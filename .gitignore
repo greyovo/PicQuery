@@ -1,0 +1,22 @@
+# General
+*.iml
+.gradle
+.idea
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+output-metadata.json
+local.properties
+*.apk
+
+# Models
+*.ptl
+*.pt
+*.onnx
+*.ort
+
+# Python
+venv
