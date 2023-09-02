@@ -1,4 +1,4 @@
-package me.grey.picquery.data.encoder
+package me.grey.picquery.core.encoder
 
 import android.content.Context
 import me.grey.picquery.util.assetFilePath
@@ -41,7 +41,7 @@ private fun readGzipFile(context: Context, assetName: String): List<String> {
     return result
 }
 
-class BPETokenizer(context: Context, bpePath: String = "bpe_vocab") {
+class BPETokenizer(context: Context, bpePath: String = "bpe_vocab.gz") {
 
     private val byteEncoder = createCharDict()
     private val byteDecoder = byteEncoder.map { it.value to it.key }.toMap()

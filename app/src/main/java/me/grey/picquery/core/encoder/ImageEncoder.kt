@@ -1,4 +1,4 @@
-package me.grey.picquery.data.encoder
+package me.grey.picquery.core.encoder
 
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
@@ -9,10 +9,11 @@ import android.util.Log
 import me.grey.picquery.util.assetFilePath
 import org.pytorch.*
 import org.pytorch.torchvision.TensorImageUtils
+import java.nio.FloatBuffer
 import java.util.*
 
 
-class ImageEncoderONNX(private val context: Context) {
+class ImageEncoder(private val context: Context) {
     companion object {
         val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
         val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
@@ -20,11 +21,10 @@ class ImageEncoderONNX(private val context: Context) {
 
     private val modelPath = "clip-image-encoder-quant-int8.onnx"
 
-    private var ortEnv: OrtEnvironment? = null
     private var ortSession: OrtSession? = null
 
     init {
-        ortEnv = OrtEnvironment.getEnvironment()
+        val ortEnv = OrtEnvironment.getEnvironment()
         ortSession = ortEnv?.createSession(assetFilePath(context, modelPath))
     }
 
@@ -78,7 +78,7 @@ class ImageEncoderONNX(private val context: Context) {
         return res
     }
 
-    fun encode(bitmap: Bitmap): Array<FloatArray> {
+    fun encode(bitmap: Bitmap): FloatBuffer {
         val imgData = preprocess(bitmap)
         val start = System.currentTimeMillis()
         val floatBuffer = Tensor.allocateFloatBuffer(3 * 224 * 224)
@@ -108,8 +108,9 @@ class ImageEncoderONNX(private val context: Context) {
                     ortSession?.run(Collections.singletonMap(inputName, tensor))
                 Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
                 output.use {
+                    val resultBuffer = output?.get(0) as OnnxTensor
                     @Suppress("UNCHECKED_CAST")
-                    return (output?.get(0)?.value) as Array<FloatArray>
+                    return (resultBuffer.floatBuffer)
                 }
             }
         }

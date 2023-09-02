@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.theme
+package me.grey.picquery.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

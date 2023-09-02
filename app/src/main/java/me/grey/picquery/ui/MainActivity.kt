@@ -1,5 +1,6 @@
 package me.grey.picquery.ui
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -15,17 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import me.grey.picquery.data.encoder.ImageEncoderONNX
-import me.grey.picquery.data.encoder.TextEncoderONNX
-import me.grey.picquery.ui.theme.PicQueryTheme
+import kotlinx.coroutines.*
+import me.grey.picquery.core.ImageSearcher
+import me.grey.picquery.core.encoder.ImageEncoder
+import me.grey.picquery.core.encoder.TextEncoder
+import me.grey.picquery.theme.PicQueryTheme
 import me.grey.picquery.util.assetFilePath
 import me.grey.picquery.util.loadThumbnail
 import me.grey.picquery.util.saveBitMap
 import java.io.File
-import java.util.*
 import kotlin.concurrent.thread
 
 private val imageList =
@@ -83,8 +82,11 @@ class MainActivity : ComponentActivity() {
                         Button(onClick = { testBatchONNX() }) {
                             Text(text = "testBatchONNX")
                         }
-                        Button(onClick = { testMultiThreadONNX() }) {
-                            Text(text = "testMultiThreadONNX")
+                        Button(onClick = { testImageSearcherEncode() }) {
+                            Text(text = "testImageSearcherEncode")
+                        }
+                        Button(onClick = { testImageSearcherSearch() }) {
+                            Text(text = "testImageSearcherSearch")
                         }
 
                         Text(text = encodeImageState1.value)
@@ -97,6 +99,14 @@ class MainActivity : ComponentActivity() {
         imagePath = assetFilePath(this, selectedImage.value)
     }
 
+    private fun testImageSearcherSearch() {
+        lifecycleScope.launch(Dispatchers.Default) {
+            initEncoder()
+            delay(2000)
+            imageSearcher?.search()
+        }
+    }
+
     var imageListExpanded = mutableStateOf(false)
     private var selectedImage = mutableStateOf(imageList[0])
     private var tokenizerCost = mutableStateOf(0L)
@@ -105,27 +115,25 @@ class MainActivity : ComponentActivity() {
     private var encodeImageState1: MutableState<String> = mutableStateOf("None")
     private var encodeImageState2: MutableState<String> = mutableStateOf("None")
 
-    private var textEncoderONNX: TextEncoderONNX? = null
-    private var imageEncoderONNX: ImageEncoderONNX? = null
+    private var textEncoder: TextEncoder? = null
+    private var imageEncoder: ImageEncoder? = null
 
     private var imagePath: String = ""
 
     private fun testTextEncoder() {
-        if (textEncoderONNX == null) {
+        if (textEncoder == null) {
             loadTextEncoderONNX()
         }
         val text = "A bird flying in the sky, cloudy"
         Log.i("testTextEncoder", "start...")
         val time = System.currentTimeMillis()
-        textEncoderONNX?.encode(text)
+        textEncoder?.encode(text)
         encodeTextCost.value = System.currentTimeMillis() - time
     }
 
     private fun testImageEncoder() {
-        lifecycleScope.launch {
-            if (imageEncoderONNX == null) {
-                loadImageEncoderONNX()
-            }
+        lifecycleScope.launch(Dispatchers.Default) {
+            initEncoder()
             val time = System.currentTimeMillis()
             // 120ms+ for loading 4096px, 4.7MB JPEG
 //            val bitmap = BitmapFactory.decodeFile(filesDir.path + "/" + selectedImage.value)
@@ -134,30 +142,30 @@ class MainActivity : ComponentActivity() {
             // 64ms for loading 4096px, 4.7MB JPEG
             val bitmap = loadThumbnail(this@MainActivity, imagePath)
             Log.d("loadImage", "${System.currentTimeMillis() - time} ms")
-            saveBitMap(this@MainActivity, bitmap, "decodeSampledBitmapFromFile")
-            val output = imageEncoderONNX?.encode(bitmap)
+//            saveBitMap(this@MainActivity, bitmap, "decodeSampledBitmapFromFile")
+            val output = imageEncoder?.encode(bitmap)
             encodeImageCost.value = System.currentTimeMillis() - time
-            Log.d("testImageEncoder", Arrays.toString(output))
+            println(output.toString())
+            println(output?.array().contentToString())
+//            println(output?.size)
+//            println(output!![0].size)
+//            println(output[0].contentToString())
         }
     }
 
     private fun loadImageEncoderONNX() {
-        if (imageEncoderONNX == null) {
+        if (imageEncoder == null) {
             encodeImageState1.value = "Loading ImageEncoder ONNX ..."
             encodeImageState2.value = "Loading ImageEncoder ONNX ..."
-            imageEncoderONNX = ImageEncoderONNX(context = this@MainActivity)
+            imageEncoder = ImageEncoder(context = this@MainActivity)
             encodeImageState1.value = "Loading ImageEncoder ONNX done"
             encodeImageState2.value = "Loading ImageEncoder ONNX done"
         }
     }
 
     private fun loadTextEncoderONNX() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.Default) {
-                if (textEncoderONNX == null) {
-                    textEncoderONNX = TextEncoderONNX(context = this@MainActivity)
-                }
-            }
+        if (textEncoder == null) {
+            textEncoder = TextEncoder(context = this@MainActivity)
         }
     }
 
@@ -182,7 +190,7 @@ class MainActivity : ComponentActivity() {
         batchTestLock = true
         lifecycleScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.Default) {
-                if (imageEncoderONNX == null) {
+                if (imageEncoder == null) {
                     loadImageEncoderONNX()
                 }
                 val total = 500
@@ -192,7 +200,7 @@ class MainActivity : ComponentActivity() {
                     val bitmap = loadThumbnail(this@MainActivity, imagePath)
                     Log.d("decodeStream", "${System.currentTimeMillis() - _start} ms")
                     saveBitMap(this@MainActivity, bitmap, "temp-224.jpg")
-                    imageEncoderONNX?.encode(bitmap)
+                    imageEncoder?.encode(bitmap)
                     if (i % 10 == 0) {
                         encodeImageState1.value =
                             "Processing `${selectedImage.value}`: $i / $total using ONNX..."
@@ -206,63 +214,36 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    var encodeLock1 = false
-    var encodeLock2 = false
+    var imageSearcher: ImageSearcher? = null
 
-    private fun testMultiThreadONNX() {
+    private fun testImageSearcherEncode() {
         assetFilePath(this, selectedImage.value)
-        if (imageEncoderONNX == null) {
+        val batchSize = 100
+        lifecycleScope.launch(Dispatchers.Default) {
+            // 在后台线程执行耗时操作
+            initEncoder()
+            val tempBitmaps = mutableListOf<Bitmap>()
+            encodeImageState1.value = "load $batchSize thumbnails..."
+            for (i in 1..batchSize) {
+                tempBitmaps.add(loadThumbnail(this@MainActivity, imagePath))
+            }
+            encodeImageState1.value = "testImageSearcherEncode batch $batchSize ..."
+            imageSearcher!!.encodeBatch(tempBitmaps)
+            encodeImageState1.value = "testImageSearcherEncode $batchSize done!"
+            Log.d("ImageSearcher", "testImageSearcherEncode $batchSize done!")
+        }
+
+    }
+
+    private fun initEncoder() {
+        if (imageEncoder == null) {
             loadImageEncoderONNX()
-            return
         }
-        if (encodeLock1) {
-            Toast.makeText(this, "Already Running batch test!", Toast.LENGTH_SHORT).show()
-            return
-        } else {
-            encodeLock1 = true
-            thread(start = true, isDaemon = false, name = "DThread1", priority = 1) {
-                suspend {
-                    val total = 500
-                    val start = System.currentTimeMillis()
-                    for (i in 0..total) {
-                        val bitmap =
-                            BitmapFactory.decodeStream(File(filesDir.path + "/" + (selectedImage.value)).inputStream())
-                        imageEncoderONNX?.encode(bitmap)
-                        if (i % 10 == 0) {
-                            encodeImageState1.value =
-                                "Processing `${selectedImage.value}`: $i / $total"
-                        }
-                    }
-                    encodeImageState1.value =
-                        "Processed: $total `${selectedImage.value}` images in ${System.currentTimeMillis() - start} ms"
-                    encodeLock1 = false
-                }
-
-            }
+        if (textEncoder == null) {
+            loadTextEncoderONNX()
         }
-        if (encodeLock2) {
-            Toast.makeText(this, "Already Running batch test!", Toast.LENGTH_SHORT).show()
-            return
-        } else {
-            encodeLock2 = true
-            thread(start = true, isDaemon = false, name = "DThread2", priority = 1) {
-                suspend {
-                    val total = 500
-                    val start = System.currentTimeMillis()
-                    for (i in 0..total) {
-                        val bitmap = loadThumbnail(this, imagePath)
-                        imageEncoderONNX?.encode(bitmap)
-                        if (i % 10 == 0) {
-                            encodeImageState2.value =
-                                "Processing `${selectedImage.value}`: $i / $total"
-                        }
-                    }
-                    encodeImageState2.value =
-                        "Processed: $total `${selectedImage.value}` images in ${System.currentTimeMillis() - start} ms"
-                    encodeLock2 = false
-                }
-            }
-
+        if (imageSearcher == null) {
+            imageSearcher = ImageSearcher(imageEncoder!!, textEncoder!!, this.filesDir)
         }
     }
 
