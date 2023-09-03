@@ -151,7 +151,7 @@ class MainActivity : FragmentActivity() {
 
         val repo = PhotoRepository(contentResolver)
         val batchSize = 500
-        val photos = repo.getPhotos(pageSize = batchSize)
+        val photos = repo.getPhotoList(pageSize = batchSize)
         if (photos.isEmpty()) {
             Toast.makeText(this, "没有内容！", Toast.LENGTH_SHORT).show()
         } else {

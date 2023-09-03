@@ -3,11 +3,13 @@ package me.grey.picquery.util
 import android.content.Context
 import android.graphics.*
 import android.util.Log
+import android.util.Size
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.grey.picquery.core.encoder.ImageEncoder
 import java.io.*
 
 @Throws(IOException::class)
@@ -61,15 +63,14 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
  * */
 fun decodeSampledBitmapFromFileDescriptor(
     fd: FileDescriptor,
-    reqWidth: Int,
-    reqHeight: Int
+    size: Size,
 ): Bitmap {
     return BitmapFactory.Options().run {
         inJustDecodeBounds = true
         BitmapFactory.decodeFileDescriptor(fd, null, this)
 
         // Calculate inSampleSize
-        inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+        inSampleSize = calculateInSampleSize(this, size.width, size.height)
 
         // Decode bitmap with inSampleSize set
         inJustDecodeBounds = false
@@ -80,8 +81,7 @@ fun decodeSampledBitmapFromFileDescriptor(
 
 fun decodeSampledBitmapFromFile(
     pathName: String,
-    reqWidth: Int,
-    reqHeight: Int
+    size: Size,
 ): Bitmap {
     // First decode with inJustDecodeBounds=true to check dimensions
     return BitmapFactory.Options().run {
@@ -89,7 +89,7 @@ fun decodeSampledBitmapFromFile(
         BitmapFactory.decodeFile(pathName, this)
 
         // Calculate inSampleSize
-        inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+        inSampleSize = calculateInSampleSize(this, size.width, size.height)
 
         // Decode bitmap with inSampleSize set
         inJustDecodeBounds = false
@@ -141,5 +141,5 @@ suspend fun loadThumbnail(context: Context, imagePath: String): Bitmap {
         }
     }
     Log.d("loadThumbnail", "using BitmapFactory")
-    return decodeSampledBitmapFromFile(imagePath, 224, 224)
+    return decodeSampledBitmapFromFile(imagePath, ImageEncoder.INPUT_SIZE)
 }

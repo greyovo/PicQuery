@@ -3,7 +3,7 @@ package me.grey.picquery.data.model
 import java.io.Serializable
 
 data class Embedding(
-    val id: String, val data: FloatArray
+    val id: Long, val data: FloatArray
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

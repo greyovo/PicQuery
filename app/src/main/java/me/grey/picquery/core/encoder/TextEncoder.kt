@@ -20,7 +20,7 @@ class TextEncoder(private val context: Context) {
         ortSession = ortEnv?.createSession(assetFilePath(context, modelPath))
     }
 
-    fun encode(input: String): Array<FloatArray> {
+    fun encode(input: String): FloatArray {
         if (tokenizer == null) {
             tokenizer = BPETokenizer(context)
         }
@@ -35,9 +35,14 @@ class TextEncoder(private val context: Context) {
             tensor.use {
                 val output = ortSession?.run(Collections.singletonMap(inputName, tensor))
                 output.use {
+                    val resultBuffer = output?.get(0) as OnnxTensor
                     @Suppress("UNCHECKED_CAST")
-                    return (output?.get(0)?.value) as Array<FloatArray>
+                    return (resultBuffer.floatBuffer).array()
                 }
+//                output.use {
+//                    @Suppress("UNCHECKED_CAST")
+//                    return (output?.get(0)?.value) as Array<FloatArray>
+//                }
             }
         }
     }
