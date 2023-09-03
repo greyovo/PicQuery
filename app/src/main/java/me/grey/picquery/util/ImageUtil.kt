@@ -8,9 +8,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 
 @Throws(IOException::class)
 fun assetFilePath(context: Context, assetName: String): String {
@@ -61,6 +59,25 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
 /**
  * https://developer.android.google.cn/topic/performance/graphics/load-bitmap?hl=zh-cn
  * */
+fun decodeSampledBitmapFromFileDescriptor(
+    fd: FileDescriptor,
+    reqWidth: Int,
+    reqHeight: Int
+): Bitmap {
+    return BitmapFactory.Options().run {
+        inJustDecodeBounds = true
+        BitmapFactory.decodeFileDescriptor(fd, null, this)
+
+        // Calculate inSampleSize
+        inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+
+        // Decode bitmap with inSampleSize set
+        inJustDecodeBounds = false
+
+        BitmapFactory.decodeFileDescriptor(fd, null, this)!!
+    }
+}
+
 fun decodeSampledBitmapFromFile(
     pathName: String,
     reqWidth: Int,

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="me.grey.picquery">
 
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"

@@ -1,4 +1,4 @@
-package me.grey.picquery.data
+package me.grey.picquery.data.model
 
 import java.io.Serializable
 
