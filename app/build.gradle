@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "me.grey.picquery"
-        minSdk 23
+        minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"

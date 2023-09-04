@@ -2,17 +2,27 @@ package me.grey.picquery.data
 
 //import android.content.ContentResolver
 import android.content.ContentResolver
+import android.content.ContentResolver.QUERY_ARG_LIMIT
+import android.content.ContentResolver.QUERY_ARG_OFFSET
 import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import androidx.annotation.RequiresApi
+import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 
 
 class PhotoRepository(private val contentResolver: ContentResolver) {
 
-    private val projection = arrayOf(
+    companion object {
+        private const val TAG = "PhotoRepository"
+    }
+
+    private val imageProjection = arrayOf(
         MediaStore.Images.Media._ID,
         MediaStore.Images.Media.DATA,
         MediaStore.Images.Media.DISPLAY_NAME,
@@ -22,85 +32,99 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
         MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
     )
 
-    private val collection: Uri =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.Media.getContentUri(
-                MediaStore.VOLUME_EXTERNAL
-            )
-        } else {
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
-
-    private val queryAllPhoto = contentResolver.query(
-        collection,
-        projection,
-        null,
-        null,
-        null,
-    )
+    private val imageCollection: Uri =
+        MediaStore.Images.Media.getContentUri(
+            MediaStore.VOLUME_EXTERNAL
+        )
 
     fun getPhotoList(pageIndex: Int = 0, pageSize: Int = 50): List<Photo> {
-        val photoList = mutableListOf<Photo>()
         val offset = pageIndex * pageSize
 
+        val queryAllPhoto = contentResolver.query(
+            imageCollection,
+            imageProjection,
+            Bundle().apply {
+                putInt(QUERY_ARG_OFFSET, offset)
+                putInt(QUERY_ARG_LIMIT, pageSize)
+            },
+            null,
+        )
+        val photoList = mutableListOf<Photo>()
+
         queryAllPhoto.use { cursor: Cursor? ->
-            // 开始从结果中迭代查找
-            cursor!!.move(offset)
-            while (cursor.moveToNext()) {
-                if (photoList.size >= pageSize) break
-                photoList.add(getPhotoFromCursor(cursor))
+            when (cursor?.count) {
+                null -> {
+                    Log.e(TAG, "getPhotoList, cursor null")
+                    return emptyList()
+                }
+                0 -> return emptyList()
+                else -> {
+                    // 开始从结果中迭代查找，cursor最初从-1开始
+                    cursor.move(offset)
+                    while (cursor.moveToNext()) {
+                        if (photoList.size >= pageSize) break
+                        photoList.add(CursorUtil.getPhoto(cursor))
+                    }
+                    return photoList
+                }
             }
-            return photoList
+        }
+    }
+
+
+    fun getPhotoListByAlbumId(albumId: Long): List<Photo> {
+        val query = contentResolver.query(
+            imageCollection,
+            imageProjection,
+            Bundle().apply {
+                putInt(
+                    ContentResolver.QUERY_ARG_SORT_DIRECTION,
+                    ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+                )
+                putStringArray(
+                    ContentResolver.QUERY_ARG_SORT_COLUMNS,
+                    arrayOf(MediaStore.MediaColumns.DATE_MODIFIED)
+                )
+            },
+            null
+        )
+
+        query.use { cursor: Cursor? ->
+            when (cursor?.count) {
+                null -> {
+                    Log.e(TAG, "getPhotoListByAlbumId, cursor null")
+                    return emptyList()
+                }
+                0 -> return emptyList()
+                else -> {
+                    // 开始从结果中迭代查找，cursor最初从-1开始
+                    val photoList = mutableListOf<Photo>()
+                    while (cursor.moveToNext()) {
+                        photoList.add(CursorUtil.getPhoto(cursor))
+                    }
+                    return photoList
+                }
+            }
         }
     }
 
     fun getPhotoById(id: Long): Photo? {
         val queryPhotoById = contentResolver.query(
-            collection,
-            projection,
+            imageCollection,
+            imageProjection,
             "${MediaStore.Images.Media._ID} = ?",
             arrayOf(id.toString()),
             null,
         )
         return queryPhotoById.use { cursor: Cursor? ->
+            cursor?.moveToFirst()
             if (cursor != null) {
-                getPhotoFromCursor(cursor)
+                CursorUtil.getPhoto(cursor)
             } else {
                 null
             }
         }
     }
 
-    private fun getPhotoFromCursor(cursor: Cursor): Photo {
-        var albumIDColumn: Int? = null
-        var albumLabelColumn: Int? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            albumIDColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
-            albumLabelColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
-        }
 
-        val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-        val label =
-            cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME))
-        val timestamp =
-            cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-        val albumID = albumIDColumn?.let { cursor.getLong(it) }
-        val albumLabel = albumLabelColumn?.let { cursor.getString(it) }
-        val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
-        val contentUri = ContentUris.withAppendedId(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            id
-        )
-
-        return Photo(
-            id = id,
-            uri = contentUri,
-            label = label,
-            albumID = albumID,
-            albumLabel = albumLabel,
-            timestamp = timestamp,
-            path = path
-        )
-    }
 }

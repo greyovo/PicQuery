@@ -10,8 +10,8 @@ data class Photo(
     val uri: Uri,
     val path: String,
     val timestamp: Long, // 最后修改的日期，时间戳
-    val albumID: Long?,
-    val albumLabel: String?,
+    val albumID: Long,
+    val albumLabel: String,
 ){
     override fun toString(): String {
         return "Photo(id=$id, label='$label', uri=$uri, path='$path', timestamp=$timestamp, albumID=$albumID, albumLabel=$albumLabel)"
