@@ -73,6 +73,8 @@ dependencies {
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:latest.release'
 
     implementation 'com.github.bumptech.glide:glide:4.14.0'
+    implementation 'com.github.bumptech.glide:compose:1.0.0-alpha.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 }

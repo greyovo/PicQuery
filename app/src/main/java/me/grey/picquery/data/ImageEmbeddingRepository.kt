@@ -15,7 +15,7 @@ class ImageEmbeddingRepository(
         private const val EMBEDDING_FILE = "img-feat.bin" // 存储为二进制数据
     }
 
-    private val embeddingMap = mutableMapOf<Long, Embedding>() // <id, feature>
+    val embeddingMap = mutableMapOf<Long, Embedding>() // <id, feature>
 
     fun update(emb: Embedding) {
         embeddingMap[emb.id] = emb

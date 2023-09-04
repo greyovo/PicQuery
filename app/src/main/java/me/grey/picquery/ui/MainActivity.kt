@@ -1,6 +1,7 @@
 package me.grey.picquery.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
@@ -50,14 +51,14 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PicQueryTheme() {
-                // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxSize()
+                    ) {
                         Greeting(selectedImage.value)
                         OutlinedButton(onClick = { imageListExpanded.value = true }) {
                             Text(text = "selectImage")
@@ -75,8 +76,8 @@ class MainActivity : FragmentActivity() {
 
                         Text(text = "tokenizerCost: ${tokenizerCost.value} ms")
 
-                        Button(onClick = { testTextEncoder() }) {
-                            Text(text = "testTextEncoder")
+                        Button(onClick = { testAlbumListActivity() }) {
+                            Text(text = "testAlbumListActivity")
                         }
                         Text(text = "testTextEncoder: ${encodeTextCost.value} ms")
 
@@ -113,7 +114,7 @@ class MainActivity : FragmentActivity() {
         lifecycleScope.launch(Dispatchers.Default) {
             initEncoder()
             delay(2000)
-            imageSearcher?.search()
+            imageSearcher?.search("")
         }
     }
 
@@ -161,7 +162,7 @@ class MainActivity : FragmentActivity() {
                 initEncoder()
                 encodeImageState1.value = "initEncoder！cost ${System.currentTimeMillis() - start}ms"
                 start = System.currentTimeMillis()
-                imageSearcher?.encodePhotoList(contentResolver, photos,this@MainActivity)
+                imageSearcher?.encodePhotoList(contentResolver, photos, this@MainActivity)
                 encodeImageState2.value =
                     "encodePhotoList length=${photos.size} cost ${System.currentTimeMillis() - start}ms"
             }
@@ -181,15 +182,13 @@ class MainActivity : FragmentActivity() {
 
     private var imagePath: String = ""
 
-    private fun testTextEncoder() {
-        if (textEncoder == null) {
-            loadTextEncoderONNX()
-        }
-        val text = "A bird flying in the sky, cloudy"
-        Log.i("testTextEncoder", "start...")
-        val time = System.currentTimeMillis()
-        textEncoder?.encode(text)
-        encodeTextCost.value = System.currentTimeMillis() - time
+    private fun testAlbumListActivity() {
+        // 创建一个 Intent 对象，指定要启动的目标 Activity
+        val intent = Intent(this, AlbumListActivity::class.java)
+        // 可选：传递额外的数据给第二个 Activity
+        // intent.putExtra("key", "value")
+        // 启动第二个 Activity
+        startActivity(intent)
     }
 
     private fun testImageEncoder() {

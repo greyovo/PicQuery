@@ -4,7 +4,7 @@
     package="me.grey.picquery">
 
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +17,15 @@
         android:theme="@style/Theme.PicQuery"
         tools:targetApi="31">
         <activity
+            android:name=".ui.AlbumListActivity"
+            android:exported="false"
+            android:label="@string/title_activity_album_list"
+            android:theme="@style/Theme.PicQuery">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.PicQuery">
@@ -24,7 +33,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
