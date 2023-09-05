@@ -1,8 +1,5 @@
-package me.grey.picquery.ui
+package me.grey.picquery.ui.feat.main
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,56 +7,39 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import me.grey.picquery.data.AlbumRepository
-import me.grey.picquery.data.model.Album
-import me.grey.picquery.ui.theme.PicQueryTheme
 import com.bumptech.glide.integration.compose.GlideImage
+import me.grey.picquery.data.model.Album
 import java.io.File
 
-class AlbumListActivity : FragmentActivity() {
-    private val albumList = mutableStateListOf<Album>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initAlbumList()
-        setContent {
-            PicQueryTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colors.background
-                    topBar = {
-
-                    },
-                    bottomBar = {
-
-                    },
-                ) {
-                    AlbumList(list = albumList)
+@Composable
+fun AlbumListScreen(list: List<Album>?) {
+    if (list == null)
+        CircularProgressIndicator()
+    else
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(100.dp),
+            modifier = Modifier.padding(horizontal = 8.dp),
+            content = {
+                items(
+                    list.size,
+                    key = { list[it].id },
+                ) { index ->
+                    AlbumCard(list[index], onItemClick = {})
                 }
             }
-        }
-    }
-
-    private fun initAlbumList() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val albumRepository = AlbumRepository(contentResolver)
-            val albums = albumRepository.getAlbums()
-            albumList.addAll(albums)
-        }
-    }
+        )
 }
 
 @Composable
@@ -92,21 +72,6 @@ fun AlbumCard(
     }
 }
 
-@Composable
-fun AlbumList(list: List<Album>) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(100.dp),
-        modifier = Modifier.padding(horizontal = 8.dp),
-        content = {
-            items(
-                list.size,
-                key = { list[it].id },
-            ) { index ->
-                AlbumCard(list[index], onItemClick = {})
-            }
-        }
-    )
-}
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable

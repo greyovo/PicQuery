@@ -44,7 +44,7 @@ private val imageList = listOf(
 class DevActivity : FragmentActivity() {
 
     companion object {
-        private const val TAG = "MainActivity"
+        private const val TAG = "DevActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -184,11 +184,9 @@ class DevActivity : FragmentActivity() {
 
     private fun testAlbumListActivity() {
         // 创建一个 Intent 对象，指定要启动的目标 Activity
-        val intent = Intent(this, AlbumListActivity::class.java)
         // 可选：传递额外的数据给第二个 Activity
         // intent.putExtra("key", "value")
         // 启动第二个 Activity
-        startActivity(intent)
     }
 
     private fun testImageEncoder() {
