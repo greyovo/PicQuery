@@ -4,7 +4,7 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
-import me.grey.picquery.util.assetFilePath
+import me.grey.picquery.common.assetFilePath
 import org.pytorch.*
 import java.nio.IntBuffer
 import java.util.*

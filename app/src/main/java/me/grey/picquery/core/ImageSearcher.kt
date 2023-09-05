@@ -10,8 +10,8 @@ import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.ImageEmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.util.calculateSimilarity
-import me.grey.picquery.util.decodeSampledBitmapFromFile
+import me.grey.picquery.common.calculateSimilarity
+import me.grey.picquery.common.decodeSampledBitmapFromFile
 import java.io.*
 import java.nio.FloatBuffer
 

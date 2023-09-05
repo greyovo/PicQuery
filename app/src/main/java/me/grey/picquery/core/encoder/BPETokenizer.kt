@@ -1,7 +1,7 @@
 package me.grey.picquery.core.encoder
 
 import android.content.Context
-import me.grey.picquery.util.assetFilePath
+import me.grey.picquery.common.assetFilePath
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream

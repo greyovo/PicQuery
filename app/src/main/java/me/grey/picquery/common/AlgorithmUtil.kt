@@ -1,4 +1,4 @@
-package me.grey.picquery.util
+package me.grey.picquery.common
 
 import kotlin.math.sqrt
 

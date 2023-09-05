@@ -7,7 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
-import me.grey.picquery.util.assetFilePath
+import me.grey.picquery.common.assetFilePath
 import org.pytorch.*
 import org.pytorch.torchvision.TensorImageUtils
 import java.nio.FloatBuffer

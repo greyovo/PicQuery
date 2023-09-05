@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.ui.theme
+package me.grey.picquery.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
