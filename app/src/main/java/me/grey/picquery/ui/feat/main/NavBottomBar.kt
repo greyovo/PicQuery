@@ -70,7 +70,7 @@ fun NavBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomBarWidgetLight() {
-    NavBottomBar(0, MainActivity.mBottomTabItems, {})
+    NavBottomBar(0, MainActivity.bottomTabItems, {})
 
 }
 
@@ -78,6 +78,6 @@ fun PreviewBottomBarWidgetLight() {
 @Composable
 fun PreviewBottomBarWidgetNight() {
     PicQueryTheme {
-        NavBottomBar(1, MainActivity.mBottomTabItems, {})
+        NavBottomBar(1, MainActivity.bottomTabItems, {})
     }
 }

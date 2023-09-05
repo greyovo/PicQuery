@@ -11,15 +11,15 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
-import me.grey.picquery.data.model.Album
+import me.grey.picquery.common.showConfirmDialog
+import me.grey.picquery.common.showToast
 import me.grey.picquery.ui.theme.PicQueryTheme
 
 class MainActivity : FragmentActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        val mBottomTabItems =
+        val bottomTabItems =
             listOf(
                 BottomItem("搜索", Icons.Filled.Search, Icons.Outlined.Search),
                 BottomItem("相册", Icons.Filled.Menu, Icons.Outlined.Menu),
@@ -30,36 +30,46 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent { MainScaffold() }
+    }
 
-        setContent {
-            var albumList: List<Album>? = null
-            var indexedAlbumList: List<Album>? = null
-            mainViewModel.albumList.observe(this) {
-                albumList = it
-            }
-            mainViewModel.indexedAlbumList.observe(this) {
-                indexedAlbumList = it
-            }
-            PicQueryTheme {
-                var bottomSelectedIndex by remember { mutableStateOf(0) }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
-                        NavBottomBar(bottomSelectedIndex, mBottomTabItems) {
-                            bottomSelectedIndex = it
-                            println(bottomSelectedIndex)
-                        }
+    @Composable
+    private fun MainScaffold() {
+        var bottomSelectedIndex by remember { mutableStateOf(0) }
+        var albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
+        var indexedAlbumList by remember { mutableStateOf(mainViewModel.indexedAlbumList.value) }
+
+        mainViewModel.albumList.observe(this) { albumList = it }
+        mainViewModel.indexedAlbumList.observe(this) { indexedAlbumList = it }
+        PicQueryTheme {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                bottomBar = {
+                    NavBottomBar(bottomSelectedIndex, bottomTabItems) { selected ->
+                        bottomSelectedIndex = selected
                     }
-                ) {
-                    if (bottomSelectedIndex == 0) {
-                        SearchScreen(indexedAlbumList)
-                    } else {
-                        AlbumListScreen(albumList)
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+//                            showToast("更新索引！")
+                            showConfirmDialog(this, "提示", "asd")
+                        },
+                        backgroundColor = MaterialTheme.colors.primary,
+                    ) {
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "更新索引")
                     }
+                }
+            ) {
+                if (bottomSelectedIndex == 0) {
+                    SearchScreen(indexedAlbumList)
+                } else {
+                    AlbumListScreen(albumList)
                 }
             }
         }
     }
 }
+
 
 

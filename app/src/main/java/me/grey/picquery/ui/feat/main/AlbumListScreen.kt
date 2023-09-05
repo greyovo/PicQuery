@@ -43,7 +43,7 @@ fun AlbumListScreen(list: List<Album>?) {
 }
 
 @Composable
-fun AlbumCard(
+private fun AlbumCard(
     album: Album,
     onItemClick: (Album) -> Unit,
 ) {
@@ -75,23 +75,15 @@ fun AlbumCard(
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun AlbumCover(
+private fun AlbumCover(
     album: Album,
     onItemClick: (Album) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-//    val isPressed = interactionSource.collectIsPressedAsState()
-//    val radius = if (isPressed.value) 32.dp else 16.dp
-//    val cornerRadius by animateDpAsState(targetValue = radius)
     GlideImage(
         modifier = Modifier
             .aspectRatio(1f)
             .size(130.dp)
-//            .border(
-//                width = 1.dp,
-//                color = MaterialTheme.colors.primary,
-//                shape = RoundedCornerShape(16.dp)
-//            )
             .clip(RoundedCornerShape(16.dp))
             .combinedClickable(
                 interactionSource = interactionSource,
