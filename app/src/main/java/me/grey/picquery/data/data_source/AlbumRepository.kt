@@ -80,4 +80,9 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
         val db = AppDatabase.instance
         return db.albumDao().getAll()
     }
+
+    fun addSearchableAlbum(album: Album) {
+        val db = AppDatabase.instance
+        return db.albumDao().upsert(album)
+    }
 }

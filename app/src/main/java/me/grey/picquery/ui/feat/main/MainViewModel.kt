@@ -1,19 +1,42 @@
 package me.grey.picquery.ui.feat.main
 
+import android.os.Looper
+import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.common.onProgressCallback
+import me.grey.picquery.common.showToast
 import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 
+data class SearchScreenState(
+    val albumList: List<Album>,
+    val searchableAlbumList: List<Album>,
+    val unsearchableAlbumList: List<Album>,
+    val currentId: Long,
+    val currentProgress: Float
+)
+
 class MainViewModel : ViewModel() {
+
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
 
     val albumList: LiveData<List<Album>>
         get() = _albumList
@@ -52,10 +75,49 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    //    val currentEncodingProgress = MutableLiveData<Long>(0)
+//    private var _progressState = mutableStateOf<Float>(0.0F)
+//    val progressState: State<Float> = _progressState
+//    val progressState: State<Float> = _progressState
+//    private val _progressState = MutableStateFlow(0.0F)
+//    val progressState: StateFlow<Float> = _progressState.asStateFlow()
+    private val _searchScreenState = MutableStateFlow(
+        SearchScreenState(
+            emptyList(), emptyList(), emptyList(), 0, 0.0F
+        )
+    )
+    val searchScreenState = _searchScreenState.asStateFlow()
+
     fun encodeAlbum(album: Album) {
-        viewModelScope.launch {
+        _searchScreenState.value = _searchScreenState.value.copy(
+            currentId = album.id
+        )
+        viewModelScope.launch(Dispatchers.Default) {
             val photos = photoRepository.getPhotoListByAlbumId(album.id)
+            Log.d(TAG, photos.size.toString())
             val imageSearcher = ImageSearcher
+            imageSearcher.encodePhotoList(photos) { cur, total ->
+//                _progressState.update { (cur.toFloat() / total) }
+                _searchScreenState.value = _searchScreenState.value.copy(
+                    currentProgress = (cur.toFloat() / total)
+                )
+            }
+            // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
+            albumRepository.addSearchableAlbum(album)
+            Looper.prepare()
+            showToast("完成！${album.label}")
+            Looper.loop()
+            delay(1000)
+            initAllAlbumList()
+        }
+    }
+
+    private val _testCount = MutableStateFlow(0)
+
+    val testCount: StateFlow<Int> = _testCount.asStateFlow()
+    fun testState() {
+        viewModelScope.launch {
+            _testCount.update { it + 1 }
         }
     }
 }

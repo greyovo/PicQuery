@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Album
@@ -29,7 +31,12 @@ import java.io.File
 
 @OptIn(InternalTextApi::class)
 @Composable
-fun SearchScreen(searchAbleList: List<Album>?, unsearchableList: List<Album>?) {
+fun SearchScreen(
+    searchAbleList: List<Album>?,
+    unsearchableList: List<Album>?,
+    onAddIndex: (album: Album) -> Unit, // 请求对某个相册编码
+    onRemoveIndex: (album: Album) -> Unit, // 移除某个相册的编码
+) {
     Column(
         Modifier.padding(bottom = 56.dp), // 避开bottomBar的遮挡
         verticalArrangement = Arrangement.Center,
@@ -38,17 +45,20 @@ fun SearchScreen(searchAbleList: List<Album>?, unsearchableList: List<Album>?) {
         Box(Modifier.height(50.dp))
         LogoRow()
         SearchInput()
-
         AlbumList(
             searchAbleList ?: emptyList(),
             unsearchableList ?: emptyList(),
-        ) {
-        }
+            onClickSearchable = {}
+        )
     }
 }
 
 @Composable
-private fun LogoRow() {
+private fun LogoRow(
+    viewModel: MainViewModel = viewModel()
+) {
+    // FIXME test
+    val text by viewModel.testCount.collectAsState()
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth(),
@@ -67,6 +77,8 @@ private fun LogoRow() {
                 fontWeight = FontWeight.Bold
             )
         )
+        // FIXME test
+        Text(text = text.toString())
     }
 }
 
@@ -84,9 +96,7 @@ private fun SearchInput() {
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
-                .clip(
-                    RoundedCornerShape(22.dp)
-                ),
+                .clip(RoundedCornerShape(22.dp)),
             keyboardActions = KeyboardActions(onDone = {
                 Log.d("onDone", textValue.text)
             }, onSearch = {
@@ -110,6 +120,7 @@ private fun AlbumList(
     searchAbleList: List<Album>,
     unsearchableList: List<Album>,
     onClickSearchable: (Album) -> Unit,
+    viewModel: MainViewModel = viewModel()
 ) {
     LazyColumn(content = {
         stickyHeader {
@@ -122,7 +133,12 @@ private fun AlbumList(
             AlbumListHeader("待索引相册 (${unsearchableList.size})")
         }
         items(unsearchableList.size) {
-            UnsearchableAlbum(unsearchableList[it]) {}
+            UnsearchableAlbum(
+                unsearchableList[it],
+                onAddIndex = { album ->
+                    viewModel.encodeAlbum(album)
+                },
+            )
         }
     })
 }
@@ -151,13 +167,19 @@ fun SearchableAlbum(album: Album, onClick: (Album) -> Unit) {
     }
 }
 
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun UnsearchableAlbum(album: Album, onClick: (Album) -> Unit) {
+fun UnsearchableAlbum(
+    album: Album,
+    onAddIndex: (Album) -> Unit,
+    viewModel: MainViewModel = viewModel()
+) {
+    val state by viewModel.searchScreenState.collectAsState()
     ListItem(
-        modifier = Modifier.clickable {
-            onClick(album)
-        },
+//        modifier = Modifier.clickable {
+//            onAddIndex(album)
+//        },
         icon = {
             Box(Modifier.size(50.dp)) {
                 GlideImage(
@@ -170,6 +192,23 @@ fun UnsearchableAlbum(album: Album, onClick: (Album) -> Unit) {
                 )
             }
         },
+        secondaryText = {
+            Column {
+                Text(text = album.count.toString())
+                if (album.id == state.currentId)
+                    LinearProgressIndicator(
+                        progress = state.currentProgress
+                    )
+            }
+        },
+        trailing = {
+            IconButton(onClick = { onAddIndex(album) }) {
+                Icon(
+                    imageVector = Icons.Filled.Add, contentDescription = "Add",
+                    tint = MaterialTheme.colors.primary,
+                )
+            }
+        }
     ) {
         Text(text = album.label)
     }

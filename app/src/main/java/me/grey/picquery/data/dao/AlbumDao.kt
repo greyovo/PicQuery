@@ -21,6 +21,9 @@ interface AlbumDao {
     fun getById(id: Long): Album
 
     @Upsert
+    fun upsert(album: Album)
+
+    @Upsert
     fun upsertAll(albums: List<Album>)
 
     @Delete

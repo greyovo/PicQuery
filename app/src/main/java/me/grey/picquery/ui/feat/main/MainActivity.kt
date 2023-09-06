@@ -36,7 +36,7 @@ class MainActivity : FragmentActivity() {
     @Composable
     private fun MainScaffold() {
         var bottomSelectedIndex by remember { mutableStateOf(0) }
-        var albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
+        val albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
         var searchableList by remember { mutableStateOf(mainViewModel.searchableAlbumList.value) }
         var unsearchableList by remember { mutableStateOf(mainViewModel.unsearchableAlbumList.value) }
 
@@ -55,7 +55,7 @@ class MainActivity : FragmentActivity() {
                     FloatingActionButton(
                         onClick = {
 //                            showToast("更新索引！")
-                            showConfirmDialog(this, "提示", "asd")
+                            mainViewModel.testState()
                         },
                         backgroundColor = MaterialTheme.colors.primary,
                     ) {
@@ -64,7 +64,20 @@ class MainActivity : FragmentActivity() {
                 }
             ) {
                 if (bottomSelectedIndex == 0) {
-                    SearchScreen(searchableList, unsearchableList)
+                    SearchScreen(
+                        searchableList, unsearchableList,
+                        onAddIndex = {
+                            mainViewModel.encodeAlbum(
+                                album = it,
+//                                progressCallback = { cur, total ->
+//
+//                                },
+                            )
+                        },
+                        onRemoveIndex = {
+                            // 移除某个相册的编码
+                        },
+                    )
                 } else {
                     AlbumListScreen(albumList)
                 }

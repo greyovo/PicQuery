@@ -4,12 +4,14 @@ import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
+import me.grey.picquery.common.onProgressCallback
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
@@ -25,6 +27,8 @@ object ImageSearcher {
     private const val TAG = "ImageSearcher"
     private const val MATCH_THRESHOLD = 0.3
 
+    private val contentResolver = PicQueryApplication.context.contentResolver
+
     private fun loadImageEncoder() {
         if (imageEncoder == null) {
             imageEncoder = ImageEncoder
@@ -37,17 +41,17 @@ object ImageSearcher {
         }
     }
 
-    fun encodePhotoList(contentResolver: ContentResolver, photos: List<Photo>) {
+    fun encodePhotoList(photos: List<Photo>, progressCallback: onProgressCallback? = null) {
         loadImageEncoder()
 
+        var count = 0
         val listToUpdate = mutableListOf<Embedding>()
         for (photo in photos) {
             Log.d(TAG, photo.toString())
             // ====
             Log.d(TAG, "Use: contentResolver")
             val start = System.currentTimeMillis() // REMOVE
-            val thumbnailBitmap =
-                contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
+            val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
             Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
             val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
             listToUpdate.add(
@@ -57,6 +61,8 @@ object ImageSearcher {
                     data = feat.toByteArray()
                 )
             )
+            count++
+            progressCallback?.invoke(count, photos.size)
         }
         embeddingRepository.updateAll(listToUpdate)
     }

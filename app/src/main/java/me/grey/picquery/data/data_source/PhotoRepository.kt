@@ -2,8 +2,7 @@ package me.grey.picquery.data.data_source
 
 //import android.content.ContentResolver
 import android.content.ContentResolver
-import android.content.ContentResolver.QUERY_ARG_LIMIT
-import android.content.ContentResolver.QUERY_ARG_OFFSET
+import android.content.ContentResolver.*
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -75,13 +74,18 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
             imageProjection,
             Bundle().apply {
                 putInt(
-                    ContentResolver.QUERY_ARG_SORT_DIRECTION,
-                    ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
+                    QUERY_ARG_SORT_DIRECTION,
+                    QUERY_SORT_DIRECTION_DESCENDING
                 )
                 putStringArray(
-                    ContentResolver.QUERY_ARG_SORT_COLUMNS,
+                    QUERY_ARG_SORT_COLUMNS,
                     arrayOf(MediaStore.MediaColumns.DATE_MODIFIED)
                 )
+                putString(
+                    QUERY_ARG_SQL_SELECTION,
+                    "${MediaStore.Images.Media.BUCKET_ID}=?"
+                )
+                putStringArray(QUERY_ARG_SQL_SELECTION_ARGS, arrayOf(albumId.toString()));
             },
             null
         )

@@ -161,7 +161,7 @@ class DevActivity : FragmentActivity() {
                 initEncoder()
                 encodeImageState1.value = "initEncoder！cost ${System.currentTimeMillis() - start}ms"
                 start = System.currentTimeMillis()
-                imageSearcher?.encodePhotoList(contentResolver, photos)
+                imageSearcher?.encodePhotoList(photos)
                 encodeImageState2.value =
                     "encodePhotoList length=${photos.size} cost ${System.currentTimeMillis() - start}ms"
             }
