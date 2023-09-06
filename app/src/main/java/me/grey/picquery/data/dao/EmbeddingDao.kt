@@ -12,7 +12,7 @@ interface EmbeddingDao {
     @Query("SELECT * FROM $tableName")
     fun getAll(): List<Embedding>
 
-    @Query("SELECT * FROM $tableName WHERE uid IN (:photoIds)")
+    @Query("SELECT * FROM $tableName WHERE photo_id IN (:photoIds)")
     fun getAllByPhotoIds(photoIds: LongArray): List<Embedding>
 
     @Query(

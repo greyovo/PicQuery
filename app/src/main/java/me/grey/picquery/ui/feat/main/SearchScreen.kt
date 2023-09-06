@@ -1,19 +1,14 @@
 package me.grey.picquery.ui.feat.main
 
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +42,7 @@ fun SearchScreen(list: List<Album>?) {
             modifier = Modifier.padding(horizontal = 16.dp),
             style = TextStyle(fontSize = 14.sp, color = Color.Gray)
         )
-        AvailableAlbumList(list) {
+        SearchableAlbumList(list) {
 
         }
     }
@@ -59,15 +54,15 @@ private fun LogoRow() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         val textStyle = TextStyle(fontSize = 29.sp)
+        Text(text = "Pic", style = textStyle)
         Icon(
             imageVector = Icons.Filled.Search,
             contentDescription = "搜索",
-            modifier = Modifier.size(36.dp),
+            modifier = Modifier.size(38.dp),
             tint = MaterialTheme.colors.primary
         )
-        Text(text = "Pic", style = textStyle)
         Text(
-            text = "Query", style = textStyle.copy(
+            text = "uery", style = textStyle.copy(
                 fontWeight = FontWeight.Bold
             )
         )
@@ -106,16 +101,50 @@ private fun SearchInput() {
         )
 
     }
+}
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
+@Composable
+private fun UnSearchableAlbumList(
+    list: List<Album>?,
+    onItemClick: (Album) -> Unit,
+) {
+    if (list == null) {
+        Box(modifier = Modifier.height(1.dp))
+    } else {
+        LazyColumn(content = {
+            items(list.size) {
+                val album = list[it]
+                ListItem(
+                    modifier = Modifier.clickable {
+                        onItemClick(album)
+                    },
+                    icon = {
+                        Box(Modifier.size(50.dp)) {
+                            GlideImage(
+                                modifier = Modifier
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                model = File(album.coverPath),
+                                contentDescription = album.label,
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                    },
+                ) {
+                    Text(text = album.label)
+                }
+            }
+        })
+    }
 }
 
 @OptIn(
     ExperimentalMaterialApi::class,
     ExperimentalGlideComposeApi::class,
-    ExperimentalFoundationApi::class
 )
 @Composable
-private fun AvailableAlbumList(
+private fun SearchableAlbumList(
     list: List<Album>?,
     onItemClick: (Album) -> Unit,
 ) {

@@ -214,10 +214,8 @@ class DevActivity : FragmentActivity() {
     private fun loadImageEncoderONNX() {
         if (imageEncoder == null) {
             encodeImageState1.value = "Loading ImageEncoder ONNX ..."
-            encodeImageState2.value = "Loading ImageEncoder ONNX ..."
-            imageEncoder = ImageEncoder(context = this@DevActivity)
+            imageEncoder = ImageEncoder
             encodeImageState1.value = "Loading ImageEncoder ONNX done"
-            encodeImageState2.value = "Loading ImageEncoder ONNX done"
         }
     }
 
@@ -301,7 +299,7 @@ class DevActivity : FragmentActivity() {
             loadTextEncoderONNX()
         }
         if (imageSearcher == null) {
-            imageSearcher = ImageSearcher(imageEncoder!!, textEncoder!!, this.filesDir)
+            imageSearcher = ImageSearcher(imageEncoder!!, textEncoder!!)
         }
     }
 

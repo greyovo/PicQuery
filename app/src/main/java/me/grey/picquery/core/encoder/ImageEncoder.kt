@@ -7,7 +7,9 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import me.grey.picquery.PicQueryApplication.Companion.context
+import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.assetFilePath
+import me.grey.picquery.common.bitmapToFloatBuffer
 import org.pytorch.*
 import org.pytorch.torchvision.TensorImageUtils
 import java.nio.FloatBuffer
@@ -81,8 +83,9 @@ object ImageEncoder {
     fun encode(bitmap: Bitmap): FloatBuffer {
         val imgData = preprocess(bitmap)
         val start = System.currentTimeMillis()
-        val floatBuffer = Tensor.allocateFloatBuffer(3 * 224 * 224)
-        TensorImageUtils.bitmapToFloatBuffer(
+        val floatBuffer = allocateFloatBuffer(3 * 224 * 224)
+//        TensorImageUtils.bitmapToFloatBuffer(
+        bitmapToFloatBuffer(
             imgData,
             0, 0,
             224, 224,

@@ -3,15 +3,13 @@ package me.grey.picquery.core
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import android.util.Log
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
-import me.grey.picquery.data.ImageEmbeddingRepository
+import me.grey.picquery.data.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
-import me.grey.picquery.common.decodeSampledBitmapFromFile
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
@@ -22,9 +20,8 @@ import java.nio.FloatBuffer
 class ImageSearcher(
     private val imageEncoder: ImageEncoder,
     private val textEncoder: TextEncoder,
-    embeddingDirectory: File
 ) {
-    private var imageEmbeddingRepository = ImageEmbeddingRepository()
+    private var embeddingRepository = EmbeddingRepository()
 
     companion object {
         private const val TAG = "ImageSearcher"
@@ -50,7 +47,7 @@ class ImageSearcher(
                 )
             )
         }
-        imageEmbeddingRepository.updateAll(listToUpdate)
+        embeddingRepository.updateAll(listToUpdate)
     }
 
     fun encodeBatch(imageBitmaps: List<Bitmap>) {
@@ -59,7 +56,7 @@ class ImageSearcher(
             val feat: FloatBuffer = imageEncoder.encode(bitmap)
             batchResult.add(Embedding(photoId = 11, albumId = 11, data = feat.toByteArray()))
         }
-        imageEmbeddingRepository.updateAll(batchResult)
+        embeddingRepository.updateAll(batchResult)
     }
 
     private fun encode(bitmap: Bitmap) {
@@ -69,7 +66,7 @@ class ImageSearcher(
     fun search(text: String): List<Long> {
         val textFeat = textEncoder.encode(text)
         val resultPhotoIds = mutableListOf<Long>()
-        val embeddings = imageEmbeddingRepository.getAll()
+        val embeddings = embeddingRepository.getAll()
         for (emb in embeddings) {
             val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
             if (sim >= MATCH_THRESHOLD) {

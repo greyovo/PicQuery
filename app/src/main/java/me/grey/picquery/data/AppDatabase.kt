@@ -8,11 +8,11 @@ import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.model.Embedding
 
 @Database(entities = [Embedding::class], version = 1)
-abstract class AppDatabase private constructor() : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var database: AppDatabase? = null
-        
+
         val instance: AppDatabase
             get() {
                 if (database == null) {
