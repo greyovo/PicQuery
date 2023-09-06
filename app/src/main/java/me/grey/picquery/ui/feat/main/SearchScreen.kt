@@ -10,12 +10,15 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -27,9 +30,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.ui.widgets.CustomChip
 import java.io.File
 
-@OptIn(InternalTextApi::class)
+@OptIn(InternalTextApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SearchScreen(
     searchAbleList: List<Album>?,
@@ -114,7 +118,7 @@ private fun SearchInput() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun AlbumList(
     searchAbleList: List<Album>,
@@ -124,13 +128,35 @@ private fun AlbumList(
 ) {
     LazyColumn(content = {
         stickyHeader {
-            AlbumListHeader("可搜索相册 (${searchAbleList.size})")
+            AlbumListHeader(
+                "可搜索相册 (${searchAbleList.size})",
+                leadingIcon = Icons.Filled.CheckCircle,
+//                leadingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Filled.CheckCircle,
+//                        contentDescription = ""
+//                    )
+//                }
+            )
         }
-        items(searchAbleList.size) {
-            SearchableAlbum(searchAbleList[it], onClickSearchable)
+//        items(searchAbleList.size) {
+//            SearchableAlbum(searchAbleList[it], onClickSearchable)
+//        }
+        item {
+            FlowRow(modifier = Modifier.padding(8.dp)) {
+                searchAbleList.forEach {
+                    SearchableAlbum(it, onClickSearchable)
+                }
+            }
         }
+//        item {
+//
+//        }
         stickyHeader {
-            AlbumListHeader("待索引相册 (${unsearchableList.size})")
+            AlbumListHeader(
+                "待索引相册 (${unsearchableList.size})",
+                leadingIcon = Icons.Filled.Info,
+            )
         }
         items(unsearchableList.size) {
             UnsearchableAlbum(
@@ -146,24 +172,13 @@ private fun AlbumList(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun SearchableAlbum(album: Album, onClick: (Album) -> Unit) {
-    ListItem(
-        modifier = Modifier.clickable {
-            onClick(album)
-        },
-        icon = {
-            Box(Modifier.size(50.dp)) {
-                GlideImage(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(10.dp)),
-                    model = File(album.coverPath),
-                    contentDescription = album.label,
-                    contentScale = ContentScale.Crop,
-                )
-            }
-        },
-    ) {
-        Text(text = album.label)
+    Box(Modifier.padding(vertical = 2.dp, horizontal = 4.dp)) {
+        CustomChip(
+            selected = true,
+            text = "${album.label} (${album.count})",
+            onClick = { onClick(album) },
+            modifier = Modifier.padding(horizontal = 2.dp, vertical = 5.dp)
+        )
     }
 }
 
@@ -177,11 +192,8 @@ fun UnsearchableAlbum(
 ) {
     val state by viewModel.searchScreenState.collectAsState()
     ListItem(
-//        modifier = Modifier.clickable {
-//            onAddIndex(album)
-//        },
         icon = {
-            Box(Modifier.size(50.dp)) {
+            Box(Modifier.size(45.dp)) {
                 GlideImage(
                     modifier = Modifier
                         .aspectRatio(1f)
@@ -214,16 +226,31 @@ fun UnsearchableAlbum(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AlbumListHeader(title: String) {
+fun AlbumListHeader(title: String, leadingIcon: ImageVector) {
     Surface(
         color = MaterialTheme.colors.background,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .width(14.dp)
+                    .height(32.dp)
+            )
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = title,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colors.primary,
+            )
+            Text(
+                text = title,
+                modifier = Modifier.padding(horizontal = 5.dp),
+                style = TextStyle(fontSize = 14.sp)
+            )
+        }
     }
 }
