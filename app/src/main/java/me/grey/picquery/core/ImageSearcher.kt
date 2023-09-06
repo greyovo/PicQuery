@@ -41,18 +41,29 @@ object ImageSearcher {
         }
     }
 
-    fun encodePhotoList(photos: List<Photo>, progressCallback: onProgressCallback? = null) {
+    private var encodingLock = false
+    private var searchingLock = false
+
+    fun encodePhotoList(
+        photos: List<Photo>,
+        progressCallback: onProgressCallback? = null
+    ): Boolean {
         loadImageEncoder()
 
+        if (encodingLock) {
+            Log.w(TAG, "encodePhotoList: Already encoding!")
+            return false
+        }
+        encodingLock = true
         var count = 0
         val listToUpdate = mutableListOf<Embedding>()
         for (photo in photos) {
             Log.d(TAG, photo.toString())
             // ====
-            Log.d(TAG, "Use: contentResolver")
-            val start = System.currentTimeMillis() // REMOVE
+//            Log.d(TAG, "Use: contentResolver")
+//            val start = System.currentTimeMillis() // REMOVE
             val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
-            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
+//            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
             val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
             listToUpdate.add(
                 Embedding(
@@ -65,26 +76,37 @@ object ImageSearcher {
             progressCallback?.invoke(count, photos.size)
         }
         embeddingRepository.updateAll(listToUpdate)
+        encodingLock = false
+        return true
     }
 
     fun encodeBatch(imageBitmaps: List<Bitmap>) {
         loadImageEncoder()
 
+        if (encodingLock) {
+            Log.w(TAG, "encodePhotoList: Already encoding!")
+            return
+        }
+        encodingLock = true
         val batchResult = mutableListOf<Embedding>()
         for (bitmap in imageBitmaps) {
             val feat: FloatBuffer = imageEncoder!!.encode(bitmap)
             batchResult.add(Embedding(photoId = 11, albumId = 11, data = feat.toByteArray()))
         }
         embeddingRepository.updateAll(batchResult)
+        encodingLock = false
     }
 
     private fun encode(bitmap: Bitmap) {
     }
 
 
-    fun search(text: String): List<Long> {
+    fun search(text: String): List<Long>? {
         loadTextEncoder()
-
+        if (searchingLock) {
+            return null
+        }
+        searchingLock = true
         val textFeat = textEncoder!!.encode(text)
         val resultPhotoIds = mutableListOf<Long>()
         val embeddings = embeddingRepository.getAll()
@@ -94,6 +116,7 @@ object ImageSearcher {
                 resultPhotoIds.add(emb.photoId)
             }
         }
+        searchingLock = false
         return resultPhotoIds
     }
 

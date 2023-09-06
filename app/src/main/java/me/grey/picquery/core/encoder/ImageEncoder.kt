@@ -72,11 +72,11 @@ object ImageEncoder {
     private fun preprocess(bitmap: Bitmap): Bitmap {
         val start = System.currentTimeMillis()
         if (bitmap.width == 224 && bitmap.height == 224) {
-            Log.d("preprocess", "w=h=224, no preprocess.")
+//            Log.d("preprocess", "w=h=224, no preprocess.")
             return bitmap
         }
         val res = centerCrop(resize(bitmap))
-        Log.d("preprocess", "${System.currentTimeMillis() - start} ms")
+//        Log.d("preprocess", "${System.currentTimeMillis() - start} ms")
         return res
     }
 
@@ -95,7 +95,7 @@ object ImageEncoder {
             0,
             MemoryFormat.CHANNELS_LAST,
         )
-        Log.d("bitmapToBuffer", "${System.currentTimeMillis() - start} ms")
+//        Log.d("bitmapToBuffer", "${System.currentTimeMillis() - start} ms")
 
 //        val imgDataShort = floatBufferToFloat16Buffer(imgData)
 //        Log.d("ONNX imgData size", imgData.limit().toString())
@@ -109,10 +109,9 @@ object ImageEncoder {
                 val start2 = System.currentTimeMillis()
                 val output: OrtSession.Result? =
                     ortSession?.run(Collections.singletonMap(inputName, tensor))
-                Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
+//                Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
                 output.use {
                     val resultBuffer = output?.get(0) as OnnxTensor
-                    @Suppress("UNCHECKED_CAST")
                     return (resultBuffer.floatBuffer)
                 }
             }

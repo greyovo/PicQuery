@@ -96,19 +96,23 @@ class MainViewModel : ViewModel() {
             val photos = photoRepository.getPhotoListByAlbumId(album.id)
             Log.d(TAG, photos.size.toString())
             val imageSearcher = ImageSearcher
-            imageSearcher.encodePhotoList(photos) { cur, total ->
+            val success = imageSearcher.encodePhotoList(photos) { cur, total ->
 //                _progressState.update { (cur.toFloat() / total) }
                 _searchScreenState.value = _searchScreenState.value.copy(
                     currentProgress = (cur.toFloat() / total)
                 )
             }
-            // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
-            albumRepository.addSearchableAlbum(album)
-            Looper.prepare()
-            showToast("完成！${album.label}")
-            Looper.loop()
-            delay(1000)
-            initAllAlbumList()
+            if (success) {
+                // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
+                albumRepository.addSearchableAlbum(album)
+                Looper.prepare()
+                showToast("完成！${album.label}")
+                Looper.loop()
+                delay(1000)
+                initAllAlbumList()
+            } else {
+                Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
+            }
         }
     }
 
