@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -72,15 +73,20 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+    /// AI & Model
     implementation 'org.pytorch:pytorch_android_lite:1.13.0'
-//    implementation 'org.pytorch:pytorch_android_torchvision:1.10.0'
     implementation 'org.pytorch:pytorch_android_torchvision_lite:1.13.0'
-
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:latest.release'
-
+    // Glide Image Loader
     implementation 'com.github.bumptech.glide:glide:4.14.0'
     implementation 'com.github.bumptech.glide:compose:1.0.0-alpha.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
+
+    // Room
+    def room_version = "2.5.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // To use Kotlin Symbol Processing (KSP)
+    ksp "androidx.room:room-compiler:$room_version"
 }

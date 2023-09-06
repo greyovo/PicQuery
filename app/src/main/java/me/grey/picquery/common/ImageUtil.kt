@@ -9,7 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.grey.picquery.core.encoder.ImageEncoder
+import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
 import java.io.*
 
 @Throws(IOException::class)
@@ -56,27 +56,6 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
     }
 
     return inSampleSize
-}
-
-/**
- * https://developer.android.google.cn/topic/performance/graphics/load-bitmap?hl=zh-cn
- * */
-fun decodeSampledBitmapFromFileDescriptor(
-    fd: FileDescriptor,
-    size: Size,
-): Bitmap {
-    return BitmapFactory.Options().run {
-        inJustDecodeBounds = true
-        BitmapFactory.decodeFileDescriptor(fd, null, this)
-
-        // Calculate inSampleSize
-        inSampleSize = calculateInSampleSize(this, size.width, size.height)
-
-        // Decode bitmap with inSampleSize set
-        inJustDecodeBounds = false
-
-        BitmapFactory.decodeFileDescriptor(fd, null, this)!!
-    }
 }
 
 fun decodeSampledBitmapFromFile(
@@ -141,5 +120,5 @@ suspend fun loadThumbnail(context: Context, imagePath: String): Bitmap {
         }
     }
     Log.d("loadThumbnail", "using BitmapFactory")
-    return decodeSampledBitmapFromFile(imagePath, ImageEncoder.INPUT_SIZE)
+    return decodeSampledBitmapFromFile(imagePath, IMAGE_INPUT_SIZE)
 }

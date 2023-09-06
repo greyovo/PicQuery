@@ -3,25 +3,23 @@ package me.grey.picquery.core.encoder
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
+import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.assetFilePath
 import org.pytorch.*
 import org.pytorch.torchvision.TensorImageUtils
 import java.nio.FloatBuffer
 import java.util.*
 
+private val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
+private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
 
-class ImageEncoder(private val context: Context) {
-    companion object {
-        val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
-        val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
-        val INPUT_SIZE = Size(224,224)
-    }
+val IMAGE_INPUT_SIZE = Size(224, 224)
 
-    private val modelPath = "clip-image-encoder-quant-int8.onnx"
+object ImageEncoder {
+    private const val modelPath = "clip-image-encoder-quant-int8.onnx"
 
     private var ortSession: OrtSession? = null
 

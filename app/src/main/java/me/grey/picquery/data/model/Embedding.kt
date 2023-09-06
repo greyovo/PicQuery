@@ -1,9 +1,18 @@
 package me.grey.picquery.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
 import java.io.Serializable
 
 data class Embedding(
-    val id: Long, val data: FloatArray
+    @PrimaryKey @ColumnInfo(name = "photo_id")
+    val photoId: Long,
+
+    @ColumnInfo(name = "album_id")
+    val albumId: Long,
+
+    @ColumnInfo(name = "data", typeAffinity = ColumnInfo.BLOB)
+    val data: ByteArray // Actually a `FloatArray`. Need to be converted before using.
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -11,16 +20,15 @@ data class Embedding(
 
         other as Embedding
 
-        if (id != other.id) return false
-        if (!data.contentEquals(other.data)) return false
+        if (photoId != other.photoId) return false
+        if (albumId != other.albumId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + data.contentHashCode()
+        var result = photoId.hashCode()
+        result = 31 * result + albumId.hashCode()
         return result
     }
-
 }
