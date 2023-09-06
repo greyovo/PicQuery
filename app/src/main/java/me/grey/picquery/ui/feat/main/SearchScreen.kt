@@ -1,6 +1,7 @@
 package me.grey.picquery.ui.feat.main
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,22 +29,20 @@ import java.io.File
 
 @OptIn(InternalTextApi::class)
 @Composable
-fun SearchScreen(list: List<Album>?) {
+fun SearchScreen(searchAbleList: List<Album>?, unsearchableList: List<Album>?) {
     Column(
         Modifier.padding(bottom = 56.dp), // 避开bottomBar的遮挡
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
     ) {
-        Box(Modifier.fillMaxHeight(0.15f))
+        Box(Modifier.height(50.dp))
         LogoRow()
         SearchInput()
-        Text(
-            text = "将在以下相册中搜索",
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-        )
-        SearchableAlbumList(list) {
 
+        AlbumList(
+            searchAbleList ?: emptyList(),
+            unsearchableList ?: emptyList(),
+        ) {
         }
     }
 }
@@ -51,14 +50,16 @@ fun SearchScreen(list: List<Album>?) {
 @Composable
 private fun LogoRow() {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
     ) {
         val textStyle = TextStyle(fontSize = 29.sp)
         Text(text = "Pic", style = textStyle)
         Icon(
             imageVector = Icons.Filled.Search,
             contentDescription = "搜索",
-            modifier = Modifier.size(38.dp),
+            modifier = Modifier.size(39.dp),
             tint = MaterialTheme.colors.primary
         )
         Text(
@@ -103,77 +104,87 @@ private fun SearchInput() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun AlbumList(
+    searchAbleList: List<Album>,
+    unsearchableList: List<Album>,
+    onClickSearchable: (Album) -> Unit,
+) {
+    LazyColumn(content = {
+        stickyHeader {
+            AlbumListHeader("可搜索相册 (${searchAbleList.size})")
+        }
+        items(searchAbleList.size) {
+            SearchableAlbum(searchAbleList[it], onClickSearchable)
+        }
+        stickyHeader {
+            AlbumListHeader("待索引相册 (${unsearchableList.size})")
+        }
+        items(unsearchableList.size) {
+            UnsearchableAlbum(unsearchableList[it]) {}
+        }
+    })
+}
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-private fun UnSearchableAlbumList(
-    list: List<Album>?,
-    onItemClick: (Album) -> Unit,
-) {
-    if (list == null) {
-        Box(modifier = Modifier.height(1.dp))
-    } else {
-        LazyColumn(content = {
-            items(list.size) {
-                val album = list[it]
-                ListItem(
-                    modifier = Modifier.clickable {
-                        onItemClick(album)
-                    },
-                    icon = {
-                        Box(Modifier.size(50.dp)) {
-                            GlideImage(
-                                modifier = Modifier
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(10.dp)),
-                                model = File(album.coverPath),
-                                contentDescription = album.label,
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-                    },
-                ) {
-                    Text(text = album.label)
-                }
+fun SearchableAlbum(album: Album, onClick: (Album) -> Unit) {
+    ListItem(
+        modifier = Modifier.clickable {
+            onClick(album)
+        },
+        icon = {
+            Box(Modifier.size(50.dp)) {
+                GlideImage(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(10.dp)),
+                    model = File(album.coverPath),
+                    contentDescription = album.label,
+                    contentScale = ContentScale.Crop,
+                )
             }
-        })
+        },
+    ) {
+        Text(text = album.label)
     }
 }
 
-@OptIn(
-    ExperimentalMaterialApi::class,
-    ExperimentalGlideComposeApi::class,
-)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-private fun SearchableAlbumList(
-    list: List<Album>?,
-    onItemClick: (Album) -> Unit,
-) {
-    if (list == null) {
-        Box(modifier = Modifier.height(1.dp))
-    } else {
-        LazyColumn(content = {
-            items(list.size) {
-                val album = list[it]
-                ListItem(
-                    modifier = Modifier.clickable {
-                        onItemClick(album)
-                    },
-                    icon = {
-                        Box(Modifier.size(50.dp)) {
-                            GlideImage(
-                                modifier = Modifier
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(10.dp)),
-                                model = File(album.coverPath),
-                                contentDescription = album.label,
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-                    },
-                ) {
-                    Text(text = album.label)
-                }
+fun UnsearchableAlbum(album: Album, onClick: (Album) -> Unit) {
+    ListItem(
+        modifier = Modifier.clickable {
+            onClick(album)
+        },
+        icon = {
+            Box(Modifier.size(50.dp)) {
+                GlideImage(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(10.dp)),
+                    model = File(album.coverPath),
+                    contentDescription = album.label,
+                    contentScale = ContentScale.Crop,
+                )
             }
-        })
+        },
+    ) {
+        Text(text = album.label)
+    }
+}
+
+@Composable
+fun AlbumListHeader(title: String) {
+    Surface(
+        color = MaterialTheme.colors.background,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            style = TextStyle(fontSize = 14.sp, color = Color.Gray)
+        )
     }
 }

@@ -1,13 +1,12 @@
-package me.grey.picquery.data
+package me.grey.picquery.data.data_source
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.annotation.RequiresApi
+import me.grey.picquery.data.AppDatabase
+import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Album
 
 
@@ -33,7 +32,7 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
 
     // 查询相册
     // 本质上其实是还是遍历所有的图片，但是手动将他们归类和统计数量
-    fun getAlbums(): List<Album> {
+    fun getAllAlbums(): List<Album> {
         val queryAlbums = contentResolver.query(
             albumCollection,
             albumProjection,
@@ -75,5 +74,10 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
                 }
             }
         }
+    }
+
+    fun getSearchableAlbums(): List<Album> {
+        val db = AppDatabase.instance
+        return db.albumDao().getAll()
     }
 }

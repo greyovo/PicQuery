@@ -27,7 +27,7 @@ interface EmbeddingDao {
     fun upsertAll(embeddings: List<Embedding>)
 
     @Delete
-    fun delete(user: Embedding)
+    fun delete(embedding: Embedding)
 
     @Delete
     fun deleteAll(embeddings: List<Embedding>)

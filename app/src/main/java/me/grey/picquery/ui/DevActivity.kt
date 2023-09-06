@@ -1,7 +1,6 @@
 package me.grey.picquery.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
@@ -26,7 +25,7 @@ import me.grey.picquery.R
 import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
-import me.grey.picquery.data.PhotoRepository
+import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.theme.PicQueryTheme
 import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.loadThumbnail
@@ -162,7 +161,7 @@ class DevActivity : FragmentActivity() {
                 initEncoder()
                 encodeImageState1.value = "initEncoder！cost ${System.currentTimeMillis() - start}ms"
                 start = System.currentTimeMillis()
-                imageSearcher?.encodePhotoList(contentResolver, photos, this@DevActivity)
+                imageSearcher?.encodePhotoList(contentResolver, photos)
                 encodeImageState2.value =
                     "encodePhotoList length=${photos.size} cost ${System.currentTimeMillis() - start}ms"
             }
@@ -221,7 +220,7 @@ class DevActivity : FragmentActivity() {
 
     private fun loadTextEncoderONNX() {
         if (textEncoder == null) {
-            textEncoder = TextEncoder(context = this@DevActivity)
+            textEncoder = TextEncoder
         }
     }
 
@@ -299,7 +298,7 @@ class DevActivity : FragmentActivity() {
             loadTextEncoderONNX()
         }
         if (imageSearcher == null) {
-            imageSearcher = ImageSearcher(imageEncoder!!, textEncoder!!)
+            imageSearcher = ImageSearcher
         }
     }
 

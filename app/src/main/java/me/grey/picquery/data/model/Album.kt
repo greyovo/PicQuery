@@ -1,6 +1,12 @@
 package me.grey.picquery.data.model
 
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "searchable_album")
 data class Album(
+    @PrimaryKey
     val id: Long = 0,
     val label: String,
     var coverPath: String,

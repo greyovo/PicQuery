@@ -1,18 +1,15 @@
-package me.grey.picquery.data
+package me.grey.picquery.data.data_source
 
 //import android.content.ContentResolver
 import android.content.ContentResolver
 import android.content.ContentResolver.QUERY_ARG_LIMIT
 import android.content.ContentResolver.QUERY_ARG_OFFSET
-import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.annotation.RequiresApi
-import me.grey.picquery.data.model.Album
+import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Photo
 
 

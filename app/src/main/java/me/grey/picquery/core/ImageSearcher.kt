@@ -6,29 +6,40 @@ import android.graphics.Bitmap
 import android.util.Log
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
-import me.grey.picquery.data.EmbeddingRepository
+import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
-import java.io.*
 import java.nio.FloatBuffer
 
 
-class ImageSearcher(
-    private val imageEncoder: ImageEncoder,
-    private val textEncoder: TextEncoder,
-) {
+object ImageSearcher {
     private var embeddingRepository = EmbeddingRepository()
 
-    companion object {
-        private const val TAG = "ImageSearcher"
-        private const val MATCH_THRESHOLD = 0.3
+    private var imageEncoder: ImageEncoder? = null
+    private var textEncoder: TextEncoder? = null
+
+    private const val TAG = "ImageSearcher"
+    private const val MATCH_THRESHOLD = 0.3
+
+    private fun loadImageEncoder() {
+        if (imageEncoder == null) {
+            imageEncoder = ImageEncoder
+        }
     }
 
-    fun encodePhotoList(contentResolver: ContentResolver, photos: List<Photo>, context: Context?) {
+    private fun loadTextEncoder() {
+        if (textEncoder == null) {
+            textEncoder = TextEncoder
+        }
+    }
+
+    fun encodePhotoList(contentResolver: ContentResolver, photos: List<Photo>) {
+        loadImageEncoder()
+
         val listToUpdate = mutableListOf<Embedding>()
         for (photo in photos) {
             Log.d(TAG, photo.toString())
@@ -38,7 +49,7 @@ class ImageSearcher(
             val thumbnailBitmap =
                 contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
             Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
-            val feat: FloatBuffer = imageEncoder.encode(thumbnailBitmap)
+            val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
             listToUpdate.add(
                 Embedding(
                     photoId = photo.id,
@@ -51,9 +62,11 @@ class ImageSearcher(
     }
 
     fun encodeBatch(imageBitmaps: List<Bitmap>) {
+        loadImageEncoder()
+
         val batchResult = mutableListOf<Embedding>()
         for (bitmap in imageBitmaps) {
-            val feat: FloatBuffer = imageEncoder.encode(bitmap)
+            val feat: FloatBuffer = imageEncoder!!.encode(bitmap)
             batchResult.add(Embedding(photoId = 11, albumId = 11, data = feat.toByteArray()))
         }
         embeddingRepository.updateAll(batchResult)
@@ -64,7 +77,9 @@ class ImageSearcher(
 
 
     fun search(text: String): List<Long> {
-        val textFeat = textEncoder.encode(text)
+        loadTextEncoder()
+
+        val textFeat = textEncoder!!.encode(text)
         val resultPhotoIds = mutableListOf<Long>()
         val embeddings = embeddingRepository.getAll()
         for (emb in embeddings) {

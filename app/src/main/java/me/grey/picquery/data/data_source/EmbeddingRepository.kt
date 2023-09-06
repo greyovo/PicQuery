@@ -1,5 +1,6 @@
-package me.grey.picquery.data
+package me.grey.picquery.data.data_source
 
+import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.model.Embedding
 
 class EmbeddingRepository {

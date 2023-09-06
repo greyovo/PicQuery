@@ -4,10 +4,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.data.dao.AlbumDao
 import me.grey.picquery.data.dao.EmbeddingDao
+import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 
-@Database(entities = [Embedding::class], version = 1)
+@Database(entities = [Embedding::class, Album::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile
@@ -26,5 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
     abstract fun embeddingDao(): EmbeddingDao
+
+    abstract fun albumDao(): AlbumDao
 }
 

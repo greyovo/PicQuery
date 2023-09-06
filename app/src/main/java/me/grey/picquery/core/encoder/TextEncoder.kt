@@ -4,13 +4,14 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
+import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.assetFilePath
 import org.pytorch.*
 import java.nio.IntBuffer
 import java.util.*
 
-class TextEncoder(private val context: Context) {
-    private val modelPath = "clip-text-encoder-quant-int8.onnx"
+object TextEncoder {
+    private const val modelPath = "clip-text-encoder-quant-int8.onnx"
 
     private var ortSession: OrtSession? = null
     private var tokenizer: BPETokenizer? = null

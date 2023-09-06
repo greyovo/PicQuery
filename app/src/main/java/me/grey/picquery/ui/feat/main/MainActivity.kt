@@ -37,10 +37,12 @@ class MainActivity : FragmentActivity() {
     private fun MainScaffold() {
         var bottomSelectedIndex by remember { mutableStateOf(0) }
         var albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
-        var indexedAlbumList by remember { mutableStateOf(mainViewModel.indexedAlbumList.value) }
+        var searchableList by remember { mutableStateOf(mainViewModel.searchableAlbumList.value) }
+        var unsearchableList by remember { mutableStateOf(mainViewModel.unsearchableAlbumList.value) }
 
-        mainViewModel.albumList.observe(this) { albumList = it }
-        mainViewModel.indexedAlbumList.observe(this) { indexedAlbumList = it }
+//        mainViewModel.albumList.observe(this) { albumList = it }
+        mainViewModel.searchableAlbumList.observe(this) { searchableList = it }
+        mainViewModel.unsearchableAlbumList.observe(this) { unsearchableList = it }
         PicQueryTheme {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -62,7 +64,7 @@ class MainActivity : FragmentActivity() {
                 }
             ) {
                 if (bottomSelectedIndex == 0) {
-                    SearchScreen(indexedAlbumList)
+                    SearchScreen(searchableList, unsearchableList)
                 } else {
                     AlbumListScreen(albumList)
                 }
