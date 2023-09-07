@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.util.Log
 import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Photo
+import java.util.Arrays
 
 
 class PhotoRepository(private val contentResolver: ContentResolver) {
@@ -53,6 +54,7 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
                     Log.e(TAG, "getPhotoList, cursor null")
                     return emptyList()
                 }
+
                 0 -> return emptyList()
                 else -> {
                     // 开始从结果中迭代查找，cursor最初从-1开始
@@ -96,6 +98,7 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
                     Log.e(TAG, "getPhotoListByAlbumId, cursor null")
                     return emptyList()
                 }
+
                 0 -> return emptyList()
                 else -> {
                     // 开始从结果中迭代查找，cursor最初从-1开始
@@ -123,6 +126,38 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
                 CursorUtil.getPhoto(cursor)
             } else {
                 null
+            }
+        }
+    }
+
+    fun getPhotoListByIds(ids: List<Long>): List<Photo> {
+        val query = contentResolver.query(
+            imageCollection,
+            imageProjection,
+            "${MediaStore.Images.Media._ID} IN (${ids.joinToString(",")})",
+            arrayOf(),
+            null,
+        )
+        query.use { cursor: Cursor? ->
+            when (cursor?.count) {
+                null -> {
+                    Log.e(TAG, "getPhotoListByIds, cursor null")
+                    return emptyList()
+                }
+
+                0 -> {
+                    Log.w(TAG, "getPhotoListByIds, need ${ids.size} but found 0!")
+                    return emptyList()
+                }
+
+                else -> {
+                    // 开始从结果中迭代查找，cursor最初从-1开始
+                    val photoList = mutableListOf<Photo>()
+                    while (cursor.moveToNext()) {
+                        photoList.add(CursorUtil.getPhoto(cursor))
+                    }
+                    return photoList
+                }
             }
         }
     }

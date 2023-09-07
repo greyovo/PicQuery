@@ -15,6 +15,7 @@ import me.grey.picquery.common.onProgressCallback
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
+import me.grey.picquery.data.model.Album
 import java.nio.FloatBuffer
 
 
@@ -25,7 +26,7 @@ object ImageSearcher {
     private var textEncoder: TextEncoder? = null
 
     private const val TAG = "ImageSearcher"
-    private const val MATCH_THRESHOLD = 0.3
+    private const val MATCH_THRESHOLD = 0.2
 
     private val contentResolver = PicQueryApplication.context.contentResolver
 
@@ -101,15 +102,17 @@ object ImageSearcher {
     }
 
 
-    fun search(text: String): List<Long>? {
+    fun search(text: String, range: List<Album> = emptyList()): List<Long>? {
         loadTextEncoder()
         if (searchingLock) {
             return null
         }
         searchingLock = true
         val textFeat = textEncoder!!.encode(text)
+        Log.d(TAG, "Encode text=${text} done")
         val resultPhotoIds = mutableListOf<Long>()
         val embeddings = embeddingRepository.getAll()
+        Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
         for (emb in embeddings) {
             val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
             if (sim >= MATCH_THRESHOLD) {
@@ -117,6 +120,7 @@ object ImageSearcher {
             }
         }
         searchingLock = false
+        Log.d(TAG, "Search result: found ${resultPhotoIds.size} pics")
         return resultPhotoIds
     }
 

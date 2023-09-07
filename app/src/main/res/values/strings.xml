@@ -6,4 +6,5 @@
     <string name="ok">好的</string>
     <string name="title_activity_album_list">相册列表</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_search_result">SearchResultActivity</string>
 </resources>

@@ -19,8 +19,6 @@ fun CustomChip(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    // define properties to the chip
-    // such as color, shape, width
     Surface(
         color = when {
             selected -> MaterialTheme.colors.primary.copy(alpha = 0.1F)

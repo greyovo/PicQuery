@@ -37,7 +37,6 @@ object TextEncoder {
                 val output = ortSession?.run(Collections.singletonMap(inputName, tensor))
                 output.use {
                     val resultBuffer = output?.get(0) as OnnxTensor
-                    @Suppress("UNCHECKED_CAST")
                     return (resultBuffer.floatBuffer).array()
                 }
 //                output.use {

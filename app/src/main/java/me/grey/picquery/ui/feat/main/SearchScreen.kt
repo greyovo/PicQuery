@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +63,6 @@ private fun LogoRow(
     viewModel: MainViewModel = viewModel()
 ) {
     // FIXME test
-    val text by viewModel.testCount.collectAsState()
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth(),
@@ -81,16 +81,22 @@ private fun LogoRow(
                 fontWeight = FontWeight.Bold
             )
         )
-        // FIXME test
-        Text(text = text.toString())
     }
 }
 
 
 @InternalTextApi
 @Composable
-private fun SearchInput() {
+private fun SearchInput(
+    viewModel: MainViewModel = viewModel()
+) {
     var textValue by remember { mutableStateOf(TextFieldValue("")) }
+    val context = LocalContext.current
+    fun action() {
+        // TODO onSearch
+        Log.d("onSearch", textValue.text)
+        viewModel.toSearchResult(context, textValue.text)
+    }
     Row {
         TextField(value = textValue,
             onValueChange = { textValue = it },
@@ -101,14 +107,14 @@ private fun SearchInput() {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(22.dp)),
-            keyboardActions = KeyboardActions(onDone = {
-                Log.d("onDone", textValue.text)
-            }, onSearch = {
-                // TODO onSearch
-                Log.d("onSearch", textValue.text)
-            }),
+            keyboardActions = KeyboardActions(
+                onDone = { action() },
+                onSearch = { action() },
+                onGo = { action() },
+                onSend = { action() }
+            ),
             trailingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { action() }) {
                     Icon(imageVector = Icons.Filled.Search, contentDescription = "搜索")
                 }
             }
@@ -193,7 +199,7 @@ fun UnsearchableAlbum(
     val state by viewModel.searchScreenState.collectAsState()
     ListItem(
         icon = {
-            Box(Modifier.size(45.dp)) {
+            Box(Modifier.size(55.dp)) {
                 GlideImage(
                     modifier = Modifier
                         .aspectRatio(1f)
@@ -207,6 +213,7 @@ fun UnsearchableAlbum(
         secondaryText = {
             Column {
                 Text(text = album.count.toString())
+                Box(Modifier.height(10.dp))
                 if (album.id == state.currentId)
                     LinearProgressIndicator(
                         progress = state.currentProgress

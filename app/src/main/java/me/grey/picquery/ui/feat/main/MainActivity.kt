@@ -1,5 +1,6 @@
 package me.grey.picquery.ui.feat.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -11,9 +12,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import me.grey.picquery.common.showConfirmDialog
-import me.grey.picquery.common.showToast
-import me.grey.picquery.ui.theme.PicQueryTheme
+import me.grey.picquery.theme.PicQueryTheme
 
 class MainActivity : FragmentActivity() {
 
@@ -51,27 +50,13 @@ class MainActivity : FragmentActivity() {
                         bottomSelectedIndex = selected
                     }
                 },
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-//                            showToast("更新索引！")
-                            mainViewModel.testState()
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                    ) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "更新索引")
-                    }
-                }
-            ) {
+            ) { _ ->
                 if (bottomSelectedIndex == 0) {
                     SearchScreen(
                         searchableList, unsearchableList,
                         onAddIndex = {
                             mainViewModel.encodeAlbum(
                                 album = it,
-//                                progressCallback = { cur, total ->
-//
-//                                },
                             )
                         },
                         onRemoveIndex = {

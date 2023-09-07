@@ -41,7 +41,7 @@ private fun readGzipFile(context: Context, assetName: String): List<String> {
     return result
 }
 
-class BPETokenizer(context: Context, bpePath: String = "bpe_vocab.gz") {
+class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
 
     private val byteEncoder = createCharDict()
     private val byteDecoder = byteEncoder.map { it.value to it.key }.toMap()

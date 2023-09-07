@@ -1,5 +1,7 @@
 package me.grey.picquery.ui.feat.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.State
@@ -23,6 +25,7 @@ import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.ui.feat.result.SearchResultActivity
 
 data class SearchScreenState(
     val albumList: List<Album>,
@@ -75,12 +78,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    //    val currentEncodingProgress = MutableLiveData<Long>(0)
-//    private var _progressState = mutableStateOf<Float>(0.0F)
-//    val progressState: State<Float> = _progressState
-//    val progressState: State<Float> = _progressState
-//    private val _progressState = MutableStateFlow(0.0F)
-//    val progressState: StateFlow<Float> = _progressState.asStateFlow()
     private val _searchScreenState = MutableStateFlow(
         SearchScreenState(
             emptyList(), emptyList(), emptyList(), 0, 0.0F
@@ -116,12 +113,11 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private val _testCount = MutableStateFlow(0)
-
-    val testCount: StateFlow<Int> = _testCount.asStateFlow()
-    fun testState() {
-        viewModelScope.launch {
-            _testCount.update { it + 1 }
+    fun toSearchResult(context: Context, text: String) {
+        val intent = Intent(context, SearchResultActivity::class.java)
+        intent.apply {
+            putExtra("text", text)
         }
+        context.startActivity(intent)
     }
 }
