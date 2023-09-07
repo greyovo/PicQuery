@@ -80,7 +80,7 @@ class MainActivity : FragmentActivity() {
 
     @Composable
     private fun MainScaffold() {
-        var bottomSelectedIndex by remember { mutableStateOf(0) }
+        var bottomSelectedIndex by remember { mutableIntStateOf(0) }
         val albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
         var searchableList by remember { mutableStateOf(mainViewModel.searchableAlbumList.value) }
         var unsearchableList by remember { mutableStateOf(mainViewModel.unsearchableAlbumList.value) }

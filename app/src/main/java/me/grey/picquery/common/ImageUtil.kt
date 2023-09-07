@@ -79,13 +79,13 @@ fun decodeSampledBitmapFromFile(
 
 fun saveBitMap(context: Context, bitmap: Bitmap, name: String) {
     try {
-        val file = File(context.filesDir.path + "/$name.png")
+        val file = File(context.filesDir.path + "/$name.jpg")
         if (!file.exists()) {
             file.createNewFile()
         }
         val out = FileOutputStream(file)
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
 
         // 刷新输出流并关闭
         out.flush()

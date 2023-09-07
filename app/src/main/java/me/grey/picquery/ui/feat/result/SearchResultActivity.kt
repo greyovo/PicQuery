@@ -10,9 +10,12 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import me.grey.picquery.theme.PicQueryTheme
 
 class SearchResultActivity : ComponentActivity() {
@@ -27,14 +30,20 @@ class SearchResultActivity : ComponentActivity() {
             viewModel.startSearch(text)
         }
         setContent {
+            val searchText by viewModel.searchText.collectAsState()
             Scaffold(
                 topBar = {
-                    TopAppBar(title = {
-                        Text(
-                            text = "搜索结果",
-                            style = TextStyle(color = MaterialTheme.colors.onPrimary)
-                        )
-                    },)
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "搜索: $searchText",
+                                style = TextStyle(
+                                    color = MaterialTheme.colors.onPrimary,
+                                    fontSize = 18.sp,
+                                )
+                            )
+                        },
+                    )
                 }
             ) {
                 SearchResultGrid()

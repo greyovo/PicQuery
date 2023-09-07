@@ -10,8 +10,8 @@ import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.bitmapToFloatBuffer
+import me.grey.picquery.common.saveBitMap
 import org.pytorch.*
-import org.pytorch.torchvision.TensorImageUtils
 import java.nio.FloatBuffer
 import java.util.*
 
@@ -21,13 +21,17 @@ private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
 val IMAGE_INPUT_SIZE = Size(224, 224)
 
 object ImageEncoder {
-    private const val modelPath = "clip-image-encoder-quant-int8.onnx"
+    //        private const val modelPath = "clip-image-encoder-quant-int8.onnx"
+    private const val modelPath = "clip-image-encoder-quant-int8.with_runtime_opt.ort"
+//    private const val modelPath = "clip-image-encoder.onnx"
 
     private var ortSession: OrtSession? = null
 
     init {
         val ortEnv = OrtEnvironment.getEnvironment()
-        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath))
+        val session_options = OrtSession.SessionOptions()
+        session_options.addConfigEntry("session.load_model_format", "ORT")
+        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), session_options)
     }
 
     /**
@@ -82,8 +86,10 @@ object ImageEncoder {
 
     fun encode(bitmap: Bitmap): FloatBuffer {
         val imgData = preprocess(bitmap)
+//        saveBitMap(context, imgData, "decodeSampledBitmapFromFile")
         val start = System.currentTimeMillis()
         val floatBuffer = allocateFloatBuffer(3 * 224 * 224)
+        floatBuffer.rewind()
 //        TensorImageUtils.bitmapToFloatBuffer(
         bitmapToFloatBuffer(
             imgData,
@@ -93,8 +99,9 @@ object ImageEncoder {
             normStdRGB,
             floatBuffer,
             0,
-            MemoryFormat.CHANNELS_LAST,
+            MemoryFormat.CONTIGUOUS,
         )
+        floatBuffer.rewind()
 //        Log.d("bitmapToBuffer", "${System.currentTimeMillis() - start} ms")
 
 //        val imgDataShort = floatBufferToFloat16Buffer(imgData)
@@ -109,7 +116,7 @@ object ImageEncoder {
                 val start2 = System.currentTimeMillis()
                 val output: OrtSession.Result? =
                     ortSession?.run(Collections.singletonMap(inputName, tensor))
-//                Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
+                Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
                 output.use {
                     val resultBuffer = output?.get(0) as OnnxTensor
                     return (resultBuffer.floatBuffer)

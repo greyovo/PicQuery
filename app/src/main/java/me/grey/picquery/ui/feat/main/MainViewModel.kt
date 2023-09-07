@@ -28,6 +28,7 @@ import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.ui.DevActivity
 import me.grey.picquery.ui.feat.result.SearchResultActivity
 
 data class SearchScreenState(
@@ -121,6 +122,11 @@ class MainViewModel : ViewModel() {
         intent.apply {
             putExtra("text", text)
         }
+        context.startActivity(intent)
+    }
+
+    fun toDevTest(context: Context) {
+        val intent = Intent(context, DevActivity::class.java)
         context.startActivity(intent)
     }
 }

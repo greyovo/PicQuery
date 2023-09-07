@@ -41,13 +41,18 @@ fun SearchScreen(
     unsearchableList: List<Album>?,
     onAddIndex: (album: Album) -> Unit, // 请求对某个相册编码
     onRemoveIndex: (album: Album) -> Unit, // 移除某个相册的编码
+    viewModel: MainViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     Column(
         Modifier.padding(bottom = 56.dp), // 避开bottomBar的遮挡
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
     ) {
         Box(Modifier.height(50.dp))
+        TextButton(onClick = { viewModel.toDevTest(context) }) {
+            Text(text = "DevTest")
+        }
         LogoRow()
         SearchInput()
         AlbumList(

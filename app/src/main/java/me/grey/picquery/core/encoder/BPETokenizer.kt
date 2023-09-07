@@ -85,7 +85,7 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
             return cache[token]!!
         }
 
-        var word: MutableList<String> = token.dropLast(1).map { it.toString() }.toMutableList()
+        var word = token.dropLast(1).map { it.toString() }.toMutableList()
         word.add(token.last().toString() + "</w>")
         var pairs: List<Pair<String, String>> = getPairs(word)
 

@@ -26,12 +26,15 @@ class SearchResultViewModel : ViewModel() {
     private val _searchingState = MutableStateFlow(true)
     val searchingState = _searchingState.asStateFlow()
 
+    val searchText = MutableStateFlow("")
+
     private val repo = PhotoRepository(PicQueryApplication.context.contentResolver)
     fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
         if (text.trim().isEmpty()) {
             Log.w(TAG, "搜索字段为空")
             return
         }
+        searchText.value = text
         viewModelScope.launch(Dispatchers.IO) {
             _searchingState.value = true
             val ids = ImageSearcher.search(text)

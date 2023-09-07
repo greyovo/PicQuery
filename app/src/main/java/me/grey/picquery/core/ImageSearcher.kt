@@ -110,13 +110,15 @@ object ImageSearcher {
         }
         searchingLock = true
         val textFeat = textEncoder!!.encode(text)
-        Log.d(TAG, "Encode text=${text} done")
+        Log.d(TAG, "Encode '${text}' done")
+        Log.i(TAG, "textFeat ${textFeat.joinToString()}")
         val photoResults = mutableListOf<Pair<Long, Double>>()
         val embeddings = embeddingRepository.getAll()
         Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
         for (emb in embeddings) {
-//            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
-            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
+//            Log.i(TAG, "imageFeat ${emb.data.toFloatArray().joinToString()}")
+            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
+//            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
 //            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
             insertSmallest(photoResults, Pair(emb.photoId, sim))
         }

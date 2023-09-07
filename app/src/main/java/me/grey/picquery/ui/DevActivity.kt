@@ -199,10 +199,8 @@ class DevActivity : FragmentActivity() {
             // 64ms for loading 4096px, 4.7MB JPEG
             val bitmap = loadThumbnail(this@DevActivity, imagePath)
             Log.d("loadImage", "${System.currentTimeMillis() - time} ms")
-//            saveBitMap(this@MainActivity, bitmap, "decodeSampledBitmapFromFile")
             val output = imageEncoder?.encode(bitmap)
             encodeImageCost.value = System.currentTimeMillis() - time
-            println(output.toString())
             println(output?.array().contentToString())
 //            println(output?.size)
 //            println(output!![0].size)
