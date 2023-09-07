@@ -1,10 +1,9 @@
 package me.grey.picquery.core
 
-import android.content.ContentResolver
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.common.Cosine
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -12,6 +11,7 @@ import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.onProgressCallback
+import me.grey.picquery.common.sphericalDistLoss
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
@@ -27,6 +27,7 @@ object ImageSearcher {
 
     private const val TAG = "ImageSearcher"
     private const val MATCH_THRESHOLD = 0.2
+    private const val TOP_K = 10
 
     private val contentResolver = PicQueryApplication.context.contentResolver
 
@@ -110,19 +111,47 @@ object ImageSearcher {
         searchingLock = true
         val textFeat = textEncoder!!.encode(text)
         Log.d(TAG, "Encode text=${text} done")
-        val resultPhotoIds = mutableListOf<Long>()
+        val photoResults = mutableListOf<Pair<Long, Double>>()
         val embeddings = embeddingRepository.getAll()
         Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
         for (emb in embeddings) {
-            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
-            if (sim >= MATCH_THRESHOLD) {
-                resultPhotoIds.add(emb.photoId)
-            }
+//            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
+            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
+//            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
+            insertSmallest(photoResults, Pair(emb.photoId, sim))
         }
         searchingLock = false
-        Log.d(TAG, "Search result: found ${resultPhotoIds.size} pics")
-        return resultPhotoIds
+        Log.d(TAG, "Search result: found ${photoResults.size} pics")
+        Log.d(TAG, "photoResults: ${photoResults.joinToString()}")
+
+        return photoResults.map { it.first }
     }
+
+    // 将结果替换已有序列中最小的位置，保持结果降序排列
+    private fun insertSmallest(
+        resultPair: MutableList<Pair<Long, Double>>,
+        candidate: Pair<Long, Double>
+    ) {
+        if (resultPair.isEmpty()) {
+            resultPair.add(candidate)
+            return
+        }
+        val smallestIndex = resultPair.indexOfFirst { it.second < candidate.second }
+        if (smallestIndex == -1) {
+            // 如果没有找到，有两种情况：
+            // 1. 数组满了，则返回，什么都不做
+            // 2. 数组没满，则直接插入在最末尾
+            if (resultPair.size < TOP_K) {
+                resultPair.add(candidate)
+            }
+        } else {
+            resultPair.add(smallestIndex, candidate)
+            if (resultPair.size > TOP_K) {
+                resultPair.removeLast()
+            }
+        }
+    }
+
 
     private fun selectMax() {
 

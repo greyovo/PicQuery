@@ -1,6 +1,6 @@
 package me.grey.picquery
 
-import androidx.test.platform.app.InstrumentationRegistry
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import org.junit.Test
@@ -15,10 +15,5 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("me.grey.picquery", appContext.packageName)
-    }
+
 }

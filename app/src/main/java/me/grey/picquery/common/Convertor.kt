@@ -1,6 +1,7 @@
 package me.grey.picquery.common
 
 import android.graphics.Bitmap
+import android.util.Log
 import org.pytorch.MemoryFormat
 import org.pytorch.Tensor
 import java.nio.ByteBuffer

@@ -36,11 +36,7 @@ class SearchResultViewModel : ViewModel() {
             _searchingState.value = true
             val ids = ImageSearcher.search(text)
             if (ids != null) {
-                // TODO Test
-                Log.d(TAG, "${ids[0]} ${ids[1]} ${ids[2]}")
                 _resultList.value = repo.getPhotoListByIds(ids)
-//                val p = repo.getPhotoById(ids[0])
-//                p?.let { _resultList.value = listOf(it) }
             }
             _searchingState.value = false
         }

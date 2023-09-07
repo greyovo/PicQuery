@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.permissionx.guolindev.PermissionX
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.R
 import me.grey.picquery.common.onProgressCallback
 import me.grey.picquery.common.showToast
 import me.grey.picquery.core.ImageSearcher
@@ -59,10 +62,10 @@ class MainViewModel : ViewModel() {
 
     init {
         _albumList.value = emptyList()
-        initAllAlbumList()
+//        initAllAlbumList()
     }
 
-    private fun initAllAlbumList() {
+    fun initAllAlbumList() {
         viewModelScope.launch(Dispatchers.IO) {
             // 本机中的相册
             val albums = albumRepository.getAllAlbums()

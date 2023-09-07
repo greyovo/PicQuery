@@ -75,7 +75,6 @@ fun decodeSampledBitmapFromFile(
 
         BitmapFactory.decodeFile(pathName, this)
     }
-
 }
 
 fun saveBitMap(context: Context, bitmap: Bitmap, name: String) {

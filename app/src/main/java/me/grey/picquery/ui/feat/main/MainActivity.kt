@@ -1,7 +1,11 @@
 package me.grey.picquery.ui.feat.main
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
@@ -11,7 +15,10 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.permissionx.guolindev.PermissionX
+import me.grey.picquery.R
 import me.grey.picquery.theme.PicQueryTheme
 
 class MainActivity : FragmentActivity() {
@@ -30,6 +37,45 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent { MainScaffold() }
+        initAlbum()
+    }
+
+    private fun initAlbum() {
+        for (p in permissions) {
+            if (ContextCompat.checkSelfPermission(this, p) != PackageManager.PERMISSION_GRANTED) {
+                requestPermission()
+                return
+            }
+        }
+        mainViewModel.initAllAlbumList()
+    }
+
+    private val permissions =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        else
+            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+    private fun requestPermission() {
+        PermissionX.init(this)
+            .permissions(permissions)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(
+                    deniedList,
+                    resources.getString(R.string.permission_tips),
+                    resources.getString(R.string.ok),
+                    resources.getString(R.string.cancel),
+                )
+            }.request { allGranted, _, _ ->
+                if (!allGranted) {
+                    Toast.makeText(this, "无法获取相应权限", Toast.LENGTH_LONG).show()
+                } else {
+                    mainViewModel.initAllAlbumList()
+                }
+            }
     }
 
     @Composable
