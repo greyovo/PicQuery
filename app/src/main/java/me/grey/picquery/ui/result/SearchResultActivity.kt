@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.feat.result
+package me.grey.picquery.ui.result
 
 import android.annotation.SuppressLint
 import android.os.Bundle

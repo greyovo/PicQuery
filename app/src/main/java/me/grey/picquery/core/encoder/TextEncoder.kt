@@ -20,9 +20,9 @@ object TextEncoder {
 
     init {
         val ortEnv = OrtEnvironment.getEnvironment()
-        val session_options = SessionOptions()
-        session_options.addConfigEntry("session.load_model_format", "ORT")
-        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), session_options)
+        val options = SessionOptions()
+        options.addConfigEntry("session.load_model_format", "ORT")
+        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), options)
     }
 
     fun encode(input: String): FloatArray {

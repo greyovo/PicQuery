@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.feat.main
+package me.grey.picquery.ui.main
 
 import android.content.Context
 import android.content.Intent
@@ -29,7 +29,7 @@ import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.DevActivity
-import me.grey.picquery.ui.feat.result.SearchResultActivity
+import me.grey.picquery.ui.result.SearchResultActivity
 
 data class SearchScreenState(
     val albumList: List<Album>,

@@ -1,97 +1,77 @@
-package me.grey.picquery.ui.feat.main
+package me.grey.picquery.ui.result
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import me.grey.picquery.data.model.Album
+import me.grey.picquery.data.model.Photo
 import java.io.File
 
-
+@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun AlbumListScreen(list: List<Album>?) {
-    if (list == null)
+fun SearchResultGrid(
+    viewModel: SearchResultViewModel = viewModel()
+) {
+    val resultList by viewModel.resultList.collectAsState()
+    val searching by viewModel.searchingState.collectAsState()
+
+    if (searching) {
         CircularProgressIndicator()
-    else
+    } else if (resultList.isEmpty()) {
+        Text(text = "没有找到图片")
+    } else {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(100.dp),
             modifier = Modifier.padding(horizontal = 8.dp),
             content = {
                 items(
-                    list.size,
-                    key = { list[it].id },
+                    resultList.size,
+                    key = { resultList[it].id },
                 ) { index ->
-                    AlbumCard(list[index], onItemClick = {})
+                    PhotoResultItem(resultList[index], onItemClick = {})
                 }
             }
-        )
-}
-
-@Composable
-private fun AlbumCard(
-    album: Album,
-    onItemClick: (Album) -> Unit,
-) {
-    Column(
-        modifier = Modifier.padding(
-            PaddingValues(
-                vertical = 8.dp,
-                horizontal = 8.dp
-            )
-        ),
-    ) {
-        AlbumCover(album = album, onItemClick)
-        Text(
-            modifier = Modifier.padding(top = 8.dp),
-            text = album.label,
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface,
-        )
-        Text(
-            text = album.count.toString(),
-            style = MaterialTheme.typography.caption,
-            modifier = Modifier
-                .padding(top = 2.dp, bottom = 6.dp)
-                .padding(horizontal = 2.dp)
         )
     }
 }
 
-
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@ExperimentalFoundationApi
+@ExperimentalGlideComposeApi
 @Composable
-private fun AlbumCover(
-    album: Album,
-    onItemClick: (Album) -> Unit,
-) {
+fun PhotoResultItem(photo: Photo, onItemClick: (photo: Photo) -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     GlideImage(
         modifier = Modifier
             .aspectRatio(1f)
-            .size(130.dp)
+            .size(240.dp)
             .clip(RoundedCornerShape(16.dp))
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = rememberRipple(),
-                onClick = { onItemClick(album) }
+                onClick = { onItemClick(photo) }
             ),
-        model = File(album.coverPath),
-        contentDescription = album.label,
+        model = File(photo.path),
+        contentDescription = photo.label,
         contentScale = ContentScale.Crop,
     )
 }

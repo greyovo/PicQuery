@@ -10,7 +10,6 @@ import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.bitmapToFloatBuffer
-import me.grey.picquery.common.saveBitMap
 import org.pytorch.*
 import java.nio.FloatBuffer
 import java.util.*
@@ -29,9 +28,9 @@ object ImageEncoder {
 
     init {
         val ortEnv = OrtEnvironment.getEnvironment()
-        val session_options = OrtSession.SessionOptions()
-        session_options.addConfigEntry("session.load_model_format", "ORT")
-        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), session_options)
+        val options = OrtSession.SessionOptions()
+        options.addConfigEntry("session.load_model_format", "ORT")
+        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), options)
     }
 
     /**

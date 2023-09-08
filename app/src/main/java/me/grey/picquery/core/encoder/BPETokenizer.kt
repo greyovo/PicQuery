@@ -87,12 +87,11 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
 
         var word = token.dropLast(1).map { it.toString() }.toMutableList()
         word.add(token.last().toString() + "</w>")
-        var pairs: List<Pair<String, String>> = getPairs(word)
+        var pairs = getPairs(word)
 
         if (pairs.isEmpty()) {
             return "$token</w>"
         }
-//        var result = mutableListOf<String>()
         while (true) {
             val bigram: Pair<String, String> =
                 pairs.minByOrNull { bpeRanks[it] ?: Int.MAX_VALUE } ?: break
@@ -103,9 +102,10 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
             val newWord = mutableListOf<String>()
             var i = 0
             while (i < word.size) {
-                val j = word.subList(i, word.size).indexOf(first)
+                var j = word.subList(i, word.size).indexOf(first)
                 if (j != -1) {
-                    newWord.addAll(word.subList(i, j + i))
+                    j += i
+                    newWord.addAll(word.subList(i, j))
                     i = j
                 } else {
                     newWord.addAll(word.subList(i, word.size))
@@ -123,14 +123,14 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
             word = newWord
 
             if (word.size == 1) break
-            else pairs = getPairs(word.toList())
+            else pairs = getPairs(word)
         }
         val result = word.joinToString(" ")
         cache[token] = result
         return result
     }
 
-    fun encode(text: String): List<Int> {
+    private fun encode(text: String): List<Int> {
         val cleanedText = whitespaceClean(text).lowercase()
         val matcher = pat.matcher(cleanedText)
         val matches = mutableListOf<String>()
@@ -146,8 +146,8 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
 //        return bpe_tokens
         for (token in matches) {
             val encodedToken = token.toByteArray().map { byteEncoder[it.toInt()] }.joinToString("")
-            for (bpe_token in bpe(encodedToken).split(" ")) {
-                bpeTokens.add(encoder[bpe_token]!!)
+            for (bpeToken in bpe(encodedToken).split(" ")) {
+                bpeTokens.add(encoder[bpeToken]!!)
             }
         }
         return bpeTokens
@@ -194,8 +194,8 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
 
 }
 
-private fun getPairs(word: List<String>): List<Pair<String, String>> {
-    return word.zipWithNext().map { it.first to it.second }
+private fun getPairs(word: List<String>): Set<Pair<String, String>> {
+    return word.zipWithNext().map { it.first to it.second }.toSet()
 }
 
 private fun whitespaceClean(text: String): String {
