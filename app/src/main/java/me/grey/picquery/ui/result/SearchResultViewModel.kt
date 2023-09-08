@@ -9,11 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.core.ImageSearcher
-import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.ui.main.SearchScreenState
 
 class SearchResultViewModel : ViewModel() {
     companion object {

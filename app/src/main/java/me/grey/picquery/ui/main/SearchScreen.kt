@@ -31,6 +31,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.widgets.CustomChip
 import java.io.File
+import kotlin.math.round
 
 @OptIn(InternalTextApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -199,7 +200,12 @@ fun UnsearchableAlbum(
     onAddIndex: (Album) -> Unit,
     viewModel: MainViewModel = viewModel()
 ) {
-    val state by viewModel.searchScreenState.collectAsState()
+    val state = remember { viewModel.encodingAlbumState }
+    val showProgress = remember { mutableStateOf(false) }
+    showProgress.value = album.id == state.value.id && state.value.total > 0
+
+    val progress = (state.value.current.toFloat() / state.value.total)
+
     ListItem(
         icon = {
             Box(Modifier.size(55.dp)) {
@@ -215,12 +221,17 @@ fun UnsearchableAlbum(
         },
         secondaryText = {
             Column {
-                Text(text = album.count.toString())
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = album.count.toString())
+                    if (showProgress.value)
+                        Text(text = "${(progress * 100).toInt()}%")
+                }
                 Box(Modifier.height(10.dp))
-                if (album.id == state.currentId)
-                    LinearProgressIndicator(
-                        progress = state.currentProgress
-                    )
+                if (showProgress.value)
+                    LinearProgressIndicator(progress = progress)
             }
         },
         trailing = {
