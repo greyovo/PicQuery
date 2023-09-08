@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.grey.picquery.data.model.Album
 
 @Dao
@@ -14,6 +15,9 @@ interface AlbumDao {
 
     @Query("SELECT * FROM $tableName")
     fun getAll(): List<Album>
+
+    @Query("SELECT * FROM $tableName")
+    fun getAllFlow(): Flow<List<Album>>
 
     @Query(
         "SELECT * FROM $tableName WHERE id= (:id)"

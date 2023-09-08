@@ -4,27 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.viewModelScope
-import com.permissionx.guolindev.PermissionX
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
-import me.grey.picquery.R
-import me.grey.picquery.common.onProgressCallback
 import me.grey.picquery.common.showToast
 import me.grey.picquery.core.ImageSearcher
-import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
@@ -35,8 +31,8 @@ data class SearchScreenState(
     val albumList: List<Album>,
     val searchableAlbumList: List<Album>,
     val unsearchableAlbumList: List<Album>,
-    val currentId: Long,
-    val currentProgress: Float
+    var currentId: Long,
+    var currentProgress: Float
 )
 
 class MainViewModel : ViewModel() {
@@ -45,40 +41,57 @@ class MainViewModel : ViewModel() {
         private const val TAG = "MainViewModel"
     }
 
-    val albumList: LiveData<List<Album>>
-        get() = _albumList
+//    val albumList: LiveData<List<Album>>
+//        get() = _albumList
+//
+//    val searchableAlbumList: LiveData<List<Album>>
+//        get() = _searchableAlbumList
+//    val unsearchableAlbumList: LiveData<List<Album>>
+//        get() = _unsearchableAlbumList
 
-    val searchableAlbumList: LiveData<List<Album>>
-        get() = _searchableAlbumList
-    val unsearchableAlbumList: LiveData<List<Album>>
-        get() = _unsearchableAlbumList
+    val albumList = mutableStateListOf<Album>()
+    val searchableAlbumList = mutableStateListOf<Album>()
+    val unsearchableAlbumList = mutableStateListOf<Album>()
 
-    private val _albumList = MutableLiveData<List<Album>>()
-
-    private val _searchableAlbumList = MutableLiveData<List<Album>>()
-    private val _unsearchableAlbumList = MutableLiveData<List<Album>>()
 
     private val albumRepository = AlbumRepository(PicQueryApplication.context.contentResolver)
     private val photoRepository = PhotoRepository(PicQueryApplication.context.contentResolver)
 
-    init {
-        _albumList.value = emptyList()
-//        initAllAlbumList()
+    fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
+
+    fun initAll() {
+        initAllAlbumList()
     }
 
-    fun initAllAlbumList() {
+    private suspend fun initDataFlow() {
+        searchableAlbumFlow().collect {
+            // 从数据库中检索已经索引的相册
+            // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
+            searchableAlbumList.clear()
+            searchableAlbumList.addAll(it)
+            // 从全部相册减去已经索引的ID，就是未索引的相册
+            val unsearchable = albumList.filter { all -> !it.contains(all) }
+            unsearchableAlbumList.clear()
+            unsearchableAlbumList.addAll(unsearchable)
+        }
+    }
+
+    private fun initAllAlbumList() {
         viewModelScope.launch(Dispatchers.IO) {
             // 本机中的相册
             val albums = albumRepository.getAllAlbums()
-            _albumList.postValue(albums)
+            albumList.addAll(albums)
+            Log.d(TAG, "ALL albums: ${albums.size}")
 
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
-            val searchable = albumRepository.getSearchableAlbums().filter { albums.contains(it) }
-            _searchableAlbumList.postValue(searchable)
+            val searchable =
+                albumRepository.getSearchableAlbums().filter { albums.contains(it) }
+            searchableAlbumList.addAll(searchable)
             // 从全部相册减去已经索引的ID，就是未索引的相册
             val unsearchable = albums.filter { !searchable.contains(it) }
-            _unsearchableAlbumList.postValue(unsearchable)
+            unsearchableAlbumList.addAll(unsearchable)
+            initDataFlow()
         }
     }
 
@@ -91,6 +104,7 @@ class MainViewModel : ViewModel() {
 
     fun encodeAlbum(album: Album) {
         _searchScreenState.value = _searchScreenState.value.copy(
+            currentProgress = 0.0F,
             currentId = album.id
         )
         viewModelScope.launch(Dispatchers.Default) {

@@ -1,10 +1,13 @@
 package me.grey.picquery.ui.main
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,7 +20,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.permissionx.guolindev.PermissionX
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.theme.PicQueryTheme
 
@@ -47,7 +55,7 @@ class MainActivity : FragmentActivity() {
                 return
             }
         }
-        mainViewModel.initAllAlbumList()
+        mainViewModel.initAll()
     }
 
     private val permissions =
@@ -73,31 +81,28 @@ class MainActivity : FragmentActivity() {
                 if (!allGranted) {
                     Toast.makeText(this, "无法获取相应权限", Toast.LENGTH_LONG).show()
                 } else {
-                    mainViewModel.initAllAlbumList()
+                    mainViewModel.initAll()
                 }
             }
     }
 
     @Composable
     private fun MainScaffold() {
-        var bottomSelectedIndex by remember { mutableIntStateOf(0) }
-        val albumList by remember { mutableStateOf(mainViewModel.albumList.value) }
-        var searchableList by remember { mutableStateOf(mainViewModel.searchableAlbumList.value) }
-        var unsearchableList by remember { mutableStateOf(mainViewModel.unsearchableAlbumList.value) }
+        val bottomSelectedIndex = remember { mutableIntStateOf(0) }
+        val albumList = remember { mainViewModel.albumList }
+        val searchableList = remember { mainViewModel.searchableAlbumList }
+        val unsearchableList = remember { mainViewModel.unsearchableAlbumList }
 
-//        mainViewModel.albumList.observe(this) { albumList = it }
-        mainViewModel.searchableAlbumList.observe(this) { searchableList = it }
-        mainViewModel.unsearchableAlbumList.observe(this) { unsearchableList = it }
         PicQueryTheme {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    NavBottomBar(bottomSelectedIndex, bottomTabItems) { selected ->
-                        bottomSelectedIndex = selected
+                    NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
+                        bottomSelectedIndex.intValue = selected
                     }
                 },
             ) { _ ->
-                if (bottomSelectedIndex == 0) {
+                if (bottomSelectedIndex.intValue == 0) {
                     SearchScreen(
                         searchableList, unsearchableList,
                         onAddIndex = {
