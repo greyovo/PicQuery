@@ -1,13 +1,9 @@
 package me.grey.picquery.ui.main
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,12 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
 import com.permissionx.guolindev.PermissionX
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.theme.PicQueryTheme
 
@@ -103,7 +94,7 @@ class MainActivity : FragmentActivity() {
                 },
             ) { _ ->
                 if (bottomSelectedIndex.intValue == 0) {
-                    SearchScreen(
+                    SearchScreenM3(
                         searchableList, unsearchableList,
                         onAddIndex = {
                             mainViewModel.encodeAlbum(

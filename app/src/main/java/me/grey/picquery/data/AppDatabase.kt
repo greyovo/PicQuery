@@ -9,7 +9,7 @@ import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 
-@Database(entities = [Embedding::class, Album::class], version = 1)
+@Database(entities = [Embedding::class, Album::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         @Volatile
