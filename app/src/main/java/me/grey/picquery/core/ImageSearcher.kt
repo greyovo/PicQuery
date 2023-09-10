@@ -2,6 +2,9 @@ package me.grey.picquery.core
 
 import android.graphics.Bitmap
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.Cosine
 import me.grey.picquery.core.encoder.ImageEncoder
@@ -26,8 +29,8 @@ object ImageSearcher {
     private var textEncoder: TextEncoder? = null
 
     private const val TAG = "ImageSearcher"
-    private const val MATCH_THRESHOLD = 0.2
-    private const val TOP_K = 10
+    private const val MATCH_THRESHOLD = 0.25
+    private const val TOP_K = 30
 
     private val contentResolver = PicQueryApplication.context.contentResolver
 
@@ -103,30 +106,32 @@ object ImageSearcher {
     }
 
 
-    fun search(text: String, range: List<Album> = emptyList()): List<Long>? {
-        loadTextEncoder()
-        if (searchingLock) {
-            return null
-        }
-        searchingLock = true
-        val textFeat = textEncoder!!.encode(text)
-        Log.d(TAG, "Encode '${text}' done")
-        Log.i(TAG, "textFeat ${textFeat.joinToString()}")
-        val photoResults = mutableListOf<Pair<Long, Double>>()
-        val embeddings = embeddingRepository.getAll()
-        Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
-        for (emb in embeddings) {
+    suspend fun search(text: String, range: List<Album> = emptyList()): List<Long>? {
+        return withContext(Dispatchers.Default) {
+            loadTextEncoder()
+            if (searchingLock) {
+                return@withContext null
+            }
+            searchingLock = true
+            val textFeat = textEncoder!!.encode(text)
+            Log.d(TAG, "Encode '${text}' done")
+            Log.i(TAG, "textFeat ${textFeat.joinToString()}")
+            val photoResults = mutableListOf<Pair<Long, Double>>()
+            val embeddings = embeddingRepository.getAll()
+            Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
+            for (emb in embeddings) {
 //            Log.i(TAG, "imageFeat ${emb.data.toFloatArray().joinToString()}")
-            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
+                val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
 //            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
 //            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
-            insertSmallest(photoResults, Pair(emb.photoId, sim))
-        }
-        searchingLock = false
-        Log.d(TAG, "Search result: found ${photoResults.size} pics")
-        Log.d(TAG, "photoResults: ${photoResults.joinToString()}")
+                insertSmallest(photoResults, Pair(emb.photoId, sim))
+            }
+            searchingLock = false
+            Log.d(TAG, "Search result: found ${photoResults.size} pics")
+            Log.d(TAG, "photoResults: ${photoResults.joinToString()}")
 
-        return photoResults.map { it.first }
+            return@withContext photoResults.map { it.first }
+        }
     }
 
     // 将结果替换已有序列中最小的位置，保持结果降序排列

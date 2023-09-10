@@ -2,6 +2,7 @@ package me.grey.picquery.ui.main
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,12 +12,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -61,7 +66,9 @@ fun SearchScreenM3(
             Text(text = "DevTest")
         }
         LogoRow()
-        SearchInput()
+        Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+            SearchInput()
+        }
         AlbumList(
             searchAbleList ?: emptyList(),
             unsearchableList ?: emptyList(),
@@ -97,42 +104,47 @@ private fun LogoRow(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @InternalTextApi
 @Composable
 private fun SearchInput(
     viewModel: MainViewModel = viewModel()
 ) {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+//    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+    val text = remember { mutableStateOf("") }
+    val active = remember { mutableStateOf(false) }
     val context = LocalContext.current
     fun action() {
         // TODO onSearch
-        Log.d("onSearch", textValue.text)
-        viewModel.toSearchResult(context, textValue.text)
+        Log.d("onSearch", text.value)
+        viewModel.toSearchResult(context, text.value)
     }
-    Row {
-        TextField(value = textValue,
-            onValueChange = { textValue = it },
-            //            label = { Text("Enter Your Name") },
-            placeholder = { Text(text = "对图片的描述...") },
-            singleLine = true,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(22.dp)),
-            keyboardActions = KeyboardActions(
-                onDone = { action() },
-                onSearch = { action() },
-                onGo = { action() },
-                onSend = { action() }
-            ),
-            trailingIcon = {
-                IconButton(onClick = { action() }) {
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "搜索")
-                }
-            }
-
-        )
-
+    SearchBar(
+        modifier = Modifier.fillMaxWidth(),
+        query = text.value,
+        onQueryChange = { text.value = it },
+        onSearch = { action() },
+        active = false,
+        onActiveChange = { },
+        placeholder = { Text("对图片的描述...") },
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
+    ) {
+//        repeat(4) { idx ->
+//            val resultText = "Suggestion $idx"
+//            ListItem(
+//                headlineContent = { Text(resultText) },
+//                supportingContent = { Text("Additional info") },
+//                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
+//                modifier = Modifier
+//                    .clickable {
+//                        text.value = resultText
+//                        active.value = false
+//                    }
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 16.dp, vertical = 4.dp)
+//            )
+//        }
     }
 }
 
@@ -160,15 +172,12 @@ private fun AlbumList(
 //        items(searchAbleList.size) {
 //            SearchableAlbum(searchAbleList[it], onClickSearchable)
 //        }
-        item {
-            FlowRow(modifier = Modifier.padding(8.dp)) {
-                searchAbleList.forEach {
-                    SearchableAlbum(it, onClickSearchable)
-                }
-            }
-        }
 //        item {
-//
+//            FlowRow(modifier = Modifier.padding(8.dp)) {
+//                searchAbleList.forEach {
+//                    SearchableAlbum(it, onClickSearchable)
+//                }
+//            }
 //        }
         stickyHeader {
             AlbumListHeader(
@@ -187,7 +196,6 @@ private fun AlbumList(
     })
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 private fun SearchableAlbum(album: Album, onClick: (Album) -> Unit) {
     Box(Modifier.padding(vertical = 2.dp, horizontal = 4.dp)) {

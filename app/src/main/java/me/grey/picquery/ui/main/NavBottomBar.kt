@@ -2,7 +2,12 @@ package me.grey.picquery.ui.main
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,49 +26,35 @@ fun NavBottomBar(
     bottomItems: List<BottomItem>,
     onItemSelected: (position: Int) -> Unit
 ) {
-    BottomNavigation(backgroundColor = MaterialTheme.colors.background) {
+    NavigationBar() {
         bottomItems.forEachIndexed { index, item ->
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = selectedIndex == index,
                 onClick = { onItemSelected.invoke(index) },
                 icon = {
-                    var icon = item.unSelectIcon
-                    var iconColor =
-                        LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
-                    if (selectedIndex == index) {
-                        icon = item.selectIcon
-                        iconColor = MaterialTheme.colors.primary
+                    val icon = if (selectedIndex == index) {
+                        item.selectIcon
+                    } else {
+                        item.unSelectIcon
                     }
 
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .padding(bottom = 4.dp),
-                        tint = iconColor,
+                        modifier = Modifier.padding(bottom = 4.dp),
                     )
                 },
-                label = {
-                    val labelStyle = if (selectedIndex == index) {
-                        TextStyle(
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colors.primary
-                        )
-                    } else {
-                        TextStyle(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 11.sp,
-                        )
-                    }
-                    Text(
-                        text = bottomItems[index].label,
-                        style = labelStyle,
-                    )
-                },
+                label = { Text(text = bottomItems[index].label) },
             )
         }
+//        bottomItems.forEachIndexed { index, item ->
+//            NavigationBarItem(
+//                icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+//                label = { Text(item) },
+//                selected = selectedItem == index,
+//                onClick = { selectedItem = index }
+//            )
+//        }
     }
 }
 
