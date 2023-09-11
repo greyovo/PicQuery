@@ -35,7 +35,6 @@ class MainViewModel : ViewModel() {
     val searchableAlbumList = mutableStateListOf<Album>()
     val unsearchableAlbumList = mutableStateListOf<Album>()
 
-
     private val albumRepository = AlbumRepository(PicQueryApplication.context.contentResolver)
     private val photoRepository = PhotoRepository(PicQueryApplication.context.contentResolver)
 
@@ -103,12 +102,4 @@ class MainViewModel : ViewModel() {
             }
         }
     }
-
-//    fun toSearchResult(context: Context, text: String) {
-//        val intent = Intent(context, SearchResultActivity::class.java)
-//        intent.apply {
-//            putExtra("text", text)
-//        }
-//        context.startActivity(intent)
-//    }
 }

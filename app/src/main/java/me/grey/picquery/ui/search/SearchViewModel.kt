@@ -1,9 +1,6 @@
 package me.grey.picquery.ui.search
 
 import android.util.Log
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.InteractionSource
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,17 +16,11 @@ import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 
 enum class SearchState() {
-    UNREADY, // 没有索引/没有可供搜索的
+    NO_INDEX, // 没有索引
     LOADING, // 初始化加载模型中
     READY,  // 准备好搜索
     SEARCHING,  // 正在搜索
     FINISHED,  // 搜索已完成
-    ;
-
-    val searching: Boolean
-        get() {
-            return this == SEARCHING
-        }
 }
 
 class SearchViewModel : ViewModel() {
@@ -44,6 +35,8 @@ class SearchViewModel : ViewModel() {
     val searchState = _searchState.asStateFlow()
 
     val searchText = mutableStateOf("")
+
+    val isBottomSheetOpen = mutableStateOf(false)
 
     private val repo = PhotoRepository(PicQueryApplication.context.contentResolver)
     fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
@@ -61,6 +54,14 @@ class SearchViewModel : ViewModel() {
             }
             _searchState.value = SearchState.FINISHED
         }
+    }
+
+    fun openBottomSheet() {
+        isBottomSheetOpen.value = true
+    }
+
+    fun closeBottomSheet() {
+        isBottomSheetOpen.value = false
     }
 
     fun clearAll() {

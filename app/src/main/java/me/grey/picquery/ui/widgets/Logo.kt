@@ -16,25 +16,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun LogoRow() {
+fun LogoRow(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.Top,
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier = modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.Center
     ) {
         val fontSize = 25
         val textStyle =
             TextStyle(fontSize = fontSize.sp, color = MaterialTheme.colorScheme.onBackground)
         Text(text = "Pic", style = textStyle)
-        Icon(
-            imageVector = Icons.Filled.Search,
-            contentDescription = "搜索",
-            modifier = Modifier.size((fontSize + 10).dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
+//        Icon(
+//            imageVector = Icons.Filled.Search,
+//            contentDescription = "搜索",
+//            modifier = Modifier.size((fontSize + 10).dp),
+//            tint = MaterialTheme.colorScheme.primary
+//        )
         Text(
-            text = "uery", style = textStyle.copy(
-                fontWeight = FontWeight.Bold
+            text = "Query", style = textStyle.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
         )
     }

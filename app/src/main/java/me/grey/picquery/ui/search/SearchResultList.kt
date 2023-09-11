@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +43,7 @@ fun SearchResultGrid(
     val resultList by viewModel.resultList.collectAsState()
     val state by viewModel.searchState.collectAsState()
     when (state) {
-        SearchState.UNREADY -> UnReadyText()
+        SearchState.NO_INDEX -> UnReadyText()
         SearchState.LOADING -> CentralLoadingProgressBar()
         SearchState.READY -> ReadyText()
         SearchState.SEARCHING -> CentralLoadingProgressBar()

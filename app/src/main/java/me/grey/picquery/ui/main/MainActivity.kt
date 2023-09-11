@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.permissionx.guolindev.PermissionX
 import me.grey.picquery.R
 import me.grey.picquery.themeM3.PicQueryThemeM3
@@ -99,11 +101,11 @@ class MainActivity : FragmentActivity() {
                     if (bottomSelectedIndex.intValue == 0)
                         EncodingSnackBar()
                 },
-                bottomBar = {
-                    NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
-                        bottomSelectedIndex.intValue = selected
-                    }
-                },
+//                bottomBar = {
+//                    NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
+//                        bottomSelectedIndex.intValue = selected
+//                    }
+//                },
             ) { padding ->
                 if (bottomSelectedIndex.intValue == 0) {
                     SearchScreen(paddingValues = padding)
@@ -115,22 +117,29 @@ class MainActivity : FragmentActivity() {
     }
 }
 
-
 @Composable
-private fun EncodingSnackBar() {
-    Snackbar {
-        Column {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "索引中 1092 / 3021")
-                Text(text = "预计还需: 01:19")
-            }
-            Box(Modifier.height(8.dp))
-            LinearProgressIndicator((1092f / 3021f), Modifier.fillMaxWidth())
-            Box(Modifier.height(6.dp))
-        }
-    }
+private fun EncodingSnackBar(
+    mainViewModel: MainViewModel = viewModel()
+) {
+    val state by remember { mainViewModel.encodingAlbumState }
 
+    if (state.total > 1)
+        Snackbar {
+            Column(Modifier.padding(vertical = 3.dp, horizontal = 3.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "索引中 ${state.current} / ${state.total}")
+//                Text(text = "预计还需: 01:19")
+                }
+                Box(Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    (state.current.toDouble() / state.total).toFloat(),
+                    Modifier.fillMaxWidth()
+                )
+                Box(Modifier.height(6.dp))
+            }
+        }
 }
