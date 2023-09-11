@@ -1,7 +1,6 @@
 package me.grey.picquery.ui.result
 
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -9,28 +8,23 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,26 +43,18 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.themeM3.PicQueryThemeM3
+import me.grey.picquery.ui.widgets.CentralLoadingProgressBar
 import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchResultScreen(
-    onBack: () -> Unit,
-    viewModel: SearchResultViewModel = viewModel()
-) {
-    val searchText = remember { viewModel.searchText }
-    val state = rememberTopAppBarState()
-    val expand = remember { derivedStateOf { false } }
-//            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state)
+fun SearchResultScreen(onBack: () -> Unit) {
     PicQueryThemeM3 {
         Scaffold(
-//                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 TopAppBar(
                     title = { Text(text = "搜索结果") },
-//                            scrollBehavior = scrollBehavior,
                     navigationIcon = {
                         IconButton(onClick = { onBack() }) {
                             Icon(
@@ -97,11 +83,9 @@ fun SearchResultGrid(
     ) {
         SearchBarInput()
         if (searching) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                LinearProgressIndicator()
-            }
+            CentralLoadingProgressBar()
         } else if (resultList.isEmpty()) {
-            Text(text = "没有找到图片")
+            NoResultText()
         } else {
             LazyVerticalGrid(
                 modifier = Modifier.padding(horizontal = 10.dp),
@@ -126,8 +110,20 @@ fun SearchResultGrid(
             )
         }
     }
+}
 
 
+
+@Composable
+private fun NoResultText() {
+    Box(
+        Modifier
+            .fillMaxHeight(0.7f)
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = "没有找到图片")
+    }
 }
 
 

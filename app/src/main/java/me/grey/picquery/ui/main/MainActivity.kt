@@ -7,11 +7,12 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
@@ -19,6 +20,9 @@ import androidx.fragment.app.FragmentActivity
 import com.permissionx.guolindev.PermissionX
 import me.grey.picquery.R
 import me.grey.picquery.theme.PicQueryTheme
+import me.grey.picquery.themeM3.PicQueryThemeM3
+import me.grey.picquery.ui.albums.AlbumListScreen
+import me.grey.picquery.ui.search.SearchScreenM3
 
 class MainActivity : FragmentActivity() {
 
@@ -84,15 +88,14 @@ class MainActivity : FragmentActivity() {
         val searchableList = remember { mainViewModel.searchableAlbumList }
         val unsearchableList = remember { mainViewModel.unsearchableAlbumList }
 
-        PicQueryTheme {
+        PicQueryThemeM3 {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
                 bottomBar = {
                     NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
                         bottomSelectedIndex.intValue = selected
                     }
                 },
-            ) { _ ->
+            ) { padding ->
                 if (bottomSelectedIndex.intValue == 0) {
                     SearchScreenM3(
                         searchableList, unsearchableList,
@@ -104,9 +107,10 @@ class MainActivity : FragmentActivity() {
                         onRemoveIndex = {
                             // 移除某个相册的编码
                         },
+                        paddingValues = padding
                     )
                 } else {
-                    AlbumListScreen(albumList)
+                    AlbumListScreen(albumList, padding)
                 }
             }
         }

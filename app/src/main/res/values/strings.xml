@@ -4,7 +4,8 @@
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
     <string name="ok">好的</string>
-    <string name="title_activity_album_list">相册列表</string>
+    <string name="searchable_albums">可搜索相册</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_search_result">SearchResultActivity</string>
+    <string name="add_album">添加相册</string>
 </resources>

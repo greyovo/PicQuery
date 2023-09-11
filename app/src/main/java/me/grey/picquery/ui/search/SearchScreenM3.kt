@@ -1,17 +1,28 @@
-package me.grey.picquery.ui.main
+package me.grey.picquery.ui.search
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,63 +33,67 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.ui.main.MainViewModel
 import me.grey.picquery.ui.widgets.CustomChip
 import java.io.File
-import kotlin.math.round
 
 @OptIn(InternalTextApi::class, ExperimentalLayoutApi::class)
 @Composable
-fun SearchScreen(
+fun SearchScreenM3(
     searchAbleList: List<Album>?,
     unsearchableList: List<Album>?,
     onAddIndex: (album: Album) -> Unit, // 请求对某个相册编码
     onRemoveIndex: (album: Album) -> Unit, // 移除某个相册的编码
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    paddingValues: PaddingValues,
 ) {
     val context = LocalContext.current
     Column(
-        Modifier.padding(bottom = 56.dp), // 避开bottomBar的遮挡
+        Modifier
+            .padding(paddingValues)
+            .fillMaxHeight(0.7f),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
     ) {
+//        TextButton(onClick = { viewModel.toDevTest(context) }) {
+//            Text(text = "DevTest")
+//        }
         Box(Modifier.height(50.dp))
-        TextButton(onClick = { viewModel.toDevTest(context) }) {
-            Text(text = "DevTest")
-        }
         LogoRow()
-        SearchInput()
-        AlbumList(
-            searchAbleList ?: emptyList(),
-            unsearchableList ?: emptyList(),
-            onClickSearchable = {}
-        )
+        Box(Modifier.height(25.dp))
+        Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+            SearchInput()
+        }
+//        AlbumList(
+//            searchAbleList ?: emptyList(),
+//            unsearchableList ?: emptyList(),
+//            onClickSearchable = {}
+//        )
     }
 }
 
 @Composable
-private fun LogoRow(
-    viewModel: MainViewModel = viewModel()
-) {
-    // FIXME test
+private fun LogoRow() {
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        val textStyle = TextStyle(fontSize = 29.sp)
+        val fontSize = 35
+        val textStyle =
+            TextStyle(fontSize = fontSize.sp, color = MaterialTheme.colorScheme.onBackground)
         Text(text = "Pic", style = textStyle)
         Icon(
             imageVector = Icons.Filled.Search,
             contentDescription = "搜索",
-            modifier = Modifier.size(39.dp),
-            tint = MaterialTheme.colors.primary
+            modifier = Modifier.size((fontSize + 10).dp),
+            tint = MaterialTheme.colorScheme.primary
         )
         Text(
             text = "uery", style = textStyle.copy(
@@ -89,42 +104,29 @@ private fun LogoRow(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @InternalTextApi
 @Composable
 private fun SearchInput(
     viewModel: MainViewModel = viewModel()
 ) {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+    val text = remember { mutableStateOf("") }
     val context = LocalContext.current
     fun action() {
-        // TODO onSearch
-        Log.d("onSearch", textValue.text)
-        viewModel.toSearchResult(context, textValue.text)
+        Log.d("onSearch", text.value)
+        viewModel.toSearchResult(context, text.value)
     }
-    Row {
-        TextField(value = textValue,
-            onValueChange = { textValue = it },
-            //            label = { Text("Enter Your Name") },
-            placeholder = { Text(text = "对图片的描述...") },
-            singleLine = true,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(22.dp)),
-            keyboardActions = KeyboardActions(
-                onDone = { action() },
-                onSearch = { action() },
-                onGo = { action() },
-                onSend = { action() }
-            ),
-            trailingIcon = {
-                IconButton(onClick = { action() }) {
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "搜索")
-                }
-            }
-
-        )
-
+    SearchBar(
+        modifier = Modifier.fillMaxWidth(),
+        query = text.value,
+        onQueryChange = { text.value = it },
+        onSearch = { action() },
+        active = false,
+        onActiveChange = { },
+        placeholder = { Text("对图片的描述...") },
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
+    ) {
     }
 }
 
@@ -152,15 +154,12 @@ private fun AlbumList(
 //        items(searchAbleList.size) {
 //            SearchableAlbum(searchAbleList[it], onClickSearchable)
 //        }
-        item {
-            FlowRow(modifier = Modifier.padding(8.dp)) {
-                searchAbleList.forEach {
-                    SearchableAlbum(it, onClickSearchable)
-                }
-            }
-        }
 //        item {
-//
+//            FlowRow(modifier = Modifier.padding(8.dp)) {
+//                searchAbleList.forEach {
+//                    SearchableAlbum(it, onClickSearchable)
+//                }
+//            }
 //        }
         stickyHeader {
             AlbumListHeader(
@@ -179,7 +178,6 @@ private fun AlbumList(
     })
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 private fun SearchableAlbum(album: Album, onClick: (Album) -> Unit) {
     Box(Modifier.padding(vertical = 2.dp, horizontal = 4.dp)) {
@@ -207,7 +205,7 @@ private fun UnsearchableAlbum(
     val progress = (state.value.current.toFloat() / state.value.total)
 
     ListItem(
-        icon = {
+        leadingContent = {
             Box(Modifier.size(55.dp)) {
                 GlideImage(
                     modifier = Modifier
@@ -219,7 +217,8 @@ private fun UnsearchableAlbum(
                 )
             }
         },
-        secondaryText = {
+        headlineContent = { Text(text = album.label) },
+        supportingContent = {
             Column {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -234,24 +233,22 @@ private fun UnsearchableAlbum(
                     LinearProgressIndicator(progress = progress)
             }
         },
-        trailing = {
+        trailingContent = {
             IconButton(onClick = { onAddIndex(album) }) {
                 Icon(
                     imageVector = Icons.Filled.Add, contentDescription = "Add",
-                    tint = MaterialTheme.colors.primary,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
-    ) {
-        Text(text = album.label)
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun AlbumListHeader(title: String, leadingIcon: ImageVector) {
     Surface(
-        color = MaterialTheme.colors.background,
+        color = MaterialTheme.colorScheme.background,
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -265,7 +262,7 @@ private fun AlbumListHeader(title: String, leadingIcon: ImageVector) {
                 imageVector = leadingIcon,
                 contentDescription = title,
                 modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colors.primary,
+                tint = MaterialTheme.colorScheme.primary,
             )
             Text(
                 text = title,
