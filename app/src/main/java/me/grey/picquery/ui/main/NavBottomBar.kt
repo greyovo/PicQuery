@@ -26,7 +26,9 @@ fun NavBottomBar(
     bottomItems: List<BottomItem>,
     onItemSelected: (position: Int) -> Unit
 ) {
-    NavigationBar() {
+    NavigationBar(
+
+    ) {
         bottomItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedIndex == index,
@@ -47,14 +49,6 @@ fun NavBottomBar(
                 label = { Text(text = bottomItems[index].label) },
             )
         }
-//        bottomItems.forEachIndexed { index, item ->
-//            NavigationBarItem(
-//                icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
-//                label = { Text(item) },
-//                selected = selectedItem == index,
-//                onClick = { selectedItem = index }
-//            )
-//        }
     }
 }
 

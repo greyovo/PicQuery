@@ -8,4 +8,5 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_search_result">SearchResultActivity</string>
     <string name="add_album">添加相册</string>
+    <string name="start_index_album">开始索引相册</string>
 </resources>

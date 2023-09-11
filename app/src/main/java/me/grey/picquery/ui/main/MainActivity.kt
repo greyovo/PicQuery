@@ -7,22 +7,29 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.permissionx.guolindev.PermissionX
 import me.grey.picquery.R
-import me.grey.picquery.theme.PicQueryTheme
 import me.grey.picquery.themeM3.PicQueryThemeM3
 import me.grey.picquery.ui.albums.AlbumListScreen
-import me.grey.picquery.ui.search.SearchScreenM3
+import me.grey.picquery.ui.search.SearchScreen
 
 class MainActivity : FragmentActivity() {
 
@@ -85,11 +92,13 @@ class MainActivity : FragmentActivity() {
     private fun MainScaffold() {
         val bottomSelectedIndex = remember { mutableIntStateOf(0) }
         val albumList = remember { mainViewModel.albumList }
-        val searchableList = remember { mainViewModel.searchableAlbumList }
-        val unsearchableList = remember { mainViewModel.unsearchableAlbumList }
 
         PicQueryThemeM3 {
             Scaffold(
+                snackbarHost = {
+                    if (bottomSelectedIndex.intValue == 0)
+                        EncodingSnackBar()
+                },
                 bottomBar = {
                     NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
                         bottomSelectedIndex.intValue = selected
@@ -97,18 +106,7 @@ class MainActivity : FragmentActivity() {
                 },
             ) { padding ->
                 if (bottomSelectedIndex.intValue == 0) {
-                    SearchScreenM3(
-                        searchableList, unsearchableList,
-                        onAddIndex = {
-                            mainViewModel.encodeAlbum(
-                                album = it,
-                            )
-                        },
-                        onRemoveIndex = {
-                            // 移除某个相册的编码
-                        },
-                        paddingValues = padding
-                    )
+                    SearchScreen(paddingValues = padding)
                 } else {
                     AlbumListScreen(albumList, padding)
                 }
@@ -118,4 +116,21 @@ class MainActivity : FragmentActivity() {
 }
 
 
+@Composable
+private fun EncodingSnackBar() {
+    Snackbar {
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "索引中 1092 / 3021")
+                Text(text = "预计还需: 01:19")
+            }
+            Box(Modifier.height(8.dp))
+            LinearProgressIndicator((1092f / 3021f), Modifier.fillMaxWidth())
+            Box(Modifier.height(6.dp))
+        }
+    }
 
+}

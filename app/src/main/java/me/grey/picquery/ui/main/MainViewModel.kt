@@ -18,7 +18,6 @@ import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.DevActivity
-import me.grey.picquery.ui.result.SearchResultActivity
 
 data class EncodingAlbumState(
     val id: Long = 0,
@@ -105,16 +104,11 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun toSearchResult(context: Context, text: String) {
-        val intent = Intent(context, SearchResultActivity::class.java)
-        intent.apply {
-            putExtra("text", text)
-        }
-        context.startActivity(intent)
-    }
-
-    fun toDevTest(context: Context) {
-        val intent = Intent(context, DevActivity::class.java)
-        context.startActivity(intent)
-    }
+//    fun toSearchResult(context: Context, text: String) {
+//        val intent = Intent(context, SearchResultActivity::class.java)
+//        intent.apply {
+//            putExtra("text", text)
+//        }
+//        context.startActivity(intent)
+//    }
 }
