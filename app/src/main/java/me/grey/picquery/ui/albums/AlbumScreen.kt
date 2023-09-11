@@ -32,47 +32,6 @@ import me.grey.picquery.ui.widgets.CentralLoadingProgressBar
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlbumListScreen(list: List<Album>?, paddingValues: PaddingValues) {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text(text = stringResource(id = R.string.searchable_albums)) }) },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(paddingValues),
-                onClick = { /*TODO 索引更多相册*/ }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_album)
-                )
-            }
-        }
-    ) { innerPadding ->
-        if (list == null) {
-            CentralLoadingProgressBar()
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(100.dp),
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(paddingValues)
-                    .padding(horizontal = 8.dp),
-                content = {
-                    items(
-                        list.size,
-                        key = { list[it].id },
-                    ) { index ->
-                        AlbumCard(list[index], onItemClick = {})
-                    }
-                }
-            )
-        }
-    }
-
-
-}
-
 @Composable
 fun AlbumCard(
     album: Album,

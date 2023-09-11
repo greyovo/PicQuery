@@ -4,26 +4,23 @@ import LogoRow
 import SearchInput
 import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,15 +38,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.ui.albums.AlbumCard
+import me.grey.picquery.ui.main.EncodingAlbumState
 import me.grey.picquery.ui.main.MainViewModel
 
 @OptIn(InternalTextApi::class, ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     vm: SearchViewModel = viewModel(),
+    mainVm: MainViewModel = viewModel(),
     paddingValues: PaddingValues,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val state = remember { mainVm.encodingAlbumState }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -62,6 +62,10 @@ fun SearchScreen(
                 actions = { TopBarActions() },
             )
         },
+        bottomBar = {
+            if (state.value.album != null)
+                BottomEncodingStateBar(state.value)
+        }
     ) {
         Column(
             modifier = Modifier
@@ -106,6 +110,37 @@ private fun TopBarActions(
     }
 }
 
+@Composable
+private fun BottomEncodingStateBar(
+    state: EncodingAlbumState
+) {
+    val progress =
+        if (state.total >= 1) (state.current.toDouble() / state.total).toFloat()
+        else 0.0f
+    BottomAppBar {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                Modifier.padding(horizontal = 14.dp)
+            ) {
+                Text(text = "正在索引: ${state.album?.label ?: ""} ${state.current} / ${state.total}")
+                Box(modifier = Modifier.height(15.dp))
+                if (state.total >= 1) LinearProgressIndicator(
+                    progress,
+                    Modifier.fillMaxWidth(0.8f)
+                )
+            }
+
+            TextButton(onClick = { }, enabled = progress >= 1) {
+                Text(text = "OK")
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AlbumListBottomSheet(
@@ -114,6 +149,7 @@ private fun AlbumListBottomSheet(
 ) {
     val openBottomSheet by rememberSaveable { vm.isBottomSheetOpen }
     val bottomSheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
 
     if (openBottomSheet) {
         ModalBottomSheet(
@@ -170,7 +206,12 @@ private fun AlbumListBottomSheet(
                         key = { list[it].id },
                     ) { index ->
                         AlbumCard(list[index], onItemClick = {
-                            mainVm.encodeAlbum(list[index])
+                            scope.launch {
+                                mainVm.encodeAlbum(list[index])
+                                bottomSheetState.hide()
+                            }.invokeOnCompletion {
+                                vm.isBottomSheetOpen.value = false
+                            }
                         })
                     }
                 }

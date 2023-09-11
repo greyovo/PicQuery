@@ -17,10 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,9 +33,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.permissionx.guolindev.PermissionX
+import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.themeM3.PicQueryThemeM3
-import me.grey.picquery.ui.albums.AlbumListScreen
 import me.grey.picquery.ui.search.SearchScreen
 
 class MainActivity : FragmentActivity() {
@@ -92,54 +97,11 @@ class MainActivity : FragmentActivity() {
 
     @Composable
     private fun MainScaffold() {
-        val bottomSelectedIndex = remember { mutableIntStateOf(0) }
-        val albumList = remember { mainViewModel.albumList }
-
         PicQueryThemeM3 {
-            Scaffold(
-                snackbarHost = {
-                    if (bottomSelectedIndex.intValue == 0)
-                        EncodingSnackBar()
-                },
-//                bottomBar = {
-//                    NavBottomBar(bottomSelectedIndex.intValue, bottomTabItems) { selected ->
-//                        bottomSelectedIndex.intValue = selected
-//                    }
-//                },
-            ) { padding ->
-                if (bottomSelectedIndex.intValue == 0) {
-                    SearchScreen(paddingValues = padding)
-                } else {
-                    AlbumListScreen(albumList, padding)
-                }
+            Scaffold() { padding ->
+                SearchScreen(paddingValues = padding)
             }
         }
     }
 }
 
-@Composable
-private fun EncodingSnackBar(
-    mainViewModel: MainViewModel = viewModel()
-) {
-    val state by remember { mainViewModel.encodingAlbumState }
-
-    if (state.total > 1)
-        Snackbar {
-            Column(Modifier.padding(vertical = 3.dp, horizontal = 3.dp)) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(text = "索引中 ${state.current} / ${state.total}")
-//                Text(text = "预计还需: 01:19")
-                }
-                Box(Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    (state.current.toDouble() / state.total).toFloat(),
-                    Modifier.fillMaxWidth()
-                )
-                Box(Modifier.height(6.dp))
-            }
-        }
-}

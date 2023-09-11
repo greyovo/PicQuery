@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Looper
 import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -20,10 +21,30 @@ import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.DevActivity
 
 data class EncodingAlbumState(
-    val id: Long = 0,
+    val album: Album? = null,
     val total: Int = 0,
     val current: Int = 0,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as EncodingAlbumState
+
+        if (album != other.album) return false
+        if (total != other.total) return false
+        if (current != other.current) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = album?.hashCode() ?: 0
+        result = 31 * result + total
+        result = 31 * result + current
+        return result
+    }
+}
 
 class MainViewModel : ViewModel() {
 
@@ -79,7 +100,7 @@ class MainViewModel : ViewModel() {
     val encodingAlbumState = mutableStateOf(EncodingAlbumState())
 
     fun encodeAlbum(album: Album) {
-        encodingAlbumState.value = EncodingAlbumState(id = album.id)
+        encodingAlbumState.value = EncodingAlbumState(album = album)
         viewModelScope.launch(Dispatchers.Default) {
             val photos = photoRepository.getPhotoListByAlbumId(album.id)
             Log.d(TAG, photos.size.toString())
@@ -101,5 +122,9 @@ class MainViewModel : ViewModel() {
                 Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
             }
         }
+    }
+
+    fun closeBottomBar() {
+        encodingAlbumState.value = EncodingAlbumState()
     }
 }
