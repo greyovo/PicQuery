@@ -7,10 +7,10 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import me.grey.picquery.PicQueryApplication.Companion.context
+import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.bitmapToFloatBuffer
-import org.pytorch.*
 import java.nio.FloatBuffer
 import java.util.*
 

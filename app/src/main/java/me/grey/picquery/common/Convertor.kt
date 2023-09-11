@@ -1,12 +1,13 @@
 package me.grey.picquery.common
 
 import android.graphics.Bitmap
-import android.util.Log
-import org.pytorch.MemoryFormat
-import org.pytorch.Tensor
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+
+enum class MemoryFormat(val jniCode: Int) {
+    CONTIGUOUS(1), CHANNELS_LAST(2), CHANNELS_LAST_3D(3)
+}
 
 /**
  * Copy from [org.pytorch.torchvision.TensorImageUtils]
