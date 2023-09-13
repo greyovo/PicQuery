@@ -20,3 +20,7 @@ local.properties
 
 # Python
 venv
+
+# Signature config
+key.properties
+*.jks

@@ -26,8 +26,34 @@ android {
         }
     }
 
-    buildTypes {
+    // === Signature Config ===
+    def keystoreProperties = new Properties()
+    def keystorePropertiesFile = rootProject.file('key.properties')
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    } else {
+        throw Exception("You need to put a `key.properties` on root project and " +
+                "a corresponding `*.jks` keystore file " +
+                "to provide a signature for building the apk. " +
+                "You may comment out this config if you don't need them.")
+    }
+    signingConfigs {
         release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+    // === Signature Config End ===
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release // comment out if you don't need it
+        }
+
+        release {
+            signingConfig signingConfigs.release // comment out if you don't need it
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
