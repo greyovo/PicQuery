@@ -18,12 +18,12 @@ import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.ui.DevActivity
 
 data class EncodingAlbumState(
     val album: Album? = null,
     val total: Int = 0,
     val current: Int = 0,
+    val cost: Long = 0, // Time cost for encoding each item
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -105,9 +105,9 @@ class MainViewModel : ViewModel() {
             val photos = photoRepository.getPhotoListByAlbumId(album.id)
             Log.d(TAG, photos.size.toString())
             val imageSearcher = ImageSearcher
-            val success = imageSearcher.encodePhotoList(photos) { cur, total ->
+            val success = imageSearcher.encodePhotoList(photos) { cur, total, cost ->
                 encodingAlbumState.value = encodingAlbumState.value.copy(
-                    current = cur, total = total,
+                    current = cur, total = total, cost = cost
                 )
             }
             if (success) {

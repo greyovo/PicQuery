@@ -2,7 +2,10 @@ package me.grey.picquery.ui.search
 
 import LogoRow
 import SearchInput
+import android.text.format.DateUtils
 import android.util.Log
+import android.util.TimeUtils
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,6 +24,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,16 +41,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
+import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.ui.albums.AlbumCard
 import me.grey.picquery.ui.main.EncodingAlbumState
 import me.grey.picquery.ui.main.MainViewModel
+import java.lang.Float.NaN
+import kotlin.time.DurationUnit
 
-@OptIn(InternalTextApi::class, ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    vm: SearchViewModel = viewModel(),
     mainVm: MainViewModel = viewModel(),
-    paddingValues: PaddingValues,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val state = remember { mainVm.encodingAlbumState }
@@ -63,18 +68,18 @@ fun SearchScreen(
             )
         },
         bottomBar = {
-            if (state.value.album != null)
-                BottomEncodingStateBar(state.value)
+            AnimatedVisibility(visible = state.value.album != null) {
+                BottomEncodingStateBar(state.value) {
+                    mainVm.closeBottomBar()
+                }
+            }
         }
     ) {
         Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(it),
+            modifier = Modifier.padding(it),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
         ) {
-//            AlbumListBottomSheet()
             SearchInput()
             SearchResultGrid()
         }
@@ -112,31 +117,43 @@ private fun TopBarActions(
 
 @Composable
 private fun BottomEncodingStateBar(
-    state: EncodingAlbumState
+    state: EncodingAlbumState,
+    onClickOk: () -> Unit,
 ) {
-    val progress =
-        if (state.total >= 1) (state.current.toDouble() / state.total).toFloat()
-        else 0.0f
-    BottomAppBar {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(
-                Modifier.padding(horizontal = 14.dp)
-            ) {
-                Text(text = "正在索引: ${state.album?.label ?: ""} ${state.current} / ${state.total}")
-                Box(modifier = Modifier.height(15.dp))
-                if (state.total >= 1) LinearProgressIndicator(
-                    progress,
-                    Modifier.fillMaxWidth(0.8f)
-                )
-            }
+    val progress = (state.current.toDouble() / state.total).toFloat()
 
-            TextButton(onClick = { }, enabled = progress >= 1) {
-                Text(text = "OK")
+    BottomAppBar {
+        Column(
+            Modifier
+                .padding(horizontal = 14.dp)
+                .padding(bottom = 12.dp)
+        ) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "正在索引: ${state.current} / ${state.total}")
+                val remain = calculateRemainingTime(
+                    state.current,
+                    state.total,
+                    state.cost
+                )
+                val finished = state.current == state.total && state.total >= 1
+                TextButton(
+                    onClick = { onClickOk() },
+                    enabled = finished
+                ) {
+                    Text(
+                        text = if (finished) "OK" else "还需: ${DateUtils.formatElapsedTime(remain)}"
+                    )
+                }
             }
+            Box(modifier = Modifier.height(4.dp))
+            LinearProgressIndicator(
+                if (progress.isNaN()) 0.0f else progress,
+                Modifier.fillMaxWidth()
+            )
         }
     }
 }

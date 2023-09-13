@@ -3,23 +3,23 @@ package me.grey.picquery.core
 import android.graphics.Bitmap
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
-import me.grey.picquery.common.Cosine
 import me.grey.picquery.core.encoder.ImageEncoder
 import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
-import me.grey.picquery.common.onProgressCallback
-import me.grey.picquery.common.sphericalDistLoss
+import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
 import me.grey.picquery.data.model.Album
 import java.nio.FloatBuffer
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.scheduleAtFixedRate
 
 
 object ImageSearcher {
@@ -51,7 +51,7 @@ object ImageSearcher {
 
     fun encodePhotoList(
         photos: List<Photo>,
-        progressCallback: onProgressCallback? = null
+        progressCallback: encodeProgressCallback? = null
     ): Boolean {
         loadImageEncoder()
 
@@ -60,13 +60,31 @@ object ImageSearcher {
             return false
         }
         encodingLock = true
-        var count = 0
         val listToUpdate = mutableListOf<Embedding>()
+
+        var count = 0
+        var _startTime = 0L
+        var cost = 0L
+
+        val timer = Timer()
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (count > 0) {
+                    progressCallback?.invoke(
+                        count,
+                        photos.size,
+                        cost,
+                    )
+                }
+            }
+        }, 100, 500)
+
         for (photo in photos) {
-            Log.d(TAG, photo.toString())
+//            Log.d(TAG, photo.toString())
             // ====
 //            Log.d(TAG, "Use: contentResolver")
 //            val start = System.currentTimeMillis() // REMOVE
+            _startTime = System.currentTimeMillis()
             val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
 //            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
             val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
@@ -78,16 +96,21 @@ object ImageSearcher {
                 )
             )
             count++
-            progressCallback?.invoke(count, photos.size)
+            cost = System.currentTimeMillis() - _startTime
         }
         embeddingRepository.updateAll(listToUpdate)
         encodingLock = false
+        progressCallback?.invoke(
+            count,
+            photos.size,
+            cost
+        )
+        timer.cancel()
         return true
     }
 
     fun encodeBatch(imageBitmaps: List<Bitmap>) {
         loadImageEncoder()
-
         if (encodingLock) {
             Log.w(TAG, "encodePhotoList: Already encoding!")
             return
@@ -100,9 +123,6 @@ object ImageSearcher {
         }
         embeddingRepository.updateAll(batchResult)
         encodingLock = false
-    }
-
-    private fun encode(bitmap: Bitmap) {
     }
 
 

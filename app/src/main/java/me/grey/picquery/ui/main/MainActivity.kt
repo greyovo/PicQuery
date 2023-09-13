@@ -53,7 +53,11 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MainScaffold() }
+        setContent {
+            PicQueryThemeM3 {
+                SearchScreen()
+            }
+        }
         initAlbum()
     }
 
@@ -93,15 +97,6 @@ class MainActivity : FragmentActivity() {
                     mainViewModel.initAll()
                 }
             }
-    }
-
-    @Composable
-    private fun MainScaffold() {
-        PicQueryThemeM3 {
-            Scaffold() { padding ->
-                SearchScreen(paddingValues = padding)
-            }
-        }
     }
 }
 
