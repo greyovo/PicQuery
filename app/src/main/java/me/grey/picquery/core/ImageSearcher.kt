@@ -5,21 +5,20 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
-import me.grey.picquery.core.encoder.ImageEncoder
-import me.grey.picquery.core.encoder.TextEncoder
-import me.grey.picquery.data.data_source.EmbeddingRepository
-import me.grey.picquery.data.model.Embedding
-import me.grey.picquery.data.model.Photo
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
+import me.grey.picquery.core.encoder.ImageEncoder
+import me.grey.picquery.core.encoder.TextEncoder
+import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.data.model.Embedding
+import me.grey.picquery.data.model.Photo
 import java.nio.FloatBuffer
 import java.util.Timer
 import java.util.TimerTask
-import kotlin.concurrent.scheduleAtFixedRate
 
 
 object ImageSearcher {
@@ -77,7 +76,7 @@ object ImageSearcher {
                     )
                 }
             }
-        }, 100, 500)
+        }, 50, 500)
 
         for (photo in photos) {
 //            Log.d(TAG, photo.toString())

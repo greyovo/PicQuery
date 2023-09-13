@@ -6,8 +6,6 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Album
@@ -92,5 +90,10 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
     fun addSearchableAlbum(album: Album) {
         val db = AppDatabase.instance
         return db.albumDao().upsert(album)
+    }
+
+    fun addAllSearchableAlbum(album: List<Album>) {
+        val db = AppDatabase.instance
+        return db.albumDao().upsertAll(album)
     }
 }

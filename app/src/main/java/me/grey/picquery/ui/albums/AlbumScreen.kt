@@ -1,64 +1,77 @@
 package me.grey.picquery.ui.albums
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.ui.widgets.CentralLoadingProgressBar
 import java.io.File
 
 
 @Composable
 fun AlbumCard(
     album: Album,
+    selected: Boolean,
     onItemClick: (Album) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(
-            PaddingValues(
-                vertical = 8.dp,
-                horizontal = 8.dp
-            )
-        ),
+    val interactionSource = remember { MutableInteractionSource() }
+    val padding: Dp by animateDpAsState(if (selected) 10.dp else 6.dp, label = "")
+
+    Box(
+        modifier = Modifier
+            .padding(vertical = padding, horizontal = padding)
+            .clip(MaterialTheme.shapes.medium)
     ) {
-        AlbumCover(album = album, onItemClick)
-        Text(
-            modifier = Modifier.padding(top = 8.dp),
-            text = album.label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = album.count.toString(),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .padding(top = 2.dp, bottom = 6.dp)
-                .padding(horizontal = 2.dp)
-        )
+        Column(
+            Modifier.clickable(
+                interactionSource = interactionSource,
+                indication = rememberRipple(),
+                onClick = { onItemClick(album) }
+            ),
+        ) {
+            Box {
+                AlbumCover(album = album)
+                Checkbox(checked = selected, onCheckedChange = { onItemClick(album) })
+            }
+
+            Text(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .padding(horizontal = 2.dp),
+                text = album.label,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = album.count.toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .padding(top = 2.dp, bottom = 6.dp)
+                    .padding(horizontal = 2.dp)
+            )
+        }
     }
 }
 
@@ -66,20 +79,13 @@ fun AlbumCard(
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumCover(
-    album: Album,
-    onItemClick: (Album) -> Unit,
+    album: Album
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     GlideImage(
         modifier = Modifier
             .aspectRatio(1f)
             .size(130.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .combinedClickable(
-                interactionSource = interactionSource,
-                indication = rememberRipple(),
-                onClick = { onItemClick(album) }
-            ),
+            .clip(MaterialTheme.shapes.medium),
         model = File(album.coverPath),
         contentDescription = album.label,
         contentScale = ContentScale.Crop,

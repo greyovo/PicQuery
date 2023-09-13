@@ -22,7 +22,7 @@
 <!--            android:label="@string/title_activity_search_result"-->
 <!--            android:theme="@style/Theme.PicQuery" />-->
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.PicQuery">
             <intent-filter>

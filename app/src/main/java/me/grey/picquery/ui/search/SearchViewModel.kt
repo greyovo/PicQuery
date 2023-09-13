@@ -1,6 +1,9 @@
 package me.grey.picquery.ui.search
 
 import android.util.Log
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +18,7 @@ import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 
-enum class SearchState() {
+enum class SearchState {
     NO_INDEX, // 没有索引
     LOADING, // 初始化加载模型中
     READY,  // 准备好搜索
@@ -35,8 +38,7 @@ class SearchViewModel : ViewModel() {
     val searchState = _searchState.asStateFlow()
 
     val searchText = mutableStateOf("")
-
-    val isBottomSheetOpen = mutableStateOf(false)
+    val searchRange = mutableStateListOf<Album>()
 
     private val repo = PhotoRepository(PicQueryApplication.context.contentResolver)
     fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
@@ -56,17 +58,37 @@ class SearchViewModel : ViewModel() {
         }
     }
 
-    fun openBottomSheet() {
-        isBottomSheetOpen.value = true
+    val isFilterOpen = mutableStateOf(false)
+    fun openFilterBottomSheet() {
+        isFilterOpen.value = true
     }
 
-    fun closeBottomSheet() {
-        isBottomSheetOpen.value = false
+    @OptIn(ExperimentalMaterial3Api::class)
+    suspend fun closeFilterBottomSheet(bottomSheetState: SheetState) {
+        bottomSheetState.hide()
+        isFilterOpen.value = false
     }
 
     fun clearAll() {
         searchText.value = ""
         _resultList.value = emptyList()
         _searchState.value = SearchState.READY
+    }
+
+    fun toggleToRange(album: Album) {
+        if (!searchRange.contains(album)) {
+            searchRange.add(album)
+        } else {
+            searchRange.remove(album)
+        }
+    }
+
+    fun addAllToRange(list: List<Album>) {
+        searchRange.clear()
+        searchRange.addAll(list)
+    }
+
+    fun removeAllFromRange(list: List<Album>) {
+        searchRange.clear()
     }
 }
