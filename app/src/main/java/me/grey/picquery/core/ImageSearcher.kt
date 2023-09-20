@@ -33,6 +33,14 @@ object ImageSearcher {
 
     private val contentResolver = PicQueryApplication.context.contentResolver
 
+    suspend fun hasEmbedding(): Boolean {
+        return withContext(Dispatchers.IO) {
+            val total = embeddingRepository.getTotalCount()
+            Log.d(TAG, "Total embedding count $total")
+            total > 0
+        }
+    }
+
     private fun loadImageEncoder() {
         if (imageEncoder == null) {
             imageEncoder = ImageEncoder

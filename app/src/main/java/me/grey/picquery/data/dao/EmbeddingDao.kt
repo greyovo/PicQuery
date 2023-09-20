@@ -12,6 +12,9 @@ interface EmbeddingDao {
     @Query("SELECT * FROM $tableName")
     fun getAll(): List<Embedding>
 
+    @Query("SELECT COUNT(*) FROM $tableName")
+    fun getTotalCount(): Long
+
     @Query("SELECT * FROM $tableName WHERE photo_id IN (:photoIds)")
     fun getAllByPhotoIds(photoIds: LongArray): List<Embedding>
 

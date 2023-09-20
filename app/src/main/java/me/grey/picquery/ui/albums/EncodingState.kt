@@ -1,7 +1,6 @@
 package me.grey.picquery.ui.albums
 
 
-
 data class IndexingAlbumState(
     val status: Status = Status.None,
     val total: Int = 0,
@@ -11,6 +10,11 @@ data class IndexingAlbumState(
     enum class Status {
         None, Loading, Indexing, Finish, Error
     }
+
+    val isBusy: Boolean
+        get() {
+            return status == Status.Loading || status == Status.Indexing
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

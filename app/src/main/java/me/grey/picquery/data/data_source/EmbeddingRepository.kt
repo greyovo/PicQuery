@@ -13,6 +13,17 @@ class EmbeddingRepository {
         return db.embeddingDao().getAll()
     }
 
+//    fun hasEmbedding(): Boolean {
+//        val db = AppDatabase.instance
+//        val total = db.embeddingDao().getTotalCount()
+//        return total > 0
+//    }
+
+    fun getTotalCount(): Long {
+        val db = AppDatabase.instance
+        return db.embeddingDao().getTotalCount()
+    }
+
     fun getByAlbumId(albumId: Long): List<Embedding> {
         val db = AppDatabase.instance
         return db.embeddingDao().getAllByAlbumId(albumId)

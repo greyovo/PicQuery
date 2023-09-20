@@ -36,10 +36,11 @@ class SearchViewModel : ViewModel() {
     private val _resultList = MutableStateFlow<List<Photo>>(emptyList())
     val resultList = _resultList.asStateFlow()
 
-    private val _searchState = MutableStateFlow(SearchState.READY)
+    private val _searchState = MutableStateFlow(SearchState.LOADING)
     val searchState = _searchState.asStateFlow()
 
     val searchText = mutableStateOf("")
+    val isSearchRangeAll = mutableStateOf(true)
     val searchRange = mutableStateListOf<Album>()
 
     private val context: Context
@@ -48,6 +49,16 @@ class SearchViewModel : ViewModel() {
         }
 
     private val repo = PhotoRepository(context.contentResolver)
+
+    init {
+        viewModelScope.launch {
+            if (ImageSearcher.hasEmbedding()) {
+                _searchState.value = SearchState.READY
+            }
+        }
+    }
+
+
     fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
         if (text.trim().isEmpty()) {
             showToast(context.getString(R.string.empty_search_content_toast))

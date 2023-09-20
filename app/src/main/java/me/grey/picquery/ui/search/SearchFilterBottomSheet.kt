@@ -1,21 +1,28 @@
 package me.grey.picquery.ui.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,9 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import me.grey.picquery.R
 import me.grey.picquery.ui.albums.AlbumViewModel
 import me.grey.picquery.ui.albums.EmptyAlbumTips
 
@@ -45,6 +54,41 @@ fun SearchFilterBottomSheet(
             sheetState = sheetState,
         ) {
             val list = remember { albumViewModel.searchableAlbumList }
+            val selectedList = remember { searchViewModel.searchRange }
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.search_range_selection_title),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                supportingContent = {
+                    Text(text = stringResource(R.string.search_range_selection_subtitle))
+                },
+                trailingContent = {
+                    Row {
+                        TextButton(onClick = { /*TODO()*/ }) {
+                            Text(text = stringResource(R.string.clear_selection))
+                        }
+                        Box(modifier = Modifier.width(5.dp))
+                        Button(onClick = { /*TODO()*/ }) {
+                            Text(text = stringResource(R.string.finish_button))
+                        }
+                    }
+                }
+            )
+
+            val searchRangeAll = remember { searchViewModel.isSearchRangeAll }
+            ListItem(
+                modifier = Modifier.clickable { searchRangeAll.value = !searchRangeAll.value },
+                headlineContent = { Text(text = stringResource(R.string.all_albums)) },
+                trailingContent = {
+                    Switch(checked = searchRangeAll.value, onCheckedChange = {
+                        searchRangeAll.value = it
+                    })
+                }
+            )
+
             if (list.isEmpty()) {
                 EmptyAlbumTips(
                     onClose = {
@@ -52,8 +96,8 @@ fun SearchFilterBottomSheet(
                     },
                 )
             } else {
-                Box(modifier = Modifier.padding(vertical = 20.dp)) {
-                    SearchAbleAlbums()
+                Box(modifier = Modifier.padding(bottom = 55.dp)) {
+                    SearchAbleAlbums(enabled = !searchRangeAll.value)
                 }
             }
         }
@@ -66,6 +110,7 @@ fun SearchFilterBottomSheet(
 )
 @Composable
 private fun SearchAbleAlbums(
+    enabled: Boolean,
     albumViewModel: AlbumViewModel = viewModel(),
     searchViewModel: SearchViewModel = viewModel()
 ) {
@@ -86,6 +131,7 @@ private fun SearchAbleAlbums(
             )
 
             ElevatedFilterChip(
+                enabled = enabled,
                 modifier = Modifier.padding(horizontal = 6.dp),
                 colors = colors,
                 leadingIcon = {
@@ -99,9 +145,8 @@ private fun SearchAbleAlbums(
                         contentDescription = "",
                     )
                 },
-
                 selected = selected,
-                onClick = { searchViewModel.toggleToRange(album) },
+                onClick = { if (enabled) searchViewModel.toggleToRange(album) },
                 label = { Text(text = "${album.label} (${album.count})") }
             )
         }

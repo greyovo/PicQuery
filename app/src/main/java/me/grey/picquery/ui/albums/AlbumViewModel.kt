@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.R
+import me.grey.picquery.common.showToast
 import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
@@ -130,6 +132,10 @@ class AlbumViewModel : ViewModel() {
     }
 
     fun openBottomSheet() {
+        if (indexingAlbumState.value.isBusy) {
+            showToast(PicQueryApplication.context.getString(R.string.busy_when_add_album_toast))
+            return
+        }
         isBottomSheetOpen.value = true
     }
 

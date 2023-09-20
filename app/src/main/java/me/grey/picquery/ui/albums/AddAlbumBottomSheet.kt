@@ -86,7 +86,7 @@ fun EmptyAlbumTips(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.no_more_album),
+            text = stringResource(id = R.string.no_albums),
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
@@ -111,12 +111,12 @@ fun AlbumSelectionList(
         ListItem(
             headlineContent = {
                 Text(
-                    text = stringResource(R.string.add_album),
+                    text = stringResource(R.string.add_album_title),
                     style = MaterialTheme.typography.headlineSmall
                 )
             },
             supportingContent = {
-                Text(text = stringResource(R.string.choose_album_to_index))
+                Text(text = stringResource(R.string.add_album_subtitle))
             },
             trailingContent = {
                 Row {
