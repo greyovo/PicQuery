@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -51,7 +52,11 @@ fun AlbumCard(
         ) {
             Box {
                 AlbumCover(album = album)
-                Checkbox(checked = selected, onCheckedChange = { onItemClick(album) })
+                Checkbox(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    checked = selected,
+                    onCheckedChange = { onItemClick(album) }
+                )
             }
 
             Text(

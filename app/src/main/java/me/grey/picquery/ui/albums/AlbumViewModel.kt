@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.AlbumRepository
@@ -21,7 +22,7 @@ class AlbumViewModel : ViewModel() {
         private const val TAG = "AlbumViewModel"
     }
 
-    val encodingAlbumState = mutableStateOf(EncodingAlbumState())
+    val indexingAlbumState = mutableStateOf(IndexingAlbumState())
     val isBottomSheetOpen = mutableStateOf(false)
 
 
@@ -95,7 +96,8 @@ class AlbumViewModel : ViewModel() {
     }
 
     private fun encodeAlbums(albums: List<Album>) {
-        encodingAlbumState.value = EncodingAlbumState()
+        indexingAlbumState.value =
+            IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
         viewModelScope.launch(Dispatchers.Default) {
             val photos = mutableListOf<Photo>()
             albums.forEach {
@@ -103,14 +105,24 @@ class AlbumViewModel : ViewModel() {
             }
             Log.d(TAG, photos.size.toString())
             val imageSearcher = ImageSearcher
-            val success = imageSearcher.encodePhotoList(photos) { cur, total, cost ->
-                encodingAlbumState.value = encodingAlbumState.value.copy(
-                    current = cur, total = total, cost = cost
-                )
+            val success = runBlocking {
+                imageSearcher.encodePhotoList(photos) { cur, total, cost ->
+                    indexingAlbumState.value = indexingAlbumState.value.copy(
+                        current = cur,
+                        total = total,
+                        cost = cost,
+                        status = IndexingAlbumState.Status.Indexing
+                    )
+                }
             }
             if (success) {
                 // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
+                Log.i(TAG, "encode ${albums.size} album(s) finished!")
+
                 albumRepository.addAllSearchableAlbum(albums)
+                indexingAlbumState.value = indexingAlbumState.value.copy(
+                    status = IndexingAlbumState.Status.Finish
+                )
             } else {
                 Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
             }
@@ -127,7 +139,7 @@ class AlbumViewModel : ViewModel() {
         isBottomSheetOpen.value = false
     }
 
-    fun closeProgressBar() {
-        encodingAlbumState.value = EncodingAlbumState()
+    fun clearIndexingState() {
+        indexingAlbumState.value = IndexingAlbumState()
     }
 }

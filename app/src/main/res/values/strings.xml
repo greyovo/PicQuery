@@ -14,6 +14,7 @@
     <string name="unselect_all">全不选</string>
     <string name="select_all">全选</string>
     <string name="indexing_progress">正在索引: %1$s / %2$s</string>
+    <string name="estimate_remain_time">剩余</string>
     <string name="empty_search_content_toast">请输入搜索内容</string>
     <string name="ready_for_searching_tips">已准备好开始搜索</string>
     <string name="no_images_found_tips">没有找到图片</string>

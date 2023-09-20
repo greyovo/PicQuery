@@ -41,6 +41,7 @@ import me.grey.picquery.R
 import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.ui.albums.AddAlbumBottomSheet
 import me.grey.picquery.ui.albums.AlbumViewModel
+import me.grey.picquery.ui.albums.IndexingAlbumState
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -111,14 +112,16 @@ private fun TopBarActions(
 private fun BottomEncodingProgressBar(
     albumViewModel: AlbumViewModel = viewModel(),
 ) {
-    val state by remember { albumViewModel.encodingAlbumState }
-    val progress = (state.current.toDouble() / state.total).toFloat()
+    val state by remember { albumViewModel.indexingAlbumState }
+    var progress = (state.current.toDouble() / state.total).toFloat()
+    if (progress.isNaN()) progress = 0.0f
+    val finished = state.status == IndexingAlbumState.Status.Finish
 
     fun onClickOk() {
-        albumViewModel.closeProgressBar()
+        albumViewModel.clearIndexingState()
     }
 
-    AnimatedVisibility(visible = state.total >= 1) {
+    AnimatedVisibility(visible = state.status != IndexingAlbumState.Status.None) {
         BottomAppBar {
             Column(
                 Modifier
@@ -130,26 +133,32 @@ private fun BottomEncodingProgressBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = stringResource(R.string.indexing_progress, state.current, state.total))
+                    Text(
+                        text = stringResource(
+                            R.string.indexing_progress,
+                            state.current,
+                            state.total
+                        )
+                    )
                     val remain = calculateRemainingTime(
                         state.current,
                         state.total,
                         state.cost
                     )
-                    val finished = state.current == state.total && state.total >= 1
                     TextButton(
                         onClick = { onClickOk() },
                         enabled = finished
                     ) {
                         Text(
                             text = if (finished) stringResource(R.string.finish_button)
-                            else DateUtils.formatElapsedTime(remain)
+                            else stringResource(R.string.estimate_remain_time) +
+                                    " ${DateUtils.formatElapsedTime(remain)}"
                         )
                     }
                 }
                 Box(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    if (progress.isNaN()) 0.0f else progress,
+                    progress,
                     Modifier.fillMaxWidth()
                 )
             }
