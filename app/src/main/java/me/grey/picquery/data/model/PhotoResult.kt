@@ -24,6 +24,3 @@ data class PhotoResult(
     }
 }
 
-fun Photo.toPhotoResult(score: Float): PhotoResult {
-    return PhotoResult(id, label, uri, path, timestamp, albumID, albumLabel, score)
-}

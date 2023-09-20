@@ -1,13 +1,21 @@
 <resources>
-    <string name="app_name">PicQuery</string>
+    <string name="app_name">图搜</string>
     <string name="permission_tips">我们需要相册的读取权限，来搜索您的相册</string>
-    <string name="confirm">确定</string>
-    <string name="cancel">取消</string>
-    <string name="ok">好的</string>
+    <string name="no_permission_toast">无法获取相应权限</string>
+    <string name="confirm_button">确定</string>
+    <string name="cancel_button">取消</string>
+    <string name="ok_button">好的</string>
+    <string name="finish_button">完成</string>
     <string name="searchable_albums">可搜索相册</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="title_activity_search_result">SearchResultActivity</string>
     <string name="add_album">添加相册</string>
     <string name="start_index_album">开始索引相册</string>
     <string name="no_more_album">没有其他相册了</string>
+    <string name="choose_album_to_index">选择需要索引的相册</string>
+    <string name="unselect_all">全不选</string>
+    <string name="select_all">全选</string>
+    <string name="indexing_progress">正在索引: %1$s / %2$s</string>
+    <string name="empty_search_content_toast">请输入搜索内容</string>
+    <string name="ready_for_searching_tips">已准备好开始搜索</string>
+    <string name="no_images_found_tips">没有找到图片</string>
+    <string name="search_placeholder">对图片的描述</string>
 </resources>

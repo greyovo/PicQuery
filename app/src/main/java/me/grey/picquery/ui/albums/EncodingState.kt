@@ -1,5 +1,4 @@
-package me.grey.picquery.data.model
-
+package me.grey.picquery.ui.albums
 
 data class EncodingAlbumState(
     val total: Int = 0,

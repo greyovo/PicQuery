@@ -62,7 +62,7 @@ object ImageSearcher {
         val listToUpdate = mutableListOf<Embedding>()
 
         var count = 0
-        var _startTime = 0L
+        var startTime: Long
         var cost = 0L
 
         val timer = Timer()
@@ -83,7 +83,7 @@ object ImageSearcher {
             // ====
 //            Log.d(TAG, "Use: contentResolver")
 //            val start = System.currentTimeMillis() // REMOVE
-            _startTime = System.currentTimeMillis()
+            startTime = System.currentTimeMillis()
             val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
 //            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
             val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
@@ -95,7 +95,7 @@ object ImageSearcher {
                 )
             )
             count++
-            cost = System.currentTimeMillis() - _startTime
+            cost = System.currentTimeMillis() - startTime
         }
         embeddingRepository.updateAll(listToUpdate)
         encodingLock = false

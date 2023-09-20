@@ -93,7 +93,7 @@ fun EmptyAlbumTips(
         )
         Box(modifier = Modifier.height(20.dp))
         Button(onClick = { onClose() }) {
-            Text(text = stringResource(id = R.string.ok))
+            Text(text = stringResource(id = R.string.ok_button))
         }
     }
 }
@@ -111,21 +111,26 @@ fun AlbumSelectionList(
         ListItem(
             headlineContent = {
                 Text(
-                    text = stringResource(id = R.string.add_album),
+                    text = stringResource(R.string.add_album),
                     style = MaterialTheme.typography.headlineSmall
                 )
             },
             supportingContent = {
-                Text(text = "选择需要索引的相册")
+                Text(text = stringResource(R.string.choose_album_to_index))
             },
             trailingContent = {
                 Row {
                     TextButton(onClick = { onSelectAll() }) {
-                        Text(text = if (list.size == selectedList.size) "全不选" else "全选")
+                        Text(
+                            text = if (list.size == selectedList.size)
+                                stringResource(R.string.unselect_all)
+                            else
+                                stringResource(R.string.select_all)
+                        )
                     }
                     Box(modifier = Modifier.width(5.dp))
                     Button(onClick = { onFinish() }) {
-                        Text(text = "完成")
+                        Text(text = stringResource(R.string.finish_button))
                     }
                 }
             }

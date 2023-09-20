@@ -1,5 +1,6 @@
 package me.grey.picquery.ui.search
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.PhotoRepository
@@ -40,10 +42,15 @@ class SearchViewModel : ViewModel() {
     val searchText = mutableStateOf("")
     val searchRange = mutableStateListOf<Album>()
 
-    private val repo = PhotoRepository(PicQueryApplication.context.contentResolver)
+    private val context: Context
+        get() {
+            return PicQueryApplication.context
+        }
+
+    private val repo = PhotoRepository(context.contentResolver)
     fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
         if (text.trim().isEmpty()) {
-            showToast("请输入搜索内容")
+            showToast(context.getString(R.string.empty_search_content_toast))
             Log.w(TAG, "搜索字段为空")
             return
         }

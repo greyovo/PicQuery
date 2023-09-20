@@ -33,9 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.grey.picquery.R
 import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.ui.albums.AddAlbumBottomSheet
 import me.grey.picquery.ui.albums.AlbumViewModel
@@ -128,7 +130,7 @@ private fun BottomEncodingProgressBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = "正在索引: ${state.current} / ${state.total}")
+                    Text(text = stringResource(R.string.indexing_progress, state.current, state.total))
                     val remain = calculateRemainingTime(
                         state.current,
                         state.total,
@@ -140,8 +142,8 @@ private fun BottomEncodingProgressBar(
                         enabled = finished
                     ) {
                         Text(
-                            text = if (finished) "OK"
-                            else "还需: ${DateUtils.formatElapsedTime(remain)}"
+                            text = if (finished) stringResource(R.string.finish_button)
+                            else DateUtils.formatElapsedTime(remain)
                         )
                     }
                 }

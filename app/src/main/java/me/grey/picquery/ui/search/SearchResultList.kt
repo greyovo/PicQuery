@@ -101,7 +101,7 @@ private fun ReadyText() {
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "已准备好开始搜索")
+        Text(text = stringResource(R.string.ready_for_searching_tips))
     }
 }
 
@@ -113,7 +113,7 @@ private fun NoResultText() {
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "没有找到图片")
+        Text(text = stringResource(R.string.no_images_found_tips))
     }
 }
 

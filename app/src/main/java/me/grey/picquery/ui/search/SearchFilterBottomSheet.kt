@@ -1,16 +1,18 @@
 package me.grey.picquery.ui.search
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -37,7 +39,6 @@ fun SearchFilterBottomSheet(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-
     if (open) {
         ModalBottomSheet(
             onDismissRequest = { scope.launch { searchViewModel.closeFilterBottomSheet(sheetState) } },
@@ -51,7 +52,9 @@ fun SearchFilterBottomSheet(
                     },
                 )
             } else {
-                SearchAbleAlbums()
+                Box(modifier = Modifier.padding(vertical = 20.dp)) {
+                    SearchAbleAlbums()
+                }
             }
         }
     }
@@ -75,34 +78,32 @@ private fun SearchAbleAlbums(
             val album = all[index]
             val selected = searchRange.contains(album)
 
+            val colors = FilterChipDefaults.elevatedFilterChipColors(
+                iconColor = MaterialTheme.colorScheme.primary,
+                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+            )
+
             ElevatedFilterChip(
                 modifier = Modifier.padding(horizontal = 6.dp),
-                leadingIcon =
-                if (selected) {
-                    {
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Filled.CheckCircle,
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                } else {
-                    {
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Outlined.AddCircleOutline,
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                        )
-                    }
+                colors = colors,
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(18.dp),
+                        imageVector = if (selected) {
+                            Icons.Filled.CheckCircle
+                        } else {
+                            Icons.Outlined.AddCircleOutline
+                        },
+                        contentDescription = "",
+                    )
                 },
 
                 selected = selected,
                 onClick = { searchViewModel.toggleToRange(album) },
                 label = { Text(text = "${album.label} (${album.count})") }
             )
-
         }
     }
 }

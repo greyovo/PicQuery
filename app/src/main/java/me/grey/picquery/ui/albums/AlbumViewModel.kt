@@ -14,7 +14,6 @@ import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.data.model.EncodingAlbumState
 import me.grey.picquery.data.model.Photo
 
 class AlbumViewModel : ViewModel() {
@@ -91,6 +90,7 @@ class AlbumViewModel : ViewModel() {
     fun encodeSelectedAlbums() {
         if (albumsToEncode.isNotEmpty()) {
             encodeAlbums(albumsToEncode.toList())
+            albumsToEncode.clear()
         }
     }
 

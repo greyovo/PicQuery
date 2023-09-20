@@ -59,12 +59,12 @@ class MainActivity : FragmentActivity() {
                 scope.showRequestReasonDialog(
                     deniedList,
                     resources.getString(R.string.permission_tips),
-                    resources.getString(R.string.ok),
-                    resources.getString(R.string.cancel),
+                    resources.getString(R.string.ok_button),
+                    resources.getString(R.string.cancel_button),
                 )
             }.request { allGranted, _, _ ->
                 if (!allGranted) {
-                    Toast.makeText(this, "无法获取相应权限", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.no_permission_toast), Toast.LENGTH_LONG).show()
                 } else {
                     albumViewModel.initAllAlbumList()
                 }
