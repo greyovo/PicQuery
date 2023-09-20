@@ -16,17 +16,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PicQuery"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".ui.result.SearchResultActivity"-->
-<!--            android:exported="false"-->
-<!--            android:label="@string/title_activity_search_result"-->
-<!--            android:theme="@style/Theme.PicQuery" />-->
+        <activity
+            android:name=".ui.DisplayActivity"
+            android:exported="false"
+            android:label="@string/title_activity_display"
+            android:theme="@style/Theme.PicQuery" />
+        <!-- <activity -->
+        <!-- android:name=".ui.result.SearchResultActivity" -->
+        <!-- android:exported="false" -->
+        <!-- android:label="@string/title_activity_search_result" -->
+        <!-- android:theme="@style/Theme.PicQuery" /> -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.PicQuery">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 

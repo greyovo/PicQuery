@@ -141,10 +141,15 @@ object ImageSearcher {
             }
             searchingLock = true
             val textFeat = textEncoder!!.encode(text)
-            Log.d(TAG, "Encode '${text}' done")
-            Log.i(TAG, "textFeat ${textFeat.joinToString()}")
+            Log.d(TAG, "Encode text: '${text}'")
             val photoResults = mutableListOf<Pair<Long, Double>>()
-            val embeddings = embeddingRepository.getAll()
+            val embeddings = if (range.isEmpty()) {
+                Log.d(TAG, "Search from all album")
+                embeddingRepository.getAll()
+            } else {
+                Log.d(TAG, "Search from: [${range.joinToString { it.label }}]")
+                embeddingRepository.getByAlbumList(range)
+            }
             Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
             for (emb in embeddings) {
 //            Log.i(TAG, "imageFeat ${emb.data.toFloatArray().joinToString()}")

@@ -4,7 +4,6 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import ai.onnxruntime.OrtSession.SessionOptions
-import android.util.Log
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.assetFilePath
 import java.nio.IntBuffer
@@ -30,15 +29,11 @@ object TextEncoder {
             tokenizer = BPETokenizer(context)
         }
         val token = tokenizer!!.tokenize(input)
-        Log.d("tokenizer", token.first.size.toString())
         val buffer = IntBuffer.wrap(token.first)
         val shape = token.second
         val inputName = ortSession?.inputNames?.iterator()?.next()
-        Log.d("inputName", inputName ?: "null")
         val env = OrtEnvironment.getEnvironment()
         val tensor = OnnxTensor.createTensor(env, buffer, shape)
-        Log.d("inputTensor", tensor.intBuffer.array().joinToString())
-        Log.d("OutputName", ortSession!!.outputNames.joinToString())
         val output = ortSession?.run(mapOf(Pair(inputName!!, tensor)))
 
         val resultBuffer = output?.get(0) as OnnxTensor

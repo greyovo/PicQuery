@@ -1,6 +1,7 @@
 package me.grey.picquery.ui.search
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -19,6 +20,7 @@ import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
+import me.grey.picquery.ui.DisplayActivity
 
 enum class SearchState {
     NO_INDEX, // 没有索引
@@ -50,16 +52,21 @@ class SearchViewModel : ViewModel() {
 
     private val repo = PhotoRepository(context.contentResolver)
 
+    private var initialized = false
+
     init {
-        viewModelScope.launch {
-            if (ImageSearcher.hasEmbedding()) {
-                _searchState.value = SearchState.READY
+        if (!initialized) {
+            viewModelScope.launch {
+                if (ImageSearcher.hasEmbedding()) {
+                    _searchState.value = SearchState.READY
+                }
+                initialized = true
             }
         }
     }
 
 
-    fun startSearch(text: String, albumRange: List<Album> = emptyList()) {
+    fun startSearch(text: String) {
         if (text.trim().isEmpty()) {
             showToast(context.getString(R.string.empty_search_content_toast))
             Log.w(TAG, "搜索字段为空")
@@ -68,7 +75,7 @@ class SearchViewModel : ViewModel() {
         searchText.value = text
         viewModelScope.launch(Dispatchers.IO) {
             _searchState.value = SearchState.SEARCHING
-            val ids = ImageSearcher.search(text)
+            val ids = ImageSearcher.search(text, range = searchRange.toList())
             if (ids != null) {
                 _resultList.value = repo.getPhotoListByIds(ids)
             }
@@ -101,12 +108,19 @@ class SearchViewModel : ViewModel() {
         }
     }
 
-    fun addAllToRange(list: List<Album>) {
-        searchRange.clear()
-        searchRange.addAll(list)
+    fun toggleSearchAll() {
+        if (!isSearchRangeAll.value) {
+            isSearchRangeAll.value = true
+            searchRange.clear()
+        } else {
+            isSearchRangeAll.value = false
+        }
     }
 
-    fun removeAllFromRange(list: List<Album>) {
-        searchRange.clear()
+    fun displayPhotoFullscreen(context: Context, index: Int, photo: Photo) {
+        val intent = Intent(context, DisplayActivity::class.java)
+        intent.putExtra("index", index)
+        intent.putExtra("id", photo.id)
+        context.startActivity(intent)
     }
 }

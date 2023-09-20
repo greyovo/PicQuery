@@ -64,7 +64,8 @@ class MainActivity : FragmentActivity() {
                 )
             }.request { allGranted, _, _ ->
                 if (!allGranted) {
-                    Toast.makeText(this, getString(R.string.no_permission_toast), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.no_permission_toast), Toast.LENGTH_LONG)
+                        .show()
                 } else {
                     albumViewModel.initAllAlbumList()
                 }

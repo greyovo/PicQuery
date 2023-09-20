@@ -6,6 +6,8 @@
     <string name="cancel_button">取消</string>
     <string name="ok_button">好的</string>
     <string name="finish_button">完成</string>
+    <string name="selected_album_count">已选 %1$s 个</string>
+    <string name="selected_images_count">已选 %1$s 张</string>
     <string name="searchable_albums">可搜索相册</string>
     <string name="add_album_title">添加相册</string>
     <string name="add_album_subtitle">选择需要索引的相册</string>
@@ -24,4 +26,6 @@
     <string name="search_range_selection_title">搜索范围</string>
     <string name="search_range_selection_subtitle">从已索引的相册中筛选</string>
     <string name="all_albums">全部相册</string>
+    <!--  title_activity  -->
+    <string name="title_activity_display">查看图片</string>
 </resources>

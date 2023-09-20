@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,23 +52,36 @@ fun SearchResultGrid(
             if (resultList.isEmpty()) {
                 NoResultText()
             } else {
+                val context = LocalContext.current
                 LazyVerticalGrid(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
                     columns = GridCells.Adaptive(100.dp),
                     content = {
                         val padding = Modifier.padding(3.dp)
+                        fun onClickPhotoResult(index: Int) {
+                            viewModel.displayPhotoFullscreen(context, index, resultList[index])
+                        }
+
+                        // 搜索结果的第一个占满一行
                         item(span = { GridItemSpan(3) }) {
                             Box(padding) {
-                                PhotoResultRecommend(photo = resultList[0], onItemClick = {})
+                                PhotoResultRecommend(
+                                    photo = resultList[0],
+                                    onItemClick = { onClickPhotoResult(0) },
+                                )
                             }
                         }
+                        // 其余结果按表格展示
                         if (resultList.size > 1)
                             items(
                                 resultList.size - 1,
                                 key = { resultList[it].id },
                             ) { index ->
                                 Box(padding) {
-                                    PhotoResultItem(resultList[index + 1], onItemClick = {})
+                                    PhotoResultItem(
+                                        resultList[index + 1],
+                                        onItemClick = { onClickPhotoResult(index + 1) },
+                                    )
                                 }
                             }
                     }

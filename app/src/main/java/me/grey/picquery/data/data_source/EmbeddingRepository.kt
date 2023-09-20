@@ -1,6 +1,7 @@
 package me.grey.picquery.data.data_source
 
 import me.grey.picquery.data.AppDatabase
+import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 
 class EmbeddingRepository {
@@ -27,6 +28,11 @@ class EmbeddingRepository {
     fun getByAlbumId(albumId: Long): List<Embedding> {
         val db = AppDatabase.instance
         return db.embeddingDao().getAllByAlbumId(albumId)
+    }
+
+    fun getByAlbumList(albumList: List<Album>): List<Embedding> {
+        val db = AppDatabase.instance
+        return db.embeddingDao().getByAlbumIdList(albumList.map { it.id })
     }
 
     fun update(emb: Embedding) {

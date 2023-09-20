@@ -4,10 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -22,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,9 +45,15 @@ fun SearchFilterBottomSheet(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
+    fun close() {
+        scope.launch {
+            searchViewModel.closeFilterBottomSheet(sheetState)
+        }
+    }
+
     if (open) {
         ModalBottomSheet(
-            onDismissRequest = { scope.launch { searchViewModel.closeFilterBottomSheet(sheetState) } },
+            onDismissRequest = { close() },
             sheetState = sheetState,
         ) {
             val list = remember { albumViewModel.searchableAlbumList }
@@ -66,14 +69,8 @@ fun SearchFilterBottomSheet(
                     Text(text = stringResource(R.string.search_range_selection_subtitle))
                 },
                 trailingContent = {
-                    Row {
-                        TextButton(onClick = { /*TODO()*/ }) {
-                            Text(text = stringResource(R.string.clear_selection))
-                        }
-                        Box(modifier = Modifier.width(5.dp))
-                        Button(onClick = { /*TODO()*/ }) {
-                            Text(text = stringResource(R.string.finish_button))
-                        }
+                    Button(onClick = { close() }) {
+                        Text(text = stringResource(R.string.finish_button))
                     }
                 }
             )
@@ -83,9 +80,12 @@ fun SearchFilterBottomSheet(
                 modifier = Modifier.clickable { searchRangeAll.value = !searchRangeAll.value },
                 headlineContent = { Text(text = stringResource(R.string.all_albums)) },
                 trailingContent = {
-                    Switch(checked = searchRangeAll.value, onCheckedChange = {
-                        searchRangeAll.value = it
-                    })
+                    Switch(
+                        checked = searchRangeAll.value,
+                        onCheckedChange = {
+                            searchViewModel.toggleSearchAll()
+                        },
+                    )
                 }
             )
 

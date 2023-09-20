@@ -23,6 +23,11 @@ interface EmbeddingDao {
     )
     fun getAllByAlbumId(albumId: Long): List<Embedding>
 
+    @Query(
+        "SELECT * FROM $tableName WHERE album_id IN (:albumIds)"
+    )
+    fun getByAlbumIdList(albumIds: List<Long>): List<Embedding>
+
 //    @Insert
 //    fun insertAll(embeddings: List<Embedding>)
 

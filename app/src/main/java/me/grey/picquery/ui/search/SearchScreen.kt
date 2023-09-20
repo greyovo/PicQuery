@@ -45,8 +45,7 @@ import me.grey.picquery.ui.albums.IndexingAlbumState
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(
-) {
+fun SearchScreen() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
