@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
 
 /**
  * Material Theme Builder
@@ -27,6 +30,13 @@ fun PicQueryThemeM3(
     } else {
         LightColors
     }
+
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        color = Color.Transparent,
+        darkIcons = true
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,
