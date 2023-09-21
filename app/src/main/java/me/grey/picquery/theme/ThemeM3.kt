@@ -1,13 +1,18 @@
-package me.grey.picquery.themeM3
+package me.grey.picquery.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
-import androidx.compose.runtime.Composable
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 
+/**
+ * Material Theme Builder
+ *
+ * https://m3.material.io/theme-builder#/custom
+ */
 val AppLightColorScheme = lightColorScheme(
     // M3 light Color parameters
 )

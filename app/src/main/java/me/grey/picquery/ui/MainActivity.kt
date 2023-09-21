@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.permissionx.guolindev.PermissionX
 import me.grey.picquery.R
-import me.grey.picquery.themeM3.PicQueryThemeM3
+import me.grey.picquery.theme.PicQueryThemeM3
 import me.grey.picquery.ui.albums.AlbumViewModel
 import me.grey.picquery.ui.search.SearchScreen
 
