@@ -4,19 +4,15 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentActivity
-import com.permissionx.guolindev.PermissionX
-import me.grey.picquery.R
 import me.grey.picquery.theme.PicQueryThemeM3
 import me.grey.picquery.ui.albums.AlbumViewModel
 import me.grey.picquery.ui.search.SearchScreen
 
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -26,7 +22,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             PicQueryThemeM3 {
                 SearchScreen()
@@ -54,24 +50,24 @@ class MainActivity : FragmentActivity() {
         else
             listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    private fun requestPermission() {
-        PermissionX.init(this)
-            .permissions(permissions)
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(
-                    deniedList,
-                    resources.getString(R.string.permission_tips),
-                    resources.getString(R.string.ok_button),
-                    resources.getString(R.string.cancel_button),
-                )
-            }.request { allGranted, _, _ ->
-                if (!allGranted) {
-                    Toast.makeText(this, getString(R.string.no_permission_toast), Toast.LENGTH_LONG)
-                        .show()
-                } else {
-                    albumViewModel.initAllAlbumList()
-                }
-            }
-    }
+//    private fun requestPermission() {
+//        PermissionX.init(this)
+//            .permissions(permissions)
+//            .onExplainRequestReason { scope, deniedList ->
+//                scope.showRequestReasonDialog(
+//                    deniedList,
+//                    resources.getString(R.string.permission_tips),
+//                    resources.getString(R.string.ok_button),
+//                    resources.getString(R.string.cancel_button),
+//                )
+//            }.request { allGranted, _, _ ->
+//                if (!allGranted) {
+//                    Toast.makeText(this, getString(R.string.no_permission_toast), Toast.LENGTH_LONG)
+//                        .show()
+//                } else {
+//                    albumViewModel.initAllAlbumList()
+//                }
+//            }
+//    }
 }
 
