@@ -1,31 +1,32 @@
-import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.grey.picquery.R
 
 @Composable
 fun LogoRow(modifier: Modifier = Modifier) {
     Row(
-        verticalAlignment = Alignment.Top,
-        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
 //        horizontalArrangement = Arrangement.Center
     ) {
-        val fontSize = 25
+        val fontSize = 35
         val textStyle =
             TextStyle(fontSize = fontSize.sp, color = MaterialTheme.colorScheme.onBackground)
-        Text(text = "Pic", style = textStyle)
+//        Image(
+//            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+//            modifier = Modifier.size(fontSize.dp),
+//            contentDescription = "logo"
+//        )
+        Text(text = stringResource(R.string.logo_part1_pic), style = textStyle)
 //        Icon(
 //            imageVector = Icons.Filled.Search,
 //            contentDescription = "搜索",
@@ -33,8 +34,9 @@ fun LogoRow(modifier: Modifier = Modifier) {
 //            tint = MaterialTheme.colorScheme.primary
 //        )
         Text(
-            text = "Query", style = textStyle.copy(
+            text = stringResource(R.string.logo_part2_query), style = textStyle.copy(
                 fontWeight = FontWeight.Bold,
+                fontSize = (fontSize - 1).sp,
                 color = MaterialTheme.colorScheme.primary
             )
         )

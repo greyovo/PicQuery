@@ -107,7 +107,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation 'androidx.compose.material:material:1.4.0'
+//    implementation 'androidx.compose.material:material:1.4.0'
     implementation 'androidx.test:monitor:1.5.0'
     implementation 'androidx.test.ext:junit-ktx:1.1.3'
     testImplementation 'junit:junit:4.13.2'
@@ -129,8 +129,12 @@ dependencies {
     // Utility
     implementation 'net.engawapg.lib:zoomable:1.5.0'
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
-    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.32.0'
-    implementation 'com.google.accompanist:accompanist-navigation-animation:0.32.0'
+
+    def accompanist_version = "0.32.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
+
     // Optional - APIs for SplashScreen, including compatiblity helpers on devices prior Android 12
     // https://juejin.cn/post/6997217571208445965
     implementation "androidx.core:core-splashscreen:1.0.0-alpha01"

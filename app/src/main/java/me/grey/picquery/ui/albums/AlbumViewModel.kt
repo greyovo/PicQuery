@@ -38,6 +38,10 @@ class AlbumViewModel : ViewModel() {
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
+    init {
+        Log.d(TAG, "init!!!")
+    }
+
 
     fun initAllAlbumList() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -1,79 +1,66 @@
 package me.grey.picquery.ui.search
 
-import LogoRow
 import SearchInput
-import android.text.format.DateUtils
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import me.grey.picquery.R
-import me.grey.picquery.common.calculateRemainingTime
-import me.grey.picquery.ui.albums.AddAlbumBottomSheet
+import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.albums.AlbumViewModel
-import me.grey.picquery.ui.albums.IndexingAlbumState
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen() {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MediumTopAppBar(
-                title = { LogoRow() },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    scrolledContainerColor = MaterialTheme.colorScheme.background
-                ),
-                actions = { TopBarActions() },
-            )
-        },
-        bottomBar = { BottomEncodingProgressBar() }
-    ) {
-        Column(
-            modifier = Modifier.padding(it),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
-        ) {
-            SearchInput()
-            SearchResultGrid()
-        }
+fun SearchScreen(
+    initialQuery: String,
+    onClickPhoto: (Photo, Int) -> Unit,
+    onBack: () -> Unit,
+    onSelectSearchTarget: () -> Unit,
+    onSelectSearchRange: () -> Unit,
+    onSearch: (String) -> Unit,
+    searchResult: List<Photo>,
+    searchState: SearchState,
+) {
+    val queryText by remember { mutableStateOf(initialQuery) }
+    LaunchedEffect(Unit) {
+        onSearch(initialQuery)
+    }
+    Column() {
+        SearchInput(
+            onStartSearch = { onSearch(it) },
+            queryText = queryText,
+            onSelectSearchRange = onSelectSearchRange,
+            onSelectSearchTarget = onSelectSearchTarget,
+            leadingIcon = {
+                IconButton(onClick = { onBack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "back",
+                    )
+                }
+            }
+        )
+        SearchResultGrid(
+            resultList = searchResult,
+            state = searchState,
+            onClickPhoto = onClickPhoto
+        )
     }
 
-    // BottomSheet or Dialogs
-    AddAlbumBottomSheet()
-    SearchFilterBottomSheet()
 }
 
 @Composable
@@ -82,9 +69,7 @@ private fun TopBarActions(
     searchViewModel: SearchViewModel = viewModel()
 ) {
     val size = Modifier.size(22.dp)
-    IconButton(onClick = {
-        albumViewModel.openBottomSheet()
-    }) {
+    IconButton(onClick = { albumViewModel.openBottomSheet() }) {
         Icon(
             modifier = size,
             imageVector = Icons.Default.AddCircle,
@@ -107,61 +92,4 @@ private fun TopBarActions(
     }
 }
 
-@Composable
-private fun BottomEncodingProgressBar(
-    albumViewModel: AlbumViewModel = viewModel(),
-) {
-    val state by remember { albumViewModel.indexingAlbumState }
-    var progress = (state.current.toDouble() / state.total).toFloat()
-    if (progress.isNaN()) progress = 0.0f
-    val finished = state.status == IndexingAlbumState.Status.Finish
-
-    fun onClickOk() {
-        albumViewModel.clearIndexingState()
-    }
-
-    AnimatedVisibility(visible = state.status != IndexingAlbumState.Status.None) {
-        BottomAppBar {
-            Column(
-                Modifier
-                    .padding(horizontal = 14.dp)
-                    .padding(bottom = 12.dp)
-            ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.indexing_progress,
-                            state.current,
-                            state.total
-                        )
-                    )
-                    val remain = calculateRemainingTime(
-                        state.current,
-                        state.total,
-                        state.cost
-                    )
-                    TextButton(
-                        onClick = { onClickOk() },
-                        enabled = finished
-                    ) {
-                        Text(
-                            text = if (finished) stringResource(R.string.finish_button)
-                            else stringResource(R.string.estimate_remain_time) +
-                                    " ${DateUtils.formatElapsedTime(remain)}"
-                        )
-                    }
-                }
-                Box(modifier = Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress,
-                    Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
 

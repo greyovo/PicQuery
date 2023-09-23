@@ -1,8 +1,7 @@
 package me.grey.picquery.ui.widgets
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
@@ -13,9 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CentralLoadingProgressBar() {
     Box(
-        Modifier
-            .fillMaxHeight(0.7f)
-            .fillMaxWidth(),
+        Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         LinearProgressIndicator(modifier = Modifier.padding(20.dp))

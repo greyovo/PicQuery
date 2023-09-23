@@ -45,6 +45,8 @@ class SearchViewModel : ViewModel() {
     val isSearchRangeAll = mutableStateOf(true)
     val searchRange = mutableStateListOf<Album>()
 
+    val searchActive = mutableStateOf(false)
+
     private val context: Context
         get() {
             return PicQueryApplication.context
@@ -55,14 +57,17 @@ class SearchViewModel : ViewModel() {
     private var initialized = false
 
     init {
-        if (!initialized) {
-            viewModelScope.launch {
-                if (ImageSearcher.hasEmbedding()) {
-                    _searchState.value = SearchState.READY
-                }
-                initialized = true
-            }
-        }
+        Log.d(TAG, "init!!!")
+//        if (!initialized) {
+//            viewModelScope.launch {
+//                if (ImageSearcher.hasEmbedding()) {
+//                    _searchState.value = SearchState.READY
+//                } else {
+//                    _searchState.value = SearchState.NO_INDEX
+//                }
+//                initialized = true
+//            }
+//        }
     }
 
 

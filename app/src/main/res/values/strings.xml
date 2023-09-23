@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">图搜</string>
+    <string name="logo_part1_pic">图</string>
+    <string name="logo_part2_query">搜</string>
     <string name="permission_tips">我们需要相册的读取权限，来搜索您的相册</string>
     <string name="no_permission_toast">无法获取相应权限</string>
     <string name="confirm_button">确定</string>
@@ -28,4 +30,5 @@
     <string name="all_albums">全部相册</string>
     <!--  title_activity  -->
     <string name="title_activity_display">查看图片</string>
+
 </resources>

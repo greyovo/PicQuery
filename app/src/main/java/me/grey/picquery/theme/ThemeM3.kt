@@ -30,7 +30,6 @@ fun PicQueryThemeM3(
         LightColors
     }
 
-    // Remember a SystemUiController
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
         color = colorScheme.background,

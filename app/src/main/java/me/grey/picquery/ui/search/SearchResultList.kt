@@ -17,8 +17,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +25,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
@@ -39,10 +36,12 @@ import java.io.File
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun SearchResultGrid(
-    viewModel: SearchViewModel = viewModel()
-) {
-    val resultList by viewModel.resultList.collectAsState()
-    val state by viewModel.searchState.collectAsState()
+    resultList: List<Photo>,
+    state: SearchState,
+    onClickPhoto: (Photo, Int) -> Unit,
+    ) {
+//    val resultList by viewModel.resultList.collectAsState()
+//    val state by viewModel.searchState.collectAsState()
     when (state) {
         SearchState.NO_INDEX -> UnReadyText()
         SearchState.LOADING -> CentralLoadingProgressBar()
@@ -59,7 +58,6 @@ fun SearchResultGrid(
                     content = {
                         val padding = Modifier.padding(3.dp)
                         fun onClickPhotoResult(index: Int) {
-                            viewModel.displayPhotoFullscreen(context, index, resultList[index])
                         }
 
                         // 搜索结果的第一个占满一行
