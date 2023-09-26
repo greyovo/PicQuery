@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
+import me.grey.picquery.common.showToast
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.albums.AlbumCard
@@ -59,10 +60,18 @@ fun AddAlbumBottomSheet(
                 )
             } else {
                 val selectedList = remember { albumManager.albumsToEncode }
+                val noAlbumTips = stringResource(R.string.no_album_selected)
                 AlbumSelectionList(
                     list, selectedList,
                     onFinish = {
                         // FIXME
+                        val snapshot = albumManager.albumsToEncode.toList()
+                        albumManager.albumsToEncode.clear()
+                        if (snapshot.isEmpty()) {
+                            showToast(noAlbumTips)
+                        } else {
+                            scope.launch { albumManager.encodeAlbums(snapshot) }
+                        }
                         closeSheet()
                     },
                     onSelectAll = {

@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +40,9 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants
+import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.common.calculateRemainingTime
+import me.grey.picquery.common.showToast
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.albums.IndexingAlbumState
 import org.koin.androidx.compose.koinViewModel
@@ -59,8 +60,8 @@ fun HomeScreen(
     val initialized = remember { mutableStateOf(false) }
 
     // === BottomSheet block
-    val appBottomSheetState = rememberAppBottomSheetState()
-    AddAlbumBottomSheet(sheetState = appBottomSheetState)
+    val albumListSheetState = rememberAppBottomSheetState()
+    AddAlbumBottomSheet(sheetState = albumListSheetState)
     // === BottomSheet end
 
     // === Permission handling block
@@ -70,11 +71,11 @@ fun HomeScreen(
             permissions = Constants.PERMISSIONS,
             onPermissionsResult = { scope.launch { albumManager.initAllAlbumList() } },
         )
-    LaunchedEffect(Unit) {
+    InitializeEffect {
         if (!mediaPermissions.allPermissionsGranted) {
             mediaPermissions.launchMultiplePermissionRequest()
         } else {
-            scope.launch { albumManager.initAllAlbumList() }
+            albumManager.initAllAlbumList()
         }
     }
     // === Permission handling end
@@ -83,8 +84,15 @@ fun HomeScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
+            val busyToastText = stringResource(R.string.busy_when_add_album_toast)
             TextButton(
-                onClick = { scope.launch { appBottomSheetState.show() } },
+                onClick = {
+                    if (albumManager.isEncoderBusy) {
+                        showToast(busyToastText)
+                    } else {
+                        scope.launch { albumListSheetState.show() }
+                    }
+                },
                 modifier = Modifier.padding(bottom = 20.dp),
             ) {
                 Row(
@@ -99,8 +107,7 @@ fun HomeScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
-        topBar = {
-        },
+        bottomBar = { EncodingProgressBar() },
     ) { it ->
         Column(
             modifier = Modifier
@@ -126,7 +133,7 @@ fun HomeScreen(
 
 
 @Composable
-private fun BottomEncodingProgressBar(
+private fun EncodingProgressBar(
     albumManager: AlbumManager = koinInject(),
 ) {
     val state by remember { albumManager.indexingAlbumState }

@@ -1,5 +1,8 @@
 package me.grey.picquery.common
 
+import androidx.room.Room
+import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
@@ -33,8 +36,16 @@ private val viewModelModules = module {
 }
 
 private val dataModules = module {
-    single { AlbumRepository(androidContext().contentResolver) }
-    single { EmbeddingRepository() }
+    // SQLite Database
+    single {
+        Room.databaseBuilder(
+            PicQueryApplication.context,
+            AppDatabase::class.java, "app-db"
+        ).build()
+    }
+
+    single { AlbumRepository(androidContext().contentResolver, database = get()) }
+    single { EmbeddingRepository(database = get()) }
     single { PhotoRepository(androidContext().contentResolver) }
 }
 
@@ -51,6 +62,7 @@ private val domainModules = module {
         AlbumManager(
             albumRepository = get(),
             photoRepository = get(),
+            imageSearcher = get(),
         )
     }
 

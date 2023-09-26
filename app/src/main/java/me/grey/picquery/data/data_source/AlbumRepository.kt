@@ -11,7 +11,10 @@ import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Album
 
 
-class AlbumRepository(private val contentResolver: ContentResolver) {
+class AlbumRepository(
+    private val contentResolver: ContentResolver,
+    private val database: AppDatabase
+) {
 
     companion object {
         private const val TAG = "AlbumRepository"
@@ -47,6 +50,7 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
                     Log.e(TAG, "getAlbums, queryAlbums, cursor null")
                     return emptyList()
                 }
+
                 0 -> return emptyList()
                 else -> {
                     // cursor最初从-1开始
@@ -78,22 +82,18 @@ class AlbumRepository(private val contentResolver: ContentResolver) {
     }
 
     fun getSearchableAlbums(): List<Album> {
-        val db = AppDatabase.instance
-        return db.albumDao().getAll()
+        return database.albumDao().getAll()
     }
 
     fun getSearchableAlbumFlow(): Flow<List<Album>> {
-        val db = AppDatabase.instance
-        return db.albumDao().getAllFlow()
+        return database.albumDao().getAllFlow()
     }
 
     fun addSearchableAlbum(album: Album) {
-        val db = AppDatabase.instance
-        return db.albumDao().upsert(album)
+        return database.albumDao().upsert(album)
     }
 
     fun addAllSearchableAlbum(album: List<Album>) {
-        val db = AppDatabase.instance
-        return db.albumDao().upsertAll(album)
+        return database.albumDao().upsertAll(album)
     }
 }

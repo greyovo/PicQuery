@@ -25,6 +25,7 @@
     <string name="no_images_found_tips">没有找到图片</string>
     <string name="search_placeholder">对图片的描述</string>
     <string name="busy_when_add_album_toast">正在索引中，请稍后再添加更多相册</string>
+    <string name="no_album_selected">未选择任何相册！</string>
     <string name="search_range_selection_title">搜索范围</string>
     <string name="search_range_selection_subtitle">从已索引的相册中筛选</string>
     <string name="all_albums">全部相册</string>

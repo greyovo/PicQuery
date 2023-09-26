@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
+import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.AlbumRepository
@@ -19,11 +20,11 @@ import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.albums.IndexingAlbumState
-import org.koin.java.KoinJavaComponent.inject
 
 class AlbumManager(
     private val albumRepository: AlbumRepository,
-    private val photoRepository : PhotoRepository
+    private val photoRepository: PhotoRepository,
+    private val imageSearcher: ImageSearcher,
 ) {
     companion object {
         private const val TAG = "AlbumViewModel"
@@ -31,7 +32,10 @@ class AlbumManager(
 
     val indexingAlbumState = mutableStateOf(IndexingAlbumState())
 
-    val albumList = mutableStateListOf<Album>()
+    val isEncoderBusy: Boolean
+        get() = indexingAlbumState.value.isBusy
+
+    private val albumList = mutableStateListOf<Album>()
     val searchableAlbumList = mutableStateListOf<Album>()
     val unsearchableAlbumList = mutableStateListOf<Album>()
     val albumsToEncode = mutableStateListOf<Album>()
@@ -92,16 +96,20 @@ class AlbumManager(
         }
     }
 
-    suspend fun encodeSelectedAlbums() {
-        if (albumsToEncode.isNotEmpty()) {
-            encodeAlbums(albumsToEncode.toList())
-            albumsToEncode.clear()
+//    suspend fun encodeSelectedAlbums() {
+//        if (albumsToEncode.isNotEmpty()) {
+//            encodeAlbums(albumsToEncode.toList())
+//            albumsToEncode.clear()
+//        }
+//    }
+
+
+    suspend fun encodeAlbums(albums: List<Album>) {
+        if (albums.isEmpty()) {
+            showToast(context.getString(R.string.no_album_selected))
+            return
         }
-    }
 
-    val imageSearcher: ImageSearcher by inject(ImageSearcher::class.java)
-
-    private suspend fun encodeAlbums(albums: List<Album>) {
         indexingAlbumState.value =
             IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
         withContext(Dispatchers.Default) {

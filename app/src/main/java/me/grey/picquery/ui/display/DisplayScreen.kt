@@ -26,7 +26,6 @@ fun DisplayScreen(
     initialPage: Int,
     displayViewModel: DisplayViewModel = koinViewModel()
 ) {
-
     val photoList = remember { displayViewModel.photoList }
     val pagerState = rememberPagerState(
         initialPage = 0,

@@ -4,14 +4,15 @@ import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 
-class EmbeddingRepository {
+class EmbeddingRepository(
+    private val database: AppDatabase
+) {
     companion object {
         private const val TAG = "EmbeddingRepo"
     }
 
     fun getAll(): List<Embedding> {
-        val db = AppDatabase.instance
-        return db.embeddingDao().getAll()
+        return database.embeddingDao().getAll()
     }
 
 //    fun hasEmbedding(): Boolean {
@@ -21,25 +22,21 @@ class EmbeddingRepository {
 //    }
 
     fun getTotalCount(): Long {
-        val db = AppDatabase.instance
-        return db.embeddingDao().getTotalCount()
+        return database.embeddingDao().getTotalCount()
     }
 
     fun getByAlbumId(albumId: Long): List<Embedding> {
-        val db = AppDatabase.instance
-        return db.embeddingDao().getAllByAlbumId(albumId)
+        return database.embeddingDao().getAllByAlbumId(albumId)
     }
 
     fun getByAlbumList(albumList: List<Album>): List<Embedding> {
-        val db = AppDatabase.instance
-        return db.embeddingDao().getByAlbumIdList(albumList.map { it.id })
+        return database.embeddingDao().getByAlbumIdList(albumList.map { it.id })
     }
 
     fun update(emb: Embedding) {
     }
 
     fun updateAll(list: List<Embedding>) {
-        val db = AppDatabase.instance
-        return db.embeddingDao().upsertAll(list)
+        return database.embeddingDao().upsertAll(list)
     }
 }
