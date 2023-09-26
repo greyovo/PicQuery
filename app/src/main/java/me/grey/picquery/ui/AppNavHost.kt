@@ -8,22 +8,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import kotlinx.coroutines.launch
 import me.grey.picquery.ui.Animation.navigateInAnimation
 import me.grey.picquery.ui.Animation.navigateUpAnimation
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
 import me.grey.picquery.ui.search.SearchScreen
-import me.grey.picquery.ui.search.SearchViewModel
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppNavHost(
@@ -54,27 +51,20 @@ fun AppNavHost(
         }
         composable("${Routes.Search.name}/{query}") {
             val queryText = it.arguments?.getString("query") ?: ""
-            val searchViewModel: SearchViewModel = koinViewModel()
-            val resultList = searchViewModel.resultList.collectAsState()
-            val searchState = searchViewModel.searchState.collectAsState()
-
-            val scope = rememberCoroutineScope()
-
             SearchScreen(
                 initialQuery = queryText,
                 onBack = { navController.popBackStack() },
                 onClickPhoto = { photo, index ->
                     // TODO
                     navController.navigate("${Routes.Display.name}/${index}")
-//                    viewModel.displayPhotoFullscreen(context, index, resultList[index])
                 },
-                onSearch = { text -> scope.launch { searchViewModel.startSearch(text) } },
-                searchResult = resultList.value,
-                searchState = searchState.value
             )
         }
-        composable(Routes.Display.name) {
-            val initialIndex = it.arguments?.getInt("index") ?: 0
+        composable(
+            "${Routes.Display.name}/{index}",
+            arguments = listOf(navArgument("index") { type = NavType.IntType })
+        ) {
+            val initialIndex: Int = it.arguments?.getInt("index") ?: 0
             DisplayScreen(initialPage = initialIndex)
         }
     }

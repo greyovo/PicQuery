@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -39,9 +38,13 @@ fun SearchResultGrid(
     resultList: List<Photo>,
     state: SearchState,
     onClickPhoto: (Photo, Int) -> Unit,
-    ) {
-//    val resultList by viewModel.resultList.collectAsState()
+) {
+    //    val resultList by viewModel.resultList.collectAsState()
 //    val state by viewModel.searchState.collectAsState()
+    fun onClickPhotoResult(index: Int) {
+        onClickPhoto(resultList[index], index)
+    }
+
     when (state) {
         SearchState.NO_INDEX -> UnReadyText()
         SearchState.LOADING -> CentralLoadingProgressBar()
@@ -51,15 +54,11 @@ fun SearchResultGrid(
             if (resultList.isEmpty()) {
                 NoResultText()
             } else {
-                val context = LocalContext.current
                 LazyVerticalGrid(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
                     columns = GridCells.Adaptive(100.dp),
                     content = {
                         val padding = Modifier.padding(3.dp)
-                        fun onClickPhotoResult(index: Int) {
-                        }
-
                         // 搜索结果的第一个占满一行
                         item(span = { GridItemSpan(3) }) {
                             Box(padding) {
@@ -70,7 +69,7 @@ fun SearchResultGrid(
                             }
                         }
                         // 其余结果按表格展示
-                        if (resultList.size > 1)
+                        if (resultList.size > 1) {
                             items(
                                 resultList.size - 1,
                                 key = { resultList[it].id },
@@ -82,6 +81,7 @@ fun SearchResultGrid(
                                     )
                                 }
                             }
+                        }
                     }
                 )
             }

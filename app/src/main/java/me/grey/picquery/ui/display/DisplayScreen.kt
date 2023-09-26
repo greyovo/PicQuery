@@ -6,33 +6,48 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DisplayScreen(
     initialPage: Int,
-    displayViewModel: DisplayViewModel = viewModel()
+    displayViewModel: DisplayViewModel = koinViewModel()
 ) {
-    val photoList = remember { displayViewModel.photoList }
+    val initialized = rememberSaveable { mutableStateOf(false) }
+
+    val photoList = rememberSaveable { displayViewModel.photoList }
     val pagerState = rememberPagerState(
-        initialPage = initialPage,
+        initialPage = 0,
         initialPageOffsetFraction = 0f,
         pageCount = { photoList.size }
     )
-    HorizontalPager(state = pagerState) { index ->
-        ZoomablePagerImage(photo = photoList[index]) {
+    if (!initialized.value) {
+        LaunchedEffect(Unit) {
+            displayViewModel.loadPhotos(initialPage)
+            initialized.value = true
+            pagerState.scrollToPage(initialPage)
+        }
+    }
+    Surface {
+        HorizontalPager(state = pagerState) { index ->
+            ZoomablePagerImage(photo = photoList[index]) {
 
+            }
         }
     }
 }

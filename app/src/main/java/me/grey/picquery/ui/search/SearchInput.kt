@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,10 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.ImageSearch
-import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,7 +35,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
+import me.grey.picquery.domain.ImageSearcher
+import me.grey.picquery.domain.SearchTarget
 import me.grey.picquery.ui.search.SearchFilterBottomSheet
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @InternalTextApi
@@ -105,15 +104,22 @@ fun SearchInput(
 }
 
 @Composable
-fun SearchTargetChip(textStyle: TextStyle) {
+fun SearchTargetChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
     var searchTargetDropdownExpanded by remember { mutableStateOf(false) }
+    val currentTarget = imageSearcher.searchTarget.value
+
     AssistChip(
         border = null,
         onClick = { searchTargetDropdownExpanded = true },
-        label = { Text(text = "搜图片", style = textStyle) },
+        label = {
+            Text(
+                text = stringResource(id = currentTarget.labelResId),
+                style = textStyle
+            )
+        },
         leadingIcon = {
             Icon(
-                imageVector = Icons.Default.ImageSearch,
+                imageVector = currentTarget.icon,
                 contentDescription = null
             )
         },
@@ -128,14 +134,25 @@ fun SearchTargetChip(textStyle: TextStyle) {
     SearchTargetDropdown(
         searchTargetDropdownExpanded,
         onDismissRequest = { searchTargetDropdownExpanded = false },
+        onSelectItem = { target ->
+            imageSearcher.updateTarget(target)
+            searchTargetDropdownExpanded = false
+        }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchRangeChip(textStyle: TextStyle) {
+fun SearchRangeChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
     val sheetState = rememberAppBottomSheetState()
     val scope = rememberCoroutineScope()
+    val range = remember { imageSearcher.searchRange }
+    val searchAll = remember { imageSearcher.isSearchAll }
+
+    val rangeText = if (range.isEmpty() || searchAll.value) {
+        stringResource(id = R.string.all_albums)
+    } else {
+        range.joinToString { it.label }
+    }
 
     AssistChip(
         modifier = Modifier.fillMaxWidth(),
@@ -144,7 +161,7 @@ fun SearchRangeChip(textStyle: TextStyle) {
         onClick = { scope.launch { sheetState.show() } },
         label = {
             Text(
-                text = "Camera, Weixin, Weibo, Favourite",
+                text = rangeText,
                 style = textStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -167,31 +184,49 @@ fun SearchRangeChip(textStyle: TextStyle) {
     SearchFilterBottomSheet(sheetState)
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 @Composable
-fun SearchTargetDropdown(expanded: Boolean, onDismissRequest: () -> Unit) {
+fun SearchTargetDropdown(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onSelectItem: (SearchTarget) -> Unit,
+) {
+    val targets = SearchTarget.values()
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
-        DropdownMenuItem(
-            text = { Text("搜图片") },
-            onClick = { /* Handle TODO! */ },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.ImageSearch,
-                    contentDescription = null
-                )
-            },
-        )
-        DropdownMenuItem(
-            text = { Text("搜文字") },
-            onClick = { /* Handle TODO! */ },
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Translate,
-                    contentDescription = null
-                )
-            },
-        )
+        for (item in targets) {
+            DropdownMenuItem(
+                text = { Text(stringResource(id = item.labelResId)) },
+                onClick = { onSelectItem(item) },
+                leadingIcon = {
+                    Icon(
+                        item.icon,
+                        contentDescription = item.name
+                    )
+                },
+            )
+        }
+//        DropdownMenuItem(
+//            text = { Text("搜图片") },
+//            onClick = { onDismissRequest() },
+//            leadingIcon = {
+//                Icon(
+//                    Icons.Outlined.ImageSearch,
+//                    contentDescription = null
+//                )
+//            },
+//        )
+//        DropdownMenuItem(
+//            text = { Text("搜文字") },
+//            onClick = { /* Handle TODO! */ },
+//            leadingIcon = {
+//                Icon(
+//                    Icons.Outlined.Translate,
+//                    contentDescription = null
+//                )
+//            },
+//        )
     }
 }

@@ -2,26 +2,20 @@ package me.grey.picquery.ui.search
 
 import SearchInput
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.InternalTextApi
-import androidx.compose.ui.unit.dp
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.domain.AlbumManager
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -29,18 +23,27 @@ fun SearchScreen(
     initialQuery: String,
     onClickPhoto: (Photo, Int) -> Unit,
     onBack: () -> Unit,
-    onSearch: (String) -> Unit,
-    searchResult: List<Photo>,
-    searchState: SearchState,
+//    onSearch: (String) -> Unit,
+//    searchResult: List<Photo>,
+//    searchState: SearchState,
+    searchViewModel: SearchViewModel = koinViewModel()
 ) {
-    val queryText = remember { mutableStateOf(initialQuery) }
-    LaunchedEffect(Unit) {
-        onSearch(initialQuery)
+    val queryText = rememberSaveable { mutableStateOf(initialQuery) }
+    val resultList = searchViewModel.resultList.collectAsState()
+    val searchState = searchViewModel.searchState.collectAsState()
+
+    val initialQueryDone = rememberSaveable { mutableStateOf(false) }
+    if (!initialQueryDone.value) {
+        LaunchedEffect(Unit) {
+            searchViewModel.startSearch(initialQuery)
+            initialQueryDone.value = true
+        }
     }
+
     Surface {
         Column() {
             SearchInput(
-                onStartSearch = { onSearch(it) },
+                onStartSearch = { searchViewModel.startSearch(it) },
                 queryText = queryText,
                 leadingIcon = {
                     IconButton(onClick = { onBack() }) {
@@ -52,40 +55,11 @@ fun SearchScreen(
                 }
             )
             SearchResultGrid(
-                resultList = searchResult,
-                state = searchState,
+                resultList = resultList.value,
+                state = searchState.value,
                 onClickPhoto = onClickPhoto
             )
         }
-    }
-}
-
-@Composable
-private fun TopBarActions(
-    albumManager: AlbumManager = koinInject(),
-    searchViewModel: SearchViewModel = koinInject()
-) {
-    val size = Modifier.size(22.dp)
-    IconButton(onClick = { albumManager.openBottomSheet() }) {
-        Icon(
-            modifier = size,
-            imageVector = Icons.Default.AddCircle,
-            contentDescription = null
-        )
-    }
-    IconButton(onClick = { searchViewModel.openFilterBottomSheet() }) {
-        Icon(
-            modifier = size,
-            imageVector = Icons.Rounded.FilterList,
-            contentDescription = null
-        )
-    }
-    IconButton(onClick = { /*TODO*/ }) {
-        Icon(
-            modifier = size,
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = null
-        )
     }
 }
 

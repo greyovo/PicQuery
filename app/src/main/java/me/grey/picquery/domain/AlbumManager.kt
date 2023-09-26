@@ -2,9 +2,9 @@
 
 package me.grey.picquery.domain
 
+import AppBottomSheetState
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -30,7 +30,6 @@ class AlbumManager(
     }
 
     val indexingAlbumState = mutableStateOf(IndexingAlbumState())
-    val isBottomSheetOpen = mutableStateOf(false)
 
     val albumList = mutableStateListOf<Album>()
     val searchableAlbumList = mutableStateListOf<Album>()
@@ -41,12 +40,7 @@ class AlbumManager(
 
     private var initialized = false
 
-    init {
-        Log.d(TAG, "init $TAG")
-    }
-
     suspend fun initAllAlbumList() {
-        Log.d(TAG, this.hashCode().toString())
         if (initialized) return
         withContext(Dispatchers.IO) {
             // 本机中的相册
@@ -140,18 +134,17 @@ class AlbumManager(
         }
     }
 
-    fun openBottomSheet() {
+    suspend fun openBottomSheet(sheetState: AppBottomSheetState) {
         if (indexingAlbumState.value.isBusy) {
             showToast(PicQueryApplication.context.getString(R.string.busy_when_add_album_toast))
             return
         }
-        isBottomSheetOpen.value = true
+        sheetState.show()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    suspend fun closeBottomSheet(sheetState: SheetState) {
+    suspend fun closeBottomSheet(sheetState: AppBottomSheetState) {
         sheetState.hide()
-        isBottomSheetOpen.value = false
     }
 
     fun clearIndexingState() {

@@ -3,8 +3,15 @@ package me.grey.picquery.domain
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ImageSearch
+import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.grey.picquery.R
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.toByteArray
@@ -20,8 +27,9 @@ import java.nio.FloatBuffer
 import java.util.Timer
 import java.util.TimerTask
 
-enum class SearchTarget {
-    Image, Text,
+enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
+    Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
+    Text(R.string.search_target_text, Icons.Outlined.Translate),
 }
 
 class ImageSearcher(
@@ -36,19 +44,20 @@ class ImageSearcher(
         private const val TOP_K = 30
     }
 
+    val searchRange = mutableStateListOf<Album>()
+    var isSearchAll = mutableStateOf(true)
+    var searchTarget = mutableStateOf(SearchTarget.Image)
 
-    val searchRange = mutableListOf<Album>()
-    var isSearchAll = true
-    var searchTarget = SearchTarget.Image
+    val searchResultIds = mutableStateListOf<Long>()
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
         searchRange.clear()
-        searchRange.addAll(range)
-        isSearchAll = searchAll
+        searchRange.addAll(range.sortedByDescending { it.count })
+        isSearchAll.value = searchAll
     }
 
     fun updateTarget(target: SearchTarget) {
-        searchTarget = target
+        searchTarget.value = target
     }
 
     suspend fun hasEmbedding(): Boolean {
@@ -145,7 +154,7 @@ class ImageSearcher(
             val textFeat = textEncoder.encode(text)
             Log.d(TAG, "Encode text: '${text}'")
             val photoResults = mutableListOf<Pair<Long, Double>>()
-            val embeddings = if (range.isEmpty()) {
+            val embeddings = if (range.isEmpty() || isSearchAll.value) {
                 Log.d(TAG, "Search from all album")
                 embeddingRepository.getAll()
             } else {
@@ -164,6 +173,8 @@ class ImageSearcher(
             Log.d(TAG, "Search result: found ${photoResults.size} pics")
             Log.d(TAG, "photoResults: ${photoResults.joinToString()}")
 
+            searchResultIds.clear()
+            searchResultIds.addAll(photoResults.map { it.first })
             return@withContext photoResults.map { it.first }
         }
     }

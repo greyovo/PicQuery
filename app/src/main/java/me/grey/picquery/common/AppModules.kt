@@ -7,6 +7,7 @@ import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
+import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.search.SearchViewModel
 import org.koin.android.ext.koin.androidContext
@@ -25,6 +26,9 @@ private val viewModelModules = module {
             albumManager = get(),
             imageSearcher = get()
         )
+    }
+    viewModel {
+        DisplayViewModel(photoRepository = get(), imageSearcher = get())
     }
 }
 

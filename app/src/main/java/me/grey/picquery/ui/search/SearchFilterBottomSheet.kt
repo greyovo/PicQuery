@@ -21,12 +21,16 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
@@ -41,17 +45,21 @@ fun SearchFilterBottomSheet(
     sheetState: AppBottomSheetState,
     imageSearcher: ImageSearcher = koinInject(),
     albumManager: AlbumManager = koinInject(),
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
 ) {
     val scope = rememberCoroutineScope()
     val candidates = remember { albumManager.searchableAlbumList }
-    val selectedList = mutableListOf<Album>()
-    selectedList.addAll(imageSearcher.searchRange)
-    val searchAll = remember { mutableStateOf(imageSearcher.isSearchAll) }
+    val selectedList = remember { mutableStateListOf<Album>() }
+    selectedList.clear()
+    selectedList.addAll(imageSearcher.searchRange.toList())
+    val searchAll = remember { mutableStateOf(imageSearcher.isSearchAll.value) }
+
+    val canSave = remember {
+        derivedStateOf { searchAll.value || selectedList.isNotEmpty() }
+    }
 
     fun closeFilter() {
-        scope.launch {
-            sheetState.hide()
-        }
+        scope.launch { sheetState.hide() }
     }
 
     fun saveFilter() {
@@ -77,7 +85,10 @@ fun SearchFilterBottomSheet(
                     Text(text = stringResource(R.string.search_range_selection_subtitle))
                 },
                 trailingContent = {
-                    Button(onClick = { saveFilter() }) {
+                    Button(
+                        onClick = { saveFilter() },
+                        enabled = canSave.value
+                    ) {
                         Text(text = stringResource(R.string.finish_button))
                     }
                 }

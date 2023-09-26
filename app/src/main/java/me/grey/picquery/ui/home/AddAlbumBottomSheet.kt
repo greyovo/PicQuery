@@ -1,5 +1,6 @@
 package me.grey.picquery.ui.home
 
+import AppBottomSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,30 +29,33 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.ui.albums.AlbumCard
 import me.grey.picquery.domain.AlbumManager
+import me.grey.picquery.ui.albums.AlbumCard
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAlbumBottomSheet(
+    sheetState: AppBottomSheetState,
     albumManager: AlbumManager = koinInject()
 ) {
-    val openBottomSheet by rememberSaveable { albumManager.isBottomSheetOpen }
-    val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-    if (openBottomSheet) {
+    fun closeSheet() {
+        scope.launch {
+            sheetState.hide()
+        }
+    }
+
+    if (sheetState.isVisible) {
         ModalBottomSheet(
-            onDismissRequest = { scope.launch { albumManager.closeBottomSheet(sheetState) } },
-            sheetState = sheetState,
+            onDismissRequest = { closeSheet() },
+            sheetState = sheetState.sheetState,
         ) {
             val list = remember { albumManager.unsearchableAlbumList }
             if (list.isEmpty()) {
                 EmptyAlbumTips(
-                    onClose = {
-                        scope.launch { albumManager.closeBottomSheet(sheetState) }
-                    },
+                    onClose = { closeSheet() },
                 )
             } else {
                 val selectedList = remember { albumManager.albumsToEncode }
@@ -62,8 +63,7 @@ fun AddAlbumBottomSheet(
                     list, selectedList,
                     onFinish = {
                         // FIXME
-//                        albumViewModel.encodeSelectedAlbums()
-                        scope.launch { albumManager.closeBottomSheet(sheetState) }
+                        closeSheet()
                     },
                     onSelectAll = {
                         albumManager.toggleSelectAllAlbums()

@@ -30,5 +30,8 @@
     <string name="all_albums">全部相册</string>
     <!--  title_activity  -->
     <string name="title_activity_display">查看图片</string>
+    <string name="index_album_btn">索引相册</string>
 
+    <string name="search_target_image">搜图片</string>
+    <string name="search_target_text">搜文字</string>
 </resources>

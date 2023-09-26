@@ -3,7 +3,6 @@ package me.grey.picquery.ui.home
 import LogoRow
 import SearchInput
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +45,7 @@ import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.albums.IndexingAlbumState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import rememberAppBottomSheetState
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -55,29 +55,33 @@ fun HomeScreen(
     navigateToSearch: (String) -> Unit,
     navigateToSetting: () -> Unit,
 ) {
-    /* === Permission handling block === */
+    // === BottomSheet block
+    val appBottomSheetState = rememberAppBottomSheetState()
+    AddAlbumBottomSheet(sheetState = appBottomSheetState)
+    // === BottomSheet end
+
+    // === Permission handling block
     val scope = rememberCoroutineScope()
     val mediaPermissions =
         rememberMultiplePermissionsState(
             permissions = Constants.PERMISSIONS,
             onPermissionsResult = { scope.launch { albumManager.initAllAlbumList() } },
         )
-    LaunchedEffect(key1 = "HomeScreen") {
-        Log.d("HomeScreen", "LaunchedEffect")
+    LaunchedEffect(Unit) {
         if (!mediaPermissions.allPermissionsGranted) {
             mediaPermissions.launchMultiplePermissionRequest()
         } else {
             scope.launch { albumManager.initAllAlbumList() }
         }
     }
-    /* === End of permission handling  === */
+    // === Permission handling end
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             TextButton(
-                onClick = { viewModel.onManageAlbum() },
+                onClick = { scope.launch { appBottomSheetState.show() } },
                 modifier = Modifier.padding(bottom = 20.dp),
             ) {
                 Row(
@@ -86,22 +90,14 @@ fun HomeScreen(
                 ) {
                     Icon(imageVector = Icons.Default.Photo, contentDescription = "")
                     Box(modifier = Modifier.width(5.dp))
-                    Text(text = "索引相册")
+                    Text(text = stringResource(R.string.index_album_btn))
+
                 }
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
         topBar = {
-//            MediumTopAppBar(
-//                title = { LogoRow() },
-//                scrollBehavior = scrollBehavior,
-//                colors = TopAppBarDefaults.mediumTopAppBarColors(
-//                    scrolledContainerColor = MaterialTheme.colorScheme.background
-//                ),
-//                actions = { TopBarActions() },
-//            )
         },
-//        bottomBar = { BottomEncodingProgressBar() }
     ) { it ->
         Column(
             modifier = Modifier
@@ -114,8 +110,10 @@ fun HomeScreen(
             SearchInput(
                 queryText = remember { viewModel.searchText },
                 onStartSearch = { text ->
-                    viewModel.searchText.value = text
-                    navigateToSearch(text)
+                    if (text.isNotEmpty()) {
+                        viewModel.searchText.value = text
+                        navigateToSearch(text)
+                    }
                 },
             )
         }
