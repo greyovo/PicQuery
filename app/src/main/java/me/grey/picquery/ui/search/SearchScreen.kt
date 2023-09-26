@@ -9,11 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.text.InternalTextApi
+import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.data.model.Photo
 import org.koin.androidx.compose.koinViewModel
 
@@ -32,13 +32,17 @@ fun SearchScreen(
     val resultList = searchViewModel.resultList.collectAsState()
     val searchState = searchViewModel.searchState.collectAsState()
 
-    val initialQueryDone = rememberSaveable { mutableStateOf(false) }
-    if (!initialQueryDone.value) {
-        LaunchedEffect(Unit) {
-            searchViewModel.startSearch(initialQuery)
-            initialQueryDone.value = true
-        }
+    InitializeEffect {
+        searchViewModel.startSearch(initialQuery)
     }
+
+//    val initialQueryDone = rememberSaveable { mutableStateOf(false) }
+//    if (!initialQueryDone.value) {
+//        LaunchedEffect(Unit) {
+//            searchViewModel.startSearch(initialQuery)
+//            initialQueryDone.value = true
+//        }
+//    }
 
     Surface {
         Column() {

@@ -1,8 +1,11 @@
 package me.grey.picquery.common
 
-import android.app.AlertDialog
-import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.CoroutineScope
 import me.grey.picquery.PicQueryApplication
 
 private val context
@@ -14,42 +17,14 @@ fun showToast(text: String, longToast: Boolean = false) {
     Toast.makeText(context, text, duration).show()
 }
 
-
-fun showConfirmDialog(
-    context: Context,
-    title: String,
-    message: String,
-    confirmText: String = "确定",
-    cancelText: String = "取消",
-    onConfirm: () -> Unit = {},
-    onCancel: () -> Unit = {},
-) {
-    val dialog = AlertDialog.Builder(context)
-        .setTitle(title)
-        .setMessage(message)
-        .setPositiveButton(confirmText) { dialog, _ ->
-            onConfirm()
-            dialog.dismiss()
+@Composable
+fun InitializeEffect(block: suspend CoroutineScope.() -> Unit) {
+    val initialized = rememberSaveable { mutableStateOf(false) }
+    if (!initialized.value) {
+        LaunchedEffect(Unit) {
+            block.invoke(this)
+            initialized.value = true
         }
-        .setNegativeButton(cancelText) { dialog, _ ->
-            onCancel()
-            dialog.dismiss()
-        }
-        .create()
-
-    dialog.show()
-}
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun rememberAppBottomSheetState(): AppBottomSheetState {
-//    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-//    return rememberSaveable(saver = AppBottomSheetState.Saver()) {
-//        AppBottomSheetState(sheetState)
-//    }
-//}
-
-fun showBottomSelectSheet() {
-
+    }
 }
 

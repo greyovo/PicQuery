@@ -8,14 +8,12 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -28,21 +26,18 @@ fun DisplayScreen(
     initialPage: Int,
     displayViewModel: DisplayViewModel = koinViewModel()
 ) {
-    val initialized = rememberSaveable { mutableStateOf(false) }
 
-    val photoList = rememberSaveable { displayViewModel.photoList }
+    val photoList = remember { displayViewModel.photoList }
     val pagerState = rememberPagerState(
         initialPage = 0,
         initialPageOffsetFraction = 0f,
         pageCount = { photoList.size }
     )
-    if (!initialized.value) {
-        LaunchedEffect(Unit) {
-            displayViewModel.loadPhotos(initialPage)
-            initialized.value = true
-            pagerState.scrollToPage(initialPage)
-        }
+    InitializeEffect {
+        displayViewModel.loadPhotos(initialPage)
+        pagerState.scrollToPage(initialPage)
     }
+
     Surface {
         HorizontalPager(state = pagerState) { index ->
             ZoomablePagerImage(photo = photoList[index]) {

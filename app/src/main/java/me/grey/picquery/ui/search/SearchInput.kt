@@ -59,11 +59,6 @@ fun SearchInput(
         keyboard?.hide()
     }
 
-
-//    // BottomSheet or Dialogs
-//    AddAlbumBottomSheet(albumViewModel)
-//    SearchFilterBottomSheet(searchViewModel)
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,7 +179,6 @@ fun SearchRangeChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInj
     SearchFilterBottomSheet(sheetState)
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 @Composable
 fun SearchTargetDropdown(
     expanded: Boolean,
@@ -208,25 +202,5 @@ fun SearchTargetDropdown(
                 },
             )
         }
-//        DropdownMenuItem(
-//            text = { Text("搜图片") },
-//            onClick = { onDismissRequest() },
-//            leadingIcon = {
-//                Icon(
-//                    Icons.Outlined.ImageSearch,
-//                    contentDescription = null
-//                )
-//            },
-//        )
-//        DropdownMenuItem(
-//            text = { Text("搜文字") },
-//            onClick = { /* Handle TODO! */ },
-//            leadingIcon = {
-//                Icon(
-//                    Icons.Outlined.Translate,
-//                    contentDescription = null
-//                )
-//            },
-//        )
     }
 }
