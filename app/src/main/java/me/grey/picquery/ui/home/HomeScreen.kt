@@ -42,33 +42,32 @@ import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants
 import me.grey.picquery.common.calculateRemainingTime
-import me.grey.picquery.ui.albums.AlbumViewModel
+import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.albums.IndexingAlbumState
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel(),
+    albumManager: AlbumManager = koinInject(),
     navigateToSearch: (String) -> Unit,
-    onInitAllAlbumList: suspend () -> Unit,
     navigateToSetting: () -> Unit,
-    onManageAlbum: () -> Unit,
-    onSelectSearchTarget: () -> Unit,
-    onSelectSearchRange: () -> Unit,
 ) {
     /* === Permission handling block === */
     val scope = rememberCoroutineScope()
     val mediaPermissions =
         rememberMultiplePermissionsState(
             permissions = Constants.PERMISSIONS,
-            onPermissionsResult = { scope.launch { onInitAllAlbumList() } },
+            onPermissionsResult = { scope.launch { albumManager.initAllAlbumList() } },
         )
-    LaunchedEffect(key1="HomeScreen") {
+    LaunchedEffect(key1 = "HomeScreen") {
         Log.d("HomeScreen", "LaunchedEffect")
         if (!mediaPermissions.allPermissionsGranted) {
             mediaPermissions.launchMultiplePermissionRequest()
         } else {
-            scope.launch { onInitAllAlbumList() }
+            scope.launch { albumManager.initAllAlbumList() }
         }
     }
     /* === End of permission handling  === */
@@ -78,7 +77,7 @@ fun HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             TextButton(
-                onClick = { onManageAlbum() },
+                onClick = { viewModel.onManageAlbum() },
                 modifier = Modifier.padding(bottom = 20.dp),
             ) {
                 Row(
@@ -113,9 +112,11 @@ fun HomeScreen(
         ) {
             LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
             SearchInput(
-                onStartSearch = { text -> navigateToSearch(text) },
-                onSelectSearchTarget = onSelectSearchTarget,
-                onSelectSearchRange = onSelectSearchRange,
+                queryText = remember { viewModel.searchText },
+                onStartSearch = { text ->
+                    viewModel.searchText.value = text
+                    navigateToSearch(text)
+                },
             )
         }
     }
@@ -125,15 +126,15 @@ fun HomeScreen(
 
 @Composable
 private fun BottomEncodingProgressBar(
-    albumViewModel: AlbumViewModel = koinInject(),
+    albumManager: AlbumManager = koinInject(),
 ) {
-    val state by remember { albumViewModel.indexingAlbumState }
+    val state by remember { albumManager.indexingAlbumState }
     var progress = (state.current.toDouble() / state.total).toFloat()
     if (progress.isNaN()) progress = 0.0f
     val finished = state.status == IndexingAlbumState.Status.Finish
 
     fun onClickOk() {
-        albumViewModel.clearIndexingState()
+        albumManager.clearIndexingState()
     }
 
     AnimatedVisibility(visible = state.status != IndexingAlbumState.Status.None) {

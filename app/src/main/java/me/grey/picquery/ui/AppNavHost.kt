@@ -19,12 +19,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.launch
 import me.grey.picquery.ui.Animation.navigateInAnimation
 import me.grey.picquery.ui.Animation.navigateUpAnimation
-import me.grey.picquery.ui.albums.AlbumViewModel
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
 import me.grey.picquery.ui.search.SearchScreen
 import me.grey.picquery.ui.search.SearchViewModel
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppNavHost(
@@ -34,10 +33,7 @@ fun AppNavHost(
 ) {
 //    val albumViewModel: AlbumViewModel =
 //        viewModel(viewModelStoreOwner = LocalContext.current as FragmentActivity)
-//    val searchViewModel: SearchViewModel = viewModel()
 
-    val searchViewModel: SearchViewModel = koinInject()
-    val albumViewModel: AlbumViewModel = koinInject()
 
     NavHost(
         navController,
@@ -54,14 +50,11 @@ fun AppNavHost(
                     navController.navigate("${Routes.Search.name}/${query}")
                 },
                 navigateToSetting = { /* TODO */ },
-                onInitAllAlbumList = albumViewModel::initAllAlbumList,
-                onManageAlbum = { albumViewModel.openBottomSheet() },
-                onSelectSearchTarget = { /* TODO */ },
-                onSelectSearchRange = searchViewModel::openFilterBottomSheet,
             )
         }
         composable("${Routes.Search.name}/{query}") {
             val queryText = it.arguments?.getString("query") ?: ""
+            val searchViewModel: SearchViewModel = koinViewModel()
             val resultList = searchViewModel.resultList.collectAsState()
             val searchState = searchViewModel.searchState.collectAsState()
 
@@ -76,8 +69,6 @@ fun AppNavHost(
 //                    viewModel.displayPhotoFullscreen(context, index, resultList[index])
                 },
                 onSearch = { text -> scope.launch { searchViewModel.startSearch(text) } },
-                onSelectSearchTarget = { /*TODO*/ },
-                onSelectSearchRange = { searchViewModel.openFilterBottomSheet() },
                 searchResult = resultList.value,
                 searchState = searchState.value
             )

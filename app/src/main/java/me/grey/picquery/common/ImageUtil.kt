@@ -9,7 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
+import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
 import java.io.*
 
 @Throws(IOException::class)

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package me.grey.picquery.ui.albums
+package me.grey.picquery.domain
 
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,14 +14,17 @@ import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
-import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
+import me.grey.picquery.ui.albums.IndexingAlbumState
 import org.koin.java.KoinJavaComponent.inject
 
-class AlbumViewModel {
+class AlbumManager(
+    private val albumRepository: AlbumRepository,
+    private val photoRepository : PhotoRepository
+) {
     companion object {
         private const val TAG = "AlbumViewModel"
     }
@@ -34,9 +37,6 @@ class AlbumViewModel {
     val unsearchableAlbumList = mutableStateListOf<Album>()
     val albumsToEncode = mutableStateListOf<Album>()
 
-    private val albumRepository = AlbumRepository(PicQueryApplication.context.contentResolver)
-    private val photoRepository = PhotoRepository(PicQueryApplication.context.contentResolver)
-
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
     private var initialized = false
@@ -44,7 +44,6 @@ class AlbumViewModel {
     init {
         Log.d(TAG, "init $TAG")
     }
-
 
     suspend fun initAllAlbumList() {
         Log.d(TAG, this.hashCode().toString())
@@ -54,7 +53,6 @@ class AlbumViewModel {
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
             Log.d(TAG, "ALL albums: ${albums.size}")
-
 //            // 从数据库中检索已经索引的相册
 //            // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
 //            val searchable =
@@ -63,7 +61,7 @@ class AlbumViewModel {
 //            // 从全部相册减去已经索引的ID，就是未索引的相册
 //            val unsearchable = albums.filter { !searchable.contains(it) }
 //            unsearchableAlbumList.addAll(unsearchable)
-            this@AlbumViewModel.initialized = true
+            this@AlbumManager.initialized = true
             initDataFlow()
         }
     }
@@ -106,6 +104,7 @@ class AlbumViewModel {
             albumsToEncode.clear()
         }
     }
+
     val imageSearcher: ImageSearcher by inject(ImageSearcher::class.java)
 
     private suspend fun encodeAlbums(albums: List<Album>) {

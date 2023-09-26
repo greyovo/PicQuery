@@ -1,41 +1,55 @@
-package me.grey.picquery.core
+package me.grey.picquery.domain
 
+import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
-import me.grey.picquery.core.encoder.IMAGE_INPUT_SIZE
-import me.grey.picquery.core.encoder.ImageEncoder
-import me.grey.picquery.core.encoder.TextEncoder
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
-import org.koin.java.KoinJavaComponent
+import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
+import me.grey.picquery.domain.encoder.ImageEncoder
+import me.grey.picquery.domain.encoder.TextEncoder
 import java.nio.FloatBuffer
 import java.util.Timer
 import java.util.TimerTask
 
+enum class SearchTarget {
+    Image, Text,
+}
 
-class ImageSearcher {
+class ImageSearcher(
+    private val imageEncoder: ImageEncoder,
+    private val textEncoder: TextEncoder,
+    private val embeddingRepository: EmbeddingRepository,
+    private val contentResolver: ContentResolver
+) {
     companion object {
         private const val TAG = "ImageSearcher"
         private const val MATCH_THRESHOLD = 0.25
         private const val TOP_K = 30
     }
 
-    private var embeddingRepository = EmbeddingRepository()
 
-    private val imageEncoder: ImageEncoder by KoinJavaComponent.inject(ImageEncoder::class.java)
-    private val textEncoder: TextEncoder by KoinJavaComponent.inject(TextEncoder::class.java)
+    val searchRange = mutableListOf<Album>()
+    var isSearchAll = true
+    var searchTarget = SearchTarget.Image
 
+    fun updateRange(range: List<Album>, searchAll: Boolean) {
+        searchRange.clear()
+        searchRange.addAll(range)
+        isSearchAll = searchAll
+    }
 
-    private val contentResolver = PicQueryApplication.context.contentResolver
+    fun updateTarget(target: SearchTarget) {
+        searchTarget = target
+    }
 
     suspend fun hasEmbedding(): Boolean {
         return withContext(Dispatchers.IO) {
@@ -44,8 +58,6 @@ class ImageSearcher {
             total > 0
         }
     }
-
-
 
     private var encodingLock = false
     private var searchingLock = false
@@ -124,7 +136,7 @@ class ImageSearcher {
     }
 
 
-    suspend fun search(text: String, range: List<Album> = emptyList()): List<Long>? {
+    suspend fun search(text: String, range: List<Album> = searchRange): List<Long>? {
         return withContext(Dispatchers.Default) {
             if (searchingLock) {
                 return@withContext null

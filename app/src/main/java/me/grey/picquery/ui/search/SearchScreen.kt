@@ -14,14 +14,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.ui.albums.AlbumViewModel
+import me.grey.picquery.domain.AlbumManager
 import org.koin.compose.koinInject
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
@@ -30,13 +29,11 @@ fun SearchScreen(
     initialQuery: String,
     onClickPhoto: (Photo, Int) -> Unit,
     onBack: () -> Unit,
-    onSelectSearchTarget: () -> Unit,
-    onSelectSearchRange: () -> Unit,
     onSearch: (String) -> Unit,
     searchResult: List<Photo>,
     searchState: SearchState,
 ) {
-    val queryText by remember { mutableStateOf(initialQuery) }
+    val queryText = remember { mutableStateOf(initialQuery) }
     LaunchedEffect(Unit) {
         onSearch(initialQuery)
     }
@@ -45,8 +42,6 @@ fun SearchScreen(
             SearchInput(
                 onStartSearch = { onSearch(it) },
                 queryText = queryText,
-                onSelectSearchRange = onSelectSearchRange,
-                onSelectSearchTarget = onSelectSearchTarget,
                 leadingIcon = {
                     IconButton(onClick = { onBack() }) {
                         Icon(
@@ -67,11 +62,11 @@ fun SearchScreen(
 
 @Composable
 private fun TopBarActions(
-    albumViewModel: AlbumViewModel = koinInject(),
+    albumManager: AlbumManager = koinInject(),
     searchViewModel: SearchViewModel = koinInject()
 ) {
     val size = Modifier.size(22.dp)
-    IconButton(onClick = { albumViewModel.openBottomSheet() }) {
+    IconButton(onClick = { albumManager.openBottomSheet() }) {
         Icon(
             modifier = size,
             imageVector = Icons.Default.AddCircle,

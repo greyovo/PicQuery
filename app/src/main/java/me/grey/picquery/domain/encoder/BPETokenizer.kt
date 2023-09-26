@@ -1,4 +1,4 @@
-package me.grey.picquery.core.encoder
+package me.grey.picquery.domain.encoder
 
 import android.content.Context
 import me.grey.picquery.common.assetFilePath

@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,12 +15,12 @@ import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
-import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
+import me.grey.picquery.domain.AlbumManager
+import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.ui.DisplayActivity
-import org.koin.java.KoinJavaComponent.inject
 
 enum class SearchState {
     NO_INDEX, // 没有索引
@@ -29,7 +30,10 @@ enum class SearchState {
     FINISHED,  // 搜索已完成
 }
 
-class SearchViewModel {
+class SearchViewModel(
+    private val imageSearcher: ImageSearcher,
+    private val albumManager: AlbumManager,
+) : ViewModel() {
     companion object {
         private const val TAG = "SearchResultViewModel"
     }
@@ -44,7 +48,6 @@ class SearchViewModel {
     val isSearchRangeAll = mutableStateOf(true)
     val searchRange = mutableStateListOf<Album>()
 
-    private val imageSearcher: ImageSearcher by inject(ImageSearcher::class.java)
 
     private val context: Context
         get() {

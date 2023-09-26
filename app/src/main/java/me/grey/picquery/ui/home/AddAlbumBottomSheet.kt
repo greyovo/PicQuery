@@ -32,44 +32,44 @@ import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.albums.AlbumCard
-import me.grey.picquery.ui.albums.AlbumViewModel
+import me.grey.picquery.domain.AlbumManager
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAlbumBottomSheet(
-    albumViewModel: AlbumViewModel = koinInject()
+    albumManager: AlbumManager = koinInject()
 ) {
-    val openBottomSheet by rememberSaveable { albumViewModel.isBottomSheetOpen }
+    val openBottomSheet by rememberSaveable { albumManager.isBottomSheetOpen }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
     if (openBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { scope.launch { albumViewModel.closeBottomSheet(sheetState) } },
+            onDismissRequest = { scope.launch { albumManager.closeBottomSheet(sheetState) } },
             sheetState = sheetState,
         ) {
-            val list = remember { albumViewModel.unsearchableAlbumList }
+            val list = remember { albumManager.unsearchableAlbumList }
             if (list.isEmpty()) {
                 EmptyAlbumTips(
                     onClose = {
-                        scope.launch { albumViewModel.closeBottomSheet(sheetState) }
+                        scope.launch { albumManager.closeBottomSheet(sheetState) }
                     },
                 )
             } else {
-                val selectedList = remember { albumViewModel.albumsToEncode }
+                val selectedList = remember { albumManager.albumsToEncode }
                 AlbumSelectionList(
                     list, selectedList,
                     onFinish = {
                         // FIXME
 //                        albumViewModel.encodeSelectedAlbums()
-                        scope.launch { albumViewModel.closeBottomSheet(sheetState) }
+                        scope.launch { albumManager.closeBottomSheet(sheetState) }
                     },
                     onSelectAll = {
-                        albumViewModel.toggleSelectAllAlbums()
+                        albumManager.toggleSelectAllAlbums()
                     },
                     onSelectItem = {
-                        albumViewModel.toggleAlbumSelection(it)
+                        albumManager.toggleAlbumSelection(it)
                     }
                 )
             }

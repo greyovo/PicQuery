@@ -1,3 +1,4 @@
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +45,7 @@ import me.grey.picquery.ui.search.SearchFilterBottomSheet
 @InternalTextApi
 @Composable
 fun SearchInput(
-    queryText: String = "",
+    queryText: MutableState<String>,
     leadingIcon: @Composable (() -> Unit) = {
         Icon(
             Icons.Default.Search,
@@ -51,13 +53,10 @@ fun SearchInput(
         )
     },
     onStartSearch: (String) -> Unit,
-    onSelectSearchTarget: () -> Unit,
-    onSelectSearchRange: () -> Unit,
 ) {
-    val text = remember { mutableStateOf(queryText) }
     val keyboard = LocalSoftwareKeyboardController.current
     fun searchAction() {
-        onStartSearch(text.value)
+        onStartSearch(queryText.value)
         keyboard?.hide()
     }
 
@@ -72,17 +71,17 @@ fun SearchInput(
             .padding(horizontal = 14.dp)
     ) {
         SearchBar(
-            query = text.value,
-            onQueryChange = { text.value = it },
+            query = queryText.value,
+            onQueryChange = { queryText.value = it },
             onSearch = { searchAction() },
             active = false,
             onActiveChange = { },
             placeholder = { Text(stringResource(R.string.search_placeholder)) },
             leadingIcon = leadingIcon,
             trailingIcon = {
-                if (text.value.isNotEmpty()) {
+                if (queryText.value.isNotEmpty()) {
                     IconButton(onClick = {
-                        text.value = ""
+                        queryText.value = ""
                         keyboard?.show()
                     }) {
                         Icon(Icons.Default.Clear, contentDescription = null)
@@ -100,7 +99,7 @@ fun SearchInput(
                     .height(20.dp)
                     .padding(horizontal = 15.dp)
             )
-            SearchRangeChip(onClick = onSelectSearchRange, textStyle = textStyle)
+            SearchRangeChip(textStyle = textStyle)
         }
     }
 }
@@ -134,7 +133,7 @@ fun SearchTargetChip(textStyle: TextStyle) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchRangeChip(onClick: () -> Unit, textStyle: TextStyle) {
+fun SearchRangeChip(textStyle: TextStyle) {
     val sheetState = rememberAppBottomSheetState()
     val scope = rememberCoroutineScope()
 
