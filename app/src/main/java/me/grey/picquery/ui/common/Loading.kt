@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.widgets
+package me.grey.picquery.ui.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

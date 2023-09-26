@@ -9,13 +9,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kotlinx.coroutines.launch
 import me.grey.picquery.ui.Animation.navigateInAnimation
 import me.grey.picquery.ui.Animation.navigateUpAnimation
 import me.grey.picquery.ui.albums.AlbumViewModel
@@ -23,15 +24,20 @@ import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
 import me.grey.picquery.ui.search.SearchScreen
 import me.grey.picquery.ui.search.SearchViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Routes.Home.name
+    startDestination: String = Routes.Home.name,
 ) {
-    val albumViewModel: AlbumViewModel = viewModel()
-    val searchViewModel: SearchViewModel = viewModel()
+//    val albumViewModel: AlbumViewModel =
+//        viewModel(viewModelStoreOwner = LocalContext.current as FragmentActivity)
+//    val searchViewModel: SearchViewModel = viewModel()
+
+    val searchViewModel: SearchViewModel = koinInject()
+    val albumViewModel: AlbumViewModel = koinInject()
 
     NavHost(
         navController,
@@ -47,10 +53,10 @@ fun AppNavHost(
                 navigateToSearch = { query ->
                     navController.navigate("${Routes.Search.name}/${query}")
                 },
-                navigateToSetting = { /*TODO*/ },
+                navigateToSetting = { /* TODO */ },
                 onInitAllAlbumList = albumViewModel::initAllAlbumList,
                 onManageAlbum = { albumViewModel.openBottomSheet() },
-                onSelectSearchTarget = { /*TODO*/ },
+                onSelectSearchTarget = { /* TODO */ },
                 onSelectSearchRange = searchViewModel::openFilterBottomSheet,
             )
         }
@@ -58,6 +64,8 @@ fun AppNavHost(
             val queryText = it.arguments?.getString("query") ?: ""
             val resultList = searchViewModel.resultList.collectAsState()
             val searchState = searchViewModel.searchState.collectAsState()
+
+            val scope = rememberCoroutineScope()
 
             SearchScreen(
                 initialQuery = queryText,
@@ -67,7 +75,7 @@ fun AppNavHost(
                     navController.navigate("${Routes.Display.name}/${index}")
 //                    viewModel.displayPhotoFullscreen(context, index, resultList[index])
                 },
-                onSearch = { text -> searchViewModel.startSearch(text) },
+                onSearch = { text -> scope.launch { searchViewModel.startSearch(text) } },
                 onSelectSearchTarget = { /*TODO*/ },
                 onSelectSearchRange = { searchViewModel.openFilterBottomSheet() },
                 searchResult = resultList.value,

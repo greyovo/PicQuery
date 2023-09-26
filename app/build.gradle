@@ -130,6 +130,11 @@ dependencies {
     implementation 'net.engawapg.lib:zoomable:1.5.0'
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 
+    def koin_android_compose_version = "3.5.0"
+    def koin_android_compose_navigation_version = "3.5.0"
+    implementation "io.insert-koin:koin-androidx-compose:$koin_android_compose_version"
+    implementation "io.insert-koin:koin-androidx-compose-navigation:$koin_android_compose_navigation_version"
+
     def accompanist_version = "0.32.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"

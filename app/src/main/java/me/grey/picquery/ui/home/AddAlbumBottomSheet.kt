@@ -1,4 +1,4 @@
-package me.grey.picquery.ui.albums
+package me.grey.picquery.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,15 +28,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
+import me.grey.picquery.ui.albums.AlbumCard
+import me.grey.picquery.ui.albums.AlbumViewModel
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAlbumBottomSheet(
-    albumViewModel: AlbumViewModel = viewModel()
+    albumViewModel: AlbumViewModel = koinInject()
 ) {
     val openBottomSheet by rememberSaveable { albumViewModel.isBottomSheetOpen }
     val sheetState = rememberModalBottomSheetState()
@@ -59,7 +61,8 @@ fun AddAlbumBottomSheet(
                 AlbumSelectionList(
                     list, selectedList,
                     onFinish = {
-                        albumViewModel.encodeSelectedAlbums()
+                        // FIXME
+//                        albumViewModel.encodeSelectedAlbums()
                         scope.launch { albumViewModel.closeBottomSheet(sheetState) }
                     },
                     onSelectAll = {

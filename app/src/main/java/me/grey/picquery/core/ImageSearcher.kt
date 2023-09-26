@@ -16,20 +16,24 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
+import org.koin.java.KoinJavaComponent
 import java.nio.FloatBuffer
 import java.util.Timer
 import java.util.TimerTask
 
 
-object ImageSearcher {
+class ImageSearcher {
+    companion object {
+        private const val TAG = "ImageSearcher"
+        private const val MATCH_THRESHOLD = 0.25
+        private const val TOP_K = 30
+    }
+
     private var embeddingRepository = EmbeddingRepository()
 
-    private var imageEncoder: ImageEncoder? = null
-    private var textEncoder: TextEncoder? = null
+    private val imageEncoder: ImageEncoder by KoinJavaComponent.inject(ImageEncoder::class.java)
+    private val textEncoder: TextEncoder by KoinJavaComponent.inject(TextEncoder::class.java)
 
-    private const val TAG = "ImageSearcher"
-    private const val MATCH_THRESHOLD = 0.25
-    private const val TOP_K = 30
 
     private val contentResolver = PicQueryApplication.context.contentResolver
 
@@ -41,27 +45,15 @@ object ImageSearcher {
         }
     }
 
-    private fun loadImageEncoder() {
-        if (imageEncoder == null) {
-            imageEncoder = ImageEncoder
-        }
-    }
 
-    private fun loadTextEncoder() {
-        if (textEncoder == null) {
-            textEncoder = TextEncoder
-        }
-    }
 
     private var encodingLock = false
     private var searchingLock = false
 
-    fun encodePhotoList(
+    suspend fun encodePhotoList(
         photos: List<Photo>,
         progressCallback: encodeProgressCallback? = null
     ): Boolean {
-        loadImageEncoder()
-
         if (encodingLock) {
             Log.w(TAG, "encodePhotoList: Already encoding!")
             return false
@@ -94,7 +86,7 @@ object ImageSearcher {
             startTime = System.currentTimeMillis()
             val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
 //            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
-            val feat: FloatBuffer = imageEncoder!!.encode(thumbnailBitmap)
+            val feat: FloatBuffer = imageEncoder.encode(thumbnailBitmap)
             listToUpdate.add(
                 Embedding(
                     photoId = photo.id,
@@ -116,8 +108,7 @@ object ImageSearcher {
         return true
     }
 
-    fun encodeBatch(imageBitmaps: List<Bitmap>) {
-        loadImageEncoder()
+    suspend fun encodeBatch(imageBitmaps: List<Bitmap>) {
         if (encodingLock) {
             Log.w(TAG, "encodePhotoList: Already encoding!")
             return
@@ -125,7 +116,7 @@ object ImageSearcher {
         encodingLock = true
         val batchResult = mutableListOf<Embedding>()
         for (bitmap in imageBitmaps) {
-            val feat: FloatBuffer = imageEncoder!!.encode(bitmap)
+            val feat: FloatBuffer = imageEncoder.encode(bitmap)
             batchResult.add(Embedding(photoId = 11, albumId = 11, data = feat.toByteArray()))
         }
         embeddingRepository.updateAll(batchResult)
@@ -135,12 +126,11 @@ object ImageSearcher {
 
     suspend fun search(text: String, range: List<Album> = emptyList()): List<Long>? {
         return withContext(Dispatchers.Default) {
-            loadTextEncoder()
             if (searchingLock) {
                 return@withContext null
             }
             searchingLock = true
-            val textFeat = textEncoder!!.encode(text)
+            val textFeat = textEncoder.encode(text)
             Log.d(TAG, "Encode text: '${text}'")
             val photoResults = mutableListOf<Pair<Long, Double>>()
             val embeddings = if (range.isEmpty()) {

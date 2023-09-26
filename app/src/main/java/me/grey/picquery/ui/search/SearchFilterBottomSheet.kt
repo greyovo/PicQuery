@@ -28,18 +28,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
+import me.grey.picquery.core.ImageSearcher
 import me.grey.picquery.ui.albums.AlbumViewModel
-import me.grey.picquery.ui.albums.EmptyAlbumTips
+import me.grey.picquery.ui.home.EmptyAlbumTips
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchFilterBottomSheet(
     sheetState: AppBottomSheetState,
-    searchViewModel: SearchViewModel = viewModel(),
-    albumViewModel: AlbumViewModel = viewModel()
+    searchViewModel: SearchViewModel = koinInject(),
+    albumViewModel: AlbumViewModel = koinInject(),
+    imageSearcher: ImageSearcher = koinInject()
 ) {
     val open by rememberSaveable { searchViewModel.isFilterOpen }
 //    val sheetState = rememberModalBottomSheetState()
@@ -107,8 +109,8 @@ fun SearchFilterBottomSheet(
 @Composable
 private fun SearchAbleAlbums(
     enabled: Boolean,
-    albumViewModel: AlbumViewModel = viewModel(),
-    searchViewModel: SearchViewModel = viewModel()
+    albumViewModel: AlbumViewModel = koinInject(),
+    searchViewModel: SearchViewModel = koinInject()
 ) {
     val searchRange = remember { searchViewModel.searchRange }
     val all = remember { albumViewModel.searchableAlbumList }

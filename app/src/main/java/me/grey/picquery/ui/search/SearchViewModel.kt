@@ -7,12 +7,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
@@ -21,6 +19,7 @@ import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.DisplayActivity
+import org.koin.java.KoinJavaComponent.inject
 
 enum class SearchState {
     NO_INDEX, // 没有索引
@@ -30,7 +29,7 @@ enum class SearchState {
     FINISHED,  // 搜索已完成
 }
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel {
     companion object {
         private const val TAG = "SearchResultViewModel"
     }
@@ -45,7 +44,7 @@ class SearchViewModel : ViewModel() {
     val isSearchRangeAll = mutableStateOf(true)
     val searchRange = mutableStateListOf<Album>()
 
-    val searchActive = mutableStateOf(false)
+    private val imageSearcher: ImageSearcher by inject(ImageSearcher::class.java)
 
     private val context: Context
         get() {
@@ -57,30 +56,20 @@ class SearchViewModel : ViewModel() {
     private var initialized = false
 
     init {
-        Log.d(TAG, "init!!!")
-//        if (!initialized) {
-//            viewModelScope.launch {
-//                if (ImageSearcher.hasEmbedding()) {
-//                    _searchState.value = SearchState.READY
-//                } else {
-//                    _searchState.value = SearchState.NO_INDEX
-//                }
-//                initialized = true
-//            }
-//        }
+        Log.d(TAG, "init!!! SearchViewModel")
     }
 
 
-    fun startSearch(text: String) {
+    suspend fun startSearch(text: String) {
         if (text.trim().isEmpty()) {
             showToast(context.getString(R.string.empty_search_content_toast))
             Log.w(TAG, "搜索字段为空")
             return
         }
         searchText.value = text
-        viewModelScope.launch(Dispatchers.IO) {
+        withContext(Dispatchers.Default) {
             _searchState.value = SearchState.SEARCHING
-            val ids = ImageSearcher.search(text, range = searchRange.toList())
+            val ids = imageSearcher.search(text)
             if (ids != null) {
                 _resultList.value = repo.getPhotoListByIds(ids)
             }

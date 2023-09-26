@@ -11,6 +11,7 @@ import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.albums.AlbumViewModel
+import org.koin.compose.koinInject
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -39,34 +40,35 @@ fun SearchScreen(
     LaunchedEffect(Unit) {
         onSearch(initialQuery)
     }
-    Column() {
-        SearchInput(
-            onStartSearch = { onSearch(it) },
-            queryText = queryText,
-            onSelectSearchRange = onSelectSearchRange,
-            onSelectSearchTarget = onSelectSearchTarget,
-            leadingIcon = {
-                IconButton(onClick = { onBack() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "back",
-                    )
+    Surface {
+        Column() {
+            SearchInput(
+                onStartSearch = { onSearch(it) },
+                queryText = queryText,
+                onSelectSearchRange = onSelectSearchRange,
+                onSelectSearchTarget = onSelectSearchTarget,
+                leadingIcon = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "back",
+                        )
+                    }
                 }
-            }
-        )
-        SearchResultGrid(
-            resultList = searchResult,
-            state = searchState,
-            onClickPhoto = onClickPhoto
-        )
+            )
+            SearchResultGrid(
+                resultList = searchResult,
+                state = searchState,
+                onClickPhoto = onClickPhoto
+            )
+        }
     }
-
 }
 
 @Composable
 private fun TopBarActions(
-    albumViewModel: AlbumViewModel = viewModel(),
-    searchViewModel: SearchViewModel = viewModel()
+    albumViewModel: AlbumViewModel = koinInject(),
+    searchViewModel: SearchViewModel = koinInject()
 ) {
     val size = Modifier.size(22.dp)
     IconButton(onClick = { albumViewModel.openBottomSheet() }) {

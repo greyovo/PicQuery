@@ -1,9 +1,9 @@
 package me.grey.picquery.common
 
 import kotlin.math.acos
+import kotlin.math.asin
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.math.asin
 
 fun calculateSimilarity(vectorA: FloatArray, vectorB: FloatArray): Double {
     var dotProduct = 0.0
@@ -42,37 +42,6 @@ fun calculateSphericalDistanceLoss(vector1: FloatArray, vector2: FloatArray): Do
     val distanceLoss = acos(cosineSimilarity)
 
     return distanceLoss
-}
-
-// Copy from:
-// https://github.com/aallam/openai-kotlin/blob/main/openai-client/src/commonMain/kotlin/com.aallam.openai.client/extension/internal/CosineSimilarity.kt
-internal object Cosine {
-
-    /**
-     * Compute similarity between two [FloatArray] vectors.
-     */
-    fun similarity(vec1: FloatArray, vec2: FloatArray): Double {
-        if (vec1.contentEquals(vec2)) return 1.0
-        return (vec1 dot vec2) / (norm(vec1) * norm(vec2))
-    }
-
-    /**
-     * Compute distance between two [Double] vectors.
-     */
-    fun distance(vec1: FloatArray, vec2: FloatArray): Double {
-        return 1.0F - similarity(vec1, vec2)
-    }
-
-    /** Dot product */
-    private infix fun FloatArray.dot(vector: FloatArray): Double {
-        return zip(vector).fold(0.0) { acc, (i, j) -> acc + (i * j) }
-    }
-
-    /** Compute the norm L2 : sqrt(sum(v²)). */
-    private fun norm(vector: FloatArray): Double {
-        val sum = vector.fold(0.0) { acc, cur -> acc + cur.toDouble().pow(2.0) }
-        return sqrt(sum)
-    }
 }
 
 

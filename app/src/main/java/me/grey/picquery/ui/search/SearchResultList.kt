@@ -29,7 +29,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.ui.widgets.CentralLoadingProgressBar
+import me.grey.picquery.ui.common.CentralLoadingProgressBar
 import java.io.File
 
 

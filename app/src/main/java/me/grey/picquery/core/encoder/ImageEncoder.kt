@@ -4,24 +4,27 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.graphics.Bitmap
-import android.util.Log
 import android.util.Size
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.bitmapToFloatBuffer
 import java.nio.FloatBuffer
-import java.util.*
+import java.util.Collections
 
 private val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
 private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
 
 val IMAGE_INPUT_SIZE = Size(224, 224)
 
-object ImageEncoder {
+class ImageEncoder {
     //        private const val modelPath = "clip-image-encoder-quant-int8.onnx"
-    private const val modelPath = "clip-image-encoder-quant-int8.with_runtime_opt.ort"
+    companion object {
+        private const val modelPath = "clip-image-encoder-quant-int8.with_runtime_opt.ort"
+    }
 //    private const val modelPath = "clip-image-encoder.onnx"
 
     private var ortSession: OrtSession? = null
@@ -83,7 +86,7 @@ object ImageEncoder {
         return res
     }
 
-    fun encode(bitmap: Bitmap): FloatBuffer {
+    suspend fun encode(bitmap: Bitmap) = withContext<FloatBuffer>(Dispatchers.Default) {
         val imgData = preprocess(bitmap)
 //        saveBitMap(context, imgData, "decodeSampledBitmapFromFile")
         val start = System.currentTimeMillis()
@@ -111,18 +114,12 @@ object ImageEncoder {
         val env = OrtEnvironment.getEnvironment()
         env.use {
             val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
-            tensor.use {
-                val start2 = System.currentTimeMillis()
-                val output: OrtSession.Result? =
-                    ortSession?.run(Collections.singletonMap(inputName, tensor))
-                Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
-                output.use {
-                    val resultBuffer = output?.get(0) as OnnxTensor
-                    return (resultBuffer.floatBuffer)
-                }
-            }
+//            val start2 = System.currentTimeMillis()
+            val output: OrtSession.Result? =
+                ortSession?.run(Collections.singletonMap(inputName, tensor))
+//            Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
+            val resultBuffer = output?.get(0) as OnnxTensor
+            return@withContext (resultBuffer.floatBuffer)
         }
     }
-
-
 }

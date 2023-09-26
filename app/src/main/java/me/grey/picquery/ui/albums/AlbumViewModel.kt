@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package me.grey.picquery.ui.albums
 
 import android.util.Log
@@ -5,11 +7,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
@@ -18,15 +19,15 @@ import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
+import org.koin.java.KoinJavaComponent.inject
 
-class AlbumViewModel : ViewModel() {
+class AlbumViewModel {
     companion object {
         private const val TAG = "AlbumViewModel"
     }
 
     val indexingAlbumState = mutableStateOf(IndexingAlbumState())
     val isBottomSheetOpen = mutableStateOf(false)
-
 
     val albumList = mutableStateListOf<Album>()
     val searchableAlbumList = mutableStateListOf<Album>()
@@ -38,13 +39,17 @@ class AlbumViewModel : ViewModel() {
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
+    private var initialized = false
+
     init {
-        Log.d(TAG, "init!!!")
+        Log.d(TAG, "init $TAG")
     }
 
 
-    fun initAllAlbumList() {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun initAllAlbumList() {
+        Log.d(TAG, this.hashCode().toString())
+        if (initialized) return
+        withContext(Dispatchers.IO) {
             // 本机中的相册
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
@@ -58,6 +63,7 @@ class AlbumViewModel : ViewModel() {
 //            // 从全部相册减去已经索引的ID，就是未索引的相册
 //            val unsearchable = albums.filter { !searchable.contains(it) }
 //            unsearchableAlbumList.addAll(unsearchable)
+            this@AlbumViewModel.initialized = true
             initDataFlow()
         }
     }
@@ -94,23 +100,23 @@ class AlbumViewModel : ViewModel() {
         }
     }
 
-    fun encodeSelectedAlbums() {
+    suspend fun encodeSelectedAlbums() {
         if (albumsToEncode.isNotEmpty()) {
             encodeAlbums(albumsToEncode.toList())
             albumsToEncode.clear()
         }
     }
+    val imageSearcher: ImageSearcher by inject(ImageSearcher::class.java)
 
-    private fun encodeAlbums(albums: List<Album>) {
+    private suspend fun encodeAlbums(albums: List<Album>) {
         indexingAlbumState.value =
             IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
-        viewModelScope.launch(Dispatchers.Default) {
+        withContext(Dispatchers.Default) {
             val photos = mutableListOf<Photo>()
             albums.forEach {
                 photos.addAll(photoRepository.getPhotoListByAlbumId(it.id))
             }
             Log.d(TAG, photos.size.toString())
-            val imageSearcher = ImageSearcher
             val success = runBlocking {
                 imageSearcher.encodePhotoList(photos) { cur, total, cost ->
                     indexingAlbumState.value = indexingAlbumState.value.copy(

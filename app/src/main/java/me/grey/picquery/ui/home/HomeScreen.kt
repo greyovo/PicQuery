@@ -3,6 +3,7 @@ package me.grey.picquery.ui.home
 import LogoRow
 import SearchInput
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,42 +29,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants
 import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.ui.albums.AlbumViewModel
 import me.grey.picquery.ui.albums.IndexingAlbumState
+import org.koin.compose.koinInject
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     navigateToSearch: (String) -> Unit,
-    onInitAllAlbumList: () -> Unit,
+    onInitAllAlbumList: suspend () -> Unit,
     navigateToSetting: () -> Unit,
     onManageAlbum: () -> Unit,
     onSelectSearchTarget: () -> Unit,
     onSelectSearchRange: () -> Unit,
 ) {
     /* === Permission handling block === */
+    val scope = rememberCoroutineScope()
     val mediaPermissions =
         rememberMultiplePermissionsState(
             permissions = Constants.PERMISSIONS,
-            onPermissionsResult = { onInitAllAlbumList() },
+            onPermissionsResult = { scope.launch { onInitAllAlbumList() } },
         )
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1="HomeScreen") {
+        Log.d("HomeScreen", "LaunchedEffect")
         if (!mediaPermissions.allPermissionsGranted) {
             mediaPermissions.launchMultiplePermissionRequest()
         } else {
-            onInitAllAlbumList()
+            scope.launch { onInitAllAlbumList() }
         }
     }
     /* === End of permission handling  === */
@@ -120,7 +125,7 @@ fun HomeScreen(
 
 @Composable
 private fun BottomEncodingProgressBar(
-    albumViewModel: AlbumViewModel = viewModel(),
+    albumViewModel: AlbumViewModel = koinInject(),
 ) {
     val state by remember { albumViewModel.indexingAlbumState }
     var progress = (state.current.toDouble() / state.total).toFloat()

@@ -9,8 +9,10 @@ import me.grey.picquery.common.assetFilePath
 import java.nio.IntBuffer
 
 
-object TextEncoder {
-    private const val modelPath = "clip-text-encoder-quant-int8.with_runtime_opt.ort"
+class TextEncoder {
+    companion object {
+        private const val modelPath = "clip-text-encoder-quant-int8.with_runtime_opt.ort"
+    }
 //        private const val modelPath = "clip-text-encoder-quant-int8.onnx"
 //    private const val modelPath = "clip-text-encoder.onnx"
 

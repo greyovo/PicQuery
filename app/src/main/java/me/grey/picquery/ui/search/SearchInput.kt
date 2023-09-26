@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -101,7 +100,7 @@ fun SearchInput(
                     .height(20.dp)
                     .padding(horizontal = 15.dp)
             )
-            SearchRangeChip(onClickSearchRange = onSelectSearchRange, textStyle = textStyle)
+            SearchRangeChip(onClick = onSelectSearchRange, textStyle = textStyle)
         }
     }
 }
@@ -135,13 +134,14 @@ fun SearchTargetChip(textStyle: TextStyle) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchRangeChip(onClickSearchRange: () -> Unit, textStyle: TextStyle) {
+fun SearchRangeChip(onClick: () -> Unit, textStyle: TextStyle) {
     val sheetState = rememberAppBottomSheetState()
     val scope = rememberCoroutineScope()
 
     AssistChip(
         modifier = Modifier.fillMaxWidth(),
         border = null,
+        // TODO
         onClick = { scope.launch { sheetState.show() } },
         label = {
             Text(
