@@ -94,43 +94,28 @@ fun HomeScreen(
     // === Permission handling end
 
     val showUserGuide = remember { homeViewModel.showUserGuide }
-
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             val busyToastText = stringResource(R.string.busy_when_add_album_toast)
-            TextButton(
-                onClick = {
-                    if (albumManager.isEncoderBusy) {
-                        showToast(busyToastText)
-                    } else {
-                        scope.launch { albumListSheetState.show() }
-                    }
-                },
-                modifier = Modifier.padding(bottom = 15.dp),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(imageVector = Icons.Default.Photo, contentDescription = "")
-                    Box(modifier = Modifier.width(5.dp))
-                    Text(text = stringResource(R.string.index_album_btn))
+            HomeBottomActions(onClickManageAlbum = {
+                if (albumManager.isEncoderBusy) {
+                    showToast(busyToastText)
+                } else {
+                    scope.launch { albumListSheetState.show() }
                 }
-            }
-            Box(modifier = Modifier.width(5.dp))
+            })
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = { EncodingProgressBar() },
         topBar = {
-            TopAppBar(actions = {
-                IconButton(onClick = {
+            HomeTopBar(
+                onClickHelpButton = {
                     homeViewModel.showUserGuide.value = !homeViewModel.showUserGuide.value
-                }) {
-                    Icon(imageVector = Icons.Default.HelpOutline, contentDescription = null)
                 }
-            }, title = {})
+            )
         }
     ) { padding ->
 
@@ -165,7 +150,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     onRequestPermission = { mediaPermissions.launchMultiplePermissionRequest() },
                     onOpenAlbum = { scope.launch { albumListSheetState.show() } },
-                    onFinish = { homeViewModel.showUserGuide.value = false },
+                    onFinish = { homeViewModel.finishGuide() },
                     currentStep = currentStep.intValue
                 )
             }
@@ -173,6 +158,40 @@ fun HomeScreen(
         }
     }
 
+}
+
+@Composable
+private fun HomeBottomActions(
+    onClickManageAlbum: () -> Unit,
+) {
+    TextButton(
+        onClick = { onClickManageAlbum() },
+        modifier = Modifier.padding(bottom = 15.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(imageVector = Icons.Default.Photo, contentDescription = "")
+            Box(modifier = Modifier.width(5.dp))
+            Text(text = stringResource(R.string.index_album_btn))
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun HomeTopBar(onClickHelpButton: () -> Unit) {
+    TopAppBar(
+        actions = {
+            IconButton(onClick = {
+                onClickHelpButton()
+            }) {
+                Icon(imageVector = Icons.Default.HelpOutline, contentDescription = null)
+            }
+        },
+        title = {},
+    )
 }
 
 

@@ -28,10 +28,6 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Routes.Home.name,
 ) {
-//    val albumViewModel: AlbumViewModel =
-//        viewModel(viewModelStoreOwner = LocalContext.current as FragmentActivity)
-
-
     NavHost(
         navController,
         startDestination = startDestination,

@@ -38,6 +38,7 @@ class HomeViewModel(
     }
 
     fun finishGuide() {
+        showUserGuide.value = false
         currentGuideStep.intValue = 3
     }
 

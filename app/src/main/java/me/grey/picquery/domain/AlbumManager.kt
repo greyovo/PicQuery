@@ -48,14 +48,6 @@ class AlbumManager(
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
             Log.d(TAG, "ALL albums: ${albums.size}")
-//            // 从数据库中检索已经索引的相册
-//            // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
-//            val searchable =
-//                albumRepository.getSearchableAlbums().filter { albums.contains(it) }
-//            searchableAlbumList.addAll(searchable)
-//            // 从全部相册减去已经索引的ID，就是未索引的相册
-//            val unsearchable = albums.filter { !searchable.contains(it) }
-//            unsearchableAlbumList.addAll(unsearchable)
             this@AlbumManager.initialized = true
             initDataFlow()
         }
@@ -92,13 +84,6 @@ class AlbumManager(
             albumsToEncode.clear()
         }
     }
-
-//    suspend fun encodeSelectedAlbums() {
-//        if (albumsToEncode.isNotEmpty()) {
-//            encodeAlbums(albumsToEncode.toList())
-//            albumsToEncode.clear()
-//        }
-//    }
 
 
     suspend fun encodeAlbums(albums: List<Album>) {

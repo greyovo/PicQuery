@@ -36,7 +36,7 @@ fun UserGuide(
     onRequestPermission: () -> Unit,
     onOpenAlbum: () -> Unit,
     onFinish: () -> Unit,
-    currentStep: Int = 3,
+    currentStep: Int,
 ) {
     Column(modifier) {
         ListItem(
