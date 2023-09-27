@@ -2,16 +2,13 @@
 
 package me.grey.picquery.domain
 
-import AppBottomSheetState
 import android.util.Log
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
@@ -140,19 +137,6 @@ class AlbumManager(
                 Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
             }
         }
-    }
-
-    suspend fun openBottomSheet(sheetState: AppBottomSheetState) {
-        if (indexingAlbumState.value.isBusy) {
-            showToast(PicQueryApplication.context.getString(R.string.busy_when_add_album_toast))
-            return
-        }
-        sheetState.show()
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    suspend fun closeBottomSheet(sheetState: AppBottomSheetState) {
-        sheetState.hide()
     }
 
     fun clearIndexingState() {

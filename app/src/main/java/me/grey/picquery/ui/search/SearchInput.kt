@@ -176,7 +176,9 @@ fun SearchRangeChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInj
         }
     )
 
-    SearchFilterBottomSheet(sheetState)
+    if (sheetState.isVisible) {
+        SearchFilterBottomSheet(sheetState)
+    }
 }
 
 @Composable

@@ -50,7 +50,6 @@ fun SearchFilterBottomSheet(
     val scope = rememberCoroutineScope()
     val candidates = remember { albumManager.searchableAlbumList }
     val selectedList = remember { mutableStateListOf<Album>() }
-    selectedList.clear()
     selectedList.addAll(imageSearcher.searchRange.toList())
     val searchAll = remember { mutableStateOf(imageSearcher.isSearchAll.value) }
 
@@ -69,54 +68,52 @@ fun SearchFilterBottomSheet(
         }
     }
 
-    if (sheetState.isVisible) {
-        ModalBottomSheet(
-            onDismissRequest = { closeFilter() },
-            sheetState = sheetState.sheetState,
-        ) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.search_range_selection_title),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                },
-                supportingContent = {
-                    Text(text = stringResource(R.string.search_range_selection_subtitle))
-                },
-                trailingContent = {
-                    Button(
-                        onClick = { saveFilter() },
-                        enabled = canSave.value
-                    ) {
-                        Text(text = stringResource(R.string.finish_button))
-                    }
+    ModalBottomSheet(
+        onDismissRequest = { closeFilter() },
+        sheetState = sheetState.sheetState,
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.search_range_selection_title),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            supportingContent = {
+                Text(text = stringResource(R.string.search_range_selection_subtitle))
+            },
+            trailingContent = {
+                Button(
+                    onClick = { saveFilter() },
+                    enabled = canSave.value
+                ) {
+                    Text(text = stringResource(R.string.finish_button))
                 }
-            )
+            }
+        )
 
-            ListItem(
-                modifier = Modifier.clickable { searchAll.value = !searchAll.value },
-                headlineContent = { Text(text = stringResource(R.string.all_albums)) },
-                trailingContent = {
-                    Switch(
-                        checked = searchAll.value,
-                        onCheckedChange = { searchAll.value = it },
-                    )
-                }
-            )
+        ListItem(
+            modifier = Modifier.clickable { searchAll.value = !searchAll.value },
+            headlineContent = { Text(text = stringResource(R.string.all_albums)) },
+            trailingContent = {
+                Switch(
+                    checked = searchAll.value,
+                    onCheckedChange = { searchAll.value = it },
+                )
+            }
+        )
 
-            if (candidates.isEmpty()) {
-                EmptyAlbumTips(onClose = { closeFilter() })
-            } else {
-                Box(modifier = Modifier.padding(bottom = 55.dp)) {
-                    SearchAbleAlbums(
-                        enabled = !searchAll.value,
-                        candidates = candidates,
-                        selectedList = selectedList,
-                        onAdd = { selectedList.add(it) },
-                        onRemove = { selectedList.remove(it) },
-                    )
-                }
+        if (candidates.isEmpty()) {
+            EmptyAlbumTips(onClose = { closeFilter() })
+        } else {
+            Box(modifier = Modifier.padding(bottom = 55.dp)) {
+                SearchAbleAlbums(
+                    enabled = !searchAll.value,
+                    candidates = candidates,
+                    selectedList = selectedList,
+                    onAdd = { selectedList.add(it) },
+                    onRemove = { selectedList.remove(it) },
+                )
             }
         }
     }

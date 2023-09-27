@@ -48,40 +48,38 @@ fun AddAlbumBottomSheet(
         }
     }
 
-    if (sheetState.isVisible) {
-        ModalBottomSheet(
-            onDismissRequest = { closeSheet() },
-            sheetState = sheetState.sheetState,
-        ) {
-            val list = remember { albumManager.unsearchableAlbumList }
-            if (list.isEmpty()) {
-                EmptyAlbumTips(
-                    onClose = { closeSheet() },
-                )
-            } else {
-                val selectedList = remember { albumManager.albumsToEncode }
-                val noAlbumTips = stringResource(R.string.no_album_selected)
-                AlbumSelectionList(
-                    list, selectedList,
-                    onFinish = {
-                        // FIXME
-                        val snapshot = albumManager.albumsToEncode.toList()
-                        albumManager.albumsToEncode.clear()
-                        if (snapshot.isEmpty()) {
-                            showToast(noAlbumTips)
-                        } else {
-                            scope.launch { albumManager.encodeAlbums(snapshot) }
-                        }
-                        closeSheet()
-                    },
-                    onSelectAll = {
-                        albumManager.toggleSelectAllAlbums()
-                    },
-                    onSelectItem = {
-                        albumManager.toggleAlbumSelection(it)
+    ModalBottomSheet(
+        onDismissRequest = { closeSheet() },
+        sheetState = sheetState.sheetState,
+    ) {
+        val list = remember { albumManager.unsearchableAlbumList }
+        if (list.isEmpty()) {
+            EmptyAlbumTips(
+                onClose = { closeSheet() },
+            )
+        } else {
+            val selectedList = remember { albumManager.albumsToEncode }
+            val noAlbumTips = stringResource(R.string.no_album_selected)
+            AlbumSelectionList(
+                list, selectedList,
+                onFinish = {
+                    // FIXME
+                    val snapshot = albumManager.albumsToEncode.toList()
+                    albumManager.albumsToEncode.clear()
+                    if (snapshot.isEmpty()) {
+                        showToast(noAlbumTips)
+                    } else {
+                        scope.launch { albumManager.encodeAlbums(snapshot) }
                     }
-                )
-            }
+                    closeSheet()
+                },
+                onSelectAll = {
+                    albumManager.toggleSelectAllAlbums()
+                },
+                onSelectItem = {
+                    albumManager.toggleAlbumSelection(it)
+                }
+            )
         }
     }
 }
