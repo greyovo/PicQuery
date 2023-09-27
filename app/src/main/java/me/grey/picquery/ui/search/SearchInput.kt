@@ -93,7 +93,13 @@ private fun SearchSettingButton(textStyle: TextStyle, imageSearcher: ImageSearch
     val scope = rememberCoroutineScope()
     val menuDropdownOpen = remember { mutableStateOf(false) }
 
-    IconButton(onClick = { menuDropdownOpen.value = true }) {
+    fun onClick() {
+        // TODO 加入了OCR识别功能后再启用dropdown菜单
+//        menuDropdownOpen.value = true
+        scope.launch { filterBottomSheetState.show() }
+    }
+
+    IconButton(onClick = { onClick() }) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = null,
