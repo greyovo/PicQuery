@@ -1,37 +1,32 @@
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.outlined.FilterAltOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
@@ -45,7 +40,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SearchInput(
     queryText: MutableState<String>,
-    leadingIcon: @Composable (() -> Unit) = {
+    leadingIcon: @Composable () -> Unit = {
         Icon(
             Icons.Default.Search,
             contentDescription = null
@@ -59,20 +54,22 @@ fun SearchInput(
         keyboard?.hide()
     }
 
-    Column(
+    val textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
+
+    SearchBar(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp)
-    ) {
-        SearchBar(
-            query = queryText.value,
-            onQueryChange = { queryText.value = it },
-            onSearch = { searchAction() },
-            active = false,
-            onActiveChange = { },
-            placeholder = { Text(stringResource(R.string.search_placeholder)) },
-            leadingIcon = leadingIcon,
-            trailingIcon = {
+            .padding(horizontal = 14.dp),
+        query = queryText.value,
+        onQueryChange = { queryText.value = it },
+        onSearch = { searchAction() },
+        active = false,
+        onActiveChange = { },
+        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+        leadingIcon = leadingIcon,
+        trailingIcon = {
+            Row {
+                // Clear text button
                 if (queryText.value.isNotEmpty()) {
                     IconButton(onClick = {
                         queryText.value = ""
@@ -81,111 +78,59 @@ fun SearchInput(
                         Icon(Icons.Default.Clear, contentDescription = null)
                     }
                 }
-            },
-        ) {
-        }
-
-        val textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SearchTargetChip(textStyle)
-            VerticalDivider(
-                modifier = Modifier
-                    .height(20.dp)
-                    .padding(horizontal = 15.dp)
-            )
-            SearchRangeChip(textStyle = textStyle)
-        }
+                // More Menu button
+                SearchSettingButton(textStyle)
+            }
+        },
+    ) {
     }
 }
 
-@Composable
-fun SearchTargetChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
-    var searchTargetDropdownExpanded by remember { mutableStateOf(false) }
-    val currentTarget = imageSearcher.searchTarget.value
-
-    AssistChip(
-        border = null,
-        onClick = { searchTargetDropdownExpanded = true },
-        label = {
-            Text(
-                text = stringResource(id = currentTarget.labelResId),
-                style = textStyle
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = currentTarget.icon,
-                contentDescription = null
-            )
-        },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null
-            )
-        }
-    )
-
-    SearchTargetDropdown(
-        searchTargetDropdownExpanded,
-        onDismissRequest = { searchTargetDropdownExpanded = false },
-        onSelectItem = { target ->
-            imageSearcher.updateTarget(target)
-            searchTargetDropdownExpanded = false
-        }
-    )
-}
 
 @Composable
-fun SearchRangeChip(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
-    val sheetState = rememberAppBottomSheetState()
+private fun SearchSettingButton(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
+    val filterBottomSheetState = rememberAppBottomSheetState()
     val scope = rememberCoroutineScope()
-    val range = remember { imageSearcher.searchRange }
-    val searchAll = remember { imageSearcher.isSearchAll }
+    val menuDropdownOpen = remember { mutableStateOf(false) }
 
-    val rangeText = if (range.isEmpty() || searchAll.value) {
-        stringResource(id = R.string.all_albums)
-    } else {
-        range.joinToString { it.label }
+    IconButton(onClick = { menuDropdownOpen.value = true }) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = null,
+            tint = textStyle.color
+        )
     }
 
-    AssistChip(
-        modifier = Modifier.fillMaxWidth(),
-        border = null,
-        // TODO
-        onClick = { scope.launch { sheetState.show() } },
-        label = {
-            Text(
-                text = rangeText,
-                style = textStyle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = null
-            )
-        },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null
-            )
-        }
-    )
+    if (filterBottomSheetState.isVisible) {
+        SearchFilterBottomSheet(filterBottomSheetState)
+    }
 
-    if (sheetState.isVisible) {
-        SearchFilterBottomSheet(sheetState)
+    if (menuDropdownOpen.value) {
+        SearchSettingDropdown(
+            menuDropdownOpen.value,
+            onDismissRequest = { menuDropdownOpen.value = false },
+            selectedTarget = imageSearcher.searchTarget.value,
+            onChangeTarget = { target ->
+                imageSearcher.updateTarget(target)
+                menuDropdownOpen.value = false
+            },
+            enableFilter = imageSearcher.isSearchAll.value,
+            onOpenFilter = {
+                scope.launch { filterBottomSheetState.show() }
+                menuDropdownOpen.value = false
+            }
+        )
     }
 }
 
 @Composable
-fun SearchTargetDropdown(
+fun SearchSettingDropdown(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    onSelectItem: (SearchTarget) -> Unit,
+    enableFilter: Boolean,
+    selectedTarget: SearchTarget,
+    onChangeTarget: (SearchTarget) -> Unit,
+    onOpenFilter: () -> Unit,
 ) {
     val targets = SearchTarget.values()
     DropdownMenu(
@@ -193,16 +138,49 @@ fun SearchTargetDropdown(
         onDismissRequest = onDismissRequest,
     ) {
         for (item in targets) {
+            val selected = selectedTarget == item
+            val color = if (selected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onBackground
+            }
             DropdownMenuItem(
-                text = { Text(stringResource(id = item.labelResId)) },
-                onClick = { onSelectItem(item) },
+                text = { Text(stringResource(id = item.labelResId), color = color) },
+                onClick = { onChangeTarget(item) },
                 leadingIcon = {
                     Icon(
-                        item.icon,
-                        contentDescription = item.name
+                        item.icon, contentDescription = item.name,
+                        tint = color,
                     )
                 },
+                trailingIcon = {
+                    if (selected)
+                        Icon(
+                            imageVector = Icons.Default.Check, contentDescription = null,
+                            tint = color,
+                        )
+                }
             )
         }
+        HorizontalDivider()
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.search_range_selection_title)) },
+            onClick = { onOpenFilter() },
+            leadingIcon = {
+                Icon(
+                    imageVector = if (enableFilter) {
+                        Icons.Outlined.FilterAltOff
+                    } else {
+                        Icons.Default.FilterAlt
+                    },
+                    contentDescription = null,
+                    tint = if (enableFilter) {
+                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
+                )
+            },
+        )
     }
 }
