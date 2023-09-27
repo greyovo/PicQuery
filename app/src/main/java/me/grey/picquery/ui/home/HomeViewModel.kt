@@ -1,8 +1,11 @@
 package me.grey.picquery.ui.home
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 
@@ -13,9 +16,30 @@ class HomeViewModel(
 
     val searchText = mutableStateOf("")
 
-    // TODO 索引相册按钮
-    // TODO 启动搜索
-    // TODO 导航到设置页
+    val showUserGuide = mutableStateOf(false)
+
+    val currentGuideStep = mutableIntStateOf(1)
+
+    init {
+        viewModelScope.launch {
+            if (!imageSearcher.hasEmbedding()) {
+                showUserGuide.value = true
+            }
+        }
+    }
+
+    fun doneRequestPermission() {
+        currentGuideStep.intValue = 2
+        viewModelScope.launch {
+            if (imageSearcher.hasEmbedding()) {
+                finishGuide()
+            }
+        }
+    }
+
+    fun finishGuide() {
+        currentGuideStep.intValue = 3
+    }
 
     /**
      * 导航

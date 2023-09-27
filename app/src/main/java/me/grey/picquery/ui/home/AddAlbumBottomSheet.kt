@@ -38,6 +38,7 @@ import org.koin.compose.koinInject
 @Composable
 fun AddAlbumBottomSheet(
     sheetState: AppBottomSheetState,
+    onStartIndexing: () -> Unit,
     albumManager: AlbumManager = koinInject()
 ) {
     val scope = rememberCoroutineScope()
@@ -69,6 +70,7 @@ fun AddAlbumBottomSheet(
                         showToast(noAlbumTips)
                     } else {
                         scope.launch { albumManager.encodeAlbums(snapshot) }
+                        onStartIndexing()
                     }
                     closeSheet()
                 },
