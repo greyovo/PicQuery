@@ -1,9 +1,11 @@
 package me.grey.picquery.ui.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Key
@@ -20,10 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.grey.picquery.R
 import java.lang.Float.min
 
 @Composable
@@ -36,13 +40,20 @@ fun UserGuide(
 ) {
     Column(modifier) {
         ListItem(
+            leadingContent = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    modifier = Modifier.size(40.dp),
+                    contentDescription = "logo"
+                )
+            },
             headlineContent = {
                 Text(
-                    text = "😊 欢迎使用",
+                    text = "欢迎使用图搜",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
             },
-            supportingContent = { Text(text = "跟随下列步骤简单操作后，即可快速搜索您的相册") },
+            supportingContent = { Text(text = "简单操作后，即可快速搜索您的相册") },
         )
 
         // Step 1
@@ -96,23 +107,18 @@ private fun StepListItem(
 ) {
     val background =
         when {
-            currentStep > stepNumber -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            currentStep > stepNumber -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
             currentStep == stepNumber -> MaterialTheme.colorScheme.primaryContainer
-            else -> MaterialTheme.colorScheme.background.copy(alpha = 0.3f)
+            else -> MaterialTheme.colorScheme.background.copy(alpha = 0.45f)
         }
     val color =
         when {
-            currentStep > stepNumber -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+            currentStep > stepNumber -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.45f)
             currentStep == stepNumber -> MaterialTheme.colorScheme.onPrimaryContainer
-            else -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+            else -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
         }
 
-    val textStyle = when {
-//        currentStep > stepNumber -> TextStyle(color = color)
-//        currentStep == stepNumber -> TextStyle(color = color, fontWeight = FontWeight.Bold)
-        else -> TextStyle(color = color)
-    }
-
+    val textStyle = TextStyle(color = color)
 
     val finishIcon = @Composable {
         Icon(
@@ -125,9 +131,6 @@ private fun StepListItem(
         modifier = Modifier
             .padding(vertical = 4.dp),
         border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.2f, 1f))),
-//        colors = CardDefaults.outlinedCardColors(
-//            containerColor = background,
-//        )
     ) {
         ListItem(
             modifier = Modifier.clickable(enabled = currentStep == stepNumber) { onClick() },
@@ -145,7 +148,12 @@ private fun StepListItem(
                     )
                 }
             },
-            headlineContent = { Text(text = title, style = textStyle) },
+            headlineContent = {
+                Text(
+                    text = title,
+                    style = textStyle.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                )
+            },
             supportingContent = { Text(text = subtitle, style = textStyle) },
         )
     }

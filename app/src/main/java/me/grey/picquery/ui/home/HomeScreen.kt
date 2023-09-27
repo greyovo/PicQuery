@@ -133,23 +133,31 @@ fun HomeScreen(
             }, title = {})
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxHeight(1f),
+                .fillMaxHeight(0.75f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
-            SearchInput(
-                queryText = remember { homeViewModel.searchText },
-                onStartSearch = { text ->
-                    if (text.isNotEmpty()) {
-                        homeViewModel.searchText.value = text
-                        navigateToSearch(text)
-                    }
-                },
-            )
+            AnimatedVisibility(visible = !showUserGuide.value) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
+                    SearchInput(
+                        queryText = remember { homeViewModel.searchText },
+                        onStartSearch = { text ->
+                            if (text.isNotEmpty()) {
+                                homeViewModel.searchText.value = text
+                                navigateToSearch(text)
+                            }
+                        },
+                    )
+                }
+            }
 
             AnimatedVisibility(visible = showUserGuide.value) {
                 val currentStep = remember { homeViewModel.currentGuideStep }
@@ -161,9 +169,7 @@ fun HomeScreen(
                     currentStep = currentStep.intValue
                 )
             }
-            AnimatedVisibility(visible = !showUserGuide.value) {
-                Box(modifier = Modifier.height(190.dp))
-            }
+
         }
     }
 

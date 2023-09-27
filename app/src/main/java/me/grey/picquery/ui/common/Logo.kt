@@ -18,19 +18,18 @@ import androidx.compose.ui.unit.sp
 import me.grey.picquery.R
 
 @Composable
-fun LogoRow(modifier: Modifier = Modifier) {
+fun LogoRow(modifier: Modifier = Modifier, size: Float = 35f) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
     ) {
-        val fontSize = 35
         val textStyle =
-            TextStyle(fontSize = fontSize.sp, color = MaterialTheme.colorScheme.onBackground)
+            TextStyle(fontSize = size.sp, color = MaterialTheme.colorScheme.onBackground)
         Image(
 //            imageVector=load
             painter = painterResource(id = R.drawable.ic_logo),
-            modifier = Modifier.size((fontSize + 5).dp),
+            modifier = Modifier.size((size + 5).dp),
             contentDescription = "logo"
         )
         Box(modifier = Modifier.width(12.dp))
@@ -44,7 +43,7 @@ fun LogoRow(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.logo_part2_query), style = textStyle.copy(
                 fontWeight = FontWeight.Bold,
-                fontSize = (fontSize - 1).sp,
+                fontSize = (size - 1).sp,
                 color = MaterialTheme.colorScheme.primary
             )
         )
