@@ -8,12 +8,13 @@
     <string name="cancel_button">取消</string>
     <string name="ok_button">好的</string>
     <string name="finish_button">完成</string>
+    <string name="do_index">索引</string>
     <string name="selected_album_count">已选 %1$s 个</string>
     <string name="selected_images_count">已选 %1$s 张</string>
     <string name="searchable_albums">可搜索相册</string>
     <string name="add_album_title">添加相册</string>
     <string name="add_album_subtitle">选择需要索引的相册</string>
-    <string name="start_index_album">开始索引相册</string>
+    <string name="start_index_album">开始索引</string>
     <string name="no_albums">没有相册</string>
     <string name="unselect_all">全不选</string>
     <string name="select_all">全选</string>

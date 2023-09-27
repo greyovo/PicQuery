@@ -62,8 +62,7 @@ fun AddAlbumBottomSheet(
             val noAlbumTips = stringResource(R.string.no_album_selected)
             AlbumSelectionList(
                 list, selectedList,
-                onFinish = {
-                    // FIXME
+                onStartIndexing = {
                     val snapshot = albumManager.albumsToEncode.toList()
                     albumManager.albumsToEncode.clear()
                     if (snapshot.isEmpty()) {
@@ -73,7 +72,7 @@ fun AddAlbumBottomSheet(
                     }
                     closeSheet()
                 },
-                onSelectAll = {
+                onToggleSelectAll = {
                     albumManager.toggleSelectAllAlbums()
                 },
                 onSelectItem = {
@@ -113,10 +112,15 @@ fun EmptyAlbumTips(
 fun AlbumSelectionList(
     list: List<Album>,
     selectedList: List<Album>,
-    onFinish: () -> Unit,
-    onSelectAll: () -> Unit,
+    onStartIndexing: () -> Unit,
+    onToggleSelectAll: () -> Unit,
     onSelectItem: (Album) -> Unit,
 ) {
+    var selectedPhotoCount = 0L
+    selectedList.forEach {
+        selectedPhotoCount += it.count
+    }
+
     Column {
         ListItem(
             headlineContent = {
@@ -126,11 +130,18 @@ fun AlbumSelectionList(
                 )
             },
             supportingContent = {
-                Text(text = stringResource(R.string.add_album_subtitle))
+                Text(
+                    text =
+                    if (selectedPhotoCount <= 0) {
+                        stringResource(R.string.add_album_subtitle)
+                    } else {
+                        stringResource(R.string.selected_images_count, selectedPhotoCount)
+                    }
+                )
             },
             trailingContent = {
                 Row {
-                    TextButton(onClick = { onSelectAll() }) {
+                    TextButton(onClick = { onToggleSelectAll() }) {
                         Text(
                             text = if (list.size == selectedList.size)
                                 stringResource(R.string.unselect_all)
@@ -139,8 +150,11 @@ fun AlbumSelectionList(
                         )
                     }
                     Box(modifier = Modifier.width(5.dp))
-                    Button(onClick = { onFinish() }) {
-                        Text(text = stringResource(R.string.finish_button))
+                    Button(
+                        onClick = { onStartIndexing() },
+                        enabled = selectedPhotoCount > 0
+                    ) {
+                        Text(text = stringResource(R.string.do_index))
                     }
                 }
             }
@@ -148,18 +162,19 @@ fun AlbumSelectionList(
     }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(100.dp),
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(horizontal = 6.dp),
         content = {
             items(
                 list.size,
                 key = { list[it].id },
             ) { index ->
                 val selected = selectedList.contains(list[index])
+                val item = list[index]
                 AlbumCard(
-                    list[index],
+                    item,
                     selected = selected,
                     onItemClick = {
-                        onSelectItem(list[index])
+                        onSelectItem(item)
                     },
                 )
             }
