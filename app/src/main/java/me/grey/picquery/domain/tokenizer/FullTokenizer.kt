@@ -1,4 +1,4 @@
-package token
+package me.grey.picquery.domain.tokenizer
 
 class FullTokenizer(
     val vocab: Map<String, Int>,

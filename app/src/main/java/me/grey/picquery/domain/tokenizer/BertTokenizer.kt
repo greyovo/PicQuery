@@ -1,10 +1,11 @@
-package token
+package me.grey.picquery.domain.tokenizer
 
 class BertTokenizer(
-    val vocabProvider: () -> Map<String, Int>,
+    val vocabProvider: () -> Map<String, Int>, // loadVocab(context, "cn_clip_vocab")
 ) {
     companion object {
         const val contextLength = 52
+        val shape = longArrayOf(1, contextLength.toLong())
     }
 
     private val vocab = vocabProvider()

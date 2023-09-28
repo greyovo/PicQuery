@@ -21,9 +21,9 @@ private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
 val IMAGE_INPUT_SIZE = Size(224, 224)
 
 class ImageEncoder {
-    //        private const val modelPath = "clip-image-encoder-quant-int8.onnx"
     companion object {
-        private const val modelPath = "clip-image-encoder-quant-int8.with_runtime_opt.ort"
+//        private const val modelPath = "clip-image-encoder-quant-int8.with_runtime_opt.ort"
+        private const val modelPath = "clip-cn-image-encoder-quant-int8.with_runtime_opt.ort"
     }
 //    private const val modelPath = "clip-image-encoder.onnx"
 

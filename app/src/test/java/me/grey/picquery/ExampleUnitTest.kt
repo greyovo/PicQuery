@@ -1,6 +1,5 @@
 package me.grey.picquery
 
-import me.grey.picquery.domain.encoder.FullTokenizer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -17,7 +16,6 @@ class ExampleUnitTest {
 
     @Test
     fun test_tokenize() {
-        val f = FullTokenizer()
         println()
     }
 }

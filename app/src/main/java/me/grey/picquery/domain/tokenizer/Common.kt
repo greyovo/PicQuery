@@ -1,13 +1,23 @@
-package token
+package me.grey.picquery.domain.tokenizer
 
+import android.content.Context
+import me.grey.picquery.common.assetFilePath
 import java.io.File
-import java.lang.Character.*
-import java.lang.Character.UnicodeBlock.GENERAL_PUNCTUATION
-import java.text.Normalizer
+import java.lang.Character.CONNECTOR_PUNCTUATION
+import java.lang.Character.CONTROL
+import java.lang.Character.DASH_PUNCTUATION
+import java.lang.Character.END_PUNCTUATION
+import java.lang.Character.FINAL_QUOTE_PUNCTUATION
+import java.lang.Character.FORMAT
+import java.lang.Character.INITIAL_QUOTE_PUNCTUATION
+import java.lang.Character.OTHER_PUNCTUATION
+import java.lang.Character.SPACE_SEPARATOR
+import java.lang.Character.START_PUNCTUATION
+import java.lang.Character.getType
 
-fun loadVocab(fileName: String): MutableMap<String, Int> {
+fun loadVocab(context: Context, fileName: String): MutableMap<String, Int> {
     val vocab = mutableMapOf<String, Int>()
-    val file = File(fileName)
+    val file = File(assetFilePath(context, fileName))
     var index = 0
     try {
         val lines = file.readLines() // 直接读取全部文件内容

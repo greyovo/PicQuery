@@ -1,4 +1,4 @@
-package token
+package me.grey.picquery.domain.tokenizer
 
 class WordPieceTokenizer(
     private val vocab: Map<String, Int>,

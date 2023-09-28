@@ -1,4 +1,4 @@
-package token
+package me.grey.picquery.domain.tokenizer
 
 import java.text.Normalizer
 
