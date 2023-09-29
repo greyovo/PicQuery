@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">图搜</string>
+    <string name="logo_part1_pic">图</string>
+    <string name="logo_part2_query">搜</string>
+    <string name="permission_tips">我们需要相册的读取权限，来搜索您的相册</string>
+    <string name="no_permission_toast">无法获取相应权限</string>
+    <string name="confirm_button">确定</string>
+    <string name="cancel_button">取消</string>
+    <string name="ok_button">好的</string>
+    <string name="finish_button">完成</string>
+    <string name="do_index">索引</string>
+    <string name="selected_album_count">已选 %1$s 个</string>
+    <string name="selected_images_count">已选 %1$s 张</string>
+    <string name="searchable_albums">可搜索相册</string>
+    <string name="add_album_title">添加相册</string>
+    <string name="add_album_subtitle">选择需要索引的相册</string>
+    <string name="start_index_album">开始索引</string>
+    <string name="no_albums">没有相册</string>
+    <string name="unselect_all">全不选</string>
+    <string name="select_all">全选</string>
+    <string name="clear_selection">清除</string>
+    <string name="indexing_progress">正在索引: %1$s / %2$s</string>
+    <string name="estimate_remain_time">剩余</string>
+    <string name="empty_search_content_toast">请输入搜索内容</string>
+    <string name="ready_for_searching_tips">已准备好开始搜索</string>
+    <string name="no_images_found_tips">没有找到图片</string>
+    <string name="search_placeholder">描述你想要的照片</string>
+    <string name="busy_when_add_album_toast">正在索引中，请稍后再添加更多相册</string>
+    <string name="no_album_selected">未选择任何相册！</string>
+    <string name="search_range_selection_title">搜索范围</string>
+    <string name="search_range_selection_subtitle">从已索引的相册中筛选</string>
+    <string name="all_albums">全部相册</string>
+    <!--  title_activity  -->
+    <string name="title_activity_display">查看图片</string>
+    <string name="index_album_btn">索引相册</string>
+
+    <string name="search_target_image">搜图片</string>
+    <string name="search_target_text">搜文字</string>
+</resources>
