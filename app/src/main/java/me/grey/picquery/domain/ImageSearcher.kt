@@ -6,14 +6,18 @@ import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ImageSearch
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.R
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
+import me.grey.picquery.common.showToast
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -36,11 +40,12 @@ class ImageSearcher(
     private val imageEncoder: ImageEncoder,
     private val textEncoder: TextEncoder,
     private val embeddingRepository: EmbeddingRepository,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    private val translator: MLKitTranslator,
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
-        private const val MATCH_THRESHOLD = 0.25
+        private const val DEFAULT_MATCH_THRESHOLD = 0.25f
         private const val TOP_K = 30
     }
 
@@ -49,6 +54,9 @@ class ImageSearcher(
     var searchTarget = mutableStateOf(SearchTarget.Image)
 
     val searchResultIds = mutableStateListOf<Long>()
+
+    // TODO 允许用户设置相似度阈值，一般在0.25以上
+    val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD)
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
         searchRange.clear()
@@ -144,12 +152,37 @@ class ImageSearcher(
         encodingLock = false
     }
 
+    suspend fun searchWithChinese(
+        text: String,
+        range: List<Album> = searchRange,
+        onSuccess: suspend (List<Long>?) -> Unit,
+    ) {
+        // 中翻英
+        translator.translate(
+            text,
+            onSuccess = { translatedText ->
+                CoroutineScope(Dispatchers.Default).launch {
+                    val res = search(translatedText, range)
+                    onSuccess(res)
+                }
+            },
+            onError = {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val res = search(text, range)
+                    onSuccess(res)
+                }
+                Log.e("MLTranslator", "中文->英文翻译出错！\n${it.message}")
+                showToast("翻译模型出错，请反馈给开发者！")
+            },
+        )
+    }
 
     suspend fun search(text: String, range: List<Album> = searchRange): List<Long>? {
         return withContext(Dispatchers.Default) {
             if (searchingLock) {
                 return@withContext null
             }
+
             searchingLock = true
             val textFeat = textEncoder.encode(text)
             Log.d(TAG, "Encode text: '${text}'")
@@ -167,7 +200,10 @@ class ImageSearcher(
                 val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
 //            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
 //            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
-                insertSmallest(photoResults, Pair(emb.photoId, sim))
+                insertDescending(photoResults, Pair(emb.photoId, sim))
+//                if (sim >= matchThreshold.floatValue) {
+//                    insertDescending(photoResults, Pair(emb.photoId, sim))
+//                }
             }
             searchingLock = false
             Log.d(TAG, "Search result: found ${photoResults.size} pics")
@@ -180,7 +216,7 @@ class ImageSearcher(
     }
 
     // 将结果替换已有序列中最小的位置，保持结果降序排列
-    private fun insertSmallest(
+    private fun insertDescending(
         resultPair: MutableList<Pair<Long, Double>>,
         candidate: Pair<Long, Double>
     ) {

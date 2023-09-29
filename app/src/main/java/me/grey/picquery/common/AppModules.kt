@@ -8,6 +8,7 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
+import me.grey.picquery.domain.MLKitTranslator
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
 import me.grey.picquery.ui.display.DisplayViewModel
@@ -55,7 +56,8 @@ private val domainModules = module {
             imageEncoder = get(),
             textEncoder = get(),
             embeddingRepository = get(),
-            contentResolver = androidContext().contentResolver
+            contentResolver = androidContext().contentResolver,
+            translator = MLKitTranslator()
         )
     }
     single {
@@ -68,6 +70,9 @@ private val domainModules = module {
 
     single { ImageEncoder() }
     single { TextEncoder() }
+
+    single { MLKitTranslator() }
 }
 
 val AppModules = listOf(viewModelModules, dataModules, domainModules)
+

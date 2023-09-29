@@ -6,7 +6,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -48,7 +52,10 @@ fun DisplayScreen(
 
 
 // TODO 标明出处
-@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
+@OptIn(
+    ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun ZoomablePagerImage(
     modifier: Modifier = Modifier,
@@ -76,20 +83,32 @@ fun ZoomablePagerImage(
 //        scrollEnabled.value = zoomState.scale == 1f
 //    }
 
-    GlideImage(
-        modifier = modifier
-            .fillMaxSize()
-            .combinedClickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onDoubleClick = {},
-                onClick = onItemClick
+    Scaffold(
+        topBar = {
+            ListItem(
+                headlineContent = { Text(text = photo.label) },
+                supportingContent = {
+                    Text(text = "${photo.id}")
+                },
             )
-            .zoomable(zoomState = zoomState),
-        model = File(photo.path),
-        contentDescription = photo.label,
-        contentScale = ContentScale.Fit,
-    )
+        }
+    ) {
+        it.apply {  }
+        GlideImage(
+            modifier = modifier
+                .fillMaxSize()
+                .combinedClickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onDoubleClick = {},
+                    onClick = onItemClick
+                )
+                .zoomable(zoomState = zoomState),
+            model = File(photo.path),
+            contentDescription = photo.label,
+            contentScale = ContentScale.Fit,
+        )
+    }
 
 //    Image(
 //        modifier = modifier

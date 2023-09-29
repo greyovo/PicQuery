@@ -120,6 +120,7 @@ dependencies {
     /// AI & Model
     def onnx_version = "1.15.1"
     implementation "com.microsoft.onnxruntime:onnxruntime-android:$onnx_version"
+    implementation 'com.google.mlkit:translate:17.0.1'
 
     // Glide Image Loader
     implementation 'com.github.bumptech.glide:glide:4.14.0'
