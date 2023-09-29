@@ -55,8 +55,8 @@ class ImageSearcher(
 
     val searchResultIds = mutableStateListOf<Long>()
 
-    // TODO 允许用户设置相似度阈值，一般在0.25以上
-    val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD)
+    // 相似度阈值，一般在0.25以上
+    private val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD)
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
         searchRange.clear()
@@ -157,7 +157,6 @@ class ImageSearcher(
         range: List<Album> = searchRange,
         onSuccess: suspend (List<Long>?) -> Unit,
     ) {
-        // 中翻英
         translator.translate(
             text,
             onSuccess = { translatedText ->
@@ -200,10 +199,10 @@ class ImageSearcher(
                 val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
 //            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
 //            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
-                insertDescending(photoResults, Pair(emb.photoId, sim))
-//                if (sim >= matchThreshold.floatValue) {
-//                    insertDescending(photoResults, Pair(emb.photoId, sim))
-//                }
+//                insertDescending(photoResults, Pair(emb.photoId, sim))
+                if (sim >= matchThreshold.floatValue) {
+                    insertDescending(photoResults, Pair(emb.photoId, sim))
+                }
             }
             searchingLock = false
             Log.d(TAG, "Search result: found ${photoResults.size} pics")

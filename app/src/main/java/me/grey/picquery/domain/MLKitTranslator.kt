@@ -1,8 +1,8 @@
 package me.grey.picquery.domain
 
+import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.TranslateRemoteModel
@@ -12,17 +12,23 @@ import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
 import java.io.File
 
-class MLKitTranslator() {
+class MLKitTranslator {
 
-    private fun copyModelsFromAssets() {
+    private val context: Context
+        get() = PicQueryApplication.context
+
+    private val shouldCopyModel: Boolean
+        get() = !targetModelDirectory.exists()
+
+    private val targetModelDirectory: File
+        get() = File(context.dataDir, "no_backup/com.google.mlkit.translate.models")
+
+    private suspend fun copyModelsFromAssets() {
         Log.d(TAG, "copyModelsFromAssets...")
-        val context = PicQueryApplication.context
-//        val inputStream = context.assets.open("mlkit/com.google.mlkit.translate.models")
-//        val inputStream = context.assets.("mlkit/com.google.mlkit.translate.models")
         AssetUtil.copyAssetsFolder(
             context,
             "mlkit/com.google.mlkit.translate.models",
-            File(context.dataDir, "no_backup/com.google.mlkit.translate.models"),
+            targetModelDirectory,
         )
     }
 
@@ -38,27 +44,6 @@ class MLKitTranslator() {
         .build()
     private val englishChineseTranslator = Translation.getClient(options)
 
-    private val conditions = DownloadConditions.Builder()
-        .requireWifi()
-        .build()
-
-    init {
-
-    }
-
-    private fun downloadModel() {
-        englishChineseTranslator.downloadModelIfNeeded(conditions)
-            .addOnSuccessListener {
-                // Model downloaded successfully. Okay to start translating.
-                // (Set a flag, unhide the translation UI, etc.)
-                Log.d(TAG, "downloadModel: OK")
-            }
-            .addOnFailureListener { exception ->
-                // Model couldn’t be downloaded or other internal error.
-                // ...
-            }
-    }
-
     private fun getDownloadedModels() {
         // Get translation models stored on the device.
         modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
@@ -72,15 +57,14 @@ class MLKitTranslator() {
     }
 
 
-    fun translate(
+    suspend fun translate(
         text: String,
         onSuccess: (String) -> Unit,
         onError: (Exception) -> Unit,
     ): Task<String> {
-        // start translate:
-        copyModelsFromAssets()
-//        englishChineseTranslator.downloadModelIfNeeded()
-        getDownloadedModels()
+        if (shouldCopyModel) {
+            copyModelsFromAssets()
+        }
         return englishChineseTranslator.translate(text)
             .addOnSuccessListener { translatedText ->
                 // Translation successful.
