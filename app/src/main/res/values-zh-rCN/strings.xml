@@ -36,4 +36,13 @@
 
     <string name="search_target_image">搜图片</string>
     <string name="search_target_text">搜文字</string>
+    <string name="welcome_to_picquery">欢迎使用图搜</string>
+    <string name="user_guide_tips">简单操作后，即可快速搜索您的相册</string>
+    <string name="step_1_title">1. 授予权限</string>
+    <string name="step_1_detail">本APP完全离线使用，请放心授权</string>
+    <string name="step_2_title">2. 索引相册</string>
+    <string name="step_2_detail">选择需要索引的相册，然后点击“索引”按钮</string>
+    <string name="step_3_title">3. 开始搜索！</string>
+    <string name="step_3_detail">等待索引完成后，即可搜索需要的图片</string>
+    <string name="i_got_it">我知道了 👌</string>
 </resources>

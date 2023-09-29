@@ -3,7 +3,9 @@ package me.grey.picquery.ui.home
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,11 +52,11 @@ fun UserGuide(
             },
             headlineContent = {
                 Text(
-                    text = "欢迎使用图搜",
+                    text = stringResource(R.string.welcome_to_picquery),
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
             },
-            supportingContent = { Text(text = "简单操作后，即可快速搜索您的相册") },
+            supportingContent = { Text(text = stringResource(R.string.user_guide_tips)) },
         )
 
         // Step 1
@@ -61,8 +64,8 @@ fun UserGuide(
             stepNumber = 1,
             currentStep = currentStep,
             icon = Icons.Default.Key,
-            title = "1. 授予权限",
-            subtitle = "本APP完全离线使用，请放心授权",
+            title = stringResource(R.string.step_1_title),
+            subtitle = stringResource(R.string.step_1_detail),
             onClick = { onRequestPermission() }
         )
         // Step 2
@@ -70,8 +73,8 @@ fun UserGuide(
             stepNumber = 2,
             currentStep = currentStep,
             icon = Icons.Default.PhotoAlbum,
-            title = "2. 索引相册",
-            subtitle = "选择需要索引的相册，然后点击“索引”按钮",
+            title = stringResource(R.string.step_2_title),
+            subtitle = stringResource(R.string.step_2_detail),
             onClick = { onOpenAlbum() }
         )
 
@@ -80,17 +83,18 @@ fun UserGuide(
             stepNumber = 3,
             currentStep = currentStep,
             icon = Icons.Default.Search,
-            title = "3. 开始搜索！",
-            subtitle = "等待索引完成后，即可搜索需要的图片",
+            title = stringResource(R.string.step_3_title),
+            subtitle = stringResource(R.string.step_3_detail),
             onClick = {}
         )
 
         if (currentStep == 3) {
+            Box(modifier = Modifier.height(15.dp))
             Button(
                 onClick = { onFinish() },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(text = "我知道了")
+                Text(text = stringResource(R.string.i_got_it))
             }
         }
     }

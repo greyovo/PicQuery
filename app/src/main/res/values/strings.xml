@@ -35,4 +35,13 @@
     <string name="index_album_btn">Index album</string>
     <string name="search_target_image">Search Photo</string>
     <string name="search_target_text">Search Text</string>
+    <string name="welcome_to_picquery">Welcome to PicQuery</string>
+    <string name="user_guide_tips">Instantly search your albums with simple settings</string>
+    <string name="step_1_title">1. Grant permission</string>
+    <string name="step_1_detail">Your data stays safe as we are totally offline.</string>
+    <string name="step_2_title">2. Index albums</string>
+    <string name="step_2_detail">Select your desired albums for indexing.</string>
+    <string name="step_3_title">3. Start searching!</string>
+    <string name="step_3_detail">Search images once the indexing are done.</string>
+    <string name="i_got_it">Got it 👌</string>
 </resources>
