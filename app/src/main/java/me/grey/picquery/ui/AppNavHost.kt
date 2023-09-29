@@ -49,7 +49,7 @@ fun AppNavHost(
             val queryText = it.arguments?.getString("query") ?: ""
             SearchScreen(
                 initialQuery = queryText,
-                onBack = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
                 onClickPhoto = { photo, index ->
                     // TODO
                     navController.navigate("${Routes.Display.name}/${index}")
@@ -61,7 +61,12 @@ fun AppNavHost(
             arguments = listOf(navArgument("index") { type = NavType.IntType })
         ) {
             val initialIndex: Int = it.arguments?.getInt("index") ?: 0
-            DisplayScreen(initialPage = initialIndex)
+            DisplayScreen(
+                initialPage = initialIndex,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+            )
         }
     }
 }

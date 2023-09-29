@@ -22,7 +22,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SearchScreen(
     initialQuery: String,
     onClickPhoto: (Photo, Int) -> Unit,
-    onBack: () -> Unit,
+    onNavigateBack: () -> Unit,
 //    onSearch: (String) -> Unit,
 //    searchResult: List<Photo>,
 //    searchState: SearchState,
@@ -50,7 +50,7 @@ fun SearchScreen(
                 onStartSearch = { searchViewModel.startSearch(it) },
                 queryText = queryText,
                 leadingIcon = {
-                    IconButton(onClick = { onBack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "back",
