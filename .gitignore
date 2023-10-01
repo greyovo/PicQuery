@@ -11,6 +11,7 @@
 output-metadata.json
 local.properties
 *.apk
+/app/release/
 
 # Models
 *.ptl

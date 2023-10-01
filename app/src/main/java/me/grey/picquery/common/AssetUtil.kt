@@ -20,19 +20,14 @@ object AssetUtil {
 
                     for (itemInFolder in assets) {
                         val currentAssetPath = "$sourceAsset/$itemInFolder"
-
-                        // 复制文件或文件夹
                         val isFile = assetManager.list(currentAssetPath)!!.isEmpty()
+
+                        val target = File(targetFolder, itemInFolder)
                         if (isFile) {
-                            if (!targetFolder.exists()) {
-                                targetFolder.mkdirs()
-                            }
                             // The file to copy into
-                            val target = File(targetFolder, itemInFolder)
-                            copyFile(context, currentAssetPath, target)
+                            copyAssetFile(context, currentAssetPath, target)
                         } else {
                             // The folder to create
-                            val target = File(targetFolder, itemInFolder)
                             if (!target.exists()) {
                                 target.mkdirs()
                             }
@@ -48,16 +43,10 @@ object AssetUtil {
     }
 
     @Throws(IOException::class)
-    fun copyFile(context: Context, sourceAsset: String, target: File) {
+    fun copyAssetFile(context: Context, sourceAsset: String, target: File) {
         if (target.exists() && target.length() > 0) {
-//            Log.d("COPY", "$target already copied!")
             return
         }
-
-//        Log.d(
-//            "COPY",
-//            "copy FILE: \n$sourceAsset -> \n${target.path}\n"
-//        )
 
         val inputStream: InputStream = context.assets.open(sourceAsset)
         val outputStream: OutputStream = FileOutputStream(target)

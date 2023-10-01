@@ -3,9 +3,7 @@ package me.grey.picquery.domain
 import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.TranslateRemoteModel
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import me.grey.picquery.PicQueryApplication
@@ -14,29 +12,20 @@ import java.io.File
 
 class MLKitTranslator {
 
+    private companion object {
+        const val TAG = "MLKitTranslator"
+        const val ASSET_MODEL_PATH = "mlkit/com.google.mlkit.translate.models"
+        const val SAVED_MODEL_PATH = "no_backup/com.google.mlkit.translate.models"
+    }
+
     private val context: Context
         get() = PicQueryApplication.context
 
     private val shouldCopyModel: Boolean
         get() = !targetModelDirectory.exists()
 
-    private val targetModelDirectory: File
-        get() = File(context.dataDir, "no_backup/com.google.mlkit.translate.models")
-
-    private suspend fun copyModelsFromAssets() {
-        Log.d(TAG, "copyModelsFromAssets...")
-        AssetUtil.copyAssetsFolder(
-            context,
-            "mlkit/com.google.mlkit.translate.models",
-            targetModelDirectory,
-        )
-    }
-
-    private val modelManager = RemoteModelManager.getInstance()
-
-    private companion object {
-        const val TAG = "MLKitTranslator"
-    }
+    private val targetModelDirectory =
+        File(context.dataDir, SAVED_MODEL_PATH)
 
     private val options = TranslatorOptions.Builder()
         .setSourceLanguage(TranslateLanguage.CHINESE)
@@ -44,16 +33,13 @@ class MLKitTranslator {
         .build()
     private val englishChineseTranslator = Translation.getClient(options)
 
-    private fun getDownloadedModels() {
-        // Get translation models stored on the device.
-        modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
-            .addOnSuccessListener { models ->
-                Log.d(TAG, "getDownloadedModels: $models")
-            }
-            .addOnFailureListener {
-                // Error.
-                Log.w(TAG, "getDownloadedModels: no model!")
-            }
+    private suspend fun copyModelsFromAssets() {
+        Log.d(TAG, "copyModelsFromAssets...")
+        AssetUtil.copyAssetsFolder(
+            context,
+            ASSET_MODEL_PATH,
+            targetModelDirectory,
+        )
     }
 
 
