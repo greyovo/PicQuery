@@ -2,7 +2,6 @@ package me.grey.picquery.ui.search
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,9 +13,7 @@ import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.PhotoRepository
-import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 
 enum class SearchState {
@@ -29,7 +26,6 @@ enum class SearchState {
 
 class SearchViewModel(
     private val imageSearcher: ImageSearcher,
-    private val albumManager: AlbumManager,
 ) : ViewModel() {
     companion object {
         private const val TAG = "SearchResultViewModel"
@@ -42,8 +38,6 @@ class SearchViewModel(
     val searchState = _searchState.asStateFlow()
 
     val searchText = mutableStateOf("")
-    val isSearchRangeAll = mutableStateOf(true)
-    val searchRange = mutableStateListOf<Album>()
 
     private val context: Context
         get() {
@@ -51,8 +45,6 @@ class SearchViewModel(
         }
 
     private val repo = PhotoRepository(context.contentResolver)
-
-    private var initialized = false
 
     init {
         Log.d(TAG, "init!!! SearchViewModel")

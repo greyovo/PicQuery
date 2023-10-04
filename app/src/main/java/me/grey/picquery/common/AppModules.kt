@@ -26,10 +26,7 @@ private val viewModelModules = module {
         )
     }
     viewModel {
-        SearchViewModel(
-            albumManager = get(),
-            imageSearcher = get()
-        )
+        SearchViewModel(imageSearcher = get())
     }
     viewModel {
         DisplayViewModel(photoRepository = get(), imageSearcher = get())

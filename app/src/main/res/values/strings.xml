@@ -4,7 +4,7 @@
     <string name="logo_part1_pic">Pic</string>
     <string name="logo_part2_query">Query</string>
     <string name="permission_tips">We need access to your albums for searching.</string>
-    <string name="no_permission_toast">Unable to obtained permissions</string>
+    <string name="no_permission_toast">Unable to obtain permissions</string>
     <string name="confirm_button">Confirm</string>
     <string name="cancel_button">Cancel</string>
     <string name="ok_button">Okay</string>
@@ -25,11 +25,11 @@
     <string name="empty_search_content_toast">Please enter some keywords</string>
     <string name="ready_for_searching_tips">Ready for searching</string>
     <string name="no_images_found_tips">No photo found</string>
-    <string name="search_placeholder">Describe your desired photo</string>
+    <string name="search_placeholder">Describe your photo</string>
     <string name="busy_when_add_album_toast">We are busy! Please add albums later</string>
     <string name="no_album_selected">No albums selected!</string>
-    <string name="search_range_selection_title">Search range</string>
-    <string name="search_range_selection_subtitle">Filter from the indexed albums</string>
+    <string name="search_range_selection_title">Search Filter</string>
+    <string name="search_range_selection_subtitle">Change the search scope</string>
     <string name="all_albums">All albums</string>
     <string name="title_activity_display">View Photo</string>
     <string name="index_album_btn">Index album</string>
@@ -40,8 +40,8 @@
     <string name="step_1_title">1. Grant permission</string>
     <string name="step_1_detail">Your data stays safe as we are totally offline.</string>
     <string name="step_2_title">2. Index albums</string>
-    <string name="step_2_detail">Select your desired albums for indexing.</string>
+    <string name="step_2_detail">Select the albums for indexing.</string>
     <string name="step_3_title">3. Start searching!</string>
-    <string name="step_3_detail">Search images once the indexing are done.</string>
+    <string name="step_3_detail">Search images once the indexing is done.</string>
     <string name="i_got_it">Got it 👌</string>
 </resources>
