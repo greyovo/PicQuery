@@ -55,6 +55,9 @@ android {
         release {
             signingConfig signingConfigs.release // comment out if you don't need it
             minifyEnabled false
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
