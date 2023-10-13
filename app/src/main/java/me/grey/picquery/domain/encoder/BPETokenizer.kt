@@ -1,12 +1,11 @@
 package me.grey.picquery.domain.encoder
 
 import android.content.Context
-import me.grey.picquery.common.assetFilePath
+import me.grey.picquery.common.AssetUtil
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
-import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 
@@ -28,7 +27,7 @@ private fun createCharDict(): Map<Int, Char> {
 }
 
 private fun readGzipFile(context: Context, assetName: String): List<String> {
-    val filePath = assetFilePath(context, assetName)
+    val filePath = AssetUtil.assetFilePath(context, assetName)
     val result = mutableListOf<String>()
     val inputStream = GZIPInputStream(FileInputStream(File(filePath)))
     val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))

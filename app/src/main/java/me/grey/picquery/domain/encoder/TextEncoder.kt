@@ -5,7 +5,7 @@ import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import ai.onnxruntime.OrtSession.SessionOptions
 import me.grey.picquery.PicQueryApplication.Companion.context
-import me.grey.picquery.common.assetFilePath
+import me.grey.picquery.common.AssetUtil
 import java.nio.IntBuffer
 
 
@@ -23,7 +23,7 @@ class TextEncoder {
         val ortEnv = OrtEnvironment.getEnvironment()
         val options = SessionOptions()
         options.addConfigEntry("session.load_model_format", "ORT")
-        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), options)
+        ortSession = ortEnv?.createSession(AssetUtil.assetFilePath(context, modelPath), options)
     }
 
     fun encode(input: String): FloatArray {

@@ -1,6 +1,11 @@
 package me.grey.picquery.common
 
 import android.widget.Toast
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -28,3 +33,21 @@ fun InitializeEffect(block: suspend CoroutineScope.() -> Unit) {
     }
 }
 
+
+object Animation {
+    /**
+     * Value in ms
+     */
+    private const val DEFAULT_LOW_VELOCITY_SWIPE_DURATION = 150
+
+    private const val DEFAULT_NAVIGATION_ANIMATION_DURATION = 300
+
+    val navigateInAnimation = fadeIn(tween(DEFAULT_NAVIGATION_ANIMATION_DURATION))
+    val navigateUpAnimation = fadeOut(tween(DEFAULT_NAVIGATION_ANIMATION_DURATION))
+
+    fun enterAnimation(durationMillis: Int): EnterTransition =
+        fadeIn(tween(durationMillis))
+
+    fun exitAnimation(durationMillis: Int): ExitTransition =
+        fadeOut(tween(durationMillis))
+}

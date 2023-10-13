@@ -8,9 +8,9 @@ import android.util.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
+import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
-import me.grey.picquery.common.assetFilePath
 import me.grey.picquery.common.bitmapToFloatBuffer
 import java.nio.FloatBuffer
 import java.util.Collections
@@ -33,7 +33,7 @@ class ImageEncoder {
         val ortEnv = OrtEnvironment.getEnvironment()
         val options = OrtSession.SessionOptions()
         options.addConfigEntry("session.load_model_format", "ORT")
-        ortSession = ortEnv?.createSession(assetFilePath(context, modelPath), options)
+        ortSession = ortEnv?.createSession(AssetUtil.assetFilePath(context, modelPath), options)
     }
 
     /**
