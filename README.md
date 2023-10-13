@@ -10,8 +10,10 @@
 
 ## 获取方式
 
-- Google Play： 搜索 “图搜” 或 “PicQuery”，或点击下方链接
-  <a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a> 
+<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a> 
+
+- Google Play： 搜索 “图搜” 或 “PicQuery”，或点击上方链接
+
 - 从本仓库下载：[Release](https://github.com/greyovo/PicQuery/releases)
 
 **其他方式：**

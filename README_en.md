@@ -8,8 +8,9 @@ Search for your local images in the way you normally talk, running completely of
 
 ## Installation
 
-- Google Play - Search for “PicQuery”，or click the button below:
-  <a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-en.png'/></a> 
+<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-en.png'/></a> 
+
+- Google Play - Search for “PicQuery”，or click the button above
 - Download APK from [Release](https://github.com/greyovo/PicQuery/releases)
 
 > For iOS, please refer to *[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)*, the inspiration behind this application, developed and open-sourced by [@mazzzystar](https://github.com/mazzzystar).

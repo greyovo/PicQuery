@@ -23,5 +23,5 @@ local.properties
 venv
 
 # Signature config
-key.properties1
+key.properties
 *.jks
