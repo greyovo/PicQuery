@@ -4,7 +4,15 @@
 
 ![cover_en](assets/cover_en.jpg)
 
-Search for your local images in the way you normally talk, running completely offline
+🔍 Search for your local images with natural language, running completely offline. For example, "a laptop on the desk", "sunset by the sea", "kitty in the grass", and so on.
+
+- Totally free, NO in-app purchases
+- Support both English and Chinese
+- Indexing and searching of images works completely offline without worrying about privacy
+- Show results in less than 1 second when searcing for 8,000+ photos
+- Wait for indexing on the first time you launch, and search immediately afterwards
+
+
 
 ## Installation
 
@@ -13,11 +21,11 @@ Search for your local images in the way you normally talk, running completely of
 - Google Play - Search for “PicQuery”，or click the button above
 - Download APK from [Release](https://github.com/greyovo/PicQuery/releases)
 
-> For iOS, please refer to *[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)*, the inspiration behind this application, developed and open-sourced by [@mazzzystar](https://github.com/mazzzystar).
+> 🍎 For iOS users, please refer to *[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)*, the inspiration behind this application, developed and open-sourced by [@mazzzystar](https://github.com/mazzzystar).
 
 ## Implementation
 
-> Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their assistance during the development of this application. The discussion can be viewed [here](https://github.com/mazzzystar/Queryable/issues/12).
+> Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their assistance during the development. The discussion can be viewed [here](https://github.com/mazzzystar/Queryable/issues/12).
 
 *PicQuery* is powered by OpenAI's [CLIP model](https://github.com/openai/CLIP). 
 
@@ -38,3 +46,8 @@ Put them into `app\src\main\assets` and you're ready to build and run.
 - [mazzzystar/Queryable](https://github.com/mazzzystar/Queryable)
 - [Young-Flash](https://github.com/Young-Flash)
 - [IacobIonut01/Gallery](https://github.com/IacobIonut01/Gallery)
+
+## License
+
+This project is open source under MIT license. All rights reserved.
+
