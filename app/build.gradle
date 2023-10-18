@@ -111,6 +111,9 @@ dependencies {
     implementation 'net.engawapg.lib:zoomable:1.5.0'
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 
+    // Crash Collection
+    implementation 'com.iqiyi.xcrash:xcrash-android-lib:3.0.0'
+
     def koin_android_compose_version = "3.5.0"
     def koin_android_compose_navigation_version = "3.5.0"
     implementation "io.insert-koin:koin-androidx-compose:$koin_android_compose_version"

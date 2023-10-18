@@ -50,6 +50,7 @@ import me.grey.picquery.ui.albums.IndexingAlbumState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import rememberAppBottomSheetState
+import xcrash.XCrash
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -64,9 +65,7 @@ fun HomeScreen(
     if (albumListSheetState.isVisible) {
         AddAlbumBottomSheet(
             sheetState = albumListSheetState,
-            onStartIndexing = {
-                homeViewModel.finishGuide()
-            },
+            onStartIndexing = { homeViewModel.finishGuide() },
         )
     }
     // === BottomSheet end
@@ -96,17 +95,23 @@ fun HomeScreen(
     val showUserGuide = remember { homeViewModel.showUserGuide }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
+    // === UI block
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             val busyToastText = stringResource(R.string.busy_when_add_album_toast)
-            HomeBottomActions(onClickManageAlbum = {
-                if (albumManager.isEncoderBusy) {
-                    showToast(busyToastText)
-                } else {
-                    scope.launch { albumListSheetState.show() }
+            Row {
+                HomeBottomActions(onClickManageAlbum = {
+                    if (albumManager.isEncoderBusy) {
+                        showToast(busyToastText)
+                    } else {
+                        scope.launch { albumListSheetState.show() }
+                    }
+                })
+                TextButton(onClick = { XCrash.testJavaCrash(false) }) {
+                    Text(text = "CRASH!")
                 }
-            })
+            }
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = { EncodingProgressBar() },
@@ -118,7 +123,6 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -126,6 +130,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // Central SearchInput bar
             AnimatedVisibility(visible = !showUserGuide.value) {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -144,6 +149,7 @@ fun HomeScreen(
                 }
             }
 
+            // User Guide
             AnimatedVisibility(visible = showUserGuide.value) {
                 val currentStep = remember { homeViewModel.currentGuideStep }
                 UserGuide(
