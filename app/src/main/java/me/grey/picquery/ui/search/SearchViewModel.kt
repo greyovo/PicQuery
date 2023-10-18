@@ -59,7 +59,7 @@ class SearchViewModel(
         searchText.value = text
         viewModelScope.launch(Dispatchers.Default) {
             _searchState.value = SearchState.SEARCHING
-            imageSearcher.searchWithChinese(text) { ids ->
+            imageSearcher.search(text) { ids ->
                 if (ids != null) {
                     _resultList.value = repo.getPhotoListByIds(ids)
                 }

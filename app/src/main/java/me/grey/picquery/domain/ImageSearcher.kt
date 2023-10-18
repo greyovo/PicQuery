@@ -1,7 +1,6 @@
 package me.grey.picquery.domain
 
 import android.content.ContentResolver
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ImageSearch
@@ -14,9 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
+import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.showToast
 import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
@@ -24,7 +25,6 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
 import java.nio.FloatBuffer
@@ -107,14 +107,14 @@ class ImageSearcher(
             }
         }, 50, 500)
 
+        Log.d(TAG, "Started encoding PhotoList ...")
         for (photo in photos) {
-//            Log.d(TAG, photo.toString())
-            // ====
-//            Log.d(TAG, "Use: contentResolver")
-//            val start = System.currentTimeMillis() // REMOVE
             startTime = System.currentTimeMillis()
-            val thumbnailBitmap = contentResolver.loadThumbnail(photo.uri, IMAGE_INPUT_SIZE, null)
-//            Log.d(TAG, "load: ${System.currentTimeMillis() - start}ms") // REMOVE
+            val thumbnailBitmap = loadThumbnail(context, photo)
+            if (thumbnailBitmap == null) {
+                Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
+                continue
+            }
             val feat: FloatBuffer = imageEncoder.encode(thumbnailBitmap)
             listToUpdate.add(
                 Embedding(
@@ -126,6 +126,7 @@ class ImageSearcher(
             count++
             cost = System.currentTimeMillis() - startTime
         }
+        Log.d(TAG, "Finished encoding PhotoList.")
         embeddingRepository.updateAll(listToUpdate)
         encodingLock = false
         progressCallback?.invoke(
@@ -137,22 +138,7 @@ class ImageSearcher(
         return true
     }
 
-    suspend fun encodeBatch(imageBitmaps: List<Bitmap>) {
-        if (encodingLock) {
-            Log.w(TAG, "encodePhotoList: Already encoding!")
-            return
-        }
-        encodingLock = true
-        val batchResult = mutableListOf<Embedding>()
-        for (bitmap in imageBitmaps) {
-            val feat: FloatBuffer = imageEncoder.encode(bitmap)
-            batchResult.add(Embedding(photoId = 11, albumId = 11, data = feat.toByteArray()))
-        }
-        embeddingRepository.updateAll(batchResult)
-        encodingLock = false
-    }
-
-    suspend fun searchWithChinese(
+    suspend fun search(
         text: String,
         range: List<Album> = searchRange,
         onSuccess: suspend (List<Long>?) -> Unit,
@@ -161,13 +147,13 @@ class ImageSearcher(
             text,
             onSuccess = { translatedText ->
                 CoroutineScope(Dispatchers.Default).launch {
-                    val res = search(translatedText, range)
+                    val res = searchWithRange(translatedText, range)
                     onSuccess(res)
                 }
             },
             onError = {
                 CoroutineScope(Dispatchers.Default).launch {
-                    val res = search(text, range)
+                    val res = searchWithRange(text, range)
                     onSuccess(res)
                 }
                 Log.e("MLTranslator", "中文->英文翻译出错！\n${it.message}")
@@ -176,7 +162,10 @@ class ImageSearcher(
         )
     }
 
-    suspend fun search(text: String, range: List<Album> = searchRange): List<Long>? {
+    private suspend fun searchWithRange(
+        text: String,
+        range: List<Album> = searchRange
+    ): List<Long>? {
         return withContext(Dispatchers.Default) {
             if (searchingLock) {
                 return@withContext null
@@ -195,11 +184,7 @@ class ImageSearcher(
             }
             Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
             for (emb in embeddings) {
-//            Log.i(TAG, "imageFeat ${emb.data.toFloatArray().joinToString()}")
                 val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
-//            val sim = sphericalDistLoss(emb.data.toFloatArray(), textFeat)
-//            val sim = Cosine.similarity(emb.data.toFloatArray(), textFeat)
-//                insertDescending(photoResults, Pair(emb.photoId, sim))
                 if (sim >= matchThreshold.floatValue) {
                     insertDescending(photoResults, Pair(emb.photoId, sim))
                 }
