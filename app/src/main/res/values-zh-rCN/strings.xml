@@ -51,4 +51,5 @@
     <string name="share_anonymous_data">分享匿名运行数据</string>
     <string name="share_anonymous_data_statement">仅用于改善图搜的使用体验，不含任何个人信息。</string>
     <string name="skip">稍后设置</string>
+    <string name="external_storage">[外部存储]</string>
 </resources>

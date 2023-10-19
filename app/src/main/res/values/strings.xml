@@ -50,4 +50,5 @@
     <string name="share_anonymous_data">Send running data</string>
     <string name="share_anonymous_data_statement">For improving your experience. Not containing any personal data</string>
     <string name="skip">Later…</string>
+    <string name="external_storage">[External Storage]</string>
 </resources>
