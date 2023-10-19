@@ -112,7 +112,8 @@ dependencies {
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
 
     // Crash Collection
-    implementation 'com.iqiyi.xcrash:xcrash-android-lib:3.0.0'
+//    implementation 'com.iqiyi.xcrash:xcrash-android-lib:3.0.0'
+    implementation 'com.tencent.bugly:crashreport:4.1.9.2'
 
     def koin_android_compose_version = "3.5.0"
     def koin_android_compose_navigation_version = "3.5.0"
@@ -135,4 +136,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // To use Kotlin Symbol Processing (KSP)
     ksp "androidx.room:room-compiler:$room_version"
+
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }

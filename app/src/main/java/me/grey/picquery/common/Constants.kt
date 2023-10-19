@@ -16,4 +16,6 @@ object Constants {
     } else {
         PERMISSION_OLD
     }
+
+    const val BUGLY_APP_ID = "390e55b27f"
 }
