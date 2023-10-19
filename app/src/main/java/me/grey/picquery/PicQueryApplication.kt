@@ -3,8 +3,6 @@ package me.grey.picquery
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import me.grey.picquery.common.AppModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -28,13 +26,5 @@ class PicQueryApplication : Application() {
             modules(AppModules)
         }
     }
-
-    // =========
-
-    private val showAgreement = mutableStateOf(false)
-
-    @Composable
-    fun AgreementDialog() {
-
-    }
 }
+

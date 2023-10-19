@@ -1,5 +1,6 @@
 package me.grey.picquery.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,24 +22,32 @@ class HomeViewModel(
     private val albumManager: AlbumManager,
 ) : ViewModel() {
 
+    companion object {
+        private const val TAG = "HomeViewModel"
+    }
+
     val searchText = mutableStateOf("")
 
-    val showUserGuide = mutableStateOf(false)
+    val userGuideVisible = mutableStateOf(false)
 
     val currentGuideState = mutableStateOf(UserGuideTaskState())
 
     init {
         viewModelScope.launch {
             if (!imageSearcher.hasEmbedding()) {
-                showUserGuide.value = true
+                userGuideVisible.value = true
             } else {
-                currentGuideState.value =
-                    UserGuideTaskState(permissionDone = true, indexDone = true)
+                currentGuideState.value = currentGuideState.value.copy(indexDone = true)
             }
         }
     }
 
+    fun showUserGuide() {
+        userGuideVisible.value = true
+    }
+
     fun doneRequestPermission() {
+        Log.d(TAG, "doneRequestPermission")
         currentGuideState.value = currentGuideState.value.copy(permissionDone = true)
     }
 
@@ -47,7 +56,7 @@ class HomeViewModel(
     }
 
     fun finishGuide() {
-        showUserGuide.value = false
+        userGuideVisible.value = false
     }
 
     /**

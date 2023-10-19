@@ -30,9 +30,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import me.grey.picquery.R
+import me.grey.picquery.common.InitializeEffect
+import org.koin.androidx.compose.koinViewModel
 import java.lang.Float.min
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun UserGuide(
     modifier: Modifier,
@@ -40,7 +44,14 @@ fun UserGuide(
     onOpenAlbum: () -> Unit,
     onFinish: () -> Unit,
     state: UserGuideTaskState,
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
+    val mediaPermissions = rememberMediaPermissions()
+    InitializeEffect() {
+        if (mediaPermissions.allPermissionsGranted) {
+            homeViewModel.doneRequestPermission()
+        }
+    }
     Column(modifier) {
         ListItem(
             leadingContent = {
@@ -62,6 +73,7 @@ fun UserGuide(
         // Step 1
         StepListItem(
             stepNumber = 1,
+            enabled = true,
             finished = state.permissionDone,
             icon = Icons.Default.Key,
             title = stringResource(R.string.step_1_title),
@@ -71,6 +83,7 @@ fun UserGuide(
         // Step 2
         StepListItem(
             stepNumber = 2,
+            enabled = state.permissionDone,
             finished = state.indexDone,
             icon = Icons.Default.PhotoAlbum,
             title = stringResource(R.string.step_2_title),
@@ -81,6 +94,7 @@ fun UserGuide(
         // Step 3
         StepListItem(
             stepNumber = 3,
+            enabled = state.permissionDone && state.indexDone,
             finished = false,
             icon = Icons.Default.Search,
             title = stringResource(R.string.step_3_title),
@@ -88,21 +102,26 @@ fun UserGuide(
             onClick = { onFinish() }
         )
 
-        if (state.allFinished) {
-            Box(modifier = Modifier.height(15.dp))
-            Button(
-                onClick = { onFinish() },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = stringResource(R.string.i_got_it))
-            }
+
+        Box(modifier = Modifier.height(15.dp))
+        Button(
+            enabled = state.permissionDone,
+            onClick = { onFinish() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            val text =
+                if (state.allFinished) stringResource(R.string.i_got_it)
+                else stringResource(R.string.skip)
+            Text(text = text)
         }
+
     }
 }
 
 @Composable
 private fun StepListItem(
     stepNumber: Int,
+    enabled: Boolean,
     finished: Boolean,
     title: String,
     subtitle: String,
@@ -112,11 +131,13 @@ private fun StepListItem(
     val background =
         when {
             finished -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+            !enabled -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f)
             else -> MaterialTheme.colorScheme.primaryContainer
         }
     val color =
         when {
             finished -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.45f)
+            !enabled -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
             else -> MaterialTheme.colorScheme.onPrimaryContainer
         }
 
@@ -132,10 +153,10 @@ private fun StepListItem(
     OutlinedCard(
         modifier = Modifier
             .padding(vertical = 4.dp),
-        border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.2f, 1f))),
+        border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.1f, 1f))),
     ) {
         ListItem(
-            modifier = Modifier.clickable(enabled = !finished) { onClick() },
+            modifier = Modifier.clickable(enabled = enabled) { onClick() },
             colors = ListItemDefaults.colors(
                 containerColor = background
             ),
