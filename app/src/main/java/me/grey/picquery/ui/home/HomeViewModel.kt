@@ -1,6 +1,5 @@
 package me.grey.picquery.ui.home
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,14 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
+
+data class UserGuideTaskState(
+    val permissionDone: Boolean = false,
+    val indexDone: Boolean = false,
+) {
+    val allFinished: Boolean
+        get() = permissionDone && indexDone
+}
 
 class HomeViewModel(
     private val imageSearcher: ImageSearcher,
@@ -18,28 +25,29 @@ class HomeViewModel(
 
     val showUserGuide = mutableStateOf(false)
 
-    val currentGuideStep = mutableIntStateOf(1)
+    val currentGuideState = mutableStateOf(UserGuideTaskState())
 
     init {
         viewModelScope.launch {
             if (!imageSearcher.hasEmbedding()) {
                 showUserGuide.value = true
+            } else {
+                currentGuideState.value =
+                    UserGuideTaskState(permissionDone = true, indexDone = true)
             }
         }
     }
 
     fun doneRequestPermission() {
-        currentGuideStep.intValue = 2
-        viewModelScope.launch {
-            if (imageSearcher.hasEmbedding()) {
-                finishGuide()
-            }
-        }
+        currentGuideState.value = currentGuideState.value.copy(permissionDone = true)
+    }
+
+    fun doneIndexAlbum() {
+        currentGuideState.value = currentGuideState.value.copy(indexDone = true)
     }
 
     fun finishGuide() {
         showUserGuide.value = false
-        currentGuideStep.intValue = 3
     }
 
     /**

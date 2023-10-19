@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -38,19 +36,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
-import me.grey.picquery.common.Constants
-import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.common.showToast
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.albums.IndexingAlbumState
+import me.grey.picquery.ui.rememberMediaPermissions
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import rememberAppBottomSheetState
-import xcrash.XCrash
 
 @OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -65,32 +60,11 @@ fun HomeScreen(
     if (albumListSheetState.isVisible) {
         AddAlbumBottomSheet(
             sheetState = albumListSheetState,
-            onStartIndexing = { homeViewModel.finishGuide() },
+            onStartIndexing = { homeViewModel.doneIndexAlbum() },
         )
     }
     // === BottomSheet end
-
-    // === Permission handling block
     val scope = rememberCoroutineScope()
-    val mediaPermissions =
-        rememberMultiplePermissionsState(
-            permissions = Constants.PERMISSIONS,
-            onPermissionsResult = { permission ->
-                if (permission.all { it.value }) {
-                    scope.launch { albumManager.initAllAlbumList() }
-                    homeViewModel.doneRequestPermission()
-                }
-            },
-        )
-    InitializeEffect {
-        if (!mediaPermissions.allPermissionsGranted) {
-            mediaPermissions.launchMultiplePermissionRequest()
-        } else {
-            homeViewModel.doneRequestPermission()
-            albumManager.initAllAlbumList()
-        }
-    }
-    // === Permission handling end
 
     val showUserGuide = remember { homeViewModel.showUserGuide }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -100,18 +74,16 @@ fun HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             val busyToastText = stringResource(R.string.busy_when_add_album_toast)
-            Row {
-                HomeBottomActions(onClickManageAlbum = {
+            HomeBottomActions(
+                onClickManageAlbum = {
                     if (albumManager.isEncoderBusy) {
                         showToast(busyToastText)
                     } else {
                         scope.launch { albumListSheetState.show() }
                     }
-                })
-                TextButton(onClick = { XCrash.testJavaCrash(false) }) {
-                    Text(text = "CRASH!")
-                }
-            }
+                },
+                navigateToSetting = navigateToSetting,
+            )
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = { EncodingProgressBar() },
@@ -151,38 +123,20 @@ fun HomeScreen(
 
             // User Guide
             AnimatedVisibility(visible = showUserGuide.value) {
-                val currentStep = remember { homeViewModel.currentGuideStep }
+                val currentStep = remember { homeViewModel.currentGuideState }
+                val mediaPermissions = rememberMediaPermissions()
                 UserGuide(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     onRequestPermission = { mediaPermissions.launchMultiplePermissionRequest() },
                     onOpenAlbum = { scope.launch { albumListSheetState.show() } },
                     onFinish = { homeViewModel.finishGuide() },
-                    currentStep = currentStep.intValue
+                    state = currentStep.value,
                 )
             }
 
         }
     }
 
-}
-
-@Composable
-private fun HomeBottomActions(
-    onClickManageAlbum: () -> Unit,
-) {
-    TextButton(
-        onClick = { onClickManageAlbum() },
-        modifier = Modifier.padding(bottom = 15.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(imageVector = Icons.Default.Photo, contentDescription = "")
-            Box(modifier = Modifier.width(5.dp))
-            Text(text = stringResource(R.string.index_album_btn))
-        }
-    }
 }
 
 @Composable

@@ -39,7 +39,7 @@ fun UserGuide(
     onRequestPermission: () -> Unit,
     onOpenAlbum: () -> Unit,
     onFinish: () -> Unit,
-    currentStep: Int,
+    state: UserGuideTaskState,
 ) {
     Column(modifier) {
         ListItem(
@@ -62,7 +62,7 @@ fun UserGuide(
         // Step 1
         StepListItem(
             stepNumber = 1,
-            currentStep = currentStep,
+            finished = state.permissionDone,
             icon = Icons.Default.Key,
             title = stringResource(R.string.step_1_title),
             subtitle = stringResource(R.string.step_1_detail),
@@ -71,7 +71,7 @@ fun UserGuide(
         // Step 2
         StepListItem(
             stepNumber = 2,
-            currentStep = currentStep,
+            finished = state.indexDone,
             icon = Icons.Default.PhotoAlbum,
             title = stringResource(R.string.step_2_title),
             subtitle = stringResource(R.string.step_2_detail),
@@ -81,14 +81,14 @@ fun UserGuide(
         // Step 3
         StepListItem(
             stepNumber = 3,
-            currentStep = currentStep,
+            finished = false,
             icon = Icons.Default.Search,
             title = stringResource(R.string.step_3_title),
             subtitle = stringResource(R.string.step_3_detail),
-            onClick = {}
+            onClick = { onFinish() }
         )
 
-        if (currentStep == 3) {
+        if (state.allFinished) {
             Box(modifier = Modifier.height(15.dp))
             Button(
                 onClick = { onFinish() },
@@ -103,7 +103,7 @@ fun UserGuide(
 @Composable
 private fun StepListItem(
     stepNumber: Int,
-    currentStep: Int,
+    finished: Boolean,
     title: String,
     subtitle: String,
     icon: ImageVector,
@@ -111,15 +111,13 @@ private fun StepListItem(
 ) {
     val background =
         when {
-            currentStep > stepNumber -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
-            currentStep == stepNumber -> MaterialTheme.colorScheme.primaryContainer
-            else -> MaterialTheme.colorScheme.background.copy(alpha = 0.45f)
+            finished -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+            else -> MaterialTheme.colorScheme.primaryContainer
         }
     val color =
         when {
-            currentStep > stepNumber -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.45f)
-            currentStep == stepNumber -> MaterialTheme.colorScheme.onPrimaryContainer
-            else -> MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
+            finished -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.45f)
+            else -> MaterialTheme.colorScheme.onPrimaryContainer
         }
 
     val textStyle = TextStyle(color = color)
@@ -137,12 +135,12 @@ private fun StepListItem(
         border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.2f, 1f))),
     ) {
         ListItem(
-            modifier = Modifier.clickable(enabled = currentStep == stepNumber) { onClick() },
+            modifier = Modifier.clickable(enabled = !finished) { onClick() },
             colors = ListItemDefaults.colors(
                 containerColor = background
             ),
             leadingContent = {
-                if (currentStep > stepNumber) {
+                if (finished) {
                     finishIcon()
                 } else {
                     Icon(
