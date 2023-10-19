@@ -17,29 +17,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.grey.picquery.R
 
+private const val DEFAULT_LOGO_SIZE = 35f
+
 @Composable
-fun LogoRow(modifier: Modifier = Modifier, size: Float = 35f) {
+fun LogoRow(modifier: Modifier = Modifier, size: Float = DEFAULT_LOGO_SIZE) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
     ) {
-        val textStyle =
-            TextStyle(fontSize = size.sp, color = MaterialTheme.colorScheme.onBackground)
-        Image(
-//            imageVector=load
-            painter = painterResource(id = R.drawable.ic_logo),
-            modifier = Modifier.size((size + 5).dp),
-            contentDescription = "logo"
-        )
+        LogoImage(size = size + 5)
         Box(modifier = Modifier.width(12.dp))
+        LogoText(size = size)
+    }
+}
+
+@Composable
+fun LogoImage(modifier: Modifier = Modifier, size: Float = DEFAULT_LOGO_SIZE + 5) {
+    Image(
+        painter = painterResource(id = R.drawable.ic_logo),
+        modifier = modifier.size(size.dp),
+        contentDescription = "logo"
+    )
+}
+
+@Composable
+fun LogoText(modifier: Modifier = Modifier, size: Float = DEFAULT_LOGO_SIZE) {
+    val textStyle =
+        TextStyle(fontSize = size.sp, color = MaterialTheme.colorScheme.onBackground)
+    Row(modifier = modifier) {
         Text(text = stringResource(R.string.logo_part1_pic), style = textStyle)
-//        Icon(
-//            imageVector = Icons.Filled.Search,
-//            contentDescription = "搜索",
-//            modifier = Modifier.size((fontSize + 10).dp),
-//            tint = MaterialTheme.colorScheme.primary
-//        )
         Text(
             text = stringResource(R.string.logo_part2_query), style = textStyle.copy(
                 fontWeight = FontWeight.Bold,
