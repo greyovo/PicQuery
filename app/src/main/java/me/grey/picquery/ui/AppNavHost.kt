@@ -14,6 +14,7 @@ import me.grey.picquery.common.Routes
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
 import me.grey.picquery.ui.search.SearchScreen
+import me.grey.picquery.ui.setting.SettingScreen
 
 @Composable
 fun AppNavHost(
@@ -35,7 +36,7 @@ fun AppNavHost(
                 navigateToSearch = { query ->
                     navController.navigate("${Routes.Search.name}/${query}")
                 },
-                navigateToSetting = { /* TODO */ },
+                navigateToSetting = { navController.navigate(Routes.Setting.name) },
             )
         }
         composable("${Routes.Search.name}/{query}") {
@@ -59,6 +60,11 @@ fun AppNavHost(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
+            )
+        }
+        composable(Routes.Setting.name) {
+            SettingScreen(
+                onNavigateBack = { navController.popBackStack() },
             )
         }
     }

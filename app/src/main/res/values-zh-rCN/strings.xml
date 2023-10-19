@@ -45,4 +45,9 @@
     <string name="step_3_title">3. 开始搜索！</string>
     <string name="step_3_detail">等待索引完成后，即可搜索需要的图片</string>
     <string name="i_got_it">我知道了 👌</string>
+    <string name="privacy_statement_dialog">❤️ 感谢您下载并使用图搜！图搜在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。</string>
+    <string name="privacy_statement_agree">同意</string>
+    <string name="privacy_statement_decline">不同意并退出</string>
+    <string name="share_anonymous_data">分享匿名运行数据</string>
+    <string name="share_anonymous_data_statement">仅用于改善图搜的使用体验，不含任何个人信息。</string>
 </resources>
