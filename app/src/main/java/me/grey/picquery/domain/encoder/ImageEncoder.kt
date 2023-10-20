@@ -4,10 +4,11 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.graphics.Bitmap
+import android.util.Log
 import android.util.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication.Companion.context
+import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
@@ -22,17 +23,19 @@ val IMAGE_INPUT_SIZE = Size(224, 224)
 
 class ImageEncoder {
     companion object {
+        private const val TAG = "ImageEncoder"
         private const val modelPath = "clip-image-int8.ort"
         private const val floatBufferElementCount = 3 * 224 * 224
     }
 
     private var ortSession: OrtSession? = null
 
+    private var options = OrtSession.SessionOptions().apply {
+        addConfigEntry("session.load_model_format", "ORT")
+    }
+
     init {
-        val ortEnv = OrtEnvironment.getEnvironment()
-        val options = OrtSession.SessionOptions()
-        options.addConfigEntry("session.load_model_format", "ORT")
-        ortSession = ortEnv?.createSession(AssetUtil.assetFilePath(context, modelPath), options)
+        Log.d(TAG, "Init $TAG")
     }
 
     /**
@@ -87,6 +90,14 @@ class ImageEncoder {
 
 
     suspend fun encode(bitmap: Bitmap) = withContext<FloatBuffer>(Dispatchers.Default) {
+        val ortEnv = OrtEnvironment.getEnvironment()
+        if (ortSession == null) {
+            ortSession = ortEnv.createSession(
+                AssetUtil.assetFilePath(PicQueryApplication.context, modelPath),
+                options
+            )
+        }
+
         val imageBitmap = preprocess(bitmap)
         val floatBuffer = allocateFloatBuffer(floatBufferElementCount)
         floatBuffer.rewind()
@@ -104,8 +115,7 @@ class ImageEncoder {
 
         val inputName = ortSession?.inputNames?.iterator()?.next()
         val shape: LongArray = longArrayOf(1, 3, 224, 224)
-        val env = OrtEnvironment.getEnvironment()
-        env.use {
+        ortEnv.use { env ->
             val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
             val output: OrtSession.Result? =
                 ortSession?.run(Collections.singletonMap(inputName, tensor))
