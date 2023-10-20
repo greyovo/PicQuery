@@ -104,6 +104,7 @@ class MainActivity : ComponentActivity() {
             val enable = preferenceRepo.getEnableUploadLog().first()
             if (enable) {
                 Log.d(TAG, "Enable CrashReport")
+                CrashReport.setDeviceId(applicationContext, preferenceRepo.getDeviceId())
                 CrashReport.initCrashReport(applicationContext, BUGLY_APP_ID, false)
             } else {
                 Log.d(TAG, "Disable CrashReport")

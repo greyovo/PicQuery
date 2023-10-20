@@ -24,9 +24,13 @@
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
+# PicQuery
 -keep class me.grey.picquery.**{*;}
 
 # DataStore
 -keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
     <fields>;
 }
+
+# ONNX Runtime
+-keep class ai.onnxruntime.**{*;}
