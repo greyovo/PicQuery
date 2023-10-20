@@ -23,6 +23,7 @@ val IMAGE_INPUT_SIZE = Size(224, 224)
 class ImageEncoder {
     companion object {
         private const val modelPath = "clip-image-int8.ort"
+        private const val floatBufferElementCount = 3 * 224 * 224
     }
 
     private var ortSession: OrtSession? = null
@@ -84,15 +85,13 @@ class ImageEncoder {
         return res
     }
 
+
     suspend fun encode(bitmap: Bitmap) = withContext<FloatBuffer>(Dispatchers.Default) {
-        val imgData = preprocess(bitmap)
-//        saveBitMap(context, imgData, "decodeSampledBitmapFromFile")
-        val start = System.currentTimeMillis()
-        val floatBuffer = allocateFloatBuffer(3 * 224 * 224)
+        val imageBitmap = preprocess(bitmap)
+        val floatBuffer = allocateFloatBuffer(floatBufferElementCount)
         floatBuffer.rewind()
-//        TensorImageUtils.bitmapToFloatBuffer(
         bitmapToFloatBuffer(
-            imgData,
+            imageBitmap,
             0, 0,
             224, 224,
             normMeanRGB,
@@ -102,20 +101,14 @@ class ImageEncoder {
             MemoryFormat.CONTIGUOUS,
         )
         floatBuffer.rewind()
-//        Log.d("bitmapToBuffer", "${System.currentTimeMillis() - start} ms")
 
-//        val imgDataShort = floatBufferToFloat16Buffer(imgData)
-//        Log.d("ONNX imgData size", imgData.limit().toString())
-//        Log.d("ONNX imgDataShort size", imgDataShort.limit().toString())
         val inputName = ortSession?.inputNames?.iterator()?.next()
         val shape: LongArray = longArrayOf(1, 3, 224, 224)
         val env = OrtEnvironment.getEnvironment()
         env.use {
             val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
-//            val start2 = System.currentTimeMillis()
             val output: OrtSession.Result? =
                 ortSession?.run(Collections.singletonMap(inputName, tensor))
-//            Log.d("ONNX cost", "${System.currentTimeMillis() - start2} ms")
             val resultBuffer = output?.get(0) as OnnxTensor
             return@withContext (resultBuffer.floatBuffer)
         }
