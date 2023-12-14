@@ -1,12 +1,16 @@
 package me.grey.picquery.common
 
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.grey.picquery.PicQueryApplication
 import java.io.*
 
 object AssetUtil {
+
+    private const val TAG = "AssetUtil"
 
     suspend fun copyAssetsFolder(context: Context, sourceAsset: String, targetFolder: File) {
         try {
@@ -68,10 +72,26 @@ object AssetUtil {
 
     @Throws(IOException::class)
     fun assetFilePath(context: Context, assetName: String): String {
-        val file = File(context.filesDir, assetName)
-        if (file.exists() && file.length() > 0) {
-            return file.absolutePath
+        // 判断本地文件是否存在且有效
+        var inputLength: Long
+        try {
+            val assetStream = PicQueryApplication.context.assets.open(assetName)
+            inputLength = assetStream.available().toLong()
+            assetStream?.close()
+        } catch (e: IOException) {
+            Log.e(TAG, "assetFilePath: ", e)
+            return ""
         }
+        val file = File(context.filesDir, assetName)
+        val outputLength = file.length()
+        if (file.exists() && outputLength > 0) {
+            if (outputLength == inputLength) {
+                return file.absolutePath
+            } else {
+                file.writeText("")
+            }
+        }
+
         return try {
             runBlocking { copyAssetFile(context, assetName, file) }
             file.absolutePath
