@@ -60,10 +60,10 @@ class PreferenceRepository {
             }
     }
 
-    suspend fun acceptAgreement() {
+    suspend fun acceptAgreement(enableUploadLog: Boolean = true) {
         context.dataStore.edit { settings ->
             settings[ACCEPT_AGREEMENT] = true
-            settings[ENABLE_UPLOAD_LOG] = true
+            settings[ENABLE_UPLOAD_LOG] = enableUploadLog
         }
     }
 

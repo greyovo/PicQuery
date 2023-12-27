@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -15,12 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
-import com.tencent.bugly.crashreport.CrashReport
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import me.grey.picquery.R
-import me.grey.picquery.common.Constants.BUGLY_APP_ID
 import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.theme.PicQueryThemeM3
@@ -41,17 +38,13 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            val agreeState = remember {
-                mutableStateOf(runBlocking { agreeStateFlow.first() })
-            }
-            if (agreeState.value) {
-                initBugly()
-            }
+            val agreeState = remember { mutableStateOf(true) }
 
             InitializeEffect {
                 lifecycleScope.launch {
                     agreeStateFlow.collect { agree ->
                         agreeState.value = agree
+                        Log.d(TAG, "onCreate: $agreeState")
                     }
                 }
             }
@@ -79,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 },
                 title = { Text("欢迎使用图搜") },
                 confirmButton = {
-                    TextButton(onClick = {
+                    Button(onClick = {
                         lifecycleScope.launch {
                             preferenceRepo.acceptAgreement()
                         }
@@ -88,27 +81,15 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { finish() }) {
+                    TextButton(onClick = {
+                        lifecycleScope.launch {
+                            preferenceRepo.acceptAgreement(enableUploadLog = false)
+                        }
+                    }) {
                         Text(text = stringResource(id = R.string.privacy_statement_decline))
                     }
                 },
             )
-        }
-    }
-
-    /**
-     * Bugly, a crash reporter
-    * */
-    private fun initBugly() {
-        lifecycleScope.launch {
-            val enable = preferenceRepo.getEnableUploadLog().first()
-            if (enable) {
-                Log.d(TAG, "Enable CrashReport")
-                CrashReport.setDeviceId(applicationContext, preferenceRepo.getDeviceId())
-                CrashReport.initCrashReport(applicationContext, BUGLY_APP_ID, false)
-            } else {
-                Log.d(TAG, "Disable CrashReport")
-            }
         }
     }
 }

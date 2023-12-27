@@ -44,9 +44,9 @@
     <string name="step_3_title">3. Start searching!</string>
     <string name="step_3_detail">Search images once the indexing is done.</string>
     <string name="i_got_it">Got it 👌</string>
-    <string name="privacy_statement_dialog">❤️ Thanks for installing PicQuery! During your using with the application, we follow our PicQuery Privacy Policy.  \n\nWe may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.</string>
-    <string name="privacy_statement_agree">Accept</string>
-    <string name="privacy_statement_decline">Decline and quit</string>
+    <string name="privacy_statement_dialog">❤️ Thanks for installing PicQuery! During your usage with our application, we follow our PicQuery Privacy Policy.    We may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.</string>
+    <string name="privacy_statement_agree">Sure</string>
+    <string name="privacy_statement_decline">Don\'t send</string>
     <string name="share_anonymous_data">Send running data</string>
     <string name="share_anonymous_data_statement">For improving your experience. Not containing any personal data</string>
     <string name="skip">Later…</string>
