@@ -16,9 +16,9 @@
 
 ## 获取方式
 
-<!-- a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a--> 
+<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a> 
 
-- ~~Google Play： 搜索 “图搜” 或 “PicQuery”~~ 开发者账号被莫名其妙封禁，能不能恢复随缘吧 :)
+- Google Play： 搜索 “图搜” 或 “PicQuery”
 - 从本仓库下载：[Release](https://github.com/greyovo/PicQuery/releases)
 
 **其他方式：**
