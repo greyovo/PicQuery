@@ -36,7 +36,8 @@ fun HomeBottomActions(
         VerticalDivider(
             Modifier
                 .height(20.dp)
-                .padding(horizontal = 5.dp))
+                .padding(horizontal = 5.dp)
+        )
         SettingButton(onClick = navigateToSetting)
     }
 }
@@ -56,13 +57,8 @@ private fun IndexAlbumButton(onClick: () -> Unit) {
     TextButton(
         onClick = { onClick() },
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(imageVector = Icons.Default.Photo, contentDescription = "")
-            Box(modifier = Modifier.width(5.dp))
-            Text(text = stringResource(R.string.index_album_btn))
-        }
+        Icon(imageVector = Icons.Default.Photo, contentDescription = "")
+        Box(modifier = Modifier.width(5.dp))
+        Text(text = stringResource(R.string.index_album_btn))
     }
 }
