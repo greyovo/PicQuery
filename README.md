@@ -1,68 +1,57 @@
-# 图搜 PicQuery
+# PicQuery
 
-中文 | [English](README_en.md)
+[中文](README_zh.md)| English
 
-![cover_cn](assets/cover_cn.jpg)
+![cover_en](assets/cover_en.jpg)
 
-🔍 用平常说话的方式搜索本地相册中的图片——无需联网、本地运行
+🔍 Search for your local images with natural language, running completely offline. For example, "a laptop on the desk", "sunset by the sea", "kitty in the grass", and so on.
 
-借助图搜，您可以用平常说话的方式来搜索手机里的照片。例如：“草丛中的猫咪”、“桌上的笔记本电脑”、“粉色衣服的女孩”，等等。
-
-- 完全免费，没有任何内购
-- 对图像的索引和搜索完全离线运行，无需担心隐私安全
-- 支持中英双语搜索
-- 为移动设备专门优化的模型，上万张照片也能1秒呈现结果
-- 只需要首次使用时进行索引，后续即可立刻搜索
-
-## 获取方式
-
-<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a> 
-
-- Google Play： 搜索 “图搜” 或 “PicQuery”
-- 从本仓库下载：[Release](https://github.com/greyovo/PicQuery/releases)
-
-**其他方式：**
-
-- [蒲公英内测分发](https://www.pgyer.com/picquery)（每日500次下载）
-- 镜像站加速：将 [Release](https://github.com/greyovo/PicQuery/releases) 中的文件下载链接复制到 [GitHub Proxy](https://ghproxy.com/) 中下载
-- 国内应用市场（待上线）
-
-> 🍎 iOS 用户请使用 [“寻隐”](https://apps.apple.com/cn/app/寻隐-用句子描述找照片/id1664361663)，它是图搜的灵感来源，由 [@mazzzystar](https://github.com/mazzzystar) 开发并开源。
+- Totally free, NO in-app purchases
+- Support both English and Chinese
+- Indexing and searching of images works completely offline without worrying about privacy
+- Show results in less than 1 second when searcing for 8,000+ photos
+- Wait for indexing on the first time you launch, and search immediately afterwards
 
 
 
-## 实现原理
+## Installation
 
-> 感谢 [@mazzzystar](https://github.com/mazzzystar) 和 [@Young-Flash](https://github.com/Young-Flash) 在本应用开发过程中的[协助与讨论](https://github.com/mazzzystar/Queryable/issues/12)。
+<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-en.png'/></a> 
 
-本应用基于 OpenAI 的 [CLIP 模型](https://github.com/openai/CLIP) 实现。
+- Google Play - Search for “PicQuery”，or click the button above
+- Download APK from [Release](https://github.com/greyovo/PicQuery/releases)
 
-首先将要搜索的图片通过图像编码器编码为向量，并存储到数据库中；将用户搜索时提供的文字也编码为向量，与已索引的图片向量遍历计算相似度，选取 TopK 相似度的图像集合作为查询结果。
+> 🍎 For iOS users, please refer to *[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)*, the inspiration behind this application, developed and open-sourced by [@mazzzystar](https://github.com/mazzzystar).
 
+## Implementation
 
+> Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their assistance during the development. The discussion can be viewed [here](https://github.com/mazzzystar/Queryable/issues/12).
 
-## 构建运行
+*PicQuery* is powered by OpenAI's [CLIP model](https://github.com/openai/CLIP). 
 
-要构建运行本项目，需要获取量化后的 CLIP 模型。在 Colab 中 运行此 [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb)，依次运行其中的脚本。当运行到 “You are done” 章节，应该可以在运行环境的 `result` 目录中分别得到：
+First, the images to be searched are encoded into vectors using an image encoder and stored in a database. The text provided by the user during the search is also encoded into a vector. The encoded text vector is then compared with the indexed image vectors to calculate the similarity. The top K images with the highest similarity scores are selected as the query results.
+
+## Build & Run
+
+To build this project, you need to obtain a quantized CLIP model. 
+
+Run the scripts in this [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb) step by step. When you run into the *"You are done"* section, you should get the following model files in `./result ` directory:
 
 - `clip-image-int8.ort`
 - `clip-text-int8.ort`
 
-> 如果不想运行脚本，也可以在 [谷歌云盘](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link) 中直接下载这两个模型。
+> If you don't want to run the scripts, you may directly download them from [Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link).
 
-将它们放入 `app\src\main\assets` 中，即可构建和运行。
-
-
+Put them into `app\src\main\assets` and you're ready to build and run.
 
 
-## 鸣谢
+## Acknowledgement
 
 - [mazzzystar/Queryable](https://github.com/mazzzystar/Queryable)
 - [Young-Flash](https://github.com/Young-Flash)
 - [IacobIonut01/Gallery](https://github.com/IacobIonut01/Gallery)
 
+## License
 
+This project is open source under MIT license. All rights reserved.
 
-## 开源协议
-
-本项目基于 MIT 许可协议开源，保留所有权利。
