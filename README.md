@@ -18,9 +18,9 @@
 
 - Google Play - Search for “PicQuery”
 - Download APK from [Release](https://github.com/greyovo/PicQuery/releases)
-- If you have trouble accessing the above resource, please see [here](README_zh.md##其他方式)
+- If you have trouble accessing the above resources, please see [here](README_zh.md##其他方式)
 
-> 🍎 For iOS users, please refer to _[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)_, the inspiration behind this application, developed and open-sourced by [@mazzzystar](https://github.com/mazzzystar).
+> 🍎 For iOS users, please refer to _[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)_ ([Code](https://github.com/mazzzystar/Queryable)), the inspiration behind this application, developed by [@mazzzystar](https://github.com/mazzzystar/Queryable).
 
 ## Implementation
 
@@ -41,7 +41,7 @@ Run the scripts in this [jupyter notebook](https://colab.research.google.com/dri
 
 > If you don't want to run the scripts, you may directly download them from [Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link).
 
-Put them into `app\src\main\assets` and you're ready to build and run.
+Put them into `app\src\main\assets` and you're ready to go.
 
 ## Acknowledgment
 
