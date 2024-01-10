@@ -21,7 +21,7 @@
 - Google Play： 搜索 “图搜” 或 “PicQuery”
 - 从本仓库下载：[Release](https://github.com/greyovo/PicQuery/releases)
 
-**其他方式：**
+### 其他方式
 
 - [蒲公英内测分发](https://www.pgyer.com/picquery)（每日500次下载）
 - 镜像站加速：将 [Release](https://github.com/greyovo/PicQuery/releases) 中的文件下载链接复制到 [GitHub Proxy](https://ghproxy.com/) 中下载
