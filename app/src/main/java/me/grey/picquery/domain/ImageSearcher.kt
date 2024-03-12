@@ -30,6 +30,7 @@ import me.grey.picquery.domain.encoder.TextEncoder
 import java.nio.FloatBuffer
 import java.util.Timer
 import java.util.TimerTask
+import kotlin.math.roundToLong
 
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
     Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
@@ -79,6 +80,10 @@ class ImageSearcher(
     private var encodingLock = false
     private var searchingLock = false
 
+
+    /**
+     * 单线程编码
+     */
     suspend fun encodePhotoList(
         photos: List<Photo>,
         progressCallback: encodeProgressCallback? = null
@@ -88,35 +93,32 @@ class ImageSearcher(
             return false
         }
         encodingLock = true
-        val listToUpdate = mutableListOf<Embedding>()
+        val embListResult = mutableListOf<Embedding>()
 
         var count = 0
-        var startTime: Long
-        var cost = 0L
+        var batchStartTime: Long
+        var batchCost = 0L
 
         val timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 if (count > 0) {
-                    progressCallback?.invoke(
-                        count,
-                        photos.size,
-                        cost,
-                    )
+                    progressCallback?.invoke(count, photos.size, batchCost)
                 }
             }
         }, 50, 500)
-
+        imageEncoder.loadModel()
         Log.d(TAG, "Started encoding PhotoList ...")
+        val startTime = System.currentTimeMillis()
         for (photo in photos) {
-            startTime = System.currentTimeMillis()
+            batchStartTime = System.currentTimeMillis()
             val thumbnailBitmap = loadThumbnail(context, photo)
             if (thumbnailBitmap == null) {
                 Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
                 continue
             }
             val feat: FloatBuffer = imageEncoder.encode(thumbnailBitmap)
-            listToUpdate.add(
+            embListResult.add(
                 Embedding(
                     photoId = photo.id,
                     albumId = photo.albumID,
@@ -124,15 +126,73 @@ class ImageSearcher(
                 )
             )
             count++
-            cost = System.currentTimeMillis() - startTime
+            batchCost = System.currentTimeMillis() - batchStartTime
         }
-        Log.d(TAG, "Finished encoding PhotoList.")
-        embeddingRepository.updateAll(listToUpdate)
+        Log.i(
+            TAG,
+            "Encode done cost: ${System.currentTimeMillis() - startTime} ms for ${photos.size} photos."
+        )
+        embeddingRepository.updateAll(embListResult)
         encodingLock = false
         progressCallback?.invoke(
             count,
             photos.size,
-            cost
+            batchCost
+        )
+        timer.cancel()
+        return true
+    }
+
+    /**
+     * TODO 使用多线程优化，一边加载缩略图，一边编码
+     */
+    suspend fun encodePhotoListV2(
+        photos: List<Photo>,
+        progressCallback: encodeProgressCallback? = null
+    ): Boolean {
+        if (encodingLock) {
+            Log.w(TAG, "encodePhotoListV2: Already encoding!")
+            return false
+        }
+        Log.i(TAG, "encodePhotoListV2 started.")
+        encodingLock = true
+        val queue = PreloadPhotosQueue() // shared queue
+        val loadBitmapThread = LoadBitmapThread(queue, photos, imageEncoder) // producer
+        val encodeThread1 = EncodeThread(queue, imageEncoder, embeddingRepository) // consumer
+        val encodeThread2 = EncodeThread(queue, imageEncoder, embeddingRepository) // consumer
+        val timer = Timer()
+
+        var lastProgress = 0
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                if (queue.total > 0) {
+                    progressCallback?.invoke(
+                        queue.total.toInt(),
+                        photos.size,
+                        ((queue.total.toInt() - lastProgress) / 0.5).roundToLong(),
+                    )
+                    lastProgress = queue.total.toInt()
+                }
+            }
+        }, 50, 500)
+
+        withContext(Dispatchers.IO) {
+            loadBitmapThread.start()
+            imageEncoder.loadModel()
+
+            val startTime = System.currentTimeMillis()
+            encodeThread1.start()
+            encodeThread2.start()
+            encodeThread1.join()
+            encodeThread2.join()
+            val costTime = System.currentTimeMillis() - startTime
+            Log.i(TAG, "Encode[v2] done, cost: $costTime ms for ${photos.size} photos.")
+        }
+        encodingLock = false
+        progressCallback?.invoke(
+            photos.size,
+            photos.size,
+            0,
         )
         timer.cancel()
         return true

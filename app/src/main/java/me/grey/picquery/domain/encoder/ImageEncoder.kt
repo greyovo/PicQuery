@@ -32,6 +32,8 @@ class ImageEncoder {
 
     private var options = OrtSession.SessionOptions().apply {
         addConfigEntry("session.load_model_format", "ORT")
+        setExecutionMode(OrtSession.SessionOptions.ExecutionMode.PARALLEL)
+        setInterOpNumThreads(2)
     }
 
     init {
@@ -77,8 +79,7 @@ class ImageEncoder {
 //        return bitmap
 //    }
 
-    private fun preprocess(bitmap: Bitmap): Bitmap {
-        val start = System.currentTimeMillis()
+    fun preprocess(bitmap: Bitmap): Bitmap {
         if (bitmap.width == 224 && bitmap.height == 224) {
 //            Log.d("preprocess", "w=h=224, no preprocess.")
             return bitmap
@@ -89,38 +90,57 @@ class ImageEncoder {
     }
 
 
-    suspend fun encode(bitmap: Bitmap) = withContext<FloatBuffer>(Dispatchers.Default) {
-        val ortEnv = OrtEnvironment.getEnvironment()
+    suspend fun loadModel() {
         if (ortSession == null) {
-            ortSession = ortEnv.createSession(
-                AssetUtil.assetFilePath(PicQueryApplication.context, modelPath),
-                options
-            )
-        }
-
-        val imageBitmap = preprocess(bitmap)
-        val floatBuffer = allocateFloatBuffer(floatBufferElementCount)
-        floatBuffer.rewind()
-        bitmapToFloatBuffer(
-            imageBitmap,
-            0, 0,
-            224, 224,
-            normMeanRGB,
-            normStdRGB,
-            floatBuffer,
-            0,
-            MemoryFormat.CONTIGUOUS,
-        )
-        floatBuffer.rewind()
-
-        val inputName = ortSession?.inputNames?.iterator()?.next()
-        val shape: LongArray = longArrayOf(1, 3, 224, 224)
-        ortEnv.use { env ->
-            val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
-            val output: OrtSession.Result? =
-                ortSession?.run(Collections.singletonMap(inputName, tensor))
-            val resultBuffer = output?.get(0) as OnnxTensor
-            return@withContext (resultBuffer.floatBuffer)
+            withContext(Dispatchers.IO) {
+                Log.d(TAG, "Loading Image Encoder model...")
+                val ortEnv = OrtEnvironment.getEnvironment()
+                ortSession = ortEnv.createSession(
+                    AssetUtil.assetFilePath(PicQueryApplication.context, modelPath),
+                    options
+                )
+                Log.d(TAG, "Finish loading Image Encoder model!")
+            }
+        } else {
+            Log.d(TAG, "Already loaded Image Encoder model, skip loading.")
         }
     }
+
+    suspend fun encode(bitmap: Bitmap, usePreprocess: Boolean = true) =
+        withContext<FloatBuffer>(Dispatchers.Default) {
+            val ortEnv = OrtEnvironment.getEnvironment()
+            if (ortSession == null) {
+                loadModel()
+            }
+            val imageBitmap = if (usePreprocess) {
+                preprocess(bitmap)
+            } else {
+                bitmap
+            }
+
+            val floatBuffer = allocateFloatBuffer(floatBufferElementCount)
+            floatBuffer.rewind()
+            bitmapToFloatBuffer(
+                imageBitmap,
+                0, 0,
+                224, 224,
+                normMeanRGB,
+                normStdRGB,
+                floatBuffer,
+                0,
+                MemoryFormat.CONTIGUOUS,
+            )
+            floatBuffer.rewind()
+
+            val inputName = ortSession?.inputNames?.iterator()?.next()
+            val shape: LongArray = longArrayOf(1, 3, 224, 224)
+            ortEnv.use { env ->
+                val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
+                val output: OrtSession.Result? =
+                    ortSession?.run(Collections.singletonMap(inputName, tensor))
+                val resultBuffer = output?.get(0) as OnnxTensor
+                return@withContext (resultBuffer.floatBuffer)
+            }
+        }
+
 }

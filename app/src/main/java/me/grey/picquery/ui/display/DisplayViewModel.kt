@@ -15,7 +15,7 @@ class DisplayViewModel(
 ) : ViewModel() {
 
     val photoList = mutableStateListOf<Photo>()
-    val currentIndex = mutableIntStateOf(0)
+    private val currentIndex = mutableIntStateOf(0)
 
     // FIXME 测试用
     fun loadPhotos(initialPage: Int) {

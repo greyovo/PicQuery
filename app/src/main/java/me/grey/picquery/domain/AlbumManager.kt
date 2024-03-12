@@ -99,9 +99,8 @@ class AlbumManager(
             albums.forEach {
                 photos.addAll(photoRepository.getPhotoListByAlbumId(it.id))
             }
-            Log.d(TAG, photos.size.toString())
             val success = runBlocking {
-                imageSearcher.encodePhotoList(photos) { cur, total, cost ->
+                imageSearcher.encodePhotoListV2(photos) { cur, total, cost ->
                     indexingAlbumState.value = indexingAlbumState.value.copy(
                         current = cur,
                         total = total,
@@ -113,7 +112,6 @@ class AlbumManager(
             if (success) {
                 // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
                 Log.i(TAG, "encode ${albums.size} album(s) finished!")
-
                 albumRepository.addAllSearchableAlbum(albums)
                 indexingAlbumState.value = indexingAlbumState.value.copy(
                     status = IndexingAlbumState.Status.Finish
