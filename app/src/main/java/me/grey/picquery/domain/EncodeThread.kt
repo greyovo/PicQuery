@@ -23,8 +23,9 @@ class EncodeThread(
         var count = 0
         runBlocking {
             Log.d(TAG, "Start encoding for embedding...")
-            while (!queue.isPreloadCompleted) {
-                val item = queue.get() ?: continue
+            while (true) {
+                val item = queue.get() ?: break
+
                 val feat: FloatBuffer = imageEncoder.encode(item.bitmap, usePreprocess = false)
                 embListResult.add(
                     Embedding(

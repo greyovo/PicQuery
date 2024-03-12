@@ -32,8 +32,6 @@ class ImageEncoder {
 
     private var options = OrtSession.SessionOptions().apply {
         addConfigEntry("session.load_model_format", "ORT")
-        setExecutionMode(OrtSession.SessionOptions.ExecutionMode.PARALLEL)
-        setInterOpNumThreads(2)
     }
 
     init {

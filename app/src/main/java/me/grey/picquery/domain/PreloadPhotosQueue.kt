@@ -35,7 +35,7 @@ class PreloadPhotosQueue {
 
     suspend fun get(): PhotoBitmap? {
         return withContext(Dispatchers.IO) {
-            if (preloadCompleted && queue.isEmpty()) {
+            if (queue.isEmpty() && preloadCompleted) {
                 return@withContext null
             }
             queue.take()
