@@ -6,7 +6,7 @@ export default defineConfig({
   description: "A PicQuery documentation site",
   base: '/PicQuery/',
   head: [
-    ['link', { rel: 'icon', href: '/logo.webp' }],
+    ['link', { rel: 'icon', href: './logo.webp' }],
   ],
   themeConfig: {
     logo: './logo.png',
