@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///d%3A/Develop/Projects/Android/PicQuery/.github/workflows/deploy.yml"
+    }
+}

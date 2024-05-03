@@ -4,11 +4,12 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "PicQuery",
   description: "A PicQuery documentation site",
+  base: '/picquery/',
   head: [
     ['link', { rel: 'icon', href: '/logo.webp' }],
   ],
   themeConfig: {
-    logo: '/logo.webp',
+    logo: '/logo.png',
     footer: {
       message: 'Released under the MIT License, visit our <a href="/privacy-policy">Privacy Policy</a>.',
       copyright: 'Copyright © 2023-present <a href="https://github.com/greyovo">Grey Liu</a>.',
