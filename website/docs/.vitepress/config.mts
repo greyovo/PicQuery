@@ -6,12 +6,12 @@ export default defineConfig({
   description: "A PicQuery documentation site",
   base: '/PicQuery/',
   head: [
-    ['link', { rel: 'icon', href: './logo.webp' }],
+    ['link', { rel: 'icon', href: '/PicQuery/logo.webp' }],
   ],
   themeConfig: {
-    logo: './logo.png',
+    logo: 'logo.png',
     footer: {
-      message: 'Released under the MIT License, visit our <a href="/privacy-policy">Privacy Policy</a>.',
+      message: 'Released under the MIT License, visit our <a href="privacy-policy">Privacy Policy</a>.',
       copyright: 'Copyright © 2023-present <a href="https://github.com/greyovo">Grey Liu</a>.',
     },
     // https://vitepress.dev/reference/default-theme-config

@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "PicQuery."
-  text: "Search images with natural language."
+  name: PicQuery
+  text: Search Local Images with Natural Language
   # tagline: 🔍 Search local images with natural language on Android
   tagline: E.g., "a laptop on the desk", "sunset by the sea", "kitty in the grass"...
 
@@ -13,22 +13,26 @@ hero:
       text: Get on Google Play
       link: https://play.google.com/store/apps/details?id=me.grey.picquery
     - theme: alt
-      text: Github Release
+      text: Release
       link: https://github.com/greyovo/PicQuery/releases
+    - theme: alt
+      text: Source Code
+      link: https://github.com/greyovo/PicQuery
+
   image:
-    src: ./logo.svg
-    alt: PicQuery app screenshot
+    src: logo.svg
+    alt: PicQuery Logo
 
 features:
-  - title: Privacy-first
+  - title: Privacy First
     icon: 🔒
-    details: Indexing and searching of images works completely offline without worrying about privacy
+    details: Indexing and searching of images works completely offline without worrying about privacy.
   - title: Optimized for Android
     icon: ⚡️
-    details: Works on Android 10+, show results in 1 sec when searching for 8,000+ photos
+    details: Works on Android 10+, show results in 1 sec when searching for 8,000+ photos.
   - title: Free & Open Source
     icon: 🆓
-    details: Totally free, NO in-app purchases, supports both English and Chinese
+    details: Totally free, NO in-app purchases, supports both English and Chinese.
 ---
 
 <style>
