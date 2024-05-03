@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "PicQuery",
   description: "A PicQuery documentation site",
-  base: '/picquery/',
+  base: '/PicQuery/',
   head: [
     ['link', { rel: 'icon', href: '/logo.webp' }],
   ],
