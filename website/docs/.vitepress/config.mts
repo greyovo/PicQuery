@@ -9,7 +9,7 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/logo.webp' }],
   ],
   themeConfig: {
-    logo: '/logo.png',
+    logo: './logo.png',
     footer: {
       message: 'Released under the MIT License, visit our <a href="/privacy-policy">Privacy Policy</a>.',
       copyright: 'Copyright © 2023-present <a href="https://github.com/greyovo">Grey Liu</a>.',

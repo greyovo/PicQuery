@@ -16,7 +16,7 @@ hero:
       text: Github Release
       link: https://github.com/greyovo/PicQuery/releases
   image:
-    src: /logo.svg
+    src: ./logo.svg
     alt: PicQuery app screenshot
 
 features:
