@@ -37,14 +37,15 @@ jobs:
         with:
           node-version: 20
           cache: npm # 或 pnpm / yarn
+          cache-dependency-path: "./website/package-lock.json"
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          path: websites
       - name: Install dependencies
-        run: cd website && npm ci # 或 pnpm install / yarn install / bun install
+        run: npm ci # 或 pnpm install / yarn install / bun install
+        working-directory: ./website
       - name: Build with VitePress
         run: npm run docs:build # 或 pnpm docs:build / yarn docs:build / bun run docs:build
+        working-directory: ./website
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

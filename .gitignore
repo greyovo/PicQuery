@@ -29,4 +29,3 @@ key.properties
 # NPM
 website/docs/.vitepress/cache/**
 node_modules/
-package-lock.json
