@@ -46,7 +46,7 @@ class ImageSearcher(
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
-        private const val DEFAULT_MATCH_THRESHOLD = 0.25f
+        private const val DEFAULT_MATCH_THRESHOLD = 0.10f
         private const val TOP_K = 30
     }
 
@@ -56,7 +56,7 @@ class ImageSearcher(
 
     val searchResultIds = mutableStateListOf<Long>()
 
-    // 相似度阈值，一般在0.25以上
+    // 相似度阈值
     private val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD)
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
@@ -82,68 +82,6 @@ class ImageSearcher(
 
 
     /**
-     * 单线程编码
-     */
-    suspend fun encodePhotoList(
-        photos: List<Photo>,
-        progressCallback: encodeProgressCallback? = null
-    ): Boolean {
-        if (encodingLock) {
-            Log.w(TAG, "encodePhotoList: Already encoding!")
-            return false
-        }
-        encodingLock = true
-        val embListResult = mutableListOf<Embedding>()
-
-        var count = 0
-        var batchStartTime: Long
-        var batchCost = 0L
-
-        val timer = Timer()
-        timer.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                if (count > 0) {
-                    progressCallback?.invoke(count, photos.size, batchCost)
-                }
-            }
-        }, 50, 500)
-        imageEncoder.loadModel()
-        Log.d(TAG, "Started encoding PhotoList ...")
-        val startTime = System.currentTimeMillis()
-        for (photo in photos) {
-            batchStartTime = System.currentTimeMillis()
-            val thumbnailBitmap = loadThumbnail(context, photo)
-            if (thumbnailBitmap == null) {
-                Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
-                continue
-            }
-            val feat: FloatBuffer = imageEncoder.encode(thumbnailBitmap)
-            embListResult.add(
-                Embedding(
-                    photoId = photo.id,
-                    albumId = photo.albumID,
-                    data = feat.toByteArray()
-                )
-            )
-            count++
-            batchCost = System.currentTimeMillis() - batchStartTime
-        }
-        Log.i(
-            TAG,
-            "Encode done cost: ${System.currentTimeMillis() - startTime} ms for ${photos.size} photos."
-        )
-        embeddingRepository.updateAll(embListResult)
-        encodingLock = false
-        progressCallback?.invoke(
-            count,
-            photos.size,
-            batchCost
-        )
-        timer.cancel()
-        return true
-    }
-
-    /**
      * TODO 使用多线程优化，一边加载缩略图，一边编码
      */
     suspend fun encodePhotoListV2(
@@ -163,7 +101,7 @@ class ImageSearcher(
         val timer = Timer()
 
         var lastProgress = 0
-        timer.scheduleAtFixedRate(object : TimerTask() {
+        timer.schedule(object : TimerTask() {
             override fun run() {
                 if (queue.total > 0) {
                     progressCallback?.invoke(
@@ -283,15 +221,5 @@ class ImageSearcher(
             }
         }
     }
-
-
-    private fun selectMax() {
-
-    }
-
-    private fun searchByEmbedding() {
-
-    }
-
 
 }
