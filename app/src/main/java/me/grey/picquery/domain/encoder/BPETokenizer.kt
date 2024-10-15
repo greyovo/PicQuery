@@ -152,12 +152,6 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
         return bpeTokens
     }
 
-    fun decode(tokens: List<Int>): String {
-//        val text = tokens.map { decoder[it]!! }.joinToString("")
-        val text = tokens.joinToString("") { decoder[it]!! }
-        return text.toByteArray().toString(Charsets.UTF_8).replace("</w>", " ")
-    }
-
 
     fun tokenize(
         text: String,

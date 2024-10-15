@@ -38,53 +38,8 @@ class ImageEncoder {
         Log.d(TAG, "Init $TAG")
     }
 
-    /**
-     * 缩放为短边为224像素；
-     * 长的缩短，短的拉长。
-     */
-    private fun resize(bitmap: Bitmap): Bitmap {
-        return if (bitmap.width < bitmap.height) {
-            val longHeight = bitmap.height * 224 / bitmap.width
-            Bitmap.createScaledBitmap(bitmap, 224, longHeight, false)
-        } else {
-            val longWidth = bitmap.width * 224 / bitmap.height
-            Bitmap.createScaledBitmap(bitmap, longWidth, 224, false)
-        }
-    }
-
-    private fun centerCrop(bitmap: Bitmap): Bitmap {
-        // 计算裁切位置
-        val x: Int = (bitmap.width - 224) / 2
-        val y: Int = (bitmap.height - 224) / 2
-        return Bitmap.createBitmap(bitmap, x, y, 224, 224)
-    }
-
-
-//    private fun toRGB(bitmap: Bitmap): Bitmap {
-//        val width = bitmap.width
-//        val height = bitmap.height
-//        val pixels = IntArray(width * height)
-//        bitmap.getPixels(pixels, 0, width, 0, 0, width, height) // 获取每个像素的颜色值
-//
-//        for (i in pixels.indices) { // 将每个像素的颜色值转换为RGB格式
-//            val color = pixels[i]
-//            val red: Int = Color.red(color)
-//            val green: Int = Color.green(color)
-//            val blue: Int = Color.blue(color)
-//            val rgb = red shl 16 or (green shl 8) or blue
-//            pixels[i] = rgb
-//        }
-//        return bitmap
-//    }
-
     fun preprocess(bitmap: Bitmap): Bitmap {
-        if (bitmap.width == 224 && bitmap.height == 224) {
-//            Log.d("preprocess", "w=h=224, no preprocess.")
-            return bitmap
-        }
-        val res = centerCrop(resize(bitmap))
-//        Log.d("preprocess", "${System.currentTimeMillis() - start} ms")
-        return res
+        return Bitmap.createScaledBitmap(bitmap,224,224,true)
     }
 
 
