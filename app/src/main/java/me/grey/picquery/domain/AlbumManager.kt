@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
@@ -36,6 +38,8 @@ class AlbumManager(
     val searchableAlbumList = mutableStateListOf<Album>()
     val unsearchableAlbumList = mutableStateListOf<Album>()
     val albumsToEncode = mutableStateListOf<Album>()
+
+    val photoFlow = photoRepository.photoFlow()
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
@@ -86,20 +90,25 @@ class AlbumManager(
     }
 
 
-    suspend fun encodeAlbums(albums: List<Album>) {
-        if (albums.isEmpty()) {
-            showToast(context.getString(R.string.no_album_selected))
-            return
-        }
+    fun encodeAlbums(albums: List<Album>) {
 
-        indexingAlbumState.value =
-            IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
-        withContext(Dispatchers.Default) {
+        PicQueryApplication.applicationScope.launch{
+            if (albums.isEmpty()) {
+                showToast(context.getString(R.string.no_album_selected))
+                return@launch
+            }
+
+            indexingAlbumState.value =
+                IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
+
             val photos = mutableListOf<Photo>()
+            var totalSize = 0
             albums.forEach {
                 photos.addAll(photoRepository.getPhotoListByAlbumId(it.id))
+//                totalSize += photoRepository.getAllPhotos(it.id)
             }
-            val success = runBlocking {
+
+            val success =
                 imageSearcher.encodePhotoListV2(photos) { cur, total, cost ->
                     indexingAlbumState.value = indexingAlbumState.value.copy(
                         current = cur,
@@ -108,11 +117,13 @@ class AlbumManager(
                         status = IndexingAlbumState.Status.Indexing
                     )
                 }
-            }
+
             if (success) {
                 // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
                 Log.i(TAG, "encode ${albums.size} album(s) finished!")
-                albumRepository.addAllSearchableAlbum(albums)
+                withContext(Dispatchers.IO) {
+                    albumRepository.addAllSearchableAlbum(albums)
+                }
                 indexingAlbumState.value = indexingAlbumState.value.copy(
                     status = IndexingAlbumState.Status.Finish
                 )

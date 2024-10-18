@@ -10,27 +10,41 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.chunked
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
+import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.loadThumbnail
+import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
-import me.grey.picquery.common.toByteArray
 import me.grey.picquery.common.toFloatArray
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.Photo
+import me.grey.picquery.data.model.PhotoBitmap
+import me.grey.picquery.domain.EmbeddingUtils.saveBtimapsToEmbedings
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
-import java.nio.FloatBuffer
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.roundToLong
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.measureTimeMillis
 
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
     Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
@@ -46,7 +60,7 @@ class ImageSearcher(
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
-        private const val DEFAULT_MATCH_THRESHOLD = 0.10f
+        private const val DEFAULT_MATCH_THRESHOLD = 0.15f
         private const val TOP_K = 30
     }
 
@@ -56,7 +70,7 @@ class ImageSearcher(
 
     val searchResultIds = mutableStateListOf<Long>()
 
-    // 相似度阈值
+    // 相似度阈值，一般在0.25以上
     private val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD)
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
@@ -82,8 +96,9 @@ class ImageSearcher(
 
 
     /**
-     * TODO 使用多线程优化，一边加载缩略图，一边编码
+     * 使用 kotlin flow 来处理图片编码流程
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun encodePhotoListV2(
         photos: List<Photo>,
         progressCallback: encodeProgressCallback? = null
@@ -94,45 +109,67 @@ class ImageSearcher(
         }
         Log.i(TAG, "encodePhotoListV2 started.")
         encodingLock = true
-        val queue = PreloadPhotosQueue() // shared queue
-        val loadBitmapThread = LoadBitmapThread(queue, photos, imageEncoder) // producer
-        val encodeThread1 = EncodeThread(queue, imageEncoder, embeddingRepository) // consumer
-        val encodeThread2 = EncodeThread(queue, imageEncoder, embeddingRepository) // consumer
-        val timer = Timer()
+        imageEncoder.loadModel()
 
-        var lastProgress = 0
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                if (queue.total > 0) {
-                    progressCallback?.invoke(
-                        queue.total.toInt(),
-                        photos.size,
-                        ((queue.total.toInt() - lastProgress) / 0.5).roundToLong(),
-                    )
-                    lastProgress = queue.total.toInt()
-                }
+        try {
+            withContext(Dispatchers.Default) {
+                var cur = AtomicInteger(0)
+                Log.d(TAG, "start: ${photos.size}")
+                Log.d("encodePhotoListV2", "start: ${System.currentTimeMillis()}")
+
+                photos.asFlow()
+                    .chunked(5)
+                    .map { photos ->
+                        val deferredResults = mutableListOf<Deferred<PhotoBitmap?>>()
+                        photos.forEach { photo ->
+                            val deferred = async {
+                                val thumbnailBitmap = loadThumbnail(context, photo)
+                                if (thumbnailBitmap == null) {
+                                    Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
+                                    return@async null
+                                }
+                                val prepBitmap = preprocess(thumbnailBitmap)
+                                Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
+                                PhotoBitmap(photo, prepBitmap)
+                            }
+                            deferredResults.add(deferred)
+                        }
+                        awaitAll(*deferredResults.toTypedArray())
+                        deferredResults.mapNotNull { it.getCompleted() }
+                    }
+                    .flatMapConcat { it.asFlow() }
+                    .filterNotNull()
+                    .buffer(1000)
+                    .chunked(10)
+                    .onCompletion {
+                        Log.d(TAG, "onCompletion: ${it}")
+                        Log.d("encodePhotoListV2", "onCompletion: ${System.currentTimeMillis()}")
+                        progressCallback?.invoke(photos.size, photos.size, 0)
+                    }
+                    .collect {
+                        try {
+                            val cost = measureTimeMillis {
+                                saveBtimapsToEmbedings(it, ObjectPool.ImageEncoderPool.acquire(), embeddingRepository)
+                            }
+                            progressCallback?.invoke(
+                                cur.get(),
+                                photos.size,
+                                cost/it.size,
+                            )
+                            cur.addAndGet(it.size)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "collect: ${e.message}")
+                        }
+
+                        Log.d(TAG, "collect: ${cur}")
+                    }
             }
-        }, 50, 500)
-
-        withContext(Dispatchers.IO) {
-            loadBitmapThread.start()
-            imageEncoder.loadModel()
-
-            val startTime = System.currentTimeMillis()
-            encodeThread1.start()
-            encodeThread2.start()
-            encodeThread1.join()
-            encodeThread2.join()
-            val costTime = System.currentTimeMillis() - startTime
-            Log.i(TAG, "Encode[v2] done, cost: $costTime ms for ${photos.size} photos.")
+        } catch (e: Exception) {
+            Log.e(TAG, "encodePhotoListV2: Coroutine was cancelled", e)
+        } finally {
+            encodingLock = false
         }
-        encodingLock = false
-        progressCallback?.invoke(
-            photos.size,
-            photos.size,
-            0,
-        )
-        timer.cancel()
+
         return true
     }
 
@@ -207,19 +244,13 @@ class ImageSearcher(
             return
         }
         val smallestIndex = resultPair.indexOfFirst { it.second < candidate.second }
-        if (smallestIndex == -1) {
-            // 如果没有找到，有两种情况：
-            // 1. 数组满了，则返回，什么都不做
-            // 2. 数组没满，则直接插入在最末尾
-            if (resultPair.size < TOP_K) {
-                resultPair.add(candidate)
-            }
-        } else {
+        if (smallestIndex == -1 && resultPair.size < TOP_K) {
+            resultPair.add(candidate)
+        } else if (smallestIndex != -1) {
             resultPair.add(smallestIndex, candidate)
             if (resultPair.size > TOP_K) {
                 resultPair.removeLast()
             }
         }
     }
-
 }
