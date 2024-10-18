@@ -34,6 +34,7 @@ class EmbeddingRepository(
     }
 
     fun update(emb: Embedding) {
+        return database.embeddingDao().upsertAll(listOf(emb))
     }
 
     fun updateAll(list: List<Embedding>) {
