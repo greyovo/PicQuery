@@ -99,3 +99,8 @@ fun saveBitMap(context: Context, bitmap: Bitmap, name: String) {
         e.printStackTrace()
     }
 }
+
+fun preprocess(bitmap: Bitmap): Bitmap {
+    // bitmap size to 224x224
+    return Bitmap.createScaledBitmap(bitmap, 224, 224, true)
+}

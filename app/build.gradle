@@ -45,11 +45,12 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+
     buildFeatures {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.3'
+        kotlinCompilerExtensionVersion '1.5.9'
     }
     packagingOptions {
         resources {
@@ -137,4 +138,6 @@ dependencies {
     ksp "androidx.room:room-compiler:$room_version"
 
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
 }
