@@ -15,6 +15,7 @@ import me.grey.picquery.data.model.Photo
 import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.FloatBuffer
 import java.util.concurrent.ExecutionException
 
 private const val TAG = "ImageUtil"
@@ -104,4 +105,37 @@ fun saveBitMap(context: Context, bitmap: Bitmap, name: String) {
 fun preprocess(bitmap: Bitmap): Bitmap {
     // bitmap size to 224x224
     return Bitmap.createScaledBitmap(bitmap, DIM, DIM, true)
+}
+
+const val DIM_BATCH_SIZE = 1
+const val DIM_PIXEL_SIZE = 3
+
+/**
+ * to be used by mobile clip
+  */
+fun bitmapToFloatBuffer(bitmap: Bitmap): FloatBuffer {
+    val bitmap = Bitmap.createScaledBitmap(bitmap, DIM, DIM, true)
+    val imgData = FloatBuffer.allocate(
+        DIM_BATCH_SIZE * DIM_PIXEL_SIZE * DIM * DIM
+    )
+    imgData.rewind()
+    val stride = DIM * DIM
+    val bmpData = IntArray(stride)
+    bitmap.getPixels(bmpData, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+    for (i in 0 until DIM) {
+        for (j in 0 until DIM) {
+            val idx = DIM * i + j
+            val pixelValue = bmpData[idx]
+            imgData.put(idx, (((pixelValue shr 16 and 0xFF) / 255f)))
+            imgData.put(
+                idx + stride, (((pixelValue shr 8 and 0xFF) / 255f))
+            )
+            imgData.put(
+                idx + stride * 2, (((pixelValue and 0xFF) / 255f))
+            )
+        }
+    }
+
+    imgData.rewind()
+    return imgData
 }

@@ -6,7 +6,6 @@ import ai.onnxruntime.OrtSession
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
@@ -14,6 +13,7 @@ import me.grey.picquery.common.Constants.DIM
 import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.bitmapToFloatBuffer
+import me.grey.picquery.common.defaultDispatcher
 import me.grey.picquery.common.preprocess
 import java.nio.FloatBuffer
 import java.util.Collections
@@ -37,6 +37,11 @@ class ImageEncoder {
         addConfigEntry("session.load_model_format", "ORT")
     }
 
+    fun clearSession() {
+        ortSession?.close()
+        ortSession = null
+    }
+
     init {
         Log.d(TAG, "Init $TAG")
     }
@@ -56,7 +61,7 @@ class ImageEncoder {
     }
 
     suspend fun encode(bitmap: Bitmap, usePreprocess: Boolean = true) =
-        withContext<FloatBuffer>(Dispatchers.Default) {
+        withContext<FloatBuffer>(defaultDispatcher) {
             Log.d(TAG, "Start encoding image...$usePreprocess")
             if (ortSession == null) {
                 loadModel()

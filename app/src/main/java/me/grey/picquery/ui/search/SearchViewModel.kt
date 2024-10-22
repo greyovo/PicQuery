@@ -61,11 +61,19 @@ class SearchViewModel(
             _searchState.value = SearchState.SEARCHING
             imageSearcher.search(text) { ids ->
                 if (ids != null) {
-                    _resultList.value = repo.getPhotoListByIds(ids)
+                    val photos = repo.getPhotoListByIds(ids)
+                    // reorder by id
+                    _resultList.value = reorderList(photos, ids)
                 }
                 _searchState.value = SearchState.FINISHED
             }
         }
+    }
+
+    // fix the order of the result list
+    private fun reorderList(originalList: List<Photo>, orderList: List<Long>): List<Photo> {
+        val photoMap = originalList.associateBy { it.id }
+        return orderList.mapNotNull { id -> photoMap[id] }
     }
 
     fun clearAll() {
