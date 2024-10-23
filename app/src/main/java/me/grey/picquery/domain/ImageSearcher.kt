@@ -10,11 +10,16 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.chunked
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -33,7 +38,7 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
-import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
+import me.grey.picquery.domain.EmbeddingUtils.saveBitmapToEmbedding
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
 import java.util.SortedMap
@@ -96,6 +101,7 @@ class ImageSearcher(
      * @param progressCallback Callback to report encoding progress.
      * @return True if encoding started, false if already encoding.
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun encodePhotoListV2(
         photos: List<Photo>,
         progressCallback: encodeProgressCallback? = null
@@ -108,57 +114,64 @@ class ImageSearcher(
         encodingLock = true
         imageEncoder.loadModel()
 
-        try {
-            withContext(ioDispatcher) {
-                val cur = AtomicInteger(0)
-                Log.d(TAG, "start: ${photos.size}")
-                Log.d("encodePhotoListV2", "start: ${System.currentTimeMillis()}")
+        withContext(ioDispatcher) {
+            val cur = AtomicInteger(0)
+            Log.d(TAG, "start: ${photos.size}")
+            Log.d("encodePhotoListV2", "start: ${System.currentTimeMillis()}")
 
-                photos.asFlow()
-                    .map { photo ->
-                        val thumbnailBitmap = loadThumbnail(context, photo)
-                        if (thumbnailBitmap == null) {
-                            Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
-                            return@map null
-                        }
-                        val prepBitmap = preprocess(thumbnailBitmap)
-                        Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
-                        PhotoBitmap(photo, prepBitmap)
+            photos.asFlow()
+                .map { photo ->
+                    val thumbnailBitmap = loadThumbnail(context, photo)
+                    if (thumbnailBitmap == null) {
+                        Log.w(TAG, "Unsupported file: '${photo.path}', skip encoding it.")
+                        return@map null
                     }
-                    .filterNotNull()
-                    .buffer(1000)
-                    .chunked(5)
-                    .onEach { Log.d(TAG, "onEach: ${it.size}") }
-                    .onCompletion {
-                        Log.d(TAG, "onCompletion: ${it}")
-                        Log.d("encodePhotoListV2", "onCompletion: ${System.currentTimeMillis()}")
-                        progressCallback?.invoke(photos.size, photos.size, 0)
-                    }
-                    .collect {
-                        try {
-                            val cost = measureTimeMillis {
-                                saveBitmapsToEmbedding(it, ObjectPool.ImageEncoderPool.acquire(), embeddingRepository)
+                    val prepBitmap = preprocess(thumbnailBitmap)
+                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
+                    PhotoBitmap(photo, prepBitmap)
+                }
+                .filterNotNull()
+                .buffer(1000)
+                .chunked(10)
+
+                .onEach { Log.d(TAG, "onEach: ${it.size}") }
+                .onCompletion {
+                    Log.d(TAG, "onCompletion: ${it}")
+                    Log.d("encodePhotoListV2", "onCompletion: ${System.currentTimeMillis()}")
+                    progressCallback?.invoke(photos.size, photos.size, 0)
+                    embeddingRepository.updateCache()
+                    encodingLock = false
+                    ObjectPool.ImageEncoderPool.clear()
+                }
+                .collect {
+                    try {
+                        val cost = measureTimeMillis {
+                            val defers = it.map { item ->
+                                async {
+                                    saveBitmapToEmbedding(
+                                        item,
+                                        ObjectPool.ImageEncoderPool.acquire(),
+                                        embeddingRepository
+                                    )
+                                }
                             }
-                            progressCallback?.invoke(
-                                cur.get(),
-                                photos.size,
-                                cost / it.size,
-                            )
-                            cur.addAndGet(it.size)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "collect: ${e.message}")
+                            defers.awaitAll()
                         }
+                        progressCallback?.invoke(
+                            cur.get(),
+                            photos.size,
+                            cost / it.size,
+                        )
+                        Log.d(TAG, "cost: ${cost}")
 
-                        Log.d(TAG, "collect: ${cur}")
+                        cur.addAndGet(it.size)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "collect: ${e.message}")
                     }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "encodePhotoListV2: Coroutine was cancelled", e)
-        } finally {
-            encodingLock = false
-            ObjectPool.ImageEncoderPool.clear()
-        }
 
+                    Log.d(TAG, "collect: ${cur}")
+                }
+        }
         return true
     }
 

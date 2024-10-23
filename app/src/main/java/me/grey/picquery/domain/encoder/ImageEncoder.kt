@@ -62,7 +62,7 @@ class ImageEncoder {
 
     suspend fun encode(bitmap: Bitmap, usePreprocess: Boolean = true) =
         withContext<FloatBuffer>(defaultDispatcher) {
-            Log.d(TAG, "Start encoding image...$usePreprocess")
+            Log.d(TAG, "${this@ImageEncoder} Start encoding image...$usePreprocess")
             if (ortSession == null) {
                 loadModel()
             }

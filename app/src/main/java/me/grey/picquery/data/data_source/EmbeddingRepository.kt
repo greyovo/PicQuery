@@ -3,6 +3,7 @@ package me.grey.picquery.data.data_source
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
+import java.util.concurrent.LinkedBlockingDeque
 
 class EmbeddingRepository(
     private val database: AppDatabase
@@ -37,6 +38,24 @@ class EmbeddingRepository(
         return database.embeddingDao().upsertAll(listOf(emb))
     }
 
+    fun updateList(e: Embedding) {
+        cacheLinkedBlockingDeque.add(e)
+        if (cacheLinkedBlockingDeque.size >= 300) {
+            val toUpdate = cacheLinkedBlockingDeque.toList()
+            cacheLinkedBlockingDeque.clear()
+            return database.embeddingDao().upsertAll(toUpdate)
+        }
+    }
+
+    fun updateCache() {
+        if (cacheLinkedBlockingDeque.isNotEmpty()) {
+            val toUpdate = cacheLinkedBlockingDeque.toList()
+            cacheLinkedBlockingDeque.clear()
+            return database.embeddingDao().upsertAll(toUpdate)
+        }
+    }
+
+    private val cacheLinkedBlockingDeque = LinkedBlockingDeque<Embedding>()
     fun updateAll(list: List<Embedding>) {
         return database.embeddingDao().upsertAll(list)
     }

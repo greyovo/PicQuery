@@ -12,7 +12,7 @@ class ObjectPool<T>(private val factory: () -> T, private val maxSize: Int) {
         }
     }
 
-    fun acquire(): T = pool.poll()
+    fun acquire(): T = pool.poll() ?: factory()
 
     fun release(obj: T) {
         pool.offer(obj)
@@ -26,7 +26,7 @@ class ObjectPool<T>(private val factory: () -> T, private val maxSize: Int) {
     }
 
     companion object {
-        inline fun <reified T> create(maxSize: Int, noinline factory: () -> T) = ObjectPool(factory, maxSize)
+        private inline fun <reified T> create(maxSize: Int, noinline factory: () -> T) = ObjectPool(factory, maxSize)
         val ImageEncoderPool = create(10) { ImageEncoder() }
     }
 }
