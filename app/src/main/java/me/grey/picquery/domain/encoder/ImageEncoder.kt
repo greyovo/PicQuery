@@ -6,13 +6,14 @@ import ai.onnxruntime.OrtSession
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
+import me.grey.picquery.common.Constants.DIM
 import me.grey.picquery.common.MemoryFormat
 import me.grey.picquery.common.allocateFloatBuffer
 import me.grey.picquery.common.bitmapToFloatBuffer
+import me.grey.picquery.common.defaultDispatcher
 import me.grey.picquery.common.preprocess
 import java.nio.FloatBuffer
 import java.util.Collections
@@ -20,13 +21,13 @@ import java.util.Collections
 private val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
 private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
 
-val IMAGE_INPUT_SIZE = Size(224, 224)
+val IMAGE_INPUT_SIZE = Size(DIM, DIM)
 
 class ImageEncoder {
     companion object {
         private const val TAG = "ImageEncoder"
         private const val modelPath = "clip-image-int8.ort"
-        private const val floatBufferElementCount = 3 * 224 * 224
+        private const val floatBufferElementCount = 3 * DIM * DIM
     }
 
     private var ortSession: OrtSession? = null
@@ -34,6 +35,11 @@ class ImageEncoder {
 
     private var options = OrtSession.SessionOptions().apply {
         addConfigEntry("session.load_model_format", "ORT")
+    }
+
+    fun clearSession() {
+        ortSession?.close()
+        ortSession = null
     }
 
     init {
@@ -55,7 +61,7 @@ class ImageEncoder {
     }
 
     suspend fun encode(bitmap: Bitmap, usePreprocess: Boolean = true) =
-        withContext<FloatBuffer>(Dispatchers.Default) {
+        withContext<FloatBuffer>(defaultDispatcher) {
             Log.d(TAG, "Start encoding image...$usePreprocess")
             if (ortSession == null) {
                 loadModel()
@@ -71,7 +77,7 @@ class ImageEncoder {
             bitmapToFloatBuffer(
                 imageBitmap,
                 0, 0,
-                224, 224,
+                DIM, DIM,
                 normMeanRGB,
                 normStdRGB,
                 floatBuffer,
@@ -81,7 +87,7 @@ class ImageEncoder {
             floatBuffer.rewind()
 
             val inputName = ortSession?.inputNames?.iterator()?.next()
-            val shape: LongArray = longArrayOf(1, 3, 224, 224)
+            val shape: LongArray = longArrayOf(1, 3, DIM.toLong(), DIM.toLong())
             ortEnv.use { env ->
                 val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
                 val output: OrtSession.Result? =

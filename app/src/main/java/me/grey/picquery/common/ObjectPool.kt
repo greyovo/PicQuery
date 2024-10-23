@@ -17,8 +17,16 @@ class ObjectPool<T>(private val factory: () -> T, private val maxSize: Int) {
     fun release(obj: T) {
         pool.offer(obj)
     }
+
+    fun clear() {
+        while (pool.isNotEmpty()) {
+            val imageEncoder =  pool.poll()
+            (imageEncoder as? ImageEncoder)?.clearSession()
+        }
+    }
+
     companion object {
         inline fun <reified T> create(maxSize: Int, noinline factory: () -> T) = ObjectPool(factory, maxSize)
-        val ImageEncoderPool = create(5) { ImageEncoder() }
+        val ImageEncoderPool = create(10) { ImageEncoder() }
     }
 }
