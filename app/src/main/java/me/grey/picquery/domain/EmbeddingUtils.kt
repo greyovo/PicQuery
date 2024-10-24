@@ -1,9 +1,7 @@
 package me.grey.picquery.domain
 
 import android.util.Log
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+
 import kotlinx.coroutines.coroutineScope import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
@@ -36,27 +34,30 @@ object EmbeddingUtils {
     }
 
     suspend fun saveBitmapsToEmbedding(
-        it: List<PhotoBitmap?>,
+        items: List<PhotoBitmap?>,
+        imageEncoder: ImageEncoder,
         embeddingRepository: EmbeddingRepository
     ) {
         coroutineScope {
             Log.d(TAG, "saveBitmapsToEmbeddings Start encoding for embedding...")
 
-            val defers = mutableListOf<Deferred<Unit>>()
-            it.forEach {
-                val defer = async {
-                    if (it != null) {
-                        saveBitmapToEmbedding(
-                            it,
-                            ObjectPool.ImageEncoderPool.acquire(),
-                            embeddingRepository
-                        )
-                    }
+            Log.d(TAG, "Start encoding for embedding...")
+            Log.d(TAG, "${System.currentTimeMillis()} Start encoding image...")
+            val time = measureTimeMillis {
+                val embeddings = imageEncoder.encodeBatch(items.map { it!!.bitmap }, usePreprocess = false)
+                Log.d(TAG, "${System.currentTimeMillis()} end encoding image...")
+                ObjectPool.ImageEncoderPool.release(imageEncoder)
+                embeddings.forEachIndexed { index, feat ->
+                    embeddingRepository.updateList(Embedding(
+                        photoId = items[index]!!.photo.id,
+                        albumId = items[index]!!.photo.albumID,
+                        data = feat,
+                    ))
                 }
-                defers.add(defer)
             }
-            awaitAll(*defers.toTypedArray())
+            Log.d(TAG, "Encode[v2] done! Time: $time")
             Log.d(TAG, "saveBtimapsToEmbedings    Encode[v2] done!")
         }
     }
+
 }

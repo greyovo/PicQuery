@@ -27,6 +27,6 @@ class ObjectPool<T>(private val factory: () -> T, private val maxSize: Int) {
 
     companion object {
         private inline fun <reified T> create(maxSize: Int, noinline factory: () -> T) = ObjectPool(factory, maxSize)
-        val ImageEncoderPool = create(10) { ImageEncoder() }
+        val ImageEncoderPool = create(5) { ImageEncoder() }
     }
 }

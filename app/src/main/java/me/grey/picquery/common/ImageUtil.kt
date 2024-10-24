@@ -9,14 +9,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import me.grey.picquery.common.Constants.DIM
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
-import java.io.File
-import java.io.FileOutputStream
 import java.nio.FloatBuffer
-import java.util.concurrent.ExecutionException
 
 private const val TAG = "ImageUtil"
 
@@ -62,13 +62,11 @@ fun decodeSampledBitmapFromFile(
 }
 
 suspend fun loadThumbnail(context: Context, photo: Photo, size: Size = IMAGE_INPUT_SIZE): Bitmap? {
-    return withContext(Dispatchers.IO) {
-        try {
-            context.contentResolver.loadThumbnail(photo.uri, size, null)
-        } catch (e: Exception) {
-            // Some system may have issue by using `loadThumbnail()`,
-            // fallback to other method.
-            try {
+    return flow<Bitmap?> {
+        emit(context.contentResolver.loadThumbnail(photo.uri, size, null))
+    }.catch {
+        emit(
+            withContext(Dispatchers.IO) {
                 Glide.with(context)
                     .asBitmap()
                     .load(photo.path)
@@ -77,29 +75,11 @@ suspend fun loadThumbnail(context: Context, photo: Photo, size: Size = IMAGE_INP
                     .override(DIM)
                     .skipMemoryCache(true)
                     .submit().get()
-            } catch (e: ExecutionException) {
-                decodeSampledBitmapFromFile(photo.path, size)
             }
-        }
-    }
-}
-
-fun saveBitMap(context: Context, bitmap: Bitmap, name: String) {
-    try {
-        val file = File(context.filesDir.path + "/$name.jpg")
-        if (!file.exists()) {
-            file.createNewFile()
-        }
-        val out = FileOutputStream(file)
-
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
-
-        // 刷新输出流并关闭
-        out.flush()
-        out.close()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+        )
+    }.catch {
+        emit(decodeSampledBitmapFromFile(photo.path, size))
+    }.first()
 }
 
 fun preprocess(bitmap: Bitmap): Bitmap {
@@ -113,8 +93,8 @@ const val DIM_PIXEL_SIZE = 3
 /**
  * to be used by mobile clip
   */
-fun bitmapToFloatBuffer(bitmap: Bitmap): FloatBuffer {
-    val bitmap = Bitmap.createScaledBitmap(bitmap, DIM, DIM, true)
+fun bitmapToFloatBuffer(bm: Bitmap): FloatBuffer {
+    val bitmap = Bitmap.createScaledBitmap(bm, DIM, DIM, true)
     val imgData = FloatBuffer.allocate(
         DIM_BATCH_SIZE * DIM_PIXEL_SIZE * DIM * DIM
     )
@@ -138,4 +118,17 @@ fun bitmapToFloatBuffer(bitmap: Bitmap): FloatBuffer {
 
     imgData.rewind()
     return imgData
+}
+
+fun bitmapsToFloatBuffer(bitmaps: List<Bitmap>): FloatBuffer {
+    val totalSize = bitmaps.size * 3 * DIM * DIM
+    val combinedBuffer = FloatBuffer.allocate(totalSize)
+
+    for (bitmap in bitmaps) {
+        val floatBuffer = bitmapToFloatBuffer(bitmap)
+        combinedBuffer.put(floatBuffer)
+    }
+
+    combinedBuffer.flip()
+    return combinedBuffer
 }
