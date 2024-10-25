@@ -3,6 +3,7 @@ package me.grey.picquery.common
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
@@ -13,38 +14,41 @@ object AssetUtil {
     private const val TAG = "AssetUtil"
 
     suspend fun copyAssetsFolder(context: Context, sourceAsset: String, targetFolder: File) {
-        try {
-            withContext(Dispatchers.IO) {
-                val assetManager = context.assets
-                val assets = assetManager.list(sourceAsset)
-                if (!assets.isNullOrEmpty()) {
-                    // 创建目标文件夹
-                    if (!targetFolder.exists()) {
-                        targetFolder.mkdirs()
-                    }
 
-                    for (itemInFolder in assets) {
-                        val currentAssetPath = "$sourceAsset/$itemInFolder"
-                        val isFile = assetManager.list(currentAssetPath)!!.isEmpty()
+        withContext(ioDispatcher) {
+            tryCatch {
+                launch {
+                    val assetManager = context.assets
+                    val assets = assetManager.list(sourceAsset)
+                    if (!assets.isNullOrEmpty()) {
+                        if (!targetFolder.exists()) {
+                            targetFolder.mkdirs()
+                        }
+                        for (itemInFolder in assets) {
+                            val currentAssetPath = "$sourceAsset/$itemInFolder"
+                            val isFile = assetManager.list(currentAssetPath)!!.isEmpty()
 
-                        val target = File(targetFolder, itemInFolder)
-                        if (isFile) {
-                            // The file to copy into
-                            copyAssetFile(context, currentAssetPath, target)
-                        } else {
-                            // The folder to create
-                            if (!target.exists()) {
-                                target.mkdirs()
+                            val target = File(targetFolder, itemInFolder)
+                            if (isFile) {
+                                // The file to copy into
+                                copyAssetFile(context, currentAssetPath, target)
+                            } else {
+                                // The folder to create
+                                if (!target.exists()) {
+                                    target.mkdirs()
+                                }
+                                // Seek to see if the folder contains any file
+                                copyAssetsFolder(context, currentAssetPath, target)
                             }
-                            // Seek to see if the folder contains any file
-                            copyAssetsFolder(context, currentAssetPath, target)
                         }
                     }
                 }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
+            }.fold(
+                left = { Log.e(TAG, "copyAssetsFolder: ", it) },
+                right = { Log.d(TAG, "copyAssetsFolder: Success") },
+            )
         }
+
     }
 
     @Throws(IOException::class)
@@ -72,12 +76,11 @@ object AssetUtil {
 
     @Throws(IOException::class)
     fun assetFilePath(context: Context, assetName: String): String {
-        // 判断本地文件是否存在且有效
-        var inputLength: Long
+        val inputLength: Long
         try {
             val assetStream = PicQueryApplication.context.assets.open(assetName)
             inputLength = assetStream.available().toLong()
-            assetStream?.close()
+            assetStream.close()
         } catch (e: IOException) {
             Log.e(TAG, "assetFilePath: ", e)
             return ""

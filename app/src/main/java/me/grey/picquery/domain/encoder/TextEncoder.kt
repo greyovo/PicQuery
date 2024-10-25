@@ -7,12 +7,13 @@ import android.util.Log
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.common.AssetUtil
 import java.nio.IntBuffer
+import java.nio.LongBuffer
 
 
 class TextEncoder {
     companion object {
         private const val TAG = "TextEncoder"
-        private const val modelPath = "clip-text-int8.ort"
+        private const val modelPath = "text_model.ort"
     }
 
     private var ortSession: OrtSession? = null
@@ -31,7 +32,12 @@ class TextEncoder {
             tokenizer = BPETokenizer(context)
         }
         val token = tokenizer!!.tokenize(input)
-        val buffer = IntBuffer.wrap(token.first)
+        val intBuffer = IntBuffer.wrap(token.first)
+        val longBuffer = LongBuffer.allocate(intBuffer.capacity())
+        while (intBuffer.hasRemaining()) {
+            longBuffer.put(intBuffer.get().toLong())
+        }
+        longBuffer.flip()
         val shape = token.second
 
         val ortEnv = OrtEnvironment.getEnvironment()
@@ -41,7 +47,7 @@ class TextEncoder {
 
         val inputName = ortSession?.inputNames?.iterator()?.next()
         ortEnv.use { env ->
-            val tensor = OnnxTensor.createTensor(env, buffer, shape)
+            val tensor = OnnxTensor.createTensor(env, longBuffer, shape)
             val output = ortSession?.run(mapOf(Pair(inputName!!, tensor)))
             val resultBuffer = output?.get(0) as OnnxTensor
             return (resultBuffer.floatBuffer).array()

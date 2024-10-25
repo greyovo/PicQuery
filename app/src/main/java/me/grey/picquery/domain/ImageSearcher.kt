@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.chunked
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -38,7 +36,7 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
-import me.grey.picquery.domain.EmbeddingUtils.saveBitmapToEmbedding
+import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
 import java.util.SortedMap
@@ -112,7 +110,6 @@ class ImageSearcher(
         }
         Log.i(TAG, "encodePhotoListV2 started.")
         encodingLock = true
-        imageEncoder.loadModel()
 
         withContext(ioDispatcher) {
             val cur = AtomicInteger(0)
@@ -132,8 +129,7 @@ class ImageSearcher(
                 }
                 .filterNotNull()
                 .buffer(1000)
-                .chunked(10)
-
+                .chunked(60)
                 .onEach { Log.d(TAG, "onEach: ${it.size}") }
                 .onCompletion {
                     Log.d(TAG, "onCompletion: ${it}")
@@ -144,32 +140,29 @@ class ImageSearcher(
                     ObjectPool.ImageEncoderPool.clear()
                 }
                 .collect {
-                    try {
-                        val cost = measureTimeMillis {
-                            val defers = it.map { item ->
-                                async {
-                                    saveBitmapToEmbedding(
-                                        item,
-                                        ObjectPool.ImageEncoderPool.acquire(),
-                                        embeddingRepository
-                                    )
-                                }
+                    val loops = 4
+                    val batchSize = it.size / loops
+                    val cost = measureTimeMillis {
+                        val deferreds = (0 until loops).map { index ->
+                            async {
+                                val start = index * batchSize
+                                val end = start + batchSize
+                                saveBitmapsToEmbedding(
+                                    it.slice(start until end),
+                                    ObjectPool.ImageEncoderPool.acquire(),
+                                    embeddingRepository
+                                )
                             }
-                            defers.awaitAll()
                         }
-                        progressCallback?.invoke(
-                            cur.get(),
-                            photos.size,
-                            cost / it.size,
-                        )
-                        Log.d(TAG, "cost: ${cost}")
-
-                        cur.addAndGet(it.size)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "collect: ${e.message}")
+                        deferreds.awaitAll()
                     }
-
-                    Log.d(TAG, "collect: ${cur}")
+                    progressCallback?.invoke(
+                        cur.get(),
+                        photos.size,
+                        cost / it.size,
+                    )
+                    Log.d(TAG, "cost: ${cost}")
+                    cur.addAndGet(it.size)
                 }
         }
         return true
@@ -230,10 +223,12 @@ class ImageSearcher(
             searchingLock = false
             Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
 
+            searchResultIds.clear()
             val results = mutableListOf<Long>()
             sorteSimiliaritydMap.forEach {
                 results.add(it.value)
             }
+            searchResultIds.addAll(results)
             Log.d(TAG, "Search result: ${results.joinToString(",")}")
             return@withContext results
         }
