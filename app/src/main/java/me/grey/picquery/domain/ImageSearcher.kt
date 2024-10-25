@@ -129,7 +129,7 @@ class ImageSearcher(
                 }
                 .filterNotNull()
                 .buffer(1000)
-                .chunked(60)
+                .chunked(40)
                 .onEach { Log.d(TAG, "onEach: ${it.size}") }
                 .onCompletion {
                     Log.d(TAG, "onCompletion: ${it}")
@@ -146,6 +146,7 @@ class ImageSearcher(
                         val deferreds = (0 until loops).map { index ->
                             async {
                                 val start = index * batchSize
+                                if (start>= it.size) return@async
                                 val end = start + batchSize
                                 saveBitmapsToEmbedding(
                                     it.slice(start until end),

@@ -34,8 +34,6 @@ class ImageEncoder {
     val ortEnv = OrtEnvironment.getEnvironment()
     private var options = OrtSession.SessionOptions().apply {
         addConfigEntry("session.load_model_format", "ORT")
-        setExecutionMode(ExecutionMode.PARALLEL)
-        addNnapi()
     }
 
     init {
