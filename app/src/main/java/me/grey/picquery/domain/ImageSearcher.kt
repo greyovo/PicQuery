@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -19,30 +18,24 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.chunked
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.common.calculateSimilarity
-import me.grey.picquery.common.defaultDispatcher
 import me.grey.picquery.common.encodeProgressCallback
-import me.grey.picquery.common.fold
 import me.grey.picquery.common.ioDispatcher
 import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
-import me.grey.picquery.common.tryCatch
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
-import me.grey.picquery.domain.EmbeddingUtils.saveBitmapToEmbedding
 import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
@@ -230,10 +223,12 @@ class ImageSearcher(
             searchingLock = false
             Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
 
+            searchResultIds.clear()
             val results = mutableListOf<Long>()
             sorteSimiliaritydMap.forEach {
                 results.add(it.value)
             }
+            searchResultIds.addAll(results)
             Log.d(TAG, "Search result: ${results.joinToString(",")}")
             return@withContext results
         }
