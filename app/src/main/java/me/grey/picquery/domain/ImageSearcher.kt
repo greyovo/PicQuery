@@ -36,6 +36,7 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
+import me.grey.picquery.data.model.toFloatArray
 import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
 import me.grey.picquery.domain.encoder.ImageEncoder
 import me.grey.picquery.domain.encoder.TextEncoder
@@ -215,7 +216,7 @@ class ImageSearcher(
             Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
             sorteSimiliaritydMap.clear()
             for (emb in embeddings) {
-                val sim = calculateSimilarity(emb.data, textFeat)
+                val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
                 Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
                 if (sim >= matchThreshold.floatValue) {
                     insertDescending(Pair(emb.photoId, sim))

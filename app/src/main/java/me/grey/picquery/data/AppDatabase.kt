@@ -7,7 +7,7 @@ import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 
-@Database(entities = [Embedding::class, Album::class], version = 2, exportSchema = false)
+@Database(entities = [Embedding::class, Album::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun embeddingDao(): EmbeddingDao

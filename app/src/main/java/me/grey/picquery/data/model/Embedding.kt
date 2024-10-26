@@ -7,7 +7,6 @@ import androidx.room.TypeConverters
 import java.io.Serializable
 
 @Entity
-@TypeConverters(Converters::class)
 data class Embedding(
     @PrimaryKey @ColumnInfo(name = "photo_id")
     val photoId: Long,
@@ -15,8 +14,8 @@ data class Embedding(
     @ColumnInfo(name = "album_id")
     val albumId: Long,
 
-    @ColumnInfo(name = "data")
-    val data: FloatArray // Actually a `FloatArray`. Need to be converted before using.
+    @ColumnInfo(name = "data", typeAffinity = ColumnInfo.BLOB)
+    val data: ByteArray // Actually a `FloatArray`. Need to be converted before using.
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

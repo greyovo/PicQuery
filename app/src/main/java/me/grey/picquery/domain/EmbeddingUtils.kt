@@ -2,10 +2,12 @@ package me.grey.picquery.domain
 
 import android.util.Log
 
-import kotlinx.coroutines.coroutineScope import me.grey.picquery.common.ObjectPool
+import kotlinx.coroutines.coroutineScope
+import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.PhotoBitmap
+import me.grey.picquery.data.model.toByteArray
 import me.grey.picquery.domain.encoder.ImageEncoder
 import java.nio.FloatBuffer
 import kotlin.system.measureTimeMillis
@@ -27,7 +29,7 @@ object EmbeddingUtils {
             embeddingRepository.updateList(Embedding(
                 photoId = item.photo.id,
                 albumId = item.photo.albumID,
-                data = feat.array(),
+                data = feat.array().toByteArray(),
             ))
         }
         Log.d(TAG, "Encode[v2] done! Time: $time")
@@ -51,7 +53,7 @@ object EmbeddingUtils {
                     embeddingRepository.updateList(Embedding(
                         photoId = items[index]!!.photo.id,
                         albumId = items[index]!!.photo.albumID,
-                        data = feat,
+                        data = feat.toByteArray()
                     ))
                 }
             }
