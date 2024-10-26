@@ -1,6 +1,7 @@
 package me.grey.picquery.common
 
 import androidx.room.Room
+import com.grey.clip.clipEncoderModule
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -9,8 +10,6 @@ import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
-import me.grey.picquery.domain.encoder.ImageEncoder
-import me.grey.picquery.domain.encoder.TextEncoder
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.search.SearchViewModel
@@ -69,11 +68,9 @@ private val domainModules = module {
         )
     }
 
-    single { ImageEncoder() }
-    single { TextEncoder() }
-
     single { MLKitTranslator() }
 }
 
-val AppModules = listOf(viewModelModules, dataModules, domainModules)
+// need inject encoder here
+val AppModules = listOf(viewModelModules, dataModules, clipEncoderModule, domainModules)
 

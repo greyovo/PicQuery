@@ -25,10 +25,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
-import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
-import me.grey.picquery.common.ioDispatcher
+import com.grey.picQuery.core.ioDispatcher
+import com.grey.picquery.library.ImageEncoder
+import com.grey.picquery.library.textencoder.TextEncoder
 import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
@@ -38,8 +39,7 @@ import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
 import me.grey.picquery.data.model.toFloatArray
 import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
-import me.grey.picquery.domain.encoder.ImageEncoder
-import me.grey.picquery.domain.encoder.TextEncoder
+
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -138,7 +138,7 @@ class ImageSearcher(
                     progressCallback?.invoke(photos.size, photos.size, 0)
                     embeddingRepository.updateCache()
                     encodingLock = false
-                    ObjectPool.ImageEncoderPool.clear()
+
                 }
                 .collect {
                     val loops = 4
@@ -151,7 +151,7 @@ class ImageSearcher(
                                 val end = start + batchSize
                                 saveBitmapsToEmbedding(
                                     it.slice(start until end),
-                                    ObjectPool.ImageEncoderPool.acquire(),
+                                    imageEncoder,
                                     embeddingRepository
                                 )
                             }

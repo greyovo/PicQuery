@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import me.grey.picquery.common.Constants.DIM
 import me.grey.picquery.data.model.Photo
-import me.grey.picquery.domain.encoder.IMAGE_INPUT_SIZE
-import java.nio.FloatBuffer
 
 private const val TAG = "ImageUtil"
 
@@ -61,6 +59,8 @@ fun decodeSampledBitmapFromFile(
     }
 }
 
+val IMAGE_INPUT_SIZE = Size(DIM, DIM)
+
 suspend fun loadThumbnail(context: Context, photo: Photo, size: Size = IMAGE_INPUT_SIZE): Bitmap? {
     return flow<Bitmap?> {
         emit(context.contentResolver.loadThumbnail(photo.uri, size, null))
@@ -85,50 +85,4 @@ suspend fun loadThumbnail(context: Context, photo: Photo, size: Size = IMAGE_INP
 fun preprocess(bitmap: Bitmap): Bitmap {
     // bitmap size to 224x224
     return Bitmap.createScaledBitmap(bitmap, DIM, DIM, true)
-}
-
-const val DIM_BATCH_SIZE = 1
-const val DIM_PIXEL_SIZE = 3
-
-/**
- * to be used by mobile clip
-  */
-fun bitmapToFloatBuffer(bm: Bitmap): FloatBuffer {
-    val bitmap = Bitmap.createScaledBitmap(bm, DIM, DIM, true)
-    val imgData = FloatBuffer.allocate(
-        DIM_BATCH_SIZE * DIM_PIXEL_SIZE * DIM * DIM
-    )
-    imgData.rewind()
-    val stride = DIM * DIM
-    val bmpData = IntArray(stride)
-    bitmap.getPixels(bmpData, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
-    for (i in 0 until DIM) {
-        for (j in 0 until DIM) {
-            val idx = DIM * i + j
-            val pixelValue = bmpData[idx]
-            imgData.put(idx, (((pixelValue shr 16 and 0xFF) / 255f)))
-            imgData.put(
-                idx + stride, (((pixelValue shr 8 and 0xFF) / 255f))
-            )
-            imgData.put(
-                idx + stride * 2, (((pixelValue and 0xFF) / 255f))
-            )
-        }
-    }
-
-    imgData.rewind()
-    return imgData
-}
-
-fun bitmapsToFloatBuffer(bitmaps: List<Bitmap>): FloatBuffer {
-    val totalSize = bitmaps.size * 3 * DIM * DIM
-    val combinedBuffer = FloatBuffer.allocate(totalSize)
-
-    for (bitmap in bitmaps) {
-        val floatBuffer = bitmapToFloatBuffer(bitmap)
-        combinedBuffer.put(floatBuffer)
-    }
-
-    combinedBuffer.flip()
-    return combinedBuffer
 }

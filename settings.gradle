@@ -33,3 +33,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "PicQuery"
 include ':app'
+include 'base:clipcore'
+include 'base:core'
+include 'features:mobileclip'
+include ':features:clip'

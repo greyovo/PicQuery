@@ -17,7 +17,7 @@ object Constants {
         PERMISSION_OLD
     }
 
-    private const val useMobileClip = true
+    private const val useMobileClip = false
     val DIM = if (useMobileClip) 256 else 224
 
     const val PRIVACY_URL = "https://grey030.gitee.io/pages/picquery/privacy.html"
