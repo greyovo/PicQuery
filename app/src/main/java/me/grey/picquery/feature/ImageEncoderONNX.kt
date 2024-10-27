@@ -10,14 +10,15 @@ import kotlinx.coroutines.withContext
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.common.defaultDispatcher
 import me.grey.picquery.feature.base.ImageEncoder
-import me.grey.picquery.feature.clip.PreprocessorCLIP
+import me.grey.picquery.feature.base.Preprocessor
+import java.nio.FloatBuffer
 import java.util.Collections
 
-open class ImageEncoderImpl(
+open class ImageEncoderONNX(
     val DIM: Long,
     val modelPath: String,
     context: Context,
-    private val preprocessor: PreprocessorCLIP,
+    private val preprocessor: Preprocessor,
 ) :
     ImageEncoder {
 
@@ -47,9 +48,9 @@ open class ImageEncoderImpl(
 
     override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> =
         withContext(defaultDispatcher) {
-            Log.d(TAG, "${this@ImageEncoderImpl} Start encoding image...")
+            Log.d(TAG, "${this@ImageEncoderONNX} Start encoding image...")
 
-            val floatBuffer = preprocessor.preprocessBatch(bitmaps)
+            val floatBuffer = preprocessor.preprocessBatch(bitmaps) as FloatBuffer
 
             val inputName = ortSession?.inputNames?.iterator()?.next()
             val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, DIM, DIM)

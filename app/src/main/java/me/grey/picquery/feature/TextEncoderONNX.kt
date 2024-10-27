@@ -10,10 +10,10 @@ import me.grey.picquery.feature.base.TextEncoder
 import java.nio.IntBuffer
 import java.nio.LongBuffer
 
-abstract class TextEncoderImpl(private val context: Context): TextEncoder {
+abstract class TextEncoderONNX(private val context: Context) : TextEncoder {
     private val TAG = this.javaClass.simpleName
     abstract val modelPath: String
-    abstract val modelType:Int
+    abstract val modelType: Int
     private var ortSession: OrtSession? = null
     private var tokenizer: BPETokenizer? = null
 
@@ -52,6 +52,7 @@ abstract class TextEncoderImpl(private val context: Context): TextEncoder {
                     }
                     OnnxTensor.createTensor(env, longBuffer, shape)
                 }
+
                 else -> throw IllegalArgumentException("Unknown buffer type")
             }
             val output = ortSession?.run(mapOf(Pair(inputName!!, tensor)))

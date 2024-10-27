@@ -3,13 +3,12 @@ package me.grey.picquery.feature.clip
 import ai.onnxruntime.OnnxTensor
 import android.content.Context
 import android.graphics.Bitmap
-import me.grey.picquery.feature.ImageEncoderImpl
-import me.grey.picquery.feature.base.Preprocessor
+import me.grey.picquery.feature.ImageEncoderONNX
 import java.nio.FloatBuffer
 import java.util.Collections
 
 class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorCLIP) :
-    ImageEncoderImpl(
+    ImageEncoderONNX(
         224, "clip-image-int8.ort", context, preprocessor
     ) {
 

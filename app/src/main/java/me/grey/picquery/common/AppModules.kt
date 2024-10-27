@@ -10,6 +10,8 @@ import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
+import me.grey.picquery.feature.clip.modulesCLIP
+import me.grey.picquery.feature.mobileclip.modulesMobileCLIP
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.search.SearchViewModel
@@ -72,7 +74,7 @@ private val domainModules = module {
 }
 
 // need inject encoder here
-//val AppModules = listOf(viewModelModules, dataModules, encoderModule, domainModules)
-val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP2, domainModules)
-//val AppModules = listOf(viewModelModules, dataModules, clipEncoderModule, domainModules)
+val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)
+//val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP2, domainModules)
+//val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP, domainModules)
 
