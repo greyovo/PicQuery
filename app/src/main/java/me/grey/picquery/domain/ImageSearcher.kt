@@ -27,9 +27,7 @@ import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
-import com.grey.picQuery.core.ioDispatcher
-import com.grey.picquery.library.ImageEncoder
-import com.grey.picquery.library.textencoder.TextEncoder
+import me.grey.picquery.common.ioDispatcher
 import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
@@ -39,10 +37,13 @@ import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
 import me.grey.picquery.data.model.toFloatArray
 import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
+import me.grey.picquery.feature.base.ImageEncoder
+import me.grey.picquery.feature.base.TextEncoder
 
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
@@ -115,8 +116,8 @@ class ImageSearcher(
         withContext(ioDispatcher) {
             val cur = AtomicInteger(0)
             Log.d(TAG, "start: ${photos.size}")
-            Log.d("encodePhotoListV2", "start: ${System.currentTimeMillis()}")
 
+            val startTime = System.currentTimeMillis()
             photos.asFlow()
                 .map { photo ->
                     val thumbnailBitmap = loadThumbnail(context, photo)
@@ -125,23 +126,27 @@ class ImageSearcher(
                         return@map null
                     }
                     val prepBitmap = preprocess(thumbnailBitmap)
-                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
+//                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
                     PhotoBitmap(photo, prepBitmap)
                 }
                 .filterNotNull()
                 .buffer(1000)
-                .chunked(40)
+                .chunked(100)
                 .onEach { Log.d(TAG, "onEach: ${it.size}") }
                 .onCompletion {
-                    Log.d(TAG, "onCompletion: ${it}")
-                    Log.d("encodePhotoListV2", "onCompletion: ${System.currentTimeMillis()}")
+                    val cost = max((System.currentTimeMillis() - startTime)/1000f, 1f)
+                    Log.d(
+                        TAG,
+                        "[OK] encode ${photos.size} pics in $cost s, " +
+                                "avg speed: ${photos.size / cost} pic/s"
+                    )
                     progressCallback?.invoke(photos.size, photos.size, 0)
                     embeddingRepository.updateCache()
                     encodingLock = false
 
                 }
                 .collect {
-                    val loops = 4
+                    val loops = 1
                     val batchSize = it.size / loops
                     val cost = measureTimeMillis {
                         val deferreds = (0 until loops).map { index ->

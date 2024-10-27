@@ -7,7 +7,7 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import me.grey.picquery.PicQueryApplication
-import com.grey.picQuery.core.AssetUtil
+import me.grey.picquery.common.AssetUtil
 import java.io.File
 
 class MLKitTranslator {

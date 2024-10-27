@@ -1,30 +1,30 @@
-package com.grey.picquery.mobileclip.imageEncoder
+package me.grey.picquery.feature.clip
 
-import android.content.Context
 import android.graphics.Bitmap
-import com.grey.picquery.library.EmbeddingMaker
-import com.grey.picquery.library.ImageEncoderImpl
+import me.grey.picquery.feature.base.Preprocessor
 import java.nio.FloatBuffer
 
-const val INPUT = 256
 
-class MobileClipImageEncoder(context: Context, mobileClipEmbeddingMaker: EmbeddingMaker) :
-    ImageEncoderImpl(
-        INPUT.toLong(), "vision_model.ort", context, mobileClipEmbeddingMaker
-    )
-
-class MobileClipEmbeddingMaker() : EmbeddingMaker {
+class PreprocessorCLIP : Preprocessor {
 
     val DIM_BATCH_SIZE = 1
     val DIM_PIXEL_SIZE = 3
 
-    override suspend fun makeBatchEmbedding(input: List<Bitmap>): FloatBuffer {
+    companion object {
+        const val INPUT = 244
+    }
+
+    override suspend fun preprocessBatch(input: List<Bitmap>): FloatBuffer {
         return bitmapsToFloatBuffer(input)
     }
 
-    /**
-     * to be used by mobile clip
-     */
+    override suspend fun preprocess(input: Bitmap): FloatBuffer {
+        return bitmapToFloatBuffer(input)
+    }
+
+    private val normMeanRGB = floatArrayOf(0.48145467f, 0.4578275f, 0.40821072f)
+    private val normStdRGB = floatArrayOf(0.26862955f, 0.2613026f, 0.2757771f)
+
     fun bitmapToFloatBuffer(bm: Bitmap): FloatBuffer {
         val bitmap = Bitmap.createScaledBitmap(bm, INPUT, INPUT, true)
         val imgData = FloatBuffer.allocate(
@@ -38,12 +38,17 @@ class MobileClipEmbeddingMaker() : EmbeddingMaker {
             for (j in 0 until INPUT) {
                 val idx = INPUT * i + j
                 val pixelValue = bmpData[idx]
-                imgData.put(idx, (((pixelValue shr 16 and 0xFF) / 255f)))
                 imgData.put(
-                    idx + stride, (((pixelValue shr 8 and 0xFF) / 255f))
+                    idx,
+                    (((pixelValue shr 16 and 0xFF) / 255f - normMeanRGB[0]) / normStdRGB[0])
                 )
                 imgData.put(
-                    idx + stride * 2, (((pixelValue and 0xFF) / 255f))
+                    idx + stride,
+                    (((pixelValue shr 8 and 0xFF) / 255f - normMeanRGB[1]) / normStdRGB[1])
+                )
+                imgData.put(
+                    idx + stride * 2,
+                    (((pixelValue and 0xFF) / 255f - normMeanRGB[2]) / normStdRGB[2])
                 )
             }
         }
@@ -64,4 +69,6 @@ class MobileClipEmbeddingMaker() : EmbeddingMaker {
         combinedBuffer.flip()
         return combinedBuffer
     }
+
+
 }

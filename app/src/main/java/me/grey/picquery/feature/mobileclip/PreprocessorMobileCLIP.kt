@@ -1,25 +1,21 @@
-package com.grey.picquery.mobileclip.imageEncoder
+package me.grey.picquery.feature.mobileclip
 
-import android.content.Context
 import android.graphics.Bitmap
-import com.grey.picquery.library.EmbeddingMaker
-import com.grey.picquery.library.ImageEncoderImpl
+import me.grey.picquery.feature.base.Preprocessor
 import java.nio.FloatBuffer
 
-const val INPUT = 256
-
-class MobileClipImageEncoder(context: Context, mobileClipEmbeddingMaker: EmbeddingMaker) :
-    ImageEncoderImpl(
-        INPUT.toLong(), "vision_model.ort", context, mobileClipEmbeddingMaker
-    )
-
-class MobileClipEmbeddingMaker() : EmbeddingMaker {
+class PreprocessorMobileCLIP : Preprocessor {
 
     val DIM_BATCH_SIZE = 1
     val DIM_PIXEL_SIZE = 3
+    val INPUT = 256
 
-    override suspend fun makeBatchEmbedding(input: List<Bitmap>): FloatBuffer {
+    override suspend fun preprocessBatch(input: List<Bitmap>): FloatBuffer {
         return bitmapsToFloatBuffer(input)
+    }
+
+    override suspend fun preprocess(input: Bitmap): FloatBuffer {
+        return bitmapToFloatBuffer(input)
     }
 
     /**

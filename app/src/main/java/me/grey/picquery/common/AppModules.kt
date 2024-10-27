@@ -1,7 +1,7 @@
 package me.grey.picquery.common
 
 import androidx.room.Room
-import com.grey.clip.clipEncoderModule
+import me.grey.picquery.feature.mobileclip2.modulesMobileCLIP2
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -72,5 +72,7 @@ private val domainModules = module {
 }
 
 // need inject encoder here
-val AppModules = listOf(viewModelModules, dataModules, clipEncoderModule, domainModules)
+//val AppModules = listOf(viewModelModules, dataModules, encoderModule, domainModules)
+val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP2, domainModules)
+//val AppModules = listOf(viewModelModules, dataModules, clipEncoderModule, domainModules)
 

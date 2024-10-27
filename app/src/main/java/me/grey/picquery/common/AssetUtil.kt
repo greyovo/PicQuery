@@ -1,4 +1,4 @@
-package com.grey.picQuery.core
+package me.grey.picquery.common
 
 import android.content.Context
 import android.util.Log
