@@ -11,7 +11,7 @@ class PreprocessorCLIP : Preprocessor {
     val DIM_PIXEL_SIZE = 3
 
     companion object {
-        const val INPUT = 244
+        const val INPUT = 224
     }
 
     override suspend fun preprocessBatch(input: List<Bitmap>): FloatBuffer {
