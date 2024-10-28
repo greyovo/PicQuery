@@ -38,7 +38,7 @@ class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorC
         }
     }
 
-    fun splitFloatBuffer(buffer: FloatBuffer, parts: Int): List<FloatBuffer> {
+    private fun splitFloatBuffer(buffer: FloatBuffer, parts: Int): List<FloatBuffer> {
         val totalSize = buffer.capacity()
         val partSize = totalSize / parts
         val result = mutableListOf<FloatBuffer>()

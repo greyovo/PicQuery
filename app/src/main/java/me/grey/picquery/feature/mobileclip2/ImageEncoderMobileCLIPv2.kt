@@ -25,7 +25,7 @@ class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: Prepr
 
     companion object {
         private const val TAG = "ImageEncoderLiteRT"
-        private const val IMAGE_SIZE = 224
+        private const val IMAGE_SIZE = 256
         private const val MODEL_PATH = "mobileclip-image.tflite"
     }
 

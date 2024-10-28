@@ -14,7 +14,7 @@ class PreprocessorMobileCLIPv2 : Preprocessor {
 
     companion object {
         // FIXME 应为 256，但输入模型时出错，可能是模型转换有问题。
-        const val IMAGE_SIZE = 224
+        const val IMAGE_SIZE = 256
     }
 
     override suspend fun preprocessBatch(input: List<Bitmap>): List<TensorBuffer> {
