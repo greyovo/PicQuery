@@ -1,5 +1,8 @@
 package me.grey.picquery.ui.display
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.text.format.DateUtils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -16,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,16 +30,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import me.grey.picquery.R
 import me.grey.picquery.common.InitializeEffect
+import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -145,14 +156,20 @@ fun ZoomablePagerImage(
     modifier: Modifier = Modifier,
     photo: Photo,
     maxScale: Float = 5f,
-//    maxImageSize: Int,
     onItemClick: () -> Unit
 ) {
     val zoomState = rememberZoomState(maxScale = maxScale)
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
+    val callback = {
+        showDialog = false
+    }
 
-    ) {
+    if (showDialog) {
+        openWithExternalApp(callback, photo, context)
+    }
+    Scaffold {
         it.apply { }
         GlideImage(
             modifier = modifier
@@ -160,8 +177,11 @@ fun ZoomablePagerImage(
                 .combinedClickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onDoubleClick = {},
-                    onClick = onItemClick
+                    onDoubleClick = {
+
+                    },
+                    onClick = onItemClick,
+                    onLongClick = { showDialog = true }
                 )
                 .zoomable(zoomState = zoomState),
             model = File(photo.path),
@@ -169,21 +189,36 @@ fun ZoomablePagerImage(
             contentScale = ContentScale.Fit,
         )
     }
+}
 
-//    Image(
-//        modifier = modifier
-//            .fillMaxSize()
-//            .combinedClickable(
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = null,
-//                onDoubleClick = {},
-//                onClick = onItemClick
-//            )
-//            .zoomable(
-//                zoomState = zoomState,
-//            ),
-//        painter = painter,
-//        contentScale = ContentScale.Fit,
-//        contentDescription = photo.label
-//    )
+@Composable
+private fun openWithExternalApp(
+    callback:() -> Unit,
+    photo: Photo,
+    context: Context
+) {
+
+    AlertDialog(
+        onDismissRequest = { callback() },
+        title = { Text(stringResource(R.string.open_with_external_app)) },
+        confirmButton = {
+            Button(onClick = {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_VIEW
+                    setDataAndType(photo.uri, "image/*")
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                }
+                context.startActivity(Intent.createChooser(intent, "Open with External Apps"))
+                callback()
+            }) {
+                Text(stringResource(id = android.R.string.ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = { callback() }) {
+                Text(stringResource(id = android.R.string.cancel))
+            }
+        }
+    )
+
 }

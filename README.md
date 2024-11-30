@@ -26,11 +26,22 @@
 
 > Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their assistance during the development. The discussion can be viewed [here](https://github.com/mazzzystar/Queryable/issues/12).
 
-_PicQuery_ is powered by OpenAI's [CLIP model](https://github.com/openai/CLIP).
+_PicQuery_ is powered by OpenAI's [CLIP model](https://github.com/openai/CLIP). and Apple's [mobile clip](https://github.com/apple/ml-mobileclip)
+
 
 First, the images to be searched are encoded into vectors using an image encoder and stored in a database. The text provided by the user during the search is also encoded into a vector. The encoded text vector is then compared with the indexed image vectors to calculate the similarity. The top K images with the highest similarity scores are selected as the query results.
 
-## Build & Run
+## Build & Run Clip
+
+To build this project, you need to obtain a quantized CLIP model.
+
+Run the scripts in this [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb) step by step. When you run into the _"You are done"_ section, you should get the following model files in `./result ` directory:
+
+- `clip-image-int8.ort`
+- `clip-text-int8.ort`
+> If you don't want to run the scripts, you may directly download them from [Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link).
+
+## Build & Run mobile-clip
 
 To build this project, you need to obtain a quantized CLIP model.
 
@@ -41,6 +52,10 @@ To build this project, you need to obtain a quantized CLIP model.
 > download them from [Google Drive](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link).
 
 Put them into `app\src\main\assets` and you're ready to go.
+
+## Choose module
+val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) 切换你需要使用的 module，Clip 使用 modulesCLIP module， mobile-clip 使用 modulesMobileCLIP module
+
 
 ## Acknowledgment
 

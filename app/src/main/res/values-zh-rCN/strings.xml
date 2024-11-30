@@ -53,4 +53,6 @@
     <string name="skip">稍后设置</string>
     <string name="external_storage">[外部存储]</string>
     <string name="view_privacy_policy">查看隐私政策</string>
+    <string name="open_with_external_app">使用外部应用打开</string>
+
 </resources>
