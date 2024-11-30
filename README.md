@@ -34,12 +34,11 @@ First, the images to be searched are encoded into vectors using an image encoder
 
 To build this project, you need to obtain a quantized CLIP model.
 
-Run the scripts in this [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb) step by step. When you run into the _"You are done"_ section, you should get the following model files in `./result ` directory:
 
-- `clip-image-int8.ort`
-- `clip-text-int8.ort`
+- `vision_model.ort`
+- `text_model.ort`
 
-> If you don't want to run the scripts, you may directly download them from [Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link).
+> download them from [Google Drive](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link).
 
 Put them into `app\src\main\assets` and you're ready to go.
 

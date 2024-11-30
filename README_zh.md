@@ -43,12 +43,12 @@
 
 ## 构建运行
 
-要构建运行本项目，需要获取量化后的 CLIP 模型。在 Colab 中 运行此 [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb)，依次运行其中的脚本。当运行到 “You are done” 章节，应该可以在运行环境的 `result` 目录中分别得到：
+要构建运行本项目，需要获取MobileCLIP 模型。
 
-- `clip-image-int8.ort`
-- `clip-text-int8.ort`
+- `vision_model.ort`
+- `text_model.ort`
 
-> 如果不想运行脚本，也可以在 [谷歌云盘](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link) 中直接下载这两个模型。
+> 可以在 [谷歌云盘](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link) 中直接下载这两个模型。
 
 将它们放入 `app\src\main\assets` 中，即可构建和运行。
 

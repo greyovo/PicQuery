@@ -1,44 +1,13 @@
-package me.grey.picquery.domain.encoder
+package com.grey.picquery.library.textencoder
 
 import android.content.Context
-import me.grey.picquery.common.AssetUtil
+import com.grey.picQuery.core.AssetUtil
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
-
-private fun createCharDict(): Map<Int, Char> {
-    val bytesList = mutableListOf<Int>()
-    bytesList.addAll(33..126)
-    bytesList.addAll(161..172)
-    bytesList.addAll(174..255)
-    val charList = bytesList.toMutableList()
-    var n = 0
-    for (b in 0..255) {
-        if (b !in bytesList) {
-            bytesList.add(b)
-            charList.add(256 + n)
-            n++
-        }
-    }
-    return bytesList.zip(charList.map { it.toChar() }).toMap()
-}
-
-private fun readGzipFile(context: Context, assetName: String): List<String> {
-    val filePath = AssetUtil.assetFilePath(context, assetName)
-    val result = mutableListOf<String>()
-    val inputStream = GZIPInputStream(FileInputStream(File(filePath)))
-    val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
-    var line: String?
-    while (reader.readLine().also { line = it } != null) {
-        result.add(line!!)
-    }
-    reader.close()
-    inputStream.close()
-    return result
-}
 
 class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
 
@@ -185,6 +154,39 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") {
         return Pair(result, shape)
     }
 
+
+
+}
+
+private fun createCharDict(): Map<Int, Char> {
+    val bytesList = mutableListOf<Int>()
+    bytesList.addAll(33..126)
+    bytesList.addAll(161..172)
+    bytesList.addAll(174..255)
+    val charList = bytesList.toMutableList()
+    var n = 0
+    for (b in 0..255) {
+        if (b !in bytesList) {
+            bytesList.add(b)
+            charList.add(256 + n)
+            n++
+        }
+    }
+    return bytesList.zip(charList.map { it.toChar() }).toMap()
+}
+
+private fun readGzipFile(context: Context, assetName: String): List<String> {
+    val filePath = AssetUtil.assetFilePath(context, assetName)
+    val result = mutableListOf<String>()
+    val inputStream = GZIPInputStream(FileInputStream(File(filePath)))
+    val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
+    var line: String?
+    while (reader.readLine().also { line = it } != null) {
+        result.add(line!!)
+    }
+    reader.close()
+    inputStream.close()
+    return result
 }
 
 private fun getPairs(word: List<String>): Set<Pair<String, String>> {
@@ -196,4 +198,3 @@ private fun whitespaceClean(text: String): String {
     cleanedText = cleanedText.trim()
     return cleanedText
 }
-

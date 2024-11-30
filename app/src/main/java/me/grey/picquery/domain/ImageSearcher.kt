@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.chunked
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -27,7 +25,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
-import me.grey.picquery.common.ObjectPool
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.ioDispatcher
@@ -38,12 +35,15 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
-import me.grey.picquery.domain.EmbeddingUtils.saveBitmapToEmbedding
-import me.grey.picquery.domain.encoder.ImageEncoder
-import me.grey.picquery.domain.encoder.TextEncoder
+import me.grey.picquery.data.model.toFloatArray
+import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
+import me.grey.picquery.feature.base.ImageEncoder
+import me.grey.picquery.feature.base.TextEncoder
+
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
@@ -112,13 +112,12 @@ class ImageSearcher(
         }
         Log.i(TAG, "encodePhotoListV2 started.")
         encodingLock = true
-        imageEncoder.loadModel()
 
         withContext(ioDispatcher) {
             val cur = AtomicInteger(0)
             Log.d(TAG, "start: ${photos.size}")
-            Log.d("encodePhotoListV2", "start: ${System.currentTimeMillis()}")
 
+            val startTime = System.currentTimeMillis()
             photos.asFlow()
                 .map { photo ->
                     val thumbnailBitmap = loadThumbnail(context, photo)
@@ -127,49 +126,50 @@ class ImageSearcher(
                         return@map null
                     }
                     val prepBitmap = preprocess(thumbnailBitmap)
-                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
+//                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
                     PhotoBitmap(photo, prepBitmap)
                 }
                 .filterNotNull()
                 .buffer(1000)
-                .chunked(10)
-
+                .chunked(100)
                 .onEach { Log.d(TAG, "onEach: ${it.size}") }
                 .onCompletion {
-                    Log.d(TAG, "onCompletion: ${it}")
-                    Log.d("encodePhotoListV2", "onCompletion: ${System.currentTimeMillis()}")
+                    val cost = max((System.currentTimeMillis() - startTime)/1000f, 1f)
+                    Log.d(
+                        TAG,
+                        "[OK] encode ${photos.size} pics in $cost s, " +
+                                "avg speed: ${photos.size / cost} pic/s"
+                    )
                     progressCallback?.invoke(photos.size, photos.size, 0)
                     embeddingRepository.updateCache()
                     encodingLock = false
-                    ObjectPool.ImageEncoderPool.clear()
+
                 }
                 .collect {
-                    try {
-                        val cost = measureTimeMillis {
-                            val defers = it.map { item ->
-                                async {
-                                    saveBitmapToEmbedding(
-                                        item,
-                                        ObjectPool.ImageEncoderPool.acquire(),
-                                        embeddingRepository
-                                    )
-                                }
+                    val loops = 1
+                    val batchSize = it.size / loops
+                    val cost = measureTimeMillis {
+                        val deferreds = (0 until loops).map { index ->
+                            async {
+                                val start = index * batchSize
+                                if (start>= it.size) return@async
+                                val end = start + batchSize
+                                saveBitmapsToEmbedding(
+                                    it.slice(start until end),
+                                    imageEncoder,
+                                    embeddingRepository
+                                )
                             }
-                            defers.awaitAll()
                         }
-                        progressCallback?.invoke(
-                            cur.get(),
-                            photos.size,
-                            cost / it.size,
-                        )
-                        Log.d(TAG, "cost: ${cost}")
-
-                        cur.addAndGet(it.size)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "collect: ${e.message}")
+                        deferreds.awaitAll()
                     }
-
-                    Log.d(TAG, "collect: ${cur}")
+                    progressCallback?.invoke(
+                        cur.get(),
+                        photos.size,
+                        cost / it.size,
+                    )
+                    Log.d(TAG, "cost: ${cost}")
+                    cur.addAndGet(it.size)
                 }
         }
         return true
@@ -221,7 +221,7 @@ class ImageSearcher(
             Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
             sorteSimiliaritydMap.clear()
             for (emb in embeddings) {
-                val sim = calculateSimilarity(emb.data, textFeat)
+                val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
                 Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
                 if (sim >= matchThreshold.floatValue) {
                     insertDescending(Pair(emb.photoId, sim))
@@ -230,10 +230,12 @@ class ImageSearcher(
             searchingLock = false
             Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
 
+            searchResultIds.clear()
             val results = mutableListOf<Long>()
             sorteSimiliaritydMap.forEach {
                 results.add(it.value)
             }
+            searchResultIds.addAll(results)
             Log.d(TAG, "Search result: ${results.joinToString(",")}")
             return@withContext results
         }

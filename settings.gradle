@@ -16,7 +16,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     def ALIYUN_REPOSITORY = 'https://maven.aliyun.com/repository/public/'
     def ALIYUN_JCENTER= 'https://maven.aliyun.com/repository/jcenter/'
     def ALIYUN_GOOGLE = 'https://maven.aliyun.com/repository/google/'
@@ -33,3 +33,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "PicQuery"
 include ':app'
+include 'base:clipcore'
+include 'base:core'
+include 'features:mobileclip'
+include ':features:clip'

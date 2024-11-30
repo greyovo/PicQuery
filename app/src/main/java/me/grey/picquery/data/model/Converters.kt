@@ -3,24 +3,20 @@
  */
 
 package me.grey.picquery.data.model
+import java.nio.ByteBuffer
 
-import androidx.room.TypeConverter
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+fun FloatArray.toByteArray(): ByteArray {
+    val bufferSize = this.size * 4
+    val buffer = ByteBuffer.allocate(bufferSize)
 
-object Converters {
-    @TypeConverter
-    fun fromString(value: String?): FloatArray {
-        val json = Json
-        val floatList = value?.let { json.decodeFromString<List<Float>>(it) }
-        val floatArray = floatList?.toFloatArray()
-        return floatArray?.copyOfRange(0, floatArray.size) ?: FloatArray(0)
+    buffer.asFloatBuffer().put(this)
+    return buffer.array()
+}
 
-    }
+fun ByteArray.toFloatArray(): FloatArray {
+    val buffer = ByteBuffer.wrap(this)
+    val floatArray = FloatArray(this.size / 4)
 
-    @TypeConverter
-    fun fromFloatArray(array: FloatArray): String {
-        val json = Json.encodeToString(array)
-        return json
-    }
+    buffer.asFloatBuffer().get(floatArray)
+    return floatArray
 }
