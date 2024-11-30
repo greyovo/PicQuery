@@ -54,7 +54,7 @@ To build this project, you need to obtain a quantized CLIP model.
 Put them into `app\src\main\assets` and you're ready to go.
 
 ## Choose module
-val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) 切换你需要使用的 module，Clip 使用 modulesCLIP module， mobile-clip 使用 modulesMobileCLIP module
+val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) pick the module you want，Clip pair to modulesCLIP module， mobile-clip pair to modulesMobileCLIP module
 
 
 ## Acknowledgment
