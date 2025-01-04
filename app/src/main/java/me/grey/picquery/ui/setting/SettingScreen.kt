@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PermDeviceInformation
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -35,6 +38,7 @@ import androidx.core.content.ContextCompat.startActivity
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants.PRIVACY_URL
 import me.grey.picquery.common.Constants.SOURCE_REPO_URL
+import me.grey.picquery.common.Routes
 import me.grey.picquery.ui.common.BackButton
 import org.koin.androidx.compose.koinViewModel
 
@@ -43,6 +47,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingScreen(
     onNavigateBack: () -> Unit,
+    navigateToIndexMgr: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -59,6 +64,7 @@ fun SettingScreen(
             item { InformationRow() }
             item { Box(modifier = Modifier.height(15.dp)) }
             item { UploadLogSettingItem() }
+            item { AlbumIndexManagerUIItem(navigateToIndexMgr) }
         }
     }
 }
@@ -84,6 +90,21 @@ private fun UploadLogSettingItem(settingViewModel: SettingViewModel = koinViewMo
             )
         },
         modifier = Modifier.clickable { settingViewModel.setEnableUploadLog(!enable.value) }
+    )
+}
+
+@Composable
+private fun AlbumIndexManagerUIItem(navigateToIndexMgr: () -> Unit) {
+    ListItem(
+        leadingContent = {
+            Icon(
+                imageVector = Icons.Filled.Dataset,
+                contentDescription = "Click to Manage Album Indexes"
+            )
+        },
+        headlineContent = { Text(text = stringResource(R.string.album_index_manager_ui_title)) },
+        supportingContent = { Text(text = stringResource(R.string.album_index_manager_ui_desc)) },
+        modifier = Modifier.clickable { navigateToIndexMgr() }
     )
 }
 

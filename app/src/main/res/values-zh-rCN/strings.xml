@@ -54,5 +54,12 @@
     <string name="external_storage">[外部存储]</string>
     <string name="view_privacy_policy">查看隐私政策</string>
     <string name="open_with_external_app">使用外部应用打开</string>
+    <string name="album_index_manager_ui_title">相册索引管理器</string>
+    <string name="album_index_manager_ui_desc">打开一个对话框来查看和删除已经索引的相册信息</string>
+    <string name="album_indexmgr_ui_seems_invalid">此相册似乎无效.</string>
+    <string name="album_indexmgr_ui_album">相册:</string>
+    <string name="album_indexmgr_ui_album_photo_count">图片数:</string>
+    <string name="album_indexmgr_ui_album_timestamp">时间戳:</string>
+    <string name="album_indexmgr_ui_long_click_to_delete">点击以删除对应相册的索引信息</string>
 
 </resources>
