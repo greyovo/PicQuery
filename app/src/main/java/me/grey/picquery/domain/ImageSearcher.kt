@@ -61,7 +61,7 @@ class ImageSearcher(
     companion object {
         private const val TAG = "ImageSearcher"
         private const val DEFAULT_MATCH_THRESHOLD = 0.01
-        private const val TOP_K = 30
+        private const val TOP_K = 800
     }
 
     val searchRange = mutableStateListOf<Album>()

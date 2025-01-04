@@ -66,6 +66,7 @@ private val domainModules = module {
         AlbumManager(
             albumRepository = get(),
             photoRepository = get(),
+            embeddingRepository = get(),
             imageSearcher = get(),
         )
     }
@@ -74,7 +75,7 @@ private val domainModules = module {
 }
 
 // need inject encoder here
-val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)
+//val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)
 //val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP2, domainModules)
-//val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP, domainModules)
+val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP, domainModules)
 

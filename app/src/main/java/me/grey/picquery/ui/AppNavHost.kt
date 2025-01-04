@@ -13,6 +13,7 @@ import me.grey.picquery.common.Animation.navigateUpAnimation
 import me.grey.picquery.common.Routes
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
+import me.grey.picquery.ui.indexmgr.IndexMgrScreen
 import me.grey.picquery.ui.search.SearchScreen
 import me.grey.picquery.ui.setting.SettingScreen
 
@@ -64,6 +65,14 @@ fun AppNavHost(
         }
         composable(Routes.Setting.name) {
             SettingScreen(
+                onNavigateBack = { navController.popBackStack() },
+                navigateToIndexMgr = {
+                    navController.navigate(Routes.IndexMgr.name)
+                }
+            )
+        }
+        composable(Routes.IndexMgr.name) {
+            IndexMgrScreen(
                 onNavigateBack = { navController.popBackStack() },
             )
         }

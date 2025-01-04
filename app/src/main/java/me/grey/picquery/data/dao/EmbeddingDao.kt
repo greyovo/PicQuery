@@ -28,6 +28,12 @@ interface EmbeddingDao {
     )
     fun getByAlbumIdList(albumIds: List<Long>): List<Embedding>
 
+    @Query(
+        "DELETE FROM $tableName WHERE album_id=(:albumId)"
+    )
+    fun removeByAlbumId(albumId: Long): Unit
+
+
 //    @Insert
 //    fun insertAll(embeddings: List<Embedding>)
 

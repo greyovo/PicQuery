@@ -2,11 +2,15 @@ package me.grey.picquery.ui.search
 
 import AppBottomSheetState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AddCircleOutline
@@ -106,7 +110,10 @@ fun SearchFilterBottomSheet(
         if (candidates.isEmpty()) {
             EmptyAlbumTips(onClose = { closeFilter() })
         } else {
-            Box(modifier = Modifier.padding(bottom = 55.dp)) {
+            Box(modifier = Modifier
+                .padding(bottom = 55.dp)
+                .draggable(state = rememberDraggableState(onDelta={}), orientation = Orientation.Horizontal)
+            ){
                 SearchAbleAlbums(
                     enabled = !searchAll.value,
                     candidates = candidates,
@@ -133,49 +140,55 @@ private fun SearchAbleAlbums(
 ) {
 //    val searchRange = remember { searchViewModel.searchRange }
 //    val all = remember { albumManager.searchableAlbumList }
-    FlowRow(
-        Modifier.padding(horizontal = 12.dp)
+    LazyColumn(
+        Modifier
+            .padding(horizontal = 12.dp)
+            .draggable(state = rememberDraggableState(
+                onDelta={}
+            ), orientation = Orientation.Horizontal)
     ) {
         repeat(candidates.size) { index ->
-            val album = candidates[index]
-            val selected = remember { mutableStateOf(selectedList.contains(album)) }
+            item{
+                val album = candidates[index]
+                val selected = remember { mutableStateOf(selectedList.contains(album)) }
 
-            val colors = FilterChipDefaults.elevatedFilterChipColors(
-                iconColor = MaterialTheme.colorScheme.primary,
-                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
-            )
+                val colors = FilterChipDefaults.elevatedFilterChipColors(
+                    iconColor = MaterialTheme.colorScheme.primary,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                )
 
-            ElevatedFilterChip(
-                enabled = enabled,
-                modifier = Modifier.padding(horizontal = 6.dp),
-                colors = colors,
-                leadingIcon = {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        imageVector = if (selected.value) {
-                            Icons.Filled.CheckCircle
-                        } else {
-                            Icons.Outlined.AddCircleOutline
-                        },
-                        contentDescription = "",
-                    )
-                },
-                selected = selected.value,
-                onClick = {
-                    if (enabled) {
-                        if (!selected.value) {
-                            onAdd(album)
-                            selected.value = true
-                        } else {
-                            onRemove(album)
-                            selected.value = false
+                ElevatedFilterChip(
+                    enabled = enabled,
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    colors = colors,
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            imageVector = if (selected.value) {
+                                Icons.Filled.CheckCircle
+                            } else {
+                                Icons.Outlined.AddCircleOutline
+                            },
+                            contentDescription = "",
+                        )
+                    },
+                    selected = selected.value,
+                    onClick = {
+                        if (enabled) {
+                            if (!selected.value) {
+                                onAdd(album)
+                                selected.value = true
+                            } else {
+                                onRemove(album)
+                                selected.value = false
+                            }
                         }
-                    }
-                },
-                label = { Text(text = "${album.label} (${album.count})") }
-            )
+                    },
+                    label = { Text(text = "${album.label} (${album.count})") }
+                )
+            }
         }
     }
 }

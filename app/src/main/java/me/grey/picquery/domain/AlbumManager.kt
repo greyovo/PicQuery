@@ -15,6 +15,7 @@ import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.AlbumRepository
+import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
@@ -23,6 +24,7 @@ import me.grey.picquery.ui.albums.IndexingAlbumState
 class AlbumManager(
     private val albumRepository: AlbumRepository,
     private val photoRepository: PhotoRepository,
+    private val embeddingRepository: EmbeddingRepository,
     private val imageSearcher: ImageSearcher,
 ) {
     companion object {
@@ -34,9 +36,10 @@ class AlbumManager(
     val isEncoderBusy: Boolean
         get() = indexingAlbumState.value.isBusy
 
-    private val albumList = mutableStateListOf<Album>()
+    val albumList = mutableStateListOf<Album>()
     val searchableAlbumList = mutableStateListOf<Album>()
     val unsearchableAlbumList = mutableStateListOf<Album>()
+    var searchableAlbumListRaw = mutableStateListOf<Album>()
     val albumsToEncode = mutableStateListOf<Album>()
 
     val photoFlow = photoRepository.photoFlow()
@@ -58,6 +61,8 @@ class AlbumManager(
     }
 
     private suspend fun initDataFlow() {
+        searchableAlbumListRaw = mutableStateListOf<Album>()
+        searchableAlbumListRaw.addAll(albumRepository.getSearchableAlbums())
         searchableAlbumFlow().collect {
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
@@ -135,5 +140,10 @@ class AlbumManager(
 
     fun clearIndexingState() {
         indexingAlbumState.value = IndexingAlbumState()
+    }
+
+    fun removeSingleAlbumIndex(album: Album) {
+        embeddingRepository.removeByAlbum(album)
+        albumRepository.removeSearchableAlbum(album)
     }
 }

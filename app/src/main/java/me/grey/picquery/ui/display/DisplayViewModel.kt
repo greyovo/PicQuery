@@ -22,7 +22,11 @@ class DisplayViewModel(
         currentIndex.intValue = initialPage
         viewModelScope.launch {
             val ids = imageSearcher.searchResultIds
-            photoList.addAll(photoRepository.getPhotoListByIds(ids))
+            val resultIdSimpleList = ids.toList()
+            val photos = photoRepository.getPhotoListByIds(resultIdSimpleList)
+            val photoMap = photos.associateBy { it.id }
+            val photoListOrdered =  resultIdSimpleList.mapNotNull { id -> photoMap[id] }
+            photoList.addAll(photoListOrdered)
         }
     }
 }

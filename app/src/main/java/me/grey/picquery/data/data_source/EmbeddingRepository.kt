@@ -59,4 +59,8 @@ class EmbeddingRepository(
     fun updateAll(list: List<Embedding>) {
         return database.embeddingDao().upsertAll(list)
     }
+
+    fun removeByAlbum(album: Album){
+        return database.embeddingDao().removeByAlbumId(album.id)
+    }
 }
