@@ -108,11 +108,10 @@ private fun AlbumItem(indexedAlbum: SnapshotStateList<Album>, album: Album, albu
         },
         headlineContent = { Text(text = album.label) },
         supportingContent = {
-            if (isLoading) {
-                Text(text = "请稍后")
-            }
             if (isDone) {
                 Text(text = "此项目的索引已删除")
+            } else if (isLoading) {
+                Text(text = "请稍后")
             } else {
                 Text(text = descString)
             }
