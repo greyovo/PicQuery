@@ -10,7 +10,6 @@ import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Album
 
-
 class AlbumRepository(
     private val contentResolver: ContentResolver,
     private val database: AppDatabase
@@ -33,7 +32,6 @@ class AlbumRepository(
     private val albumCollection: Uri =
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
 
-
     // 查询相册
     // 本质上其实是还是遍历所有的图片，但是手动将他们归类和统计数量
     fun getAllAlbums(): List<Album> {
@@ -45,13 +43,12 @@ class AlbumRepository(
         )
         val albumList = mutableListOf<Album>()
         queryAlbums.use { cursor: Cursor? ->
-            when (cursor?.count) {
+            val result = when (cursor?.count) {
                 null -> {
                     Log.e(TAG, "getAlbums, queryAlbums, cursor null")
-                    return emptyList()
+                    emptyList()
                 }
-
-                0 -> return emptyList()
+                0 -> emptyList()
                 else -> {
                     // cursor最初从-1开始
                     while (cursor.moveToNext()) {
@@ -75,9 +72,10 @@ class AlbumRepository(
                             }
                         }
                     }
-                    return albumList
+                    albumList
                 }
             }
+            return result
         }
     }
 

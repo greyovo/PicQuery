@@ -16,12 +16,6 @@ class EmbeddingRepository(
         return database.embeddingDao().getAll()
     }
 
-//    fun hasEmbedding(): Boolean {
-//        val db = AppDatabase.instance
-//        val total = db.embeddingDao().getTotalCount()
-//        return total > 0
-//    }
-
     fun getTotalCount(): Long {
         return database.embeddingDao().getTotalCount()
     }

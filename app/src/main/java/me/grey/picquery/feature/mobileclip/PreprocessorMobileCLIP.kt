@@ -34,13 +34,9 @@ class PreprocessorMobileCLIP : Preprocessor {
             for (j in 0 until INPUT) {
                 val idx = INPUT * i + j
                 val pixelValue = bmpData[idx]
-                imgData.put(idx, (((pixelValue shr 16 and 0xFF) / 255f)))
-                imgData.put(
-                    idx + stride, (((pixelValue shr 8 and 0xFF) / 255f))
-                )
-                imgData.put(
-                    idx + stride * 2, (((pixelValue and 0xFF) / 255f))
-                )
+                imgData.put(idx, (pixelValue shr 16 and 0xFF) / 255f)
+                imgData.put(idx + stride, (pixelValue shr 8 and 0xFF) / 255f)
+                imgData.put(idx + stride * 2, (pixelValue and 0xFF) / 255f)
             }
         }
 

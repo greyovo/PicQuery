@@ -8,11 +8,10 @@ import android.util.Size
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import me.grey.picquery.common.Constants.DIM
 import me.grey.picquery.data.model.Photo
 
@@ -66,7 +65,7 @@ suspend fun loadThumbnail(context: Context, photo: Photo, size: Size = IMAGE_INP
         emit(context.contentResolver.loadThumbnail(photo.uri, size, null))
     }.catch {
         emit(
-            withContext(Dispatchers.IO) {
+            coroutineScope {
                 Glide.with(context)
                     .asBitmap()
                     .load(photo.path)

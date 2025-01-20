@@ -11,7 +11,8 @@ val modulesCLIP = module {
     factory<ImageEncoder> {
         ImageEncoderCLIP(
             context = get(),
-            preprocessor = get<PreprocessorCLIP>()
+            preprocessor = get<PreprocessorCLIP>(),
+            dispatcher = get()
         )
     }
 }

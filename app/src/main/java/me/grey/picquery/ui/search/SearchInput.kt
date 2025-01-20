@@ -1,27 +1,28 @@
-
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FilterAltOff
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -31,164 +32,256 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
-import me.grey.picquery.domain.ImageSearcher
-import me.grey.picquery.domain.MLKitTranslator
 import me.grey.picquery.domain.SearchTarget
 import me.grey.picquery.ui.search.SearchFilterBottomSheet
-import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @InternalTextApi
 @Composable
 fun SearchInput(
-    queryText: MutableState<String>,
-    leadingIcon: @Composable () -> Unit = {
-        Icon(
-            Icons.Default.Search,
-            contentDescription = null
-        )
-    },
+    modifier: Modifier = Modifier,
+    queryText: String,
     onStartSearch: (String) -> Unit,
+    onImageSearch: (Uri) -> Unit,
+    onQueryChange: (String) -> Unit,
+    onNavigateBack: (() -> Unit)? = null,
+    showBackButton: Boolean = false,
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
-    fun searchAction() {
-        onStartSearch(queryText.value)
-        keyboard?.hide()
-    }
-
     val textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
 
     SearchBar(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp),
-        query = queryText.value,
-        onQueryChange = { queryText.value = it },
-        onSearch = { searchAction() },
+        query = queryText,
+        onQueryChange = { onQueryChange(it) },
+        onSearch = { 
+            onStartSearch(queryText)
+            keyboard?.hide()
+        },
         active = false,
         onActiveChange = { },
-        placeholder = { Text(stringResource(R.string.search_placeholder)) },
-        leadingIcon = leadingIcon,
-        trailingIcon = {
-            Row {
-                // Clear text button
-                if (queryText.value.isNotEmpty()) {
-                    IconButton(onClick = {
-                        queryText.value = ""
-                        keyboard?.show()
-                    }) {
-                        Icon(Icons.Default.Clear, contentDescription = null)
-                    }
-                }
-                // More Menu button
-                SearchSettingButton(textStyle)
+        placeholder = { SearchPlaceholder() },
+        leadingIcon = { 
+            if (showBackButton && onNavigateBack != null) {
+                BackButton(onClick = onNavigateBack)
+            } else {
+                SearchLeadingIcon()
             }
         },
-    ) {
+        trailingIcon = {
+            SearchTrailingIcons(
+                queryText = queryText,
+                textStyle = textStyle,
+                onClearText = {
+                    onQueryChange("")
+                    keyboard?.show()
+                },
+                onImageSearch = onImageSearch
+            )
+        },
+    ) {}
+}
+
+@Composable
+private fun SearchPlaceholder() {
+    Text(stringResource(R.string.search_placeholder))
+}
+
+@Composable
+private fun SearchLeadingIcon() {
+    Icon(
+        Icons.Default.Search,
+        contentDescription = ""
+    )
+}
+
+@Composable
+private fun SearchTrailingIcons(
+    queryText: String,
+    textStyle: TextStyle,
+    onClearText: () -> Unit,
+    onImageSearch: (Uri) -> Unit,
+) {
+    Row {
+        // Clear text button
+        if (queryText.isNotEmpty()) {
+            ClearTextButton(onClearText)
+        }
+        // Search settings
+        SearchSettingsSection(
+            textStyle = textStyle,
+            onImageSearch = onImageSearch
+        )
     }
 }
 
+@Composable
+private fun ClearTextButton(onClear: () -> Unit) {
+    IconButton(onClick = onClear) {
+        Icon(
+            Icons.Default.Clear,
+            contentDescription = "CLEAR"
+        )
+    }
+}
 
 @Composable
-private fun SearchSettingButton(textStyle: TextStyle, imageSearcher: ImageSearcher = koinInject()) {
-    val filterBottomSheetState = rememberAppBottomSheetState()
+private fun SearchSettingsSection(
+    textStyle: TextStyle,
+    onImageSearch: (Uri) -> Unit,
+) {
+    val filterSheetState = rememberAppBottomSheetState()
     val scope = rememberCoroutineScope()
-    val menuDropdownOpen = remember { mutableStateOf(false) }
-
-    fun onClick() {
-        // TODO 加入了OCR识别功能后再启用dropdown菜单
-//        menuDropdownOpen.value = true
-        scope.launch { filterBottomSheetState.show() }
+    
+    // Photo picker setup
+    val photoPicker = rememberImagePicker(onImageSearch)
+    
+    // UI Components
+    Row {
+        ImageSearchButton(
+            textStyle = textStyle,
+            onClick = {
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+        )
+        
+        MoreOptionsButton(
+            textStyle = textStyle,
+            onClick = {
+                scope.launch { filterSheetState.show() }
+            }
+        )
     }
+    
+    // Bottom sheet
+    if (filterSheetState.isVisible) {
+        SearchFilterBottomSheet(filterSheetState)
+    }
+}
 
-    IconButton(onClick = { onClick() }) {
+@Composable
+private fun rememberImagePicker(
+    onImageSearch: (Uri) -> Unit
+) = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    if (uri != null) {
+        Log.d("PhotoPicker", "Selected URI: $uri")
+        onImageSearch(uri)
+    } else {
+        Log.d("PhotoPicker", "No media selected")
+    }
+}
+
+@Composable
+private fun ImageSearchButton(
+    textStyle: TextStyle,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick) {
         Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = null,
+            imageVector = Icons.Default.PhotoCamera,
+            contentDescription = "",
             tint = textStyle.color
         )
     }
+}
 
-    if (filterBottomSheetState.isVisible) {
-        SearchFilterBottomSheet(filterBottomSheetState)
-    }
-
-    if (menuDropdownOpen.value) {
-        SearchSettingDropdown(
-            menuDropdownOpen.value,
-            onDismissRequest = { menuDropdownOpen.value = false },
-            selectedTarget = imageSearcher.searchTarget.value,
-            onChangeTarget = { target ->
-                imageSearcher.updateTarget(target)
-                menuDropdownOpen.value = false
-            },
-            enableFilter = imageSearcher.isSearchAll.value,
-            onOpenFilter = {
-                scope.launch { filterBottomSheetState.show() }
-                menuDropdownOpen.value = false
-            }
+@Composable
+private fun MoreOptionsButton(
+    textStyle: TextStyle,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = "",
+            tint = textStyle.color
         )
     }
 }
 
 @Composable
-fun SearchSettingDropdown(
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    enableFilter: Boolean,
-    selectedTarget: SearchTarget,
-    onChangeTarget: (SearchTarget) -> Unit,
-    onOpenFilter: () -> Unit,
-) {
-    val targets = SearchTarget.values()
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
-        for (item in targets) {
-            val selected = selectedTarget == item
-            val color = if (selected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.onBackground
-            }
-            DropdownMenuItem(
-                text = { Text(stringResource(id = item.labelResId), color = color) },
-                onClick = { onChangeTarget(item) },
-                leadingIcon = {
-                    Icon(
-                        item.icon, contentDescription = item.name,
-                        tint = color,
-                    )
-                },
-                trailingIcon = {
-                    if (selected)
-                        Icon(
-                            imageVector = Icons.Default.Check, contentDescription = null,
-                            tint = color,
-                        )
-                }
-            )
-        }
-        HorizontalDivider()
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.search_range_selection_title)) },
-            onClick = { onOpenFilter() },
-            leadingIcon = {
-                Icon(
-                    imageVector = if (enableFilter) {
-                        Icons.Outlined.FilterAltOff
-                    } else {
-                        Icons.Default.FilterAlt
-                    },
-                    contentDescription = null,
-                    tint = if (enableFilter) {
-                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    }
-                )
-            },
+private fun BackButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "",
+            tint = MaterialTheme.colorScheme.onBackground
         )
     }
+}
+
+@Composable
+private fun SearchTargetOptions(
+    targets: Array<SearchTarget>,
+    selectedTarget: SearchTarget,
+    onChangeTarget: (SearchTarget) -> Unit
+) {
+    for (item in targets) {
+        val selected = selectedTarget == item
+        val color = if (selected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onBackground
+        }
+        
+        SearchTargetItem(
+            target = item,
+            selected = selected,
+            color = color,
+            onClick = { onChangeTarget(item) }
+        )
+    }
+}
+
+@Composable
+private fun SearchTargetItem(
+    target: SearchTarget,
+    selected: Boolean,
+    color: androidx.compose.ui.graphics.Color,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(id = target.labelResId), color = color) },
+        onClick = onClick,
+        leadingIcon = {
+            Icon(
+                target.icon,
+                contentDescription = target.name,
+                tint = color,
+            )
+        },
+        trailingIcon = {
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = color,
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun FilterOption(
+    enableFilter: Boolean,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(R.string.search_range_selection_title)) },
+        onClick = onClick,
+        leadingIcon = {
+            Icon(
+                imageVector = if (enableFilter) Icons.Outlined.FilterAltOff else Icons.Default.FilterAlt,
+                contentDescription = null,
+                tint = if (enableFilter) {
+                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
+            )
+        },
+    )
 }

@@ -1,13 +1,17 @@
 package me.grey.picquery.ui.search
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
@@ -26,6 +30,7 @@ enum class SearchState {
 
 class SearchViewModel(
     private val imageSearcher: ImageSearcher,
+    private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     companion object {
         private const val TAG = "SearchResultViewModel"
@@ -37,7 +42,12 @@ class SearchViewModel(
     private val _searchState = MutableStateFlow(SearchState.LOADING)
     val searchState = _searchState.asStateFlow()
 
-    val searchText = mutableStateOf("")
+    private val _searchText = MutableStateFlow<String>("")
+    val searchText: StateFlow<String> = _searchText.map { it }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        ""
+    )
 
     private val context: Context
         get() {
@@ -50,16 +60,42 @@ class SearchViewModel(
         Log.d(TAG, "init!!! SearchViewModel")
     }
 
+    fun onQueryChange(query: String) {
+        _searchState.value = SearchState.READY
+        _searchText.value = query
+    }
+
     fun startSearch(text: String) {
         if (text.trim().isEmpty()) {
             showToast(context.getString(R.string.empty_search_content_toast))
             Log.w(TAG, "搜索字段为空")
             return
         }
-        searchText.value = text
-        viewModelScope.launch(Dispatchers.Default) {
+        _searchText.value = text
+        viewModelScope.launch(ioDispatcher) {
             _searchState.value = SearchState.SEARCHING
             imageSearcher.search(text) { ids ->
+                if (ids != null) {
+                    val photos = repo.getPhotoListByIds(ids)
+                    // reorder by id
+                    _resultList.value = reorderList(photos, ids)
+                }
+                _searchState.value = SearchState.FINISHED
+            }
+        }
+    }
+
+    fun startSearch(uri: Uri) {
+        // 从 uri 获取图片
+        val photo = repo.getBitmapFromUri(uri)
+        if (photo == null) {
+            showToast(context.getString(R.string.empty_search_content_toast))
+            Log.w(TAG, "搜索字段为空")
+            return
+        }
+        viewModelScope.launch(ioDispatcher) {
+            _searchState.value = SearchState.SEARCHING
+            imageSearcher.searchWithRange(photo) { ids ->
                 if (ids != null) {
                     val photos = repo.getPhotoListByIds(ids)
                     // reorder by id
@@ -75,18 +111,4 @@ class SearchViewModel(
         val photoMap = originalList.associateBy { it.id }
         return orderList.mapNotNull { id -> photoMap[id] }
     }
-
-    fun clearAll() {
-        searchText.value = ""
-        _resultList.value = emptyList()
-        _searchState.value = SearchState.READY
-    }
-
-
-//    fun displayPhotoFullscreen(context: Context, index: Int, photo: Photo) {
-//        val intent = Intent(context, DisplayActivity::class.java)
-//        intent.putExtra("index", index)
-//        intent.putExtra("id", photo.id)
-//        context.startActivity(intent)
-//    }
 }

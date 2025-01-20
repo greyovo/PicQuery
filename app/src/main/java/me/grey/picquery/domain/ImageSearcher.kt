@@ -1,6 +1,7 @@
 package me.grey.picquery.domain
 
 import android.content.ContentResolver
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ImageSearch
@@ -9,6 +10,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +29,6 @@ import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.calculateSimilarity
 import me.grey.picquery.common.encodeProgressCallback
-import me.grey.picquery.common.ioDispatcher
 import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
@@ -57,6 +58,7 @@ class ImageSearcher(
     private val embeddingRepository: EmbeddingRepository,
     private val contentResolver: ContentResolver,
     private val translator: MLKitTranslator,
+    private val dispatcher: CoroutineDispatcher
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
@@ -85,7 +87,7 @@ class ImageSearcher(
     }
 
     suspend fun hasEmbedding(): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             val total = embeddingRepository.getTotalCount()
             Log.d(TAG, "Total embedding count $total")
             total > 0
@@ -104,7 +106,7 @@ class ImageSearcher(
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun encodePhotoListV2(
         photos: List<Photo>,
-        progressCallback: encodeProgressCallback? = null
+        progressCallback: encodeProgressCallback? = null,
     ): Boolean {
         if (encodingLock) {
             Log.w(TAG, "encodePhotoListV2: Already encoding!")
@@ -113,7 +115,7 @@ class ImageSearcher(
         Log.i(TAG, "encodePhotoListV2 started.")
         encodingLock = true
 
-        withContext(ioDispatcher) {
+        withContext(dispatcher) {
             val cur = AtomicInteger(0)
             Log.d(TAG, "start: ${photos.size}")
 
@@ -126,7 +128,6 @@ class ImageSearcher(
                         return@map null
                     }
                     val prepBitmap = preprocess(thumbnailBitmap)
-//                    Log.d(TAG, "prepBitmap: ${prepBitmap.width}x${prepBitmap.height}")
                     PhotoBitmap(photo, prepBitmap)
                 }
                 .filterNotNull()
@@ -204,41 +205,64 @@ class ImageSearcher(
         text: String,
         range: List<Album> = searchRange
     ): List<Long>? {
-        return withContext(Dispatchers.Default) {
+        return withContext(dispatcher) {
             if (searchingLock) {
                 return@withContext null
             }
             searchingLock = true
             val textFeat = textEncoder.encode(text)
-            Log.d(TAG, "Encode text: '${text}'")
-            val embeddings = if (range.isEmpty() || isSearchAll.value) {
-                Log.d(TAG, "Search from all album")
-                embeddingRepository.getAll()
-            } else {
-                Log.d(TAG, "Search from: [${range.joinToString { it.label }}]")
-                embeddingRepository.getByAlbumList(range)
-            }
-            Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
-            sorteSimiliaritydMap.clear()
-            for (emb in embeddings) {
-                val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
-                Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
-                if (sim >= matchThreshold.floatValue) {
-                    insertDescending(Pair(emb.photoId, sim))
-                }
-            }
-            searchingLock = false
-            Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
-
-            searchResultIds.clear()
-            val results = mutableListOf<Long>()
-            sorteSimiliaritydMap.forEach {
-                results.add(it.value)
-            }
-            searchResultIds.addAll(results)
-            Log.d(TAG, "Search result: ${results.joinToString(",")}")
+            val results = searchWithVector(range, textFeat)
             return@withContext results
         }
+    }
+
+    suspend fun searchWithRange(
+        image: Bitmap,
+        range: List<Album> = searchRange,
+        onSuccess: suspend (List<Long>?) -> Unit,
+        ) {
+        return withContext(dispatcher) {
+            if (searchingLock) {
+                return@withContext
+            }
+            searchingLock = true
+            val bitmapFeats = imageEncoder.encodeBatch(mutableListOf(image))
+            val results = searchWithVector(range, bitmapFeats[0]).toList()
+            onSuccess(results)
+        }
+    }
+
+    private fun searchWithVector(
+        range: List<Album>,
+        textFeat: FloatArray
+    ): MutableList<Long> {
+        val embeddings = if (range.isEmpty() || isSearchAll.value) {
+            Log.d(TAG, "Search from all album")
+            embeddingRepository.getAll()
+        } else {
+            Log.d(TAG, "Search from: [${range.joinToString { it.label }}]")
+            embeddingRepository.getByAlbumList(range)
+        }
+        Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
+        sorteSimiliaritydMap.clear()
+        for (emb in embeddings) {
+            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
+            Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
+            if (sim >= matchThreshold.floatValue) {
+                insertDescending(Pair(emb.photoId, sim))
+            }
+        }
+        searchingLock = false
+        Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
+
+        searchResultIds.clear()
+        val results = mutableListOf<Long>()
+        sorteSimiliaritydMap.forEach {
+            results.add(it.value)
+        }
+        searchResultIds.addAll(results)
+        Log.d(TAG, "Search result: ${results.joinToString(",")}")
+        return results
     }
 
     // use red black tree to keep top k

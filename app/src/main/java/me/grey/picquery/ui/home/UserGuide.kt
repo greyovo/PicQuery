@@ -72,7 +72,6 @@ fun UserGuide(
 
         // Step 1
         StepListItem(
-            stepNumber = 1,
             enabled = true,
             finished = state.permissionDone,
             icon = Icons.Default.Key,
@@ -82,7 +81,6 @@ fun UserGuide(
         )
         // Step 2
         StepListItem(
-            stepNumber = 2,
             enabled = state.permissionDone,
             finished = state.indexDone,
             icon = Icons.Default.PhotoAlbum,
@@ -93,7 +91,6 @@ fun UserGuide(
 
         // Step 3
         StepListItem(
-            stepNumber = 3,
             enabled = state.permissionDone && state.indexDone,
             finished = false,
             icon = Icons.Default.Search,
@@ -120,7 +117,6 @@ fun UserGuide(
 
 @Composable
 private fun StepListItem(
-    stepNumber: Int,
     enabled: Boolean,
     finished: Boolean,
     title: String,

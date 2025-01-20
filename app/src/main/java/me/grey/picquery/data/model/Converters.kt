@@ -17,6 +17,8 @@ fun ByteArray.toFloatArray(): FloatArray {
     val buffer = ByteBuffer.wrap(this)
     val floatArray = FloatArray(this.size / 4)
 
-    buffer.asFloatBuffer().get(floatArray)
+    for (i in floatArray.indices) {
+        floatArray[i] = buffer.float
+    }
     return floatArray
 }

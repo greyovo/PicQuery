@@ -1,7 +1,6 @@
 package me.grey.picquery.common
 
 import androidx.room.Room
-import me.grey.picquery.feature.mobileclip2.modulesMobileCLIP2
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -11,7 +10,6 @@ import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
 import me.grey.picquery.feature.clip.modulesCLIP
-import me.grey.picquery.feature.mobileclip.modulesMobileCLIP
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.search.SearchViewModel
@@ -23,12 +21,11 @@ import org.koin.dsl.module
 private val viewModelModules = module {
     viewModel {
         HomeViewModel(
-            albumManager = get(),
             imageSearcher = get()
         )
     }
     viewModel {
-        SearchViewModel(imageSearcher = get())
+        SearchViewModel(imageSearcher = get(), ioDispatcher = get())
     }
     viewModel {
         DisplayViewModel(photoRepository = get(), imageSearcher = get())
@@ -59,7 +56,8 @@ private val domainModules = module {
             textEncoder = get(),
             embeddingRepository = get(),
             contentResolver = androidContext().contentResolver,
-            translator = MLKitTranslator()
+            translator = MLKitTranslator(),
+            dispatcher = get()
         )
     }
     single {
@@ -67,6 +65,7 @@ private val domainModules = module {
             albumRepository = get(),
             photoRepository = get(),
             imageSearcher = get(),
+            ioDispatcher = get()
         )
     }
 
@@ -74,7 +73,5 @@ private val domainModules = module {
 }
 
 // need inject encoder here
-val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)
-//val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP2, domainModules)
-//val AppModules = listOf(viewModelModules, dataModules, modulesMobileCLIP, domainModules)
+val AppModules = listOf(dispatchersKoinModule, viewModelModules, dataModules, modulesCLIP, domainModules, )
 

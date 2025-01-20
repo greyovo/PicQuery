@@ -1,5 +1,6 @@
 package me.grey.picquery.ui
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -28,12 +29,15 @@ fun AppNavHost(
         // TODO: Animation when switching screens
         enterTransition = { navigateInAnimation },
         exitTransition = { navigateUpAnimation },
-//        popEnterTransition = { navigateInAnimation },
-//        popExitTransition = { navigateUpAnimation },
     ) {
         composable(Routes.Home.name) {
             HomeScreen(
+                modifier = modifier,
                 navigateToSearch = { query ->
+                    navController.navigate("${Routes.Search.name}/${query}")
+                },
+                navigateToSearchWitImage = {
+                    val query = Uri.encode(it.toString())
                     navController.navigate("${Routes.Search.name}/${query}")
                 },
                 navigateToSetting = { navController.navigate(Routes.Setting.name) },
@@ -44,8 +48,7 @@ fun AppNavHost(
             SearchScreen(
                 initialQuery = queryText,
                 onNavigateBack = { navController.popBackStack() },
-                onClickPhoto = { photo, index ->
-                    // TODO
+                onClickPhoto = { _, index ->
                     navController.navigate("${Routes.Display.name}/${index}")
                 },
             )

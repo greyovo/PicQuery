@@ -3,6 +3,7 @@ package me.grey.picquery.common
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -13,33 +14,14 @@ object AssetUtil {
     private const val TAG = "AssetUtil"
 
     suspend fun copyAssetsFolder(context: Context, sourceAsset: String, targetFolder: File) {
-
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             tryCatch {
                 launch {
                     val assetManager = context.assets
                     val assets = assetManager.list(sourceAsset)
                     if (!assets.isNullOrEmpty()) {
-                        if (!targetFolder.exists()) {
-                            targetFolder.mkdirs()
-                        }
-                        for (itemInFolder in assets) {
-                            val currentAssetPath = "$sourceAsset/$itemInFolder"
-                            val isFile = assetManager.list(currentAssetPath)!!.isEmpty()
-
-                            val target = File(targetFolder, itemInFolder)
-                            if (isFile) {
-                                // The file to copy into
-                                copyAssetFile(context, currentAssetPath, target)
-                            } else {
-                                // The folder to create
-                                if (!target.exists()) {
-                                    target.mkdirs()
-                                }
-                                // Seek to see if the folder contains any file
-                                copyAssetsFolder(context, currentAssetPath, target)
-                            }
-                        }
+                        createTargetFolder(targetFolder)
+                        copyAssets(context, sourceAsset, targetFolder, assets)
                     }
                 }
             }.fold(
@@ -47,7 +29,28 @@ object AssetUtil {
                 right = { Log.d(TAG, "copyAssetsFolder: Success") },
             )
         }
+    }
 
+    private fun createTargetFolder(targetFolder: File) {
+        if (!targetFolder.exists()) {
+            targetFolder.mkdirs()
+        }
+    }
+
+    private suspend fun copyAssets(context: Context, sourceAsset: String, targetFolder: File, assets: Array<String>) {
+        val assetManager = context.assets
+        for (itemInFolder in assets) {
+            val currentAssetPath = "$sourceAsset/$itemInFolder"
+            val isFile = assetManager.list(currentAssetPath)!!.isEmpty()
+
+            val target = File(targetFolder, itemInFolder)
+            if (isFile) {
+                copyAssetFile(context, currentAssetPath, target)
+            } else {
+                createTargetFolder(target)
+                copyAssetsFolder(context, currentAssetPath, target)
+            }
+        }
     }
 
     @Throws(IOException::class)
@@ -56,7 +59,7 @@ object AssetUtil {
             return
         }
 
-        withContext(Dispatchers.IO) {
+        coroutineScope {
             val inputStream: InputStream = context.assets.open(sourceAsset)
             val outputStream: OutputStream = FileOutputStream(target)
 

@@ -1,10 +1,14 @@
 package me.grey.picquery.ui.home
 
+import AppBottomSheetState
 import LogoRow
 import SearchInput
+import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +16,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -23,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants
@@ -32,98 +39,170 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import rememberAppBottomSheetState
 
-@OptIn(InternalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = koinViewModel(),
     albumManager: AlbumManager = koinInject(),
     navigateToSearch: (String) -> Unit,
+    navigateToSearchWitImage: (Uri) -> Unit,
     navigateToSetting: () -> Unit,
 ) {
     InitPermissions()
 
-    // === BottomSheet block
+    val scope = rememberCoroutineScope()
+    val userGuideVisible = remember { homeViewModel.userGuideVisible }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val albumListSheetState = rememberAppBottomSheetState()
+
+    // Handle bottom sheet
     if (albumListSheetState.isVisible) {
         AddAlbumBottomSheet(
             sheetState = albumListSheetState,
             onStartIndexing = { homeViewModel.doneIndexAlbum() },
         )
     }
-    // === BottomSheet end
 
-    val scope = rememberCoroutineScope()
-    val userGuideVisible = remember { homeViewModel.userGuideVisible }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-    // === UI block
+    // Main scaffold
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
-            val busyToastText = stringResource(R.string.busy_when_add_album_toast)
-            if (!userGuideVisible.value) {
-                HomeBottomActions(
-                    onClickManageAlbum = {
-                        if (albumManager.isEncoderBusy) {
-                            showToast(busyToastText)
-                        } else {
-                            scope.launch { albumListSheetState.show() }
-                        }
-                    },
-                    navigateToSetting = navigateToSetting,
-                )
-            }
+            HomeFloatingButton(
+                userGuideVisible = userGuideVisible.value,
+                albumManager = albumManager,
+                scope = scope,
+                albumListSheetState = albumListSheetState,
+                navigateToSetting = navigateToSetting
+            )
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = { EncodingProgressBar() },
         topBar = {
             HomeTopBar(
-                onClickHelpButton = {
-                    homeViewModel.showUserGuide()
-                }
+                onClickHelpButton = { homeViewModel.showUserGuide() }
             )
         }
     ) { padding ->
+        MainContent(
+            padding = padding,
+            userGuideVisible = userGuideVisible.value,
+            homeViewModel = homeViewModel,
+            navigateToSearch = navigateToSearch,
+            navigateToSearchWitImage = navigateToSearchWitImage,
+            albumListSheetState = albumListSheetState
+        )
+    }
+}
+
+@Composable
+private fun HomeFloatingButton(
+    userGuideVisible: Boolean,
+    albumManager: AlbumManager,
+    scope: CoroutineScope,
+    albumListSheetState: AppBottomSheetState,
+    navigateToSetting: () -> Unit
+) {
+    if (!userGuideVisible) {
+        val busyToastText = stringResource(R.string.busy_when_add_album_toast)
+        HomeBottomActions(
+            onClickManageAlbum = {
+                if (albumManager.isEncoderBusy) {
+                    showToast(busyToastText)
+                } else {
+                    scope.launch { albumListSheetState.show() }
+                }
+            },
+            navigateToSetting = navigateToSetting,
+        )
+    }
+}
+
+@Composable
+private fun MainContent(
+    padding: PaddingValues,
+    userGuideVisible: Boolean,
+    homeViewModel: HomeViewModel,
+    navigateToSearch: (String) -> Unit,
+    navigateToSearchWitImage: (Uri) -> Unit,
+    albumListSheetState: AppBottomSheetState
+) {
+    Column(
+        modifier = Modifier
+            .padding(padding)
+            .fillMaxHeight(0.75f),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        SearchSection(
+            userGuideVisible = userGuideVisible,
+            homeViewModel = homeViewModel,
+            navigateToSearch = navigateToSearch,
+            navigateToSearchWitImage = navigateToSearchWitImage
+        )
+
+        GuideSection(
+            userGuideVisible = userGuideVisible,
+            homeViewModel = homeViewModel,
+            albumListSheetState = albumListSheetState
+        )
+    }
+}
+
+@OptIn(InternalTextApi::class)
+@Composable
+private fun SearchSection(
+    userGuideVisible: Boolean,
+    homeViewModel: HomeViewModel,
+    navigateToSearch: (String) -> Unit,
+    navigateToSearchWitImage: (Uri) -> Unit
+) {
+    AnimatedVisibility(visible = !userGuideVisible) {
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxHeight(0.75f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Central SearchInput bar
-            AnimatedVisibility(visible = !userGuideVisible.value) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
-                    SearchInput(
-                        queryText = remember { homeViewModel.searchText },
-                        onStartSearch = { text ->
-                            if (text.isNotEmpty()) {
-                                homeViewModel.searchText.value = text
-                                navigateToSearch(text)
-                            }
-                        },
-                    )
-                }
-            }
-
-            // User Guide
-            AnimatedVisibility(visible = userGuideVisible.value) {
-                val currentStep = remember { homeViewModel.currentGuideState }
-                val mediaPermissions = rememberMediaPermissions()
-                UserGuide(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                    onRequestPermission = { mediaPermissions.launchMultiplePermissionRequest() },
-                    onOpenAlbum = { scope.launch { albumListSheetState.show() } },
-                    onFinish = { homeViewModel.finishGuide() },
-                    state = currentStep.value,
-                )
-            }
-
+            LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
+            
+            val searchText by homeViewModel.searchText.collectAsState()
+            SearchInput(
+                queryText = searchText,
+                onStartSearch = { text ->
+                    if (text.isNotEmpty()) {
+                        navigateToSearch(text)
+                    }
+                },
+                onQueryChange = { homeViewModel.onQueryChange(it) },
+                onImageSearch = { uri ->
+                    if (uri.toString().isNotEmpty()) {
+                        Log.d("HomeScreen", "Selected URI: $uri")
+                        navigateToSearchWitImage(uri)
+                    }
+                },
+            )
         }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun GuideSection(
+    userGuideVisible: Boolean,
+    homeViewModel: HomeViewModel,
+    albumListSheetState: AppBottomSheetState
+) {
+    AnimatedVisibility(visible = userGuideVisible) {
+        val scope = rememberCoroutineScope()
+        val currentStep = remember { homeViewModel.currentGuideState }
+        val mediaPermissions = rememberMediaPermissions()
+        
+        UserGuide(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            onRequestPermission = { mediaPermissions.launchMultiplePermissionRequest() },
+            onOpenAlbum = { scope.launch { albumListSheetState.show() } },
+            onFinish = { homeViewModel.finishGuide() },
+            state = currentStep.value,
+        )
     }
 }
 

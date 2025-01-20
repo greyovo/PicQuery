@@ -6,9 +6,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.PicQueryApplication.Companion.context
@@ -24,6 +23,7 @@ class AlbumManager(
     private val albumRepository: AlbumRepository,
     private val photoRepository: PhotoRepository,
     private val imageSearcher: ImageSearcher,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     companion object {
         private const val TAG = "AlbumViewModel"
@@ -39,15 +39,13 @@ class AlbumManager(
     val unsearchableAlbumList = mutableStateListOf<Album>()
     val albumsToEncode = mutableStateListOf<Album>()
 
-    val photoFlow = photoRepository.photoFlow()
-
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
     private var initialized = false
 
     suspend fun initAllAlbumList() {
         if (initialized) return
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             // 本机中的相册
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
@@ -102,10 +100,8 @@ class AlbumManager(
                 IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
 
             val photos = mutableListOf<Photo>()
-            var totalSize = 0
             albums.forEach {
                 photos.addAll(photoRepository.getPhotoListByAlbumId(it.id))
-//                totalSize += photoRepository.getAllPhotos(it.id)
             }
 
             val success =
@@ -121,7 +117,7 @@ class AlbumManager(
             if (success) {
                 // 等待完全Encode完毕之后，再向数据库添加一条记录，表示该album已被索引
                 Log.i(TAG, "encode ${albums.size} album(s) finished!")
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     albumRepository.addAllSearchableAlbum(albums)
                 }
                 indexingAlbumState.value = indexingAlbumState.value.copy(

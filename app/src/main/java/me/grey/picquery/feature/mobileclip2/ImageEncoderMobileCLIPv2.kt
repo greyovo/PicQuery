@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.ImageEncoder
-import me.grey.picquery.feature.base.Preprocessor
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.CompatibilityList
@@ -39,8 +38,8 @@ class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: Prepr
 
         if (compatList.isDelegateSupportedOnThisDevice) {
             // if the device has a supported GPU, add the GPU delegate
-            val delegateOptions: GpuDelegate.Options = compatList.bestOptionsForThisDevice
-            delegateOptions.forceBackend = GpuDelegateFactory.Options.GpuBackend.OPENCL
+            val delegateOptions = compatList.bestOptionsForThisDevice
+            delegateOptions?.forceBackend = GpuDelegateFactory.Options.GpuBackend.OPENCL
             options.addDelegate(GpuDelegate(delegateOptions))
             Log.d(TAG, "Supported GPU, add the GPU delegate")
         } else {
@@ -75,11 +74,9 @@ class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: Prepr
         outputBuffer.rewind()
         val output = FloatArray(outputBuffer.capacity())
         val time = measureTimeMillis {
-//            Log.d(TAG, "tensorImage Shape: ${tensorImage.shape.joinToString()}")
-//            Log.d(TAG, "outputBuffer Shape: ${outputBuffer.capacity()}")
             interpreter.run(tensorImage.buffer, outputBuffer)
             outputBuffer.rewind()
-            outputBuffer.get(output)
+            outputBuffer[output]
         }
 
         Log.d(TAG, "LiteRT encode 1 pic cost: $time ms")

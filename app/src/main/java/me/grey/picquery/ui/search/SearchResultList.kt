@@ -1,5 +1,6 @@
 package me.grey.picquery.ui.search
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -39,8 +40,6 @@ fun SearchResultGrid(
     state: SearchState,
     onClickPhoto: (Photo, Int) -> Unit,
 ) {
-    //    val resultList by viewModel.resultList.collectAsState()
-//    val state by viewModel.searchState.collectAsState()
     fun onClickPhotoResult(index: Int) {
         onClickPhoto(resultList[index], index)
     }
@@ -74,10 +73,14 @@ fun SearchResultGrid(
                                 resultList.size - 1,
                                 key = { resultList[it].id },
                             ) { index ->
+                                Log.e("SearchResultGrid", "index: $index")
                                 Box(padding) {
                                     PhotoResultItem(
                                         resultList[index + 1],
-                                        onItemClick = { onClickPhotoResult(index + 1) },
+                                        onItemClick = {
+                                            Log.e("SearchResultGrid", "click: $index")
+                                            onClickPhotoResult(index + 1)
+                                        },
                                     )
                                 }
                             }

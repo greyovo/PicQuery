@@ -3,7 +3,6 @@ package me.grey.picquery.domain
 import android.util.Log
 
 import kotlinx.coroutines.coroutineScope
-import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.PhotoBitmap

@@ -3,13 +3,14 @@ package me.grey.picquery.feature.clip
 import ai.onnxruntime.OnnxTensor
 import android.content.Context
 import android.graphics.Bitmap
+import kotlinx.coroutines.CoroutineDispatcher
 import me.grey.picquery.feature.ImageEncoderONNX
 import java.nio.FloatBuffer
 import java.util.Collections
 
-class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorCLIP) :
+class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorCLIP, private val dispatcher: CoroutineDispatcher) :
     ImageEncoderONNX(
-        224, "clip-image-int8.ort", context, preprocessor
+        224, "clip-image-int8.ort", context, preprocessor, dispatcher
     ) {
 
     companion object {
@@ -48,7 +49,7 @@ class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorC
             val end = if (i == parts - 1) totalSize else start + partSize
             val partBuffer = FloatBuffer.allocate(end - start)
             for (j in start until end) {
-                partBuffer.put(buffer.get(j))
+                partBuffer.put(buffer[j])
             }
             partBuffer.flip()
             result.add(partBuffer)

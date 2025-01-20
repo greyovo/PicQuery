@@ -10,7 +10,8 @@ val modulesMobileCLIP = module {
     factory<ImageEncoder> {
         ImageEncoderMobileCLIP(
             context = get(),
-            preprocessor = get<PreprocessorMobileCLIP>()
+            preprocessor = get<PreprocessorMobileCLIP>(),
+            dispatcher = get()
         )
     }
 }

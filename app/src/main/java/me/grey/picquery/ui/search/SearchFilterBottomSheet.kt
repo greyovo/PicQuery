@@ -27,10 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Album
@@ -45,7 +43,6 @@ fun SearchFilterBottomSheet(
     sheetState: AppBottomSheetState,
     imageSearcher: ImageSearcher = koinInject(),
     albumManager: AlbumManager = koinInject(),
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
 ) {
     val scope = rememberCoroutineScope()
     val candidates = remember { albumManager.searchableAlbumList }
@@ -131,8 +128,7 @@ private fun SearchAbleAlbums(
     onAdd: (Album) -> Unit,
     onRemove: (Album) -> Unit,
 ) {
-//    val searchRange = remember { searchViewModel.searchRange }
-//    val all = remember { albumManager.searchableAlbumList }
+
     FlowRow(
         Modifier.padding(horizontal = 12.dp)
     ) {

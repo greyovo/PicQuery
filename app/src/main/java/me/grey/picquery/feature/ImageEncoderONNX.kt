@@ -6,19 +6,20 @@ import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.grey.picquery.common.AssetUtil
-import me.grey.picquery.common.defaultDispatcher
 import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.Preprocessor
 import java.nio.FloatBuffer
 import java.util.Collections
 
 open class ImageEncoderONNX(
-    val DIM: Long,
-    val modelPath: String,
+    private val dim: Long,
+    modelPath: String,
     context: Context,
     private val preprocessor: Preprocessor,
+    private val dispatcher: CoroutineDispatcher
 ) :
     ImageEncoder {
 
@@ -47,13 +48,13 @@ open class ImageEncoderONNX(
     }
 
     override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> =
-        withContext(defaultDispatcher) {
+        withContext(dispatcher) {
             Log.d(TAG, "${this@ImageEncoderONNX} Start encoding image...")
 
             val floatBuffer = preprocessor.preprocessBatch(bitmaps) as FloatBuffer
 
             val inputName = ortSession?.inputNames?.iterator()?.next()
-            val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, DIM, DIM)
+            val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, dim, dim)
             ortEnv.use { env ->
                 val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
                 val output: OrtSession.Result? =
@@ -70,7 +71,9 @@ open class ImageEncoderONNX(
                     val start = i * embeddingSize
                     val embeddingArray = FloatArray(embeddingSize)
                     feat.position(start)
-                    feat.get(embeddingArray, 0, embeddingSize)
+                    for (j in 0 until embeddingSize) {
+                        embeddingArray[j] = feat[start + j]
+                    }
                     embeddings.add(embeddingArray)
                 }
 
