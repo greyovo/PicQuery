@@ -4,8 +4,8 @@
 
 ![cover_en](assets/cover_en.jpg)
 
-🔍 Search for your local images with natural language, running completely offline. For example, "a laptop on the desk", "sunset by the sea", "kitty in the grass", and so on.
-
+🔍 Search for your local images with natural language, running completely offline. For example, "a laptop on the desk", "sunset by the sea", "kitty in the grass", and so on.  
+Search images by picking a photo from your gallery
 - Totally free, NO in-app purchases
 - Support both English and Chinese
 - Indexing and searching of images works completely offline without worrying about privacy
