@@ -2,7 +2,6 @@ package me.grey.picquery.ui.display
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.text.format.DateUtils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -30,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +45,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
 import me.grey.picquery.common.InitializeEffect
-import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -59,7 +58,7 @@ fun DisplayScreen(
     onNavigateBack: () -> Unit,
     displayViewModel: DisplayViewModel = koinViewModel()
 ) {
-    val photoList = remember { displayViewModel.photoList }
+    val photoList by displayViewModel.photoList.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = 0,
         initialPageOffsetFraction = 0f,

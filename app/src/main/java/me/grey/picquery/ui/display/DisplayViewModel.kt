@@ -1,9 +1,10 @@
 package me.grey.picquery.ui.display
 
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Photo
@@ -14,15 +15,21 @@ class DisplayViewModel(
     private val imageSearcher: ImageSearcher,
 ) : ViewModel() {
 
-    val photoList = mutableStateListOf<Photo>()
+    private val _photoList = MutableStateFlow<MutableList<Photo>>(mutableListOf())
+    val photoList:StateFlow<MutableList<Photo>> = _photoList
     private val currentIndex = mutableIntStateOf(0)
 
-    // FIXME 测试用
     fun loadPhotos(initialPage: Int) {
         currentIndex.intValue = initialPage
         viewModelScope.launch {
             val ids = imageSearcher.searchResultIds
-            photoList.addAll(photoRepository.getPhotoListByIds(ids))
+            val list = reorderList(photoRepository.getPhotoListByIds(ids),ids)
+            _photoList.emit(list.toMutableList())
         }
+    }
+
+    private fun reorderList(originalList: List<Photo>, orderList: List<Long>): List<Photo> {
+        val photoMap = originalList.associateBy { it.id }
+        return orderList.mapNotNull { id -> photoMap[id] }
     }
 }
