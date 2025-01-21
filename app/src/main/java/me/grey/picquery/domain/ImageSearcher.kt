@@ -41,6 +41,7 @@ import me.grey.picquery.domain.EmbeddingUtils.saveBitmapsToEmbedding
 import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.TextEncoder
 
+import java.util.Collections
 import java.util.SortedMap
 import java.util.TreeMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -64,6 +65,7 @@ class ImageSearcher(
         private const val TAG = "ImageSearcher"
         private const val DEFAULT_MATCH_THRESHOLD = 0.01
         private const val TOP_K = 30
+        private const val SEARCH_BATCH_SIZE = 1000
     }
 
     val searchRange = mutableStateListOf<Album>()
@@ -71,7 +73,6 @@ class ImageSearcher(
     var searchTarget = mutableStateOf(SearchTarget.Image)
 
     val searchResultIds = mutableStateListOf<Long>()
-    private val sorteSimiliaritydMap: SortedMap<Double, Long> = TreeMap(compareByDescending { it })
 
     // 相似度阈值，一般在0.25以上
     private val matchThreshold = mutableFloatStateOf(DEFAULT_MATCH_THRESHOLD.toFloat())
@@ -232,49 +233,66 @@ class ImageSearcher(
         }
     }
 
-    private fun searchWithVector(
+    private suspend fun searchWithVector(
         range: List<Album>,
         textFeat: FloatArray
-    ): MutableList<Long> {
-        val embeddings = if (range.isEmpty() || isSearchAll.value) {
-            Log.d(TAG, "Search from all album")
-            embeddingRepository.getAll()
-        } else {
-            Log.d(TAG, "Search from: [${range.joinToString { it.label }}]")
-            embeddingRepository.getByAlbumList(range)
-        }
-        Log.d(TAG, "Get all ${embeddings.size} photo embeddings done")
-        sorteSimiliaritydMap.clear()
-        for (emb in embeddings) {
-            val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
-            Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
-            if (sim >= matchThreshold.floatValue) {
-                insertDescending(Pair(emb.photoId, sim))
-            }
-        }
-        searchingLock = false
-        Log.d(TAG, "Search result: found ${sorteSimiliaritydMap.size} pics")
+    ): MutableList<Long> = withContext(dispatcher) {
+        try {
+            searchingLock = true
+            val threadSafeSortedMap = Collections.synchronizedSortedMap(
+                TreeMap<Double, Long>(compareByDescending { it })
+            )
 
-        searchResultIds.clear()
-        val results = mutableListOf<Long>()
-        sorteSimiliaritydMap.forEach {
-            results.add(it.value)
+            val embeddings = if (range.isEmpty() || isSearchAll.value) {
+                Log.d(TAG, "Search from all album")
+                embeddingRepository.getAllEmbeddingsPaginated(SEARCH_BATCH_SIZE)
+            } else {
+                Log.d(TAG, "Search from: [${range.joinToString { it.label }}]")
+                embeddingRepository.getEmbeddingsByAlbumIdsPaginated(range.map { it.id }, SEARCH_BATCH_SIZE)
+            }
+
+            var totalProcessed = 0
+            embeddings.collect { chunk ->
+                Log.d(TAG, "Processing chunk: ${chunk.size}")
+                totalProcessed += chunk.size
+                
+                for (emb in chunk) {
+                    val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
+                    Log.d(TAG, "similarity: ${emb.photoId} -> $sim")
+                    if (sim >= matchThreshold.floatValue) {
+                        insertDescendingThreadSafe(threadSafeSortedMap, Pair(emb.photoId, sim))
+                    }
+                }
+            }
+
+            Log.d(TAG, "Search Finish: Processed $totalProcessed embeddings")
+            Log.d(TAG, "Search result: found ${threadSafeSortedMap.size} pics")
+
+            searchResultIds.clear()
+            mutableListOf<Long>().apply {
+                addAll(threadSafeSortedMap.values)
+                searchResultIds.addAll(this)
+                Log.d(TAG, "Search result: ${joinToString(",")}")
+                return@withContext this
+            }
+        } finally {
+            searchingLock = false
         }
-        searchResultIds.addAll(results)
-        Log.d(TAG, "Search result: ${results.joinToString(",")}")
-        return results
     }
 
-    // use red black tree to keep top k
-    private fun insertDescending(candidate: Pair<Long, Double>) {
-        if (sorteSimiliaritydMap.size >= TOP_K) {
-            val min = sorteSimiliaritydMap.lastKey()
+    // Thread-safe version of insertDescending
+    private fun insertDescendingThreadSafe(
+        map: SortedMap<Double, Long>,
+        candidate: Pair<Long, Double>
+    ) {
+        if (map.size >= TOP_K) {
+            val min = map.lastKey()
             if (candidate.second >= min) {
-                sorteSimiliaritydMap[candidate.second] = candidate.first
-                sorteSimiliaritydMap.remove(min)
+                map[candidate.second] = candidate.first
+                map.remove(min)
             }
         } else {
-            sorteSimiliaritydMap[candidate.second] = candidate.first
+            map[candidate.second] = candidate.first
         }
     }
 }

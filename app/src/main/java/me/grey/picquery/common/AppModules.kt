@@ -25,7 +25,7 @@ private val viewModelModules = module {
         )
     }
     viewModel {
-        SearchViewModel(imageSearcher = get(), ioDispatcher = get())
+        SearchViewModel(imageSearcher = get(), ioDispatcher = get(), get())
     }
     viewModel {
         DisplayViewModel(photoRepository = get(), imageSearcher = get())
@@ -45,7 +45,7 @@ private val dataModules = module {
 
     single { AlbumRepository(androidContext().contentResolver, database = get()) }
     single { EmbeddingRepository(database = get()) }
-    single { PhotoRepository(androidContext().contentResolver) }
+    single { PhotoRepository(androidContext()) }
     single { PreferenceRepository() }
 }
 

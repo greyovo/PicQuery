@@ -1,5 +1,8 @@
 package me.grey.picquery.data.data_source
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.AppDatabase
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
@@ -16,6 +19,19 @@ class EmbeddingRepository(
         return database.embeddingDao().getAll()
     }
 
+    fun getAllEmbeddingsPaginated(batchSize: Int): Flow<List<Embedding>> = flow {
+        var offset = 0
+        while (true) {
+            val embeddings = database.embeddingDao().getEmbeddingsPaginated(batchSize, offset)
+            if (embeddings.isEmpty()) {
+                emit(emptyList())
+                break
+            }
+            emit(embeddings)
+            offset += batchSize
+        }
+    }
+
     fun getTotalCount(): Long {
         return database.embeddingDao().getTotalCount()
     }
@@ -26,6 +42,19 @@ class EmbeddingRepository(
 
     fun getByAlbumList(albumList: List<Album>): List<Embedding> {
         return database.embeddingDao().getByAlbumIdList(albumList.map { it.id })
+    }
+
+    fun getEmbeddingsByAlbumIdsPaginated(albumIds: List<Long>, batchSize: Int): Flow<List<Embedding>> = flow {
+        var offset = 0
+        while (true) {
+            val embeddings = database.embeddingDao().getByAlbumIdList(albumIds, batchSize, offset)
+            if (embeddings.isEmpty()) {
+                emit(emptyList())
+                break
+            }
+            emit(embeddings)
+            offset += batchSize
+        }
     }
 
     fun update(emb: Embedding) {

@@ -1,7 +1,7 @@
 package me.grey.picquery.data.data_source
 
-import android.content.ContentResolver
 import android.content.ContentResolver.*
+import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,25 +9,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Photo
 import java.io.InputStream
 
 
-class PhotoRepository(private val contentResolver: ContentResolver) {
+class PhotoRepository(private val context: Context) {
 
     companion object {
         private const val TAG = "PhotoRepository"
-    }
-
-    var callback: IAlbumQuery? = null
-
-    fun photoFlow() = callbackFlow {
-        callback = IAlbumQuery { photos -> trySend(photos) }
-
-        awaitClose { callback = null }
+        private const val DEFAULT_PAGE_SIZE = 500
     }
 
     private val imageProjection = arrayOf(
@@ -45,39 +37,33 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
             MediaStore.VOLUME_EXTERNAL
         )
 
-    fun getPhotoListByAlbumId(albumId: Long): List<Photo> {
-        val query = contentResolver.query(
-            imageCollection,
-            imageProjection,
-            Bundle().apply {
-                putInt(
-                    QUERY_ARG_SORT_DIRECTION,
-                    QUERY_SORT_DIRECTION_DESCENDING
-                )
-                putStringArray(
-                    QUERY_ARG_SORT_COLUMNS,
-                    arrayOf(MediaStore.MediaColumns.DATE_MODIFIED)
-                )
-                putString(
-                    QUERY_ARG_SQL_SELECTION,
-                    "${MediaStore.Images.Media.BUCKET_ID}=?"
-                )
-                putStringArray(QUERY_ARG_SQL_SELECTION_ARGS, arrayOf(albumId.toString()))
-            },
-            null
-        )
-        val photoList = mutableListOf<Photo>()
-        query?.use { cursor: Cursor ->
-            while (cursor.moveToNext()) {
-                photoList.add(CursorUtil.getPhoto(cursor))
+    private fun getPhotoListByAlbumIdFlow(
+        albumId: Long, 
+        pageSize: Int = DEFAULT_PAGE_SIZE
+    ) = flow {
+        var pageIndex = 0
+        while (true) {
+            val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
+            if (photos.isEmpty()) {
+                break
             }
+            emit(photos)
+            pageIndex++
         }
-        return photoList
     }
 
-    fun getPhotoListByPage(albumId: Long, pageIndex: Int = 0, pageSize: Int = 1000): List<Photo> {
+    suspend fun getPhotoListByAlbumId(albumId: Long): List<Photo> {
+        val result = mutableListOf<Photo>()
+        getPhotoListByAlbumIdFlow(albumId).collect {
+                result.addAll(it)
+        }
+
+        return result
+    }
+
+    private fun getPhotoListByPage(albumId: Long, pageIndex: Int = 0, pageSize: Int = 1000): List<Photo> {
         val offset = pageIndex * pageSize
-        val query = contentResolver.query(
+        val query = context.contentResolver.query(
             imageCollection,
             imageProjection,
             Bundle().apply {
@@ -105,12 +91,11 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
                 photoList.add(CursorUtil.getPhoto(cursor))
             }
         }
-        callback?.onAlbumQuery(photoList)
         return photoList
     }
 
     fun getPhotoById(id: Long): Photo? {
-        val queryPhotoById = contentResolver.query(
+        val queryPhotoById = context.contentResolver.query(
             imageCollection,
             imageProjection,
             "${MediaStore.Images.Media._ID} = ?",
@@ -127,21 +112,27 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
         }
     }
 
-    suspend fun getAllPhotos(albumId: Long): Int {
-        var page = 0
-        val pageSize = 50 // 每页的大小
-        var size = 0
-        while (true) {
-            val photos = getPhotoListByPage(albumId, pageIndex = page, pageSize = pageSize)
-            if (photos.isEmpty()) break
-            size += photos.size
-            page++
-        }
-        return size
+    fun getImageCountInAlbum(albumId: Long): Int {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val selection = "${MediaStore.Images.Media.BUCKET_ID} = ?"
+        val selectionArgs = arrayOf(albumId.toString())
+
+        val cursor = context.contentResolver.query(
+            uri,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        return cursor?.use {
+            it.count
+        } ?: 0
     }
 
     fun getPhotoListByIds(ids: List<Long>): List<Photo> {
-        val query = contentResolver.query(
+        val query = context.contentResolver.query(
             imageCollection,
             imageProjection,
             "${MediaStore.Images.Media._ID} IN (${ids.joinToString(",")})",
@@ -175,12 +166,33 @@ class PhotoRepository(private val contentResolver: ContentResolver) {
     fun getBitmapFromUri(uri: Uri): Bitmap? {
         return try {
             // 打开输入流
-            val inputStream: InputStream? = contentResolver.openInputStream(uri)
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
             // 解码输入流为 Bitmap
             BitmapFactory.decodeStream(inputStream)
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    /**
+     * 分批获取相册中的照片，以 Flow 形式返回
+     * @param albumId 相册ID
+     * @param pageSize 每批照片的数量
+     * @return Flow<List<Photo>> 照片列表流
+     */
+    fun getPhotoListByAlbumIdPaginated(
+        albumId: Long, 
+        pageSize: Int = DEFAULT_PAGE_SIZE
+    ) = flow {
+        var pageIndex = 0
+        while (true) {
+            val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
+            if (photos.isEmpty()) {
+                break
+            }
+            emit(photos)
+            pageIndex++
         }
     }
 

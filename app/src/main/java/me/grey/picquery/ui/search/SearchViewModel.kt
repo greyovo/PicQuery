@@ -30,7 +30,8 @@ enum class SearchState {
 
 class SearchViewModel(
     private val imageSearcher: ImageSearcher,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val repo : PhotoRepository
 ) : ViewModel() {
     companion object {
         private const val TAG = "SearchResultViewModel"
@@ -53,8 +54,6 @@ class SearchViewModel(
         get() {
             return PicQueryApplication.context
         }
-
-    private val repo = PhotoRepository(context.contentResolver)
 
     init {
         Log.d(TAG, "init!!! SearchViewModel")

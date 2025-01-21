@@ -12,6 +12,9 @@ interface EmbeddingDao {
     @Query("SELECT * FROM $tableName")
     fun getAll(): List<Embedding>
 
+    @Query("SELECT * FROM $tableName LIMIT :limit OFFSET :offset")
+    fun getEmbeddingsPaginated(limit: Int, offset: Int): List<Embedding>
+
     @Query("SELECT COUNT(*) FROM $tableName")
     fun getTotalCount(): Long
 
@@ -27,6 +30,11 @@ interface EmbeddingDao {
         "SELECT * FROM $tableName WHERE album_id IN (:albumIds)"
     )
     fun getByAlbumIdList(albumIds: List<Long>): List<Embedding>
+
+    @Query(
+        "SELECT * FROM $tableName WHERE album_id IN (:albumIds) LIMIT :limit OFFSET :offset"
+    )
+    fun getByAlbumIdList(albumIds: List<Long>, limit: Int, offset: Int): List<Embedding>
 
 //    @Insert
 //    fun insertAll(embeddings: List<Embedding>)
