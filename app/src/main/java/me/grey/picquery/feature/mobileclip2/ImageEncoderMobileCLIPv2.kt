@@ -3,6 +3,9 @@ package me.grey.picquery.feature.mobileclip2
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.ImageEncoder
 import org.tensorflow.lite.DataType
@@ -29,6 +32,7 @@ class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: Prepr
     }
 
     init {
+
         val modelFile = AssetUtil.assetFile(context, MODEL_PATH)
             ?: throw FileNotFoundException("Model: $MODEL_PATH not exist.")
 

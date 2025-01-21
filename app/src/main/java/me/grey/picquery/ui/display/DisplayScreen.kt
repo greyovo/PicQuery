@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
-import me.grey.picquery.common.InitializeEffect
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -64,10 +64,20 @@ fun DisplayScreen(
         initialPageOffsetFraction = 0f,
         pageCount = { photoList.size }
     )
-    InitializeEffect {
-        displayViewModel.loadPhotos(initialPage)
-        pagerState.scrollToPage(initialPage)
+
+    LaunchedEffect(initialPage) {
+        displayViewModel.loadPhotos()
+        if (photoList.isNotEmpty()) {
+            pagerState.scrollToPage(initialPage)
+        }
     }
+
+    LaunchedEffect(photoList) {
+        if (photoList.isNotEmpty()) {
+            pagerState.scrollToPage(initialPage)
+        }
+    }
+
     Scaffold(
         topBar = {
             if (pagerState.currentPage + 1 <= photoList.size) {
@@ -146,7 +156,7 @@ private fun TopPhotoInfoBar(currentPhoto: Photo) {
 }
 
 
-// TODO 标明出处
+
 @OptIn(
     ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class,
 )

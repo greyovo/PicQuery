@@ -3,9 +3,7 @@ package me.grey.picquery.common
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.*
 
@@ -37,7 +35,12 @@ object AssetUtil {
         }
     }
 
-    private suspend fun copyAssets(context: Context, sourceAsset: String, targetFolder: File, assets: Array<String>) {
+    private suspend fun copyAssets(
+        context: Context,
+        sourceAsset: String,
+        targetFolder: File,
+        assets: Array<String>
+    ) {
         val assetManager = context.assets
         for (itemInFolder in assets) {
             val currentAssetPath = "$sourceAsset/$itemInFolder"
@@ -54,25 +57,24 @@ object AssetUtil {
     }
 
     @Throws(IOException::class)
-    suspend fun copyAssetFile(context: Context, sourceAsset: String, target: File) {
+    fun copyAssetFile(context: Context, sourceAsset: String, target: File) {
         if (target.exists() && target.length() > 0) {
             return
         }
 
-        coroutineScope {
-            val inputStream: InputStream = context.assets.open(sourceAsset)
-            val outputStream: OutputStream = FileOutputStream(target)
+        val inputStream: InputStream = context.assets.open(sourceAsset)
+        val outputStream: OutputStream = FileOutputStream(target)
 
-            inputStream.use { inputs ->
-                outputStream.use { os ->
-                    val buffer = ByteArray(4 * 1024)
-                    var read: Int
-                    while (inputs.read(buffer).also { read = it } != -1) {
-                        os.write(buffer, 0, read)
-                    }
-                    os.flush()
+        inputStream.use { inputs ->
+            outputStream.use { os ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (inputs.read(buffer).also { read = it } != -1) {
+                    os.write(buffer, 0, read)
                 }
+                os.flush()
             }
+
         }
     }
 
@@ -98,7 +100,7 @@ object AssetUtil {
         }
 
         return try {
-            runBlocking { copyAssetFile(context, assetName, file) }
+            copyAssetFile(context, assetName, file)
             file.absolutePath
         } catch (_: Exception) {
             ""
@@ -127,7 +129,7 @@ object AssetUtil {
         }
 
         return try {
-            runBlocking { copyAssetFile(context, assetName, file) }
+            copyAssetFile(context, assetName, file)
             file
         } catch (_: Exception) {
             null

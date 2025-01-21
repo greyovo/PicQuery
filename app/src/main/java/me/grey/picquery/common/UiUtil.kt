@@ -6,6 +6,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,9 @@ object Animation {
 
     val navigateInAnimation = fadeIn(tween(DEFAULT_NAVIGATION_ANIMATION_DURATION))
     val navigateUpAnimation = fadeOut(tween(DEFAULT_NAVIGATION_ANIMATION_DURATION))
+
+    val popInAnimation = slideInHorizontally { width -> width }
+    val popUpAnimation = slideOutHorizontally { width -> -width }
 
     fun enterAnimation(durationMillis: Int): EnterTransition =
         fadeIn(tween(durationMillis))

@@ -42,9 +42,9 @@ private val dataModules = module {
             AppDatabase::class.java, "app-db"
         ).build()
     }
-
+    single { get<AppDatabase>().embeddingDao() }
     single { AlbumRepository(androidContext().contentResolver, database = get()) }
-    single { EmbeddingRepository(database = get()) }
+    single { EmbeddingRepository(dataSource = get()) }
     single { PhotoRepository(androidContext()) }
     single { PreferenceRepository() }
 }

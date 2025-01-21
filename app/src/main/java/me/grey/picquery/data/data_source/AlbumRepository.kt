@@ -32,8 +32,6 @@ class AlbumRepository(
     private val albumCollection: Uri =
         MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
 
-    // 查询相册
-    // 本质上其实是还是遍历所有的图片，但是手动将他们归类和统计数量
     fun getAllAlbums(): List<Album> {
         val queryAlbums = contentResolver.query(
             albumCollection,

@@ -1,16 +1,16 @@
 package me.grey.picquery.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import me.grey.picquery.common.Animation.navigateInAnimation
 import me.grey.picquery.common.Animation.navigateUpAnimation
+import me.grey.picquery.common.Animation.popInAnimation
 import me.grey.picquery.common.Routes
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
@@ -26,7 +26,6 @@ fun AppNavHost(
     NavHost(
         navController,
         startDestination = startDestination,
-        // TODO: Animation when switching screens
         enterTransition = { navigateInAnimation },
         exitTransition = { navigateUpAnimation },
     ) {
@@ -49,15 +48,15 @@ fun AppNavHost(
                 initialQuery = queryText,
                 onNavigateBack = { navController.popBackStack() },
                 onClickPhoto = { _, index ->
+                    Log.d("AppNavHost", "onClickPhoto: $index")
                     navController.navigate("${Routes.Display.name}/${index}")
                 },
             )
         }
         composable(
             "${Routes.Display.name}/{index}",
-            arguments = listOf(navArgument("index") { type = NavType.IntType })
         ) {
-            val initialIndex: Int = it.arguments?.getInt("index") ?: 0
+            val initialIndex: Int = it.arguments?.getString("index")?.toInt() ?: 0
             DisplayScreen(
                 initialPage = initialIndex,
                 onNavigateBack = {
@@ -65,7 +64,12 @@ fun AppNavHost(
                 },
             )
         }
-        composable(Routes.Setting.name) {
+        composable(
+            Routes.Setting.name,
+            enterTransition = { popInAnimation },
+            popEnterTransition = { popInAnimation },
+            exitTransition = { navigateUpAnimation },
+        ) {
             SettingScreen(
                 onNavigateBack = { navController.popBackStack() },
             )

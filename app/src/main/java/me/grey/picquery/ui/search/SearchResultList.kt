@@ -40,9 +40,6 @@ fun SearchResultGrid(
     state: SearchState,
     onClickPhoto: (Photo, Int) -> Unit,
 ) {
-    fun onClickPhotoResult(index: Int) {
-        onClickPhoto(resultList[index], index)
-    }
 
     when (state) {
         SearchState.NO_INDEX -> UnReadyText()
@@ -63,7 +60,7 @@ fun SearchResultGrid(
                             Box(padding) {
                                 PhotoResultRecommend(
                                     photo = resultList[0],
-                                    onItemClick = { onClickPhotoResult(0) },
+                                    onItemClick = { onClickPhoto(resultList[0], 0) },
                                 )
                             }
                         }
@@ -79,7 +76,7 @@ fun SearchResultGrid(
                                         resultList[index + 1],
                                         onItemClick = {
                                             Log.e("SearchResultGrid", "click: $index")
-                                            onClickPhotoResult(index + 1)
+                                            onClickPhoto(resultList[index+1], index+1)
                                         },
                                     )
                                 }
