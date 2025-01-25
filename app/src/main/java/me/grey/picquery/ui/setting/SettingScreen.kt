@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.PermDeviceInformation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,7 +44,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingScreen(
     onNavigateBack: () -> Unit,
-) {
+    navigateToIndexMgr: () -> Unit,
+    ) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,6 +61,7 @@ fun SettingScreen(
             item { InformationRow() }
             item { Box(modifier = Modifier.height(15.dp)) }
             item { UploadLogSettingItem() }
+            item { AlbumIndexManagerUIItem(navigateToIndexMgr) }
         }
     }
 }
@@ -122,5 +125,20 @@ private fun Divider() {
         Modifier
             .height(20.dp)
             .padding(horizontal = 3.dp)
+    )
+}
+
+@Composable
+private fun AlbumIndexManagerUIItem(navigateToIndexMgr: () -> Unit) {
+    ListItem(
+        leadingContent = {
+            Icon(
+                imageVector = Icons.Filled.Dataset,
+                contentDescription = "Click to Manage Album Indexes"
+            )
+        },
+        headlineContent = { Text(text = stringResource(R.string.album_index_manager_ui_title)) },
+        supportingContent = { Text(text = stringResource(R.string.album_index_manager_ui_desc)) },
+        modifier = Modifier.clickable { navigateToIndexMgr() }
     )
 }

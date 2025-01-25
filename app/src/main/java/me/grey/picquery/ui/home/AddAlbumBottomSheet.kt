@@ -21,11 +21,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
@@ -53,7 +55,7 @@ fun AddAlbumBottomSheet(
         onDismissRequest = { closeSheet() },
         sheetState = sheetState.sheetState,
     ) {
-        val list = remember { albumManager.unsearchableAlbumList }
+        val list = albumManager.unsearchableAlbumList.value.toMutableStateList()
         if (list.isEmpty()) {
             EmptyAlbumTips(
                 onClose = { closeSheet() },
@@ -69,8 +71,12 @@ fun AddAlbumBottomSheet(
                     if (snapshot.isEmpty()) {
                         showToast(noAlbumTips)
                     } else {
-                        scope.launch { albumManager.encodeAlbums(snapshot) }
+                        GlobalScope.launch {
+                            albumManager.encodeAlbums(snapshot)
+                            albumManager.initDataFlow()
+                        }
                         onStartIndexing()
+
                     }
                     closeSheet()
                 },

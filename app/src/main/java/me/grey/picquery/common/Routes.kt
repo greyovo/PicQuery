@@ -4,5 +4,6 @@ enum class Routes {
     Home,
     Search,
     Display,
+    IndexMgr,
     Setting
 }

@@ -14,6 +14,7 @@ import me.grey.picquery.common.Animation.popInAnimation
 import me.grey.picquery.common.Routes
 import me.grey.picquery.ui.display.DisplayScreen
 import me.grey.picquery.ui.home.HomeScreen
+import me.grey.picquery.ui.indexmr.IndexMgrScreen
 import me.grey.picquery.ui.search.SearchScreen
 import me.grey.picquery.ui.setting.SettingScreen
 
@@ -64,6 +65,11 @@ fun AppNavHost(
                 },
             )
         }
+        composable(Routes.IndexMgr.name) {
+            IndexMgrScreen(
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable(
             Routes.Setting.name,
             enterTransition = { popInAnimation },
@@ -72,6 +78,9 @@ fun AppNavHost(
         ) {
             SettingScreen(
                 onNavigateBack = { navController.popBackStack() },
+                navigateToIndexMgr = {
+                    navController.navigate(Routes.IndexMgr.name)
+                }
             )
         }
     }

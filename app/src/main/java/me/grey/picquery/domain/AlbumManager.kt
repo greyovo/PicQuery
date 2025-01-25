@@ -8,15 +8,15 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.AlbumRepository
+import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.albums.IndexingAlbumState
@@ -24,6 +24,7 @@ import me.grey.picquery.ui.albums.IndexingAlbumState
 class AlbumManager(
     private val albumRepository: AlbumRepository,
     private val photoRepository: PhotoRepository,
+    private val embeddingRepository: EmbeddingRepository,
     private val imageSearcher: ImageSearcher,
     private val ioDispatcher: CoroutineDispatcher
 ) {
@@ -37,13 +38,15 @@ class AlbumManager(
         get() = indexingAlbumState.value.isBusy
 
     private val albumList = mutableStateListOf<Album>()
-    val searchableAlbumList = mutableStateListOf<Album>()
-    val unsearchableAlbumList = mutableStateListOf<Album>()
+    val searchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
+    val unsearchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
     val albumsToEncode = mutableStateListOf<Album>()
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
     private var initialized = false
+
+    fun getAlbumList() = albumList
 
     suspend fun initAllAlbumList() {
         if (initialized) return
@@ -57,18 +60,18 @@ class AlbumManager(
         }
     }
 
-    private suspend fun initDataFlow() {
+    suspend fun initDataFlow() {
         searchableAlbumFlow().collect {
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
-            searchableAlbumList.clear()
-            searchableAlbumList.addAll(it)
-            searchableAlbumList.sortByDescending { album: Album -> album.count }
+            val res = it.toMutableList().sortedByDescending { album: Album -> album.count }
+            searchableAlbumList.emit(res)
+            Log.d(TAG, "Searchable albums: ${it.size}")
             // 从全部相册减去已经索引的ID，就是未索引的相册
             val unsearchable = albumList.filter { all -> !it.contains(all) }
-            unsearchableAlbumList.clear()
-            unsearchableAlbumList.addAll(unsearchable)
-            unsearchableAlbumList.sortByDescending { album: Album -> album.count }
+
+            unsearchableAlbumList.emit(unsearchable.toMutableList().sortedByDescending { album: Album -> album.count })
+            Log.d(TAG, "Unsearchable albums: ${unsearchable.size}")
         }
     }
 
@@ -81,9 +84,9 @@ class AlbumManager(
     }
 
     fun toggleSelectAllAlbums() {
-        if (albumsToEncode.size != unsearchableAlbumList.size) {
+        if (albumsToEncode.size != unsearchableAlbumList.value?.size) {
             albumsToEncode.clear()
-            albumsToEncode.addAll(unsearchableAlbumList)
+            albumsToEncode.addAll(unsearchableAlbumList.value)
         } else {
             albumsToEncode.clear()
         }
@@ -105,11 +108,10 @@ private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
         albums.sumOf { album -> photoRepository.getImageCountInAlbum(album.id) }
     }
 
-    fun encodeAlbums(albums: List<Album>) {
-        PicQueryApplication.applicationScope.launch {
+    suspend fun encodeAlbums(albums: List<Album>) {
             if (albums.isEmpty()) {
                 showToast(context.getString(R.string.no_album_selected))
-                return@launch
+                return
             }
 
             indexingAlbumState.value = 
@@ -157,10 +159,14 @@ private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
                     status = IndexingAlbumState.Status.Error
                 )
             }
-        }
     }
 
     fun clearIndexingState() {
         indexingAlbumState.value = IndexingAlbumState()
+    }
+
+    fun removeSingleAlbumIndex(album: Album) {
+        embeddingRepository.removeByAlbum(album)
+        albumRepository.removeSearchableAlbum(album)
     }
 }
