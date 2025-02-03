@@ -64,7 +64,6 @@ private val domainModules = module {
         AlbumManager(
             albumRepository = get(),
             photoRepository = get(),
-            embeddingRepository = get(),
             imageSearcher = get(),
             ioDispatcher = get()
         )

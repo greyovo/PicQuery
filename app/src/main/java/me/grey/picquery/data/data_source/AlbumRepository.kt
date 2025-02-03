@@ -92,8 +92,4 @@ class AlbumRepository(
     fun addAllSearchableAlbum(album: List<Album>) {
         return database.albumDao().upsertAll(album)
     }
-
-    fun removeSearchableAlbum(singleAlbum: Album) {
-        database.albumDao().delete(singleAlbum)
-    }
 }

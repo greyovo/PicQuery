@@ -53,7 +53,4 @@
     <string name="external_storage">[External Storage]</string>
     <string name="view_privacy_policy">View privacy policy</string>
     <string name="open_with_external_app">Open with External Apps</string>
-
-    <string name="album_index_manager_ui_title">Album Index Manager</string>
-    <string name="album_index_manager_ui_desc">Open an Dialog to Review and Delete Album Index Data</string>
 </resources>

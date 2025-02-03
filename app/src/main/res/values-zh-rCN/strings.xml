@@ -55,6 +55,4 @@
     <string name="view_privacy_policy">查看隐私政策</string>
     <string name="open_with_external_app">使用外部应用打开</string>
 
-    <string name="album_index_manager_ui_title">相册索引管理器</string>
-    <string name="album_index_manager_ui_desc">打开一个对话框来查看和删除已经索引的相册信息</string>
 </resources>

@@ -81,8 +81,4 @@ class EmbeddingRepository(
     fun updateAll(list: List<Embedding>) {
         return dataSource.upsertAll(list)
     }
-
-    fun removeByAlbum(album: Album){
-        return dataSource.removeByAlbumId(album.id)
-    }
 }
