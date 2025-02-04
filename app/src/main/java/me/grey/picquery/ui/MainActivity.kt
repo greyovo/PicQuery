@@ -11,11 +11,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.common.InitializeEffect
@@ -34,29 +40,43 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        val agreeStateFlow = preferenceRepo.getAgreement()
-
         super.onCreate(savedInstanceState)
-        setContent {
-            val agreeState = remember { mutableStateOf(true) }
 
-            InitializeEffect {
-                lifecycleScope.launch {
-                    agreeStateFlow.collect { agree ->
-                        agreeState.value = agree
-                        Log.d(TAG, "onCreate: $agreeState")
-                    }
+        lifecycleScope.launch {
+            val agreeStateFlow = preferenceRepo.getAgreement()
+                .stateIn(
+                    scope = lifecycleScope, 
+                    started = SharingStarted.Eagerly, 
+                    initialValue = false
+                )
+
+            setContent {
+                KoinAndroidContext {
+                    MainContent(agreeStateFlow)
                 }
             }
+        }
+    }
 
-            KoinAndroidContext {
-                PicQueryThemeM3 {
-                    Surface(Modifier.fillMaxSize()) {
-                        PrivacyAgreementDialog(agreeState.value)
-                        if (agreeState.value) {
-                            AppNavHost()
-                        }
-                    }
+    @Composable
+    private fun MainContent(agreeStateFlow: StateFlow<Boolean>) {
+        var agreeState by remember { mutableStateOf(false) }
+
+        InitializeEffect {
+            lifecycleScope.launch {
+                agreeStateFlow.collect { agree ->
+                    agreeState = agree
+                    Log.d(TAG, "onCreate: $agreeState")
+                }
+            }
+        }
+
+        PicQueryThemeM3 {
+            Surface(modifier = Modifier.fillMaxSize()) {
+                if (!agreeState) {
+                    PrivacyAgreementDialog(agreeState)
+                } else {
+                    AppNavHost()
                 }
             }
         }

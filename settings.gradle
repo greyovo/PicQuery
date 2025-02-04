@@ -1,39 +1,41 @@
 pluginManagement {
     repositories {
-        def ALIYUN_REPOSITORY = 'https://maven.aliyun.com/repository/public/'
-        def ALIYUN_JCENTER= 'https://maven.aliyun.com/repository/jcenter/'
-        def ALIYUN_GOOGLE = 'https://maven.aliyun.com/repository/google/'
-        def ALIYUN_GRADLE_PLUGIN = 'https://maven.aliyun.com/repository/gradle-plugin/'
-
-        maven { url ALIYUN_REPOSITORY }
-        maven { url ALIYUN_JCENTER }
-        maven { url ALIYUN_GOOGLE }
-        maven { url ALIYUN_GRADLE_PLUGIN }
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
         gradlePluginPortal()
-        google()
-        mavenCentral()
     }
 }
-
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-    def ALIYUN_REPOSITORY = 'https://maven.aliyun.com/repository/public/'
-    def ALIYUN_JCENTER= 'https://maven.aliyun.com/repository/jcenter/'
-    def ALIYUN_GOOGLE = 'https://maven.aliyun.com/repository/google/'
-    def ALIYUN_GRADLE_PLUGIN = 'https://maven.aliyun.com/repository/gradle-plugin/'
-
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url ALIYUN_REPOSITORY }
-        maven { url ALIYUN_JCENTER }
-        maven { url ALIYUN_GOOGLE }
-        maven { url ALIYUN_GRADLE_PLUGIN }
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
     }
 }
+
+enableFeaturePreview('TYPESAFE_PROJECT_ACCESSORS')
+
 rootProject.name = "PicQuery"
 include ':app'
 //include 'base:clipcore'
 //include 'base:core'
 //include 'features:mobileclip'
 //include ':features:clip'
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs")
+    }
+}
