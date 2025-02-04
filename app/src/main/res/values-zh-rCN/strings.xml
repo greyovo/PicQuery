@@ -55,4 +55,27 @@
     <string name="view_privacy_policy">查看隐私政策</string>
     <string name="open_with_external_app">使用外部应用打开</string>
 
+    <!-- SettingScreen Strings -->
+    <string name="settings_title">设置</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="github">Github</string>
+
+    <string name="album_index_manager_ui_title">相册索引管理器</string>
+    <string name="album_index_manager_ui_desc">打开一个对话框来查看和删除已经索引的相册信息</string>
+    <string name="index_mgr_title">索引管理器(点击删除对应索引)</string>
+    <string name="album_confirm_delete_title">确认删除索引</string>
+    <string name="album_confirm_delete_message">您确定要删除此相册的索引吗？这将清除该相册的搜索索引。</string>
+    <string name="album_confirm_button">确认</string>
+    <string name="album_cancel_button">取消</string>
+    <string name="album_index_deleted">此项目的索引已删除</string>
+    <string name="album_loading">请稍后</string>
+    <string name="album_invalid_desc">此相册似乎无效</string>
+    <string name="album_update_needed_desc">此相册似乎需要更新</string>
+
+    <!-- New strings for AlbumItem -->
+    <string name="album_photo_count">照片数量</string>
+    <string name="album_date">日期</string>
+    <string name="album_invalid_icon_desc">无效相册，点击删除索引</string>
+    <string name="album_update_needed_icon_desc">相册需要更新，点击删除索引</string>
+    <string name="album_normal_icon_desc">点击删除相册索引</string>
 </resources>

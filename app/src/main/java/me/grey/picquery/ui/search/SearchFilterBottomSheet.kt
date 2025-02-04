@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,7 @@ fun SearchFilterBottomSheet(
     albumManager: AlbumManager = koinInject(),
 ) {
     val scope = rememberCoroutineScope()
-    val candidates = remember { albumManager.searchableAlbumList }
+    val candidates = albumManager.searchableAlbumList.value.toMutableStateList()
     val selectedList = remember { mutableStateListOf<Album>() }
     selectedList.addAll(imageSearcher.searchRange.toList())
     val searchAll = remember { mutableStateOf(imageSearcher.isSearchAll.value) }

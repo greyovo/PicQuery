@@ -8,22 +8,24 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.AlbumRepository
+import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.albums.IndexingAlbumState
+import java.util.concurrent.atomic.AtomicInteger
 
 class AlbumManager(
     private val albumRepository: AlbumRepository,
     private val photoRepository: PhotoRepository,
+    private val embeddingRepository: EmbeddingRepository,
     private val imageSearcher: ImageSearcher,
     private val ioDispatcher: CoroutineDispatcher
 ) {
@@ -37,13 +39,15 @@ class AlbumManager(
         get() = indexingAlbumState.value.isBusy
 
     private val albumList = mutableStateListOf<Album>()
-    val searchableAlbumList = mutableStateListOf<Album>()
-    val unsearchableAlbumList = mutableStateListOf<Album>()
+    val searchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
+    val unsearchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
     val albumsToEncode = mutableStateListOf<Album>()
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
 
     private var initialized = false
+
+    fun getAlbumList() = albumList
 
     suspend fun initAllAlbumList() {
         if (initialized) return
@@ -57,18 +61,18 @@ class AlbumManager(
         }
     }
 
-    private suspend fun initDataFlow() {
+    suspend fun initDataFlow() {
         searchableAlbumFlow().collect {
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
-            searchableAlbumList.clear()
-            searchableAlbumList.addAll(it)
-            searchableAlbumList.sortByDescending { album: Album -> album.count }
+            val res = it.toMutableList().sortedByDescending { album: Album -> album.count }
+            searchableAlbumList.emit(res)
+            Log.d(TAG, "Searchable albums: ${it.size}")
             // 从全部相册减去已经索引的ID，就是未索引的相册
             val unsearchable = albumList.filter { all -> !it.contains(all) }
-            unsearchableAlbumList.clear()
-            unsearchableAlbumList.addAll(unsearchable)
-            unsearchableAlbumList.sortByDescending { album: Album -> album.count }
+
+            unsearchableAlbumList.emit(unsearchable.toMutableList().sortedByDescending { album: Album -> album.count })
+            Log.d(TAG, "Unsearchable albums: ${unsearchable.size}")
         }
     }
 
@@ -81,9 +85,9 @@ class AlbumManager(
     }
 
     fun toggleSelectAllAlbums() {
-        if (albumsToEncode.size != unsearchableAlbumList.size) {
+        if (albumsToEncode.size != unsearchableAlbumList.value?.size) {
             albumsToEncode.clear()
-            albumsToEncode.addAll(unsearchableAlbumList)
+            albumsToEncode.addAll(unsearchableAlbumList.value)
         } else {
             albumsToEncode.clear()
         }
@@ -92,11 +96,11 @@ class AlbumManager(
     /**
      * 获取多个相册的照片流
      */
-@OptIn(ExperimentalCoroutinesApi::class)
-private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
-    .flatMapConcat { album ->
-        photoRepository.getPhotoListByAlbumIdPaginated(album.id)
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
+        .flatMapConcat { album ->
+            photoRepository.getPhotoListByAlbumIdPaginated(album.id)
+        }
 
     /**
      * 获取相册列表的照片总数
@@ -105,62 +109,64 @@ private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
         albums.sumOf { album -> photoRepository.getImageCountInAlbum(album.id) }
     }
 
-    fun encodeAlbums(albums: List<Album>) {
-        PicQueryApplication.applicationScope.launch {
-            if (albums.isEmpty()) {
-                showToast(context.getString(R.string.no_album_selected))
-                return@launch
-            }
+    suspend fun encodeAlbums(albums: List<Album>) {
+        if (albums.isEmpty()) {
+            showToast(context.getString(R.string.no_album_selected))
+            return
+        }
 
-            indexingAlbumState.value = 
-                IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
+        indexingAlbumState.value =
+            IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
 
-            try {
-                // 先获取总照片数
-                val totalPhotos = getTotalPhotoCount(albums)
-                var processedPhotos = 0
-                var success = true
+        try {
+            val totalPhotos = getTotalPhotoCount(albums)
+            val processedPhotos = AtomicInteger(0)
+            var success = true
 
-                // 分批处理照片
-                getPhotosFlow(albums).collect { photoChunk ->
-                    // 对每一批照片进行编码
-                    val chunkSuccess = imageSearcher.encodePhotoListV2(photoChunk) { cur, total, cost ->
-                        processedPhotos += cur
-                        indexingAlbumState.value = indexingAlbumState.value.copy(
-                            current = processedPhotos,
-                            total = totalPhotos,
-                            cost = cost,
-                            status = IndexingAlbumState.Status.Indexing
-                        )
-                    }
-                    
-                    if (!chunkSuccess) {
-                        success = false
-                        Log.w(TAG, "Failed to encode photo chunk, size: ${photoChunk.size}")
-                    }
-                }
+            getPhotosFlow(albums).collect { photoChunk ->
 
-                if (success) {
-                    Log.i(TAG, "Encoded ${albums.size} album(s) with $totalPhotos photos!")
-                    withContext(ioDispatcher) {
-                        albumRepository.addAllSearchableAlbum(albums)
-                    }
+                val chunkSuccess = imageSearcher.encodePhotoListV2(photoChunk) { cur, total, cost ->
+                    Log.d(TAG, "Encoded $cur/$total photos, cost: $cost")
+                    processedPhotos.addAndGet(cur)
                     indexingAlbumState.value = indexingAlbumState.value.copy(
-                        status = IndexingAlbumState.Status.Finish
+                        current = processedPhotos.get(),
+                        total = totalPhotos,
+                        cost = cost,
+                        status = IndexingAlbumState.Status.Indexing
                     )
-                } else {
-                    Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error encoding albums", e)
-                indexingAlbumState.value = indexingAlbumState.value.copy(
-                    status = IndexingAlbumState.Status.Error
-                )
+
+                if (!chunkSuccess) {
+                    success = false
+                    Log.w(TAG, "Failed to encode photo chunk, size: ${photoChunk.size}")
+                }
             }
+
+            if (success) {
+                Log.i(TAG, "Encoded ${albums.size} album(s) with $totalPhotos photos!")
+                withContext(ioDispatcher) {
+                    albumRepository.addAllSearchableAlbum(albums)
+                }
+                indexingAlbumState.value = indexingAlbumState.value.copy(
+                    status = IndexingAlbumState.Status.Finish
+                )
+            } else {
+                Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error encoding albums", e)
+            indexingAlbumState.value = indexingAlbumState.value.copy(
+                status = IndexingAlbumState.Status.Error
+            )
         }
     }
 
     fun clearIndexingState() {
         indexingAlbumState.value = IndexingAlbumState()
+    }
+
+    fun removeSingleAlbumIndex(album: Album) {
+        embeddingRepository.removeByAlbum(album)
+        albumRepository.removeSearchableAlbum(album)
     }
 }

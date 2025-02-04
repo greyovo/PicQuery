@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +68,8 @@ class ImageSearcher(
         private const val DEFAULT_MATCH_THRESHOLD = 0.01
         private const val TOP_K = 30
         private const val SEARCH_BATCH_SIZE = 1000
+
+
     }
 
     val searchRange = mutableStateListOf<Album>()
@@ -136,16 +140,8 @@ class ImageSearcher(
                 .chunked(100)
                 .onEach { Log.d(TAG, "onEach: ${it.size}") }
                 .onCompletion {
-                    val cost = max((System.currentTimeMillis() - startTime)/1000f, 1f)
-                    Log.d(
-                        TAG,
-                        "[OK] encode ${photos.size} pics in $cost s, " +
-                                "avg speed: ${photos.size / cost} pic/s"
-                    )
-                    progressCallback?.invoke(photos.size, photos.size, 0)
                     embeddingRepository.updateCache()
                     encodingLock = false
-
                 }
                 .collect {
                     val loops = 1
@@ -165,13 +161,14 @@ class ImageSearcher(
                         }
                         deferreds.awaitAll()
                     }
+                    cur.set(it.size)
+
                     progressCallback?.invoke(
                         cur.get(),
                         photos.size,
                         cost / it.size,
                     )
                     Log.d(TAG, "cost: ${cost}")
-                    cur.addAndGet(it.size)
                 }
         }
         return true
@@ -221,7 +218,7 @@ class ImageSearcher(
         image: Bitmap,
         range: List<Album> = searchRange,
         onSuccess: suspend (List<Long>?) -> Unit,
-        ) {
+    ) {
         return withContext(dispatcher) {
             if (searchingLock) {
                 return@withContext
@@ -255,7 +252,7 @@ class ImageSearcher(
             embeddings.collect { chunk ->
                 Log.d(TAG, "Processing chunk: ${chunk.size}")
                 totalProcessed += chunk.size
-                
+
                 for (emb in chunk) {
                     val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
                     Log.d(TAG, "similarity: ${emb.photoId} -> $sim")

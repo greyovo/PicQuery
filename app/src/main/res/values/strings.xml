@@ -53,4 +53,28 @@
     <string name="external_storage">[External Storage]</string>
     <string name="view_privacy_policy">View privacy policy</string>
     <string name="open_with_external_app">Open with External Apps</string>
+
+    <!-- SettingScreen Strings -->
+    <string name="settings_title">Settings</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="github">Github</string>
+
+    <string name="album_index_manager_ui_title">Album Index Manager</string>
+    <string name="album_index_manager_ui_desc">Open an Dialog to Review and Delete Album Index Data</string>
+    <string name="index_mgr_title">Index Manager (Click to Delete Index)</string>
+    <string name="album_confirm_delete_title">Confirm Index Deletion</string>
+    <string name="album_confirm_delete_message">Are you sure you want to delete the index for this album? This will clear the search index for the album.</string>
+    <string name="album_confirm_button">Confirm</string>
+    <string name="album_cancel_button">Cancel</string>
+    <string name="album_index_deleted">Index for this item has been deleted</string>
+    <string name="album_loading">Please wait</string>
+    <string name="album_invalid_desc">This album seems to be invalid</string>
+    <string name="album_update_needed_desc">This album seems to need an update</string>
+
+    <!-- New strings for AlbumItem -->
+    <string name="album_photo_count">Photo Count</string>
+    <string name="album_date">Date</string>
+    <string name="album_invalid_icon_desc">Invalid album, click to delete index</string>
+    <string name="album_update_needed_icon_desc">Album needs update, click to delete index</string>
+    <string name="album_normal_icon_desc">Click to delete album index</string>
 </resources>

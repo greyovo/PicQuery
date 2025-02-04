@@ -66,6 +66,7 @@ fun DisplayScreen(
     )
 
     LaunchedEffect(initialPage) {
+        if (initialPage == -1) return@LaunchedEffect
         displayViewModel.loadPhotos()
         if (photoList.isNotEmpty()) {
             pagerState.scrollToPage(initialPage)
