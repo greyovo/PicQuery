@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.R
@@ -31,7 +32,7 @@ enum class SearchState {
 class SearchViewModel(
     private val imageSearcher: ImageSearcher,
     private val ioDispatcher: CoroutineDispatcher,
-    private val repo : PhotoRepository
+    private val repo: PhotoRepository
 ) : ViewModel() {
     companion object {
         private const val TAG = "SearchResultViewModel"
@@ -39,6 +40,8 @@ class SearchViewModel(
 
     private val _resultList = MutableStateFlow<List<Photo>>(emptyList())
     val resultList = _resultList.asStateFlow()
+    private val _resultMap = MutableStateFlow<Map<Long, Double>>(mutableMapOf())
+    val resultMap: StateFlow<Map<Long, Double>> = _resultMap.asStateFlow()
 
     private val _searchState = MutableStateFlow(SearchState.LOADING)
     val searchState = _searchState.asStateFlow()
@@ -73,11 +76,15 @@ class SearchViewModel(
         _searchText.value = text
         viewModelScope.launch(ioDispatcher) {
             _searchState.value = SearchState.SEARCHING
-            imageSearcher.search(text) { ids ->
-                if (ids != null) {
+            imageSearcher.search(text) { entries ->
+                if (entries.isNotEmpty()) {
+                    val ids = entries.map { it.value }
                     val photos = repo.getPhotoListByIds(ids)
+                    _resultMap.update {
+                        entries.associate { it.value to it.key }.toMutableMap()
+                    }
                     // reorder by id
-                    _resultList.value = reorderList(photos, ids)
+                    _resultList.value = reOrderList(photos, ids)
                 }
                 _searchState.value = SearchState.FINISHED
             }
@@ -94,11 +101,14 @@ class SearchViewModel(
         }
         viewModelScope.launch(ioDispatcher) {
             _searchState.value = SearchState.SEARCHING
-            imageSearcher.searchWithRange(photo) { ids ->
-                if (ids != null) {
+            imageSearcher.searchWithRange(photo) { entries ->
+                if (entries.isNotEmpty()) {
+                    val ids = entries.map { it.value }
                     val photos = repo.getPhotoListByIds(ids)
-                    // reorder by id
-                    _resultList.value = reorderList(photos, ids)
+                    _resultMap.update {
+                        entries.associate { it.value to it.key }.toMutableMap()
+                    }
+                    _resultList.value = reOrderList(photos, ids)
                 }
                 _searchState.value = SearchState.FINISHED
             }
@@ -106,7 +116,7 @@ class SearchViewModel(
     }
 
     // fix the order of the result list
-    private fun reorderList(originalList: List<Photo>, orderList: List<Long>): List<Photo> {
+    private fun reOrderList(originalList: List<Photo>, orderList: List<Long>): List<Photo> {
         val photoMap = originalList.associateBy { it.id }
         return orderList.mapNotNull { id -> photoMap[id] }
     }

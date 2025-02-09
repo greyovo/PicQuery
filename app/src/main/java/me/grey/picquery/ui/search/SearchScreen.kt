@@ -25,8 +25,9 @@ fun SearchScreen(
 ) {
     Log.d("SearchScreen", "initialQuery: $initialQuery")
     
-    val resultList = searchViewModel.resultList.collectAsState()
+    val resultList by searchViewModel.resultList.collectAsState()
     val searchState by searchViewModel.searchState.collectAsState()
+    val resultMap by searchViewModel.resultMap.collectAsState()
     val initialQueryDone = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -56,9 +57,11 @@ fun SearchScreen(
                 onQueryChange = { searchViewModel.onQueryChange(it) },
                 showBackButton = searchState == SearchState.FINISHED,
             )
+
             SearchResultGrid(
-                resultList = resultList.value,
+                resultList = resultList,
                 state = searchState,
+                resultMap = resultMap,
                 onClickPhoto = onClickPhoto
             )
         }

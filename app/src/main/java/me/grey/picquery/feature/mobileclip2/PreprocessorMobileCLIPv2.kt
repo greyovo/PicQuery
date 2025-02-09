@@ -13,7 +13,6 @@ class PreprocessorMobileCLIPv2 : Preprocessor {
         .add(ResizeOp(IMAGE_SIZE, IMAGE_SIZE, ResizeOp.ResizeMethod.BILINEAR)).build()
 
     companion object {
-        // FIXME 应为 256，但输入模型时出错，可能是模型转换有问题。
         const val IMAGE_SIZE = 256
     }
 

@@ -1,39 +1,44 @@
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.FilterAltOff
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import me.grey.picquery.R
-import me.grey.picquery.domain.SearchTarget
-import me.grey.picquery.ui.search.SearchFilterBottomSheet
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @InternalTextApi
@@ -128,48 +133,14 @@ private fun ClearTextButton(onClear: () -> Unit) {
 }
 
 @Composable
-private fun SearchSettingsSection(
-    textStyle: TextStyle,
-    onImageSearch: (Uri) -> Unit,
-) {
-    val filterSheetState = rememberAppBottomSheetState()
-    val scope = rememberCoroutineScope()
-    
-    // Photo picker setup
-    val photoPicker = rememberImagePicker(onImageSearch)
-    
-    // UI Components
-    Row {
-        ImageSearchButton(
-            textStyle = textStyle,
-            onClick = {
-                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }
-        )
-        
-        MoreOptionsButton(
-            textStyle = textStyle,
-            onClick = {
-                scope.launch { filterSheetState.show() }
-            }
-        )
-    }
-    
-    // Bottom sheet
-    if (filterSheetState.isVisible) {
-        SearchFilterBottomSheet(filterSheetState)
-    }
-}
-
-@Composable
 private fun rememberImagePicker(
     onImageSearch: (Uri) -> Unit
 ) = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
     if (uri != null) {
-        Log.d("PhotoPicker", "Selected URI: $uri")
+        Timber.tag("PhotoPicker").d("Selected URI: $uri")
         onImageSearch(uri)
     } else {
-        Log.d("PhotoPicker", "No media selected")
+        Timber.tag("PhotoPicker").d("No media selected")
     }
 }
 
@@ -188,100 +159,121 @@ private fun ImageSearchButton(
 }
 
 @Composable
-private fun MoreOptionsButton(
-    textStyle: TextStyle,
-    onClick: () -> Unit
-) {
-    IconButton(onClick = onClick) {
-        Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = "",
-            tint = textStyle.color
-        )
-    }
-}
-
-@Composable
 private fun BackButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
-            imageVector = Icons.Default.ArrowBack,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "",
             tint = MaterialTheme.colorScheme.onBackground
         )
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchTargetOptions(
-    targets: Array<SearchTarget>,
-    selectedTarget: SearchTarget,
-    onChangeTarget: (SearchTarget) -> Unit
+private fun SearchSettingsSection(
+    textStyle: TextStyle,
+    onImageSearch: (Uri) -> Unit,
 ) {
-    for (item in targets) {
-        val selected = selectedTarget == item
-        val color = if (selected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onBackground
+    var showPickerBottomSheet by remember { mutableStateOf(false) }
+
+    // System Picker
+    val photoPicker = rememberImagePicker(onImageSearch)
+
+    // External Picker
+    val externalAlbumLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.let { uri ->
+                onImageSearch(uri)
+            }
         }
-        
-        SearchTargetItem(
-            target = item,
-            selected = selected,
-            color = color,
-            onClick = { onChangeTarget(item) }
+    }
+
+    // Bottom sheet for picker selection
+    if (showPickerBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showPickerBottomSheet = false },
+            sheetState = rememberModalBottomSheetState(),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.select_image_source),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // System Picker Option
+                PickerOptionItem(
+                    icon = Icons.Outlined.Image,
+                    text = stringResource(R.string.system_album),
+                    onClick = {
+                        photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        showPickerBottomSheet = false
+                    }
+                )
+
+                // External Picker Option (Intent-based)
+                PickerOptionItem(
+                    icon = Icons.Outlined.Folder,
+                    text = stringResource(R.string.external_album),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_PICK).apply {
+                            type = "image/*"
+                        }
+                        externalAlbumLauncher.launch(intent)
+                        showPickerBottomSheet = false
+                    }
+                )
+            }
+        }
+    }
+
+    // Original Image Search Button
+    Row {
+        ImageSearchButton(
+            textStyle = textStyle,
+            onClick = {
+                showPickerBottomSheet = true
+            }
         )
     }
 }
 
 @Composable
-private fun SearchTargetItem(
-    target: SearchTarget,
-    selected: Boolean,
-    color: androidx.compose.ui.graphics.Color,
+private fun PickerOptionItem(
+    icon: ImageVector,
+    text: String,
     onClick: () -> Unit
 ) {
-    DropdownMenuItem(
-        text = { Text(stringResource(id = target.labelResId), color = color) },
-        onClick = onClick,
-        leadingIcon = {
-            Icon(
-                target.icon,
-                contentDescription = target.name,
-                tint = color,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 16.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface
             )
-        },
-        trailingIcon = {
-            if (selected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = color,
-                )
-            }
-        }
-    )
-}
-
-@Composable
-private fun FilterOption(
-    enableFilter: Boolean,
-    onClick: () -> Unit
-) {
-    DropdownMenuItem(
-        text = { Text(stringResource(R.string.search_range_selection_title)) },
-        onClick = onClick,
-        leadingIcon = {
-            Icon(
-                imageVector = if (enableFilter) Icons.Outlined.FilterAltOff else Icons.Default.FilterAlt,
-                contentDescription = null,
-                tint = if (enableFilter) {
-                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                } else {
-                    MaterialTheme.colorScheme.primary
-                }
-            )
-        },
-    )
+        )
+    }
 }

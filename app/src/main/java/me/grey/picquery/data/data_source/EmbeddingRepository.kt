@@ -18,21 +18,27 @@ class EmbeddingRepository(
         return dataSource.getAll()
     }
 
-    fun getAllEmbeddingsPaginated(batchSize: Int): Flow<List<Embedding>> = flow {
+    fun getAllEmbeddingsPaginated(pageSize: Int): Flow<List<Embedding>> = flow {
         var offset = 0
-        while (true) {
-            val embeddings = dataSource.getEmbeddingsPaginated(batchSize, offset)
+        var hasMore = true
+
+        while (hasMore) {
+            val embeddings = dataSource.getEmbeddingsPaginated(pageSize, offset)
             if (embeddings.isEmpty()) {
-                emit(emptyList())
-                break
+                hasMore = false
+            } else {
+                emit(embeddings)
+                offset += pageSize
             }
-            emit(embeddings)
-            offset += batchSize
         }
     }
 
     fun getTotalCount(): Long {
         return dataSource.getTotalCount()
+    }
+
+    fun getByPhotoIds(photoIds: LongArray): List<Embedding> {
+        return dataSource.getAllByPhotoIds(photoIds)
     }
 
     fun getByAlbumId(albumId: Long): List<Embedding> {

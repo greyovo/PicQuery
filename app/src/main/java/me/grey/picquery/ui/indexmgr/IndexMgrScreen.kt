@@ -31,7 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -247,8 +247,8 @@ private fun AlbumItemColors(albumStatusEnum: Int) = ListItemDefaults.colors(
     }
 )
 
-private suspend fun removeIndexByAlbum ( album: Album, albumManager: AlbumManager){
-    withContext(Dispatchers.IO) {
+private suspend fun removeIndexByAlbum ( album: Album, albumManager: AlbumManager,dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    withContext(dispatcher) {
         albumManager.removeSingleAlbumIndex(album)
         albumManager.initDataFlow()
     }

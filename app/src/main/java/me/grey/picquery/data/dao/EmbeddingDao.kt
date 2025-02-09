@@ -41,7 +41,6 @@ interface EmbeddingDao {
     )
     fun removeByAlbumId(albumId: Long): Unit
 
-
     @Upsert
     fun upsertAll(embeddings: List<Embedding>)
 

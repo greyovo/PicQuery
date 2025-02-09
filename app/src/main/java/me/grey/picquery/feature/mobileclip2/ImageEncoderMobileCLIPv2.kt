@@ -3,9 +3,6 @@ package me.grey.picquery.feature.mobileclip2
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.ImageEncoder
 import org.tensorflow.lite.DataType
@@ -15,6 +12,7 @@ import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.gpu.GpuDelegateFactory
 
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import timber.log.Timber
 import java.io.FileNotFoundException
 import java.nio.FloatBuffer
 import kotlin.system.measureTimeMillis
@@ -45,10 +43,10 @@ class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: Prepr
             val delegateOptions = compatList.bestOptionsForThisDevice
             delegateOptions?.forceBackend = GpuDelegateFactory.Options.GpuBackend.OPENCL
             options.addDelegate(GpuDelegate(delegateOptions))
-            Log.d(TAG, "Supported GPU, add the GPU delegate")
+            Timber.tag(TAG).d("Supported GPU, add the GPU delegate")
         } else {
             // if the GPU is not supported, run on 4 threads
-            Log.d(TAG, "GPU is not supported, run on 4 threads on CPU")
+            Timber.tag(TAG).d("GPU is not supported, run on 4 threads on CPU")
             options.setNumThreads(4)
         }
         interpreter = Interpreter(modelFile, options)

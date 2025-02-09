@@ -55,6 +55,7 @@ glide = "4.14.0"
 glide-compose = "1.0.0-alpha.1"
 
 # Other Libraries
+workRuntime = "2.9.0"
 zoomable = "1.5.0"
 permissionx = "1.7.1"
 kotlinx-serialization = "1.7.2"
@@ -131,6 +132,7 @@ glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", versi
 glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide-compose" }
 
 # Other Libraries
+work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }
 permissionx = { group = "com.guolindev.permissionx", name = "permissionx", version.ref = "permissionx" }
 

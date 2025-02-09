@@ -141,4 +141,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.espresso.core)
+
+    implementation libs.androidx.work.runtime
+    implementation libs.work.runtime
 }

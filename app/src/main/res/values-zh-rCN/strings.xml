@@ -33,6 +33,7 @@
     <!--  title_activity  -->
     <string name="title_activity_display">查看图片</string>
     <string name="index_album_btn">索引相册</string>
+    <string name="similar_photos">相似图片</string>
 
     <string name="search_target_image">搜图片</string>
     <string name="search_target_text">搜文字</string>
@@ -78,4 +79,48 @@
     <string name="album_invalid_icon_desc">无效相册，点击删除索引</string>
     <string name="album_update_needed_icon_desc">相册需要更新，点击删除索引</string>
     <string name="album_normal_icon_desc">点击删除相册索引</string>
+
+    <string name="photo_details">图片详情</string>
+    <string name="photo_details_with_id">图片详情 (ID: %1$d)</string>
+    <string name="no_similar_photos">未找到相似的照片</string>
+    <string name="photo_group_count">%1$d 张照片</string>
+
+    <!-- Similar Photos Screen Strings -->
+    <string name="similar_photos_title">相似图片</string>
+    <string name="similar_photos_subtitle">内容相似的照片</string>
+    <string name="similar_photos_empty_state">未找到相似图片</string>
+    <string name="similar_photos_group_count">%1$d 张照片</string>
+
+    <!-- Similarity Configuration Strings -->
+    <string name="similarity_config_title">相似度配置</string>
+    <string name="search_image_similarity_threshold">图片相似度搜索</string>
+    <string name="similarity_group_delta">相似度分组间隔</string>
+    <string name="min_group_size">最小分组大小</string>
+    <string name="save_configuration">保存配置</string>
+    <string name="config_search_threshold_description">调整搜索的相似度阈值</string>
+    <string name="config_group_delta_description">设置相似照片分组的间隔</string>
+    <string name="config_min_group_size_description">设置分组的最小照片数量</string>
+
+    <!-- Image Search Configuration Strings -->
+    <string name="image_search_config_title">搜索配置</string>
+    <string name="match_threshold_title">匹配阈值</string>
+    <string name="top_k_results_title">结果数量限制</string>
+    <string name="match_threshold_description">调整搜索结果的最小相似度</string>
+    <string name="top_k_results_description">返回搜索结果的最大数量</string>
+    <string name="save_search_configuration">保存搜索配置</string>
+
+    <!-- More Menu Items -->
+    <string name="menu_index_albums">索引相册</string>
+    <string name="menu_settings">设置</string>
+    <!-- Search Range Menu Item -->
+    <string name="menu_search_range">搜索范围</string>
+
+    <!-- Confidence Levels -->
+    <string name="confidence_low">可信度低</string>
+    <string name="confidence_medium">可信度尚可</string>
+    <string name="confidence_high">可信度高</string>
+
+    <string name="select_image_source">选择图片来源</string>
+    <string name="system_album">系统相册</string>
+    <string name="external_album">外部相册</string>
 </resources>

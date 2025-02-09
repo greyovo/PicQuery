@@ -76,8 +76,8 @@ fun EncodingProgressBar(
                 }
                 Box(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    progress,
-                    Modifier.fillMaxWidth()
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

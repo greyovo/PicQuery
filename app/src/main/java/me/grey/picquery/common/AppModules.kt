@@ -1,7 +1,8 @@
 package me.grey.picquery.common
 
-import androidx.room.Room
+import androidx.work.WorkManager
 import me.grey.picquery.data.AppDatabase
+import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
@@ -9,11 +10,14 @@ import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
+import me.grey.picquery.domain.SimilarityManager
 import me.grey.picquery.feature.clip.modulesCLIP
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
+import me.grey.picquery.ui.photoDetail.PhotoDetailViewModel
 import me.grey.picquery.ui.search.SearchViewModel
 import me.grey.picquery.ui.setting.SettingViewModel
+import me.grey.picquery.ui.simlilar.SimilarPhotosViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -31,18 +35,19 @@ private val viewModelModules = module {
         DisplayViewModel(photoRepository = get(), imageSearcher = get())
     }
 
+
     viewModel { SettingViewModel(preferenceRepository = get()) }
+    viewModel { SimilarPhotosViewModel(get(),get(),get(),get()) }
+    viewModel { PhotoDetailViewModel(get(),get()) }
 }
 
 private val dataModules = module {
     // SQLite Database
     single {
-        Room.databaseBuilder(
-            androidContext(),
-            AppDatabase::class.java, "app-db"
-        ).build()
+        AppDatabase.getDatabase(androidContext())
     }
-    single { get<AppDatabase>().embeddingDao() }
+    single<EmbeddingDao> { get<AppDatabase>().embeddingDao() }
+    single { get<AppDatabase>().imageSimilarityDao() }
     single { AlbumRepository(androidContext().contentResolver, database = get()) }
     single { EmbeddingRepository(dataSource = get()) }
     single { PhotoRepository(androidContext()) }
@@ -55,7 +60,6 @@ private val domainModules = module {
             imageEncoder = get(),
             textEncoder = get(),
             embeddingRepository = get(),
-            contentResolver = androidContext().contentResolver,
             translator = MLKitTranslator(),
             dispatcher = get()
         )
@@ -71,8 +75,14 @@ private val domainModules = module {
     }
 
     single { MLKitTranslator() }
+
+    single { SimilarityManager(get(),get()) }
+}
+
+val workManagerModule = module {
+    single { WorkManager.getInstance(get()) }
 }
 
 // need inject encoder here
-val AppModules = listOf(dispatchersKoinModule, viewModelModules, dataModules, modulesCLIP, domainModules, )
+val AppModules = listOf(dispatchersKoinModule, viewModelModules, dataModules, modulesCLIP, domainModules, workManagerModule)
 

@@ -1,13 +1,24 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package me.grey.picquery.domain
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
@@ -17,6 +28,7 @@ import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.albums.IndexingAlbumState
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 
 class AlbumManager(
@@ -36,8 +48,12 @@ class AlbumManager(
         get() = indexingAlbumState.value.isBusy
 
     private val albumList = mutableStateListOf<Album>()
-    val searchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
-    val unsearchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
+    private val _searchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
+    private val _unsearchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
+
+    val searchableAlbumList: StateFlow<List<Album>> = _searchableAlbumList.asStateFlow()
+    val unsearchableAlbumList: StateFlow<List<Album>> = _unsearchableAlbumList.asStateFlow()
+
     val albumsToEncode = mutableStateListOf<Album>()
 
     private fun searchableAlbumFlow() = albumRepository.getSearchableAlbumFlow()
@@ -46,13 +62,30 @@ class AlbumManager(
 
     fun getAlbumList() = albumList
 
+    private val managerScope = CoroutineScope(
+        SupervisorJob() +
+                Dispatchers.Default +
+                CoroutineExceptionHandler { _, exception ->
+                    // 处理协程异常
+                    Timber.tag("AlbumManager").e(exception, "Coroutine error")
+                }
+    )
+
+    fun processAlbums(snapshot: List<Album>) {
+        managerScope.launch {
+            encodeAlbums(snapshot)
+            initDataFlow()
+        }
+    }
+
+
     suspend fun initAllAlbumList() {
         if (initialized) return
         withContext(ioDispatcher) {
             // 本机中的相册
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
-            Log.d(TAG, "ALL albums: ${albums.size}")
+            Timber.tag(TAG).d("ALL albums: ${albums.size}")
             this@AlbumManager.initialized = true
             initDataFlow()
         }
@@ -63,13 +96,13 @@ class AlbumManager(
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
             val res = it.toMutableList().sortedByDescending { album: Album -> album.count }
-            searchableAlbumList.emit(res)
-            Log.d(TAG, "Searchable albums: ${it.size}")
+            _searchableAlbumList.update{res}
+            Timber.tag(TAG).d("Searchable albums: ${it.size}")
             // 从全部相册减去已经索引的ID，就是未索引的相册
             val unsearchable = albumList.filter { all -> !it.contains(all) }
 
-            unsearchableAlbumList.emit(unsearchable.toMutableList().sortedByDescending { album: Album -> album.count })
-            Log.d(TAG, "Unsearchable albums: ${unsearchable.size}")
+            _unsearchableAlbumList.update{(unsearchable.toMutableList().sortedByDescending { album: Album -> album.count })}
+            Timber.tag(TAG).d("Unsearchable albums: ${unsearchable.size}")
         }
     }
 
@@ -82,7 +115,7 @@ class AlbumManager(
     }
 
     fun toggleSelectAllAlbums() {
-        if (albumsToEncode.size != unsearchableAlbumList.value?.size) {
+        if (albumsToEncode.size != unsearchableAlbumList.value.size) {
             albumsToEncode.clear()
             albumsToEncode.addAll(unsearchableAlbumList.value)
         } else {

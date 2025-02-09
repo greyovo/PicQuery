@@ -77,4 +77,51 @@
     <string name="album_invalid_icon_desc">Invalid album, click to delete index</string>
     <string name="album_update_needed_icon_desc">Album needs update, click to delete index</string>
     <string name="album_normal_icon_desc">Click to delete album index</string>
+
+
+    <string name="photo_details">Photo Details</string>
+    <string name="photo_details_with_id">Photo Details (ID: %1$d)</string>
+    <string name="no_similar_photos">No similar photos found</string>
+
+    <!-- Similar Photos Screen Strings -->
+    <string name="similar_photos_title">Similar Photos</string>
+    <string name="similar_photos_subtitle">Photos with similar content</string>
+    <string name="similar_photos_empty_state">No similar photos found</string>
+    <string name="similar_photos_group_count">%1$d photos</string>
+    <string name="similar_photos">similar photos</string>
+
+    <!-- Similarity Configuration Strings -->
+    <string name="similarity_config_title">Similarity Configuration</string>
+    <string name="search_image_similarity_threshold">Search Image Similarity</string>
+    <string name="similarity_group_delta">Similarity Group Delta</string>
+    <string name="min_group_size">Minimum Group Size</string>
+    <string name="save_configuration">Save Configuration</string>
+    <string name="config_search_threshold_description">Adjust the similarity threshold for searching</string>
+    <string name="config_group_delta_description">Set the delta for grouping similar photos</string>
+    <string name="config_min_group_size_description">Minimum number of photos in a group</string>
+
+    <!-- Image Search Configuration Strings -->
+    <string name="image_search_config_title">Search Configuration</string>
+    <string name="match_threshold_title">Match Threshold</string>
+    <string name="top_k_results_title">Top K Results</string>
+    <string name="match_threshold_description">Adjust the minimum similarity for search results</string>
+    <string name="top_k_results_description">Maximum number of search results to return</string>
+    <string name="save_search_configuration">Save Search Configuration</string>
+
+    <!-- More Menu Items -->
+    <string name="menu_index_albums">Index Albums</string>
+    <string name="menu_settings">Settings</string>
+    <!-- Search Range Menu Item -->
+    <string name="menu_search_range">Search Range</string>
+
+    <string name="photo_group_count">%1$d photos</string>
+
+    <!-- Confidence Levels -->
+    <string name="confidence_low">Low Confidence</string>
+    <string name="confidence_medium">Medium Confidence</string>
+    <string name="confidence_high">High Confidence</string>
+
+    <string name="select_image_source">Select Image Source</string>
+    <string name="system_album">System Album</string>
+    <string name="external_album">External Album</string>
 </resources>

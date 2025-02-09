@@ -1,18 +1,24 @@
 package me.grey.picquery.common
 
 import android.content.Context
-import android.util.Log
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.*
 
 object AssetUtil {
 
     private const val TAG = "AssetUtil"
 
-    suspend fun copyAssetsFolder(context: Context, sourceAsset: String, targetFolder: File) {
-        withContext(Dispatchers.IO) {
+    suspend fun copyAssetsFolder(
+        context: Context,
+        sourceAsset: String,
+        targetFolder: File,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) {
+        withContext(dispatcher) {
             tryCatch {
                 launch {
                     val assetManager = context.assets
@@ -23,8 +29,8 @@ object AssetUtil {
                     }
                 }
             }.fold(
-                left = { Log.e(TAG, "copyAssetsFolder: ", it) },
-                right = { Log.d(TAG, "copyAssetsFolder: Success") },
+                left = { Timber.tag(TAG).e(it, "copyAssetsFolder: ") },
+                right = { Timber.tag(TAG).d("copyAssetsFolder: Success") },
             )
         }
     }
@@ -39,7 +45,8 @@ object AssetUtil {
         context: Context,
         sourceAsset: String,
         targetFolder: File,
-        assets: Array<String>
+        assets: Array<String>,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
     ) {
         val assetManager = context.assets
         for (itemInFolder in assets) {
@@ -48,7 +55,9 @@ object AssetUtil {
 
             val target = File(targetFolder, itemInFolder)
             if (isFile) {
-                copyAssetFile(context, currentAssetPath, target)
+                withContext(dispatcher) {
+                    copyAssetFile(context, currentAssetPath, target)
+                }
             } else {
                 createTargetFolder(target)
                 copyAssetsFolder(context, currentAssetPath, target)
@@ -86,7 +95,7 @@ object AssetUtil {
             inputLength = assetStream.available().toLong()
             assetStream.close()
         } catch (e: IOException) {
-            Log.e(TAG, "assetFilePath: ", e)
+            Timber.tag(TAG).e(e, "assetFilePath: ")
             return ""
         }
         val file = File(context.filesDir, assetName)
@@ -115,7 +124,7 @@ object AssetUtil {
             inputLength = assetStream.available().toLong()
             assetStream.close()
         } catch (e: IOException) {
-            Log.e(TAG, "assetFilePath: ", e)
+            Timber.tag(TAG).e(e, "assetFilePath: ")
             return null
         }
         val file = File(context.filesDir, assetName)

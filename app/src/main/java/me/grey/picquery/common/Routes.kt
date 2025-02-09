@@ -5,5 +5,7 @@ enum class Routes {
     Search,
     Display,
     IndexMgr,
+    Similar,
+    PhotoDetail,
     Setting
 }

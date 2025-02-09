@@ -2,20 +2,23 @@ package me.grey.picquery.ui.search
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -38,6 +41,7 @@ import java.io.File
 fun SearchResultGrid(
     resultList: List<Photo>,
     state: SearchState,
+    resultMap: Map<Long, Double>,
     onClickPhoto: (Photo, Int) -> Unit,
 ) {
 
@@ -55,7 +59,8 @@ fun SearchResultGrid(
                     columns = GridCells.Adaptive(100.dp),
                     content = {
                         val padding = Modifier.padding(3.dp)
-                        // 搜索结果的第一个占满一行
+
+
                         item(span = { GridItemSpan(3) }) {
                             Box(padding) {
                                 PhotoResultRecommend(
@@ -64,7 +69,6 @@ fun SearchResultGrid(
                                 )
                             }
                         }
-                        // 其余结果按表格展示
                         if (resultList.size > 1) {
                             items(
                                 resultList.size - 1,
@@ -72,11 +76,13 @@ fun SearchResultGrid(
                             ) { index ->
                                 Log.e("SearchResultGrid", "index: $index")
                                 Box(padding) {
+                                    val photo = resultList[index + 1]
                                     PhotoResultItem(
-                                        resultList[index + 1],
+                                        photo,
+                                        resultMap[photo.id]!!.toFloat(),
                                         onItemClick = {
                                             Log.e("SearchResultGrid", "click: $index")
-                                            onClickPhoto(resultList[index+1], index+1)
+                                            onClickPhoto(resultList[index + 1], index + 1)
                                         },
                                     )
                                 }
@@ -153,20 +159,40 @@ private fun PhotoResultRecommend(photo: Photo, onItemClick: (photo: Photo) -> Un
 @ExperimentalFoundationApi
 @ExperimentalGlideComposeApi
 @Composable
-private fun PhotoResultItem(photo: Photo, onItemClick: (photo: Photo) -> Unit) {
-    val interactionSource = remember { MutableInteractionSource() }
-    GlideImage(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .size(240.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .combinedClickable(
-                interactionSource = interactionSource,
-                indication = rememberRipple(),
-                onClick = { onItemClick(photo) }
-            ),
-        model = File(photo.path),
-        contentDescription = photo.label,
-        contentScale = ContentScale.Crop,
-    )
+fun PhotoResultItem(
+    photo: Photo,
+    similarity: Float,
+    onItemClick: (photo: Photo) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val searchResult = remember { SearchResult(similarity) }
+    Box(modifier = modifier.clickable { onItemClick(photo) }) {
+        Column {
+            Box(modifier = Modifier.aspectRatio(1f)) {
+                GlideImage(
+                    model = photo.uri,
+                    contentDescription = "Search Result",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                // ConfidenceTag positioned at the top-right corner
+                ConfidenceTag(
+                    confidenceLevel =searchResult.confidenceLevel,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+            }
+
+            // Optional: Similarity score text
+            Text(
+                text = "Similarity: ${String.format("%.2f", searchResult.similarityScore)}",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
 }
