@@ -1,69 +1,73 @@
-# 图搜 PicQuery
+# PicQuery
 
-中文 | [English](README.md)
+中文|[English](README.md)
 
-![cover_cn](assets/cover_cn.jpg)
+![cover_en](assets/cover_cn.jpg)
 
-🔍 用平常说话的方式搜索本地相册中的图片——无需联网、本地运行  
-    通过选取相机里面图片来搜取相似的图片
+🔍 使用自然语言搜索本地图片，完全离线运行。例如："书桌上的笔记本电脑"、"海边日落"、"草丛中的小猫"等。  
+支持通过相册选图进行相似图片搜索
+- 完全免费，无内购
+- 支持中英文双语搜索
+- 图片索引和搜索全程离线运行，隐私无忧
+- 8000+照片搜索1秒内出结果
+- 首次启动等待索引构建，后续搜索立等可取
 
-借助图搜，您可以用平常说话的方式来搜索手机里的照片。例如：“草丛中的猫咪”、“桌上的笔记本电脑”、“粉色衣服的女孩”，等等。
+## 安装
 
-- 完全免费，没有任何内购
-- 对图像的索引和搜索完全离线运行，无需担心隐私安全
-- 支持中英双语搜索
-- 为移动设备专门优化的模型，上万张照片也能1秒呈现结果
-- 只需要首次使用时进行索引，后续即可立刻搜索
+<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-en.png'/></a>
 
-## 获取方式
+- Google Play - 搜索 "PicQuery"
+- [Release](https://github.com/greyovo/PicQuery/releases) 下载APK
+- 若无法访问上述资源，请参考[其他安装方式](README_zh.md##其他方式)
 
-<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-cn.png'/></a> 
-
-- Google Play： 搜索 “图搜” 或 “PicQuery”
-- 从本仓库下载：[Release](https://github.com/greyovo/PicQuery/releases)
-
-### 其他方式
-
-- [蒲公英内测分发](https://www.pgyer.com/picquery)（每日500次下载）
-- 镜像站加速：将 [Release](https://github.com/greyovo/PicQuery/releases) 中的文件下载链接复制到 [GitHub Proxy](https://ghproxy.com/) 中下载
-- 国内应用市场（待上线）
-
-> 🍎 iOS 用户请使用 [“寻隐”](https://apps.apple.com/cn/app/寻隐-用句子描述找照片/id1664361663)，它是图搜的灵感来源，由 [@mazzzystar](https://github.com/mazzzystar) 开发并开源。
-
-
+> 🍎 iOS用户请参考灵感来源应用 _[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)_（[代码](https://github.com/mazzzystar/Queryable)），由[@mazzzystar](https://github.com/mazzzystar/Queryable) 开发。
 
 ## 实现原理
 
-> 感谢 [@mazzzystar](https://github.com/mazzzystar) 和 [@Young-Flash](https://github.com/Young-Flash) 在本应用开发过程中的[协助与讨论](https://github.com/mazzzystar/Queryable/issues/12)。
+> 感谢 [@mazzzystar](https://github.com/mazzzystar) 和 [@Young-Flash](https://github.com/Young-Flash) 在开发过程中给予的帮助，讨论记录可[查看此处](https://github.com/mazzzystar/Queryable/issues/12)。
 
-本应用基于 OpenAI 的 [CLIP 模型](https://github.com/openai/CLIP) 实现。
+_PicQuery_ 的核心技术基于OpenAI的[CLIP模型](https://github.com/openai/CLIP)和Apple的[mobile clip](https://github.com/apple/ml-mobileclip)
 
-首先将要搜索的图片通过图像编码器编码为向量，并存储到数据库中；将用户搜索时提供的文字也编码为向量，与已索引的图片向量遍历计算相似度，选取 TopK 相似度的图像集合作为查询结果。
+首先通过图像编码器将待搜索的图片编码为向量并建立索引存储。当用户输入搜索文本时，使用文本编码器将文本同样编码为向量。通过计算文本向量与已索引图片向量的相似度，选取相似度最高的K张图片作为搜索结果。
 
+## 使用 CLIP 模型构建
 
+要构建本项目，您需要获取量化后的CLIP模型。
 
-## 构建运行
+请按步骤运行此[jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb)，当运行至_"You are done"_章节时，您应该在`./result`目录下获得以下模型文件：
+- `clip-image-int8.ort`
+- `clip-text-int8.ort`
+> 若不想运行脚本，可直接从[Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link)下载
 
-要构建运行本项目，需要获取MobileCLIP 模型。
+## 使用 mobile-clip 模型构建
+
+要构建本项目，您需要获取量化后的模型文件：
 
 - `vision_model.ort`
 - `text_model.ort`
 
-> 可以在 [谷歌云盘](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link) 中直接下载这两个模型。
+> 可从[Google Drive](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link)下载
 
-将它们放入 `app\src\main\assets` 中，即可构建和运行。
+将文件放入`app\src\main\assets`目录即可使用。
 
+## 选择模型模块
+在`val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)`中选择需要的模块，Clip对应modulesCLIP模块，mobile-clip对应modulesMobileCLIP模块
 
+## FAQ
+### Issue 1
+java.lang.RuntimeException: java.lang.reflect.InvocationTarget Exception
+> Don't forget to add model files to `app\src\main\assets` directory
 
+### Issue 2
+java.io.FileNotFoundException: clip-image-int8.ort
+> Make sure the model files are in the correct directory, if you are using mobile-clip, make sure you are using the correct model files, and change the module to modulesMobileCLIP
 
-## 鸣谢
+## 致谢
 
 - [mazzzystar/Queryable](https://github.com/mazzzystar/Queryable)
 - [Young-Flash](https://github.com/Young-Flash)
 - [IacobIonut01/Gallery](https://github.com/IacobIonut01/Gallery)
 
+## 许可证
 
-
-## 开源协议
-
-本项目基于 MIT 许可协议开源，保留所有权利。
+本项目基于MIT协议开源。保留所有权利。

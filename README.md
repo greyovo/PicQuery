@@ -56,6 +56,14 @@ Put them into `app\src\main\assets` and you're ready to go.
 ## Choose module
 val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) pick the module you want，Clip pair to modulesCLIP module， mobile-clip pair to modulesMobileCLIP module
 
+## FAQ
+### Issue 1
+java.lang.RuntimeException: java.lang.reflect.InvocationTarget Exception
+> Don't forget to add model files to `app\src\main\assets` directory
+
+### Issue 2
+java.io.FileNotFoundException: clip-image-int8.ort
+> Make sure the model files are in the correct directory, if you are using mobile-clip, make sure you are using the correct model files, and change the module to modulesMobileCLIP
 
 ## Acknowledgment
 
