@@ -1,8 +1,10 @@
 package me.grey.picquery.data.data_source
 
 import io.objectbox.query.ObjectWithScore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import me.grey.picquery.data.dao.ObjectBoxEmbeddingDao
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.ObjectBoxEmbedding
@@ -18,6 +20,12 @@ class ObjectBoxEmbeddingRepository(
 
     fun getAll(): List<ObjectBoxEmbedding> {
         return dataSource.getAll()
+    }
+
+    suspend fun getEmbeddingByPhotoId(photoId: Long): ObjectBoxEmbedding? {
+        return withContext(Dispatchers.IO) {
+            dataSource.getEmbeddingByPhotoId(photoId)
+        }
     }
 
     fun getAllEmbeddingsPaginated(pageSize: Int): Flow<List<ObjectBoxEmbedding>> = flow {
@@ -107,6 +115,20 @@ class ObjectBoxEmbeddingRepository(
         albumIds: List<Long>? = null
     ): List<ObjectWithScore<ObjectBoxEmbedding>> {
         return dataSource.searchNearestVectors(
+            queryVector,
+            topK,
+            similarityThreshold,
+            albumIds
+        )
+    }
+
+    fun findSimilarEmbeddings(
+        queryVector: FloatArray,
+        topK: Int = 30,
+        similarityThreshold: Float = 0.95f,
+        albumIds: List<Long>? = null
+    ): List<ObjectWithScore<ObjectBoxEmbedding>> {
+        return dataSource.searchNearestVectors2(
             queryVector,
             topK,
             similarityThreshold,

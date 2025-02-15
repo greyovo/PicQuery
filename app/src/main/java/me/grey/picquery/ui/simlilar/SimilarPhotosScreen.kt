@@ -64,14 +64,14 @@ fun SimilarPhotosScreen(
         ) {
 
             similarPhotosViewModel.resetState()
-            similarPhotosViewModel.updateSimilarityConfiguration(
-                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-                similarityDelta = configuration.similarityGroupDelta
-            )
-            lastConfiguration = SimilarityConfiguration(
-                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-                similarityGroupDelta = configuration.similarityGroupDelta
-            )
+//            similarPhotosViewModel.updateSimilarityConfiguration(
+//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
+//                similarityDelta = configuration.similarityGroupDelta
+//            )
+//            lastConfiguration = SimilarityConfiguration(
+//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
+//                similarityGroupDelta = configuration.similarityGroupDelta
+//            )
         }
     }
 
@@ -79,7 +79,7 @@ fun SimilarPhotosScreen(
 
     LaunchedEffect(similarPhotosViewModel) {
         if (uiState is SimilarPhotosUiState.Loading && !hasLoadedInitially.value) {
-            similarPhotosViewModel.loadSimilarPhotos()
+            similarPhotosViewModel.findSimilarPhotos()
             hasLoadedInitially.value = true
         }
     }

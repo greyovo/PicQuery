@@ -6,15 +6,20 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.domain.SimilarityManager
@@ -28,6 +33,7 @@ enum class ErrorType {
     NO_SIMILAR_PHOTOS,
     UNKNOWN
 }
+
 // Sealed interface for Similar Photos UI State
 sealed interface SimilarPhotosUiState {
     data object Loading : SimilarPhotosUiState
@@ -36,6 +42,7 @@ sealed interface SimilarPhotosUiState {
         val type: ErrorType = ErrorType.UNKNOWN,
         val message: String? = null
     ) : SimilarPhotosUiState
+
     data class Success(val similarPhotoGroups: List<List<Photo>>) : SimilarPhotosUiState
 }
 
@@ -43,11 +50,49 @@ sealed interface SimilarPhotosUiState {
 class SimilarPhotosViewModel(
     private val coroutineScope: CoroutineDispatcher,
     private val photoRepository: PhotoRepository,
+    private val objectBoxEmbeddingRepository: ObjectBoxEmbeddingRepository,
     private val similarityManager: SimilarityManager,
     private val workManager: WorkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<SimilarPhotosUiState>(SimilarPhotosUiState.Loading)
     val uiState: StateFlow<SimilarPhotosUiState> = _uiState
+
+    fun findSimilarPhotos() = viewModelScope.launch {
+
+        val similarPhotoIds = mutableSetOf<Long>()
+        val similarGroups = mutableListOf<List<Photo>>()
+
+        objectBoxEmbeddingRepository.getAllEmbeddingsPaginated(1000)
+
+            .collect { embeddingBatch ->
+                flow {
+                    embeddingBatch
+                        .map { it.photoId }
+                        .filter { photoId ->
+                            photoId !in similarPhotoIds
+                        }
+                        .forEach { photoId ->
+
+                            val baseEmbedding = objectBoxEmbeddingRepository.getEmbeddingByPhotoId(photoId)
+
+                            val similarEmbeddings = objectBoxEmbeddingRepository.findSimilarEmbeddings(
+                                queryVector = baseEmbedding!!.data,
+                                topK = 30,
+                                similarityThreshold = 0.95f
+                            )
+                            similarPhotoIds.addAll(similarEmbeddings.map { it.get().photoId })
+                            val photos = photoRepository.getPhotoListByIds(similarEmbeddings.map { it.get().photoId })
+                            emit(photos)
+                        }
+                }.flowOn(Dispatchers.IO).collect{
+                    if (it.size > 1) {
+                        similarGroups.add(it)
+                        _uiState.update { SimilarPhotosUiState.Success(similarGroups.toList()) }
+                    }
+                }
+
+            }
+    }
 
     // Add a method to update similarity configuration
     fun updateSimilarityConfiguration(

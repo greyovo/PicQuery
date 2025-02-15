@@ -104,14 +104,16 @@ class SearchViewModel(
         }
         viewModelScope.launch(ioDispatcher) {
             _searchState.value = SearchState.SEARCHING
-            imageSearcher.searchWithRange(photo) { entries ->
-                if (entries.isNotEmpty()) {
-                    val ids = entries.map { it.value }
-                    val photos = repo.getPhotoListByIds(ids)
+            imageSearcher.searchWithRangeV2(photo) { ids ->
+                if (ids.isNotEmpty()) {
+
+                    val photos = repo.getPhotoListByIds(ids.map { it.first })
+                    _resultList.value = reOrderList(photos, ids.map { it.first })
                     _resultMap.update {
-                        entries.associate { it.value to it.key }.toMutableMap()
+                        ids.associate { it.first to (1.0-it.second) }.toMutableMap()
                     }
-                    _resultList.value = reOrderList(photos, ids)
+                    Timber.tag(TAG).d("searchV2 photos re-orders: ${_resultList.value.size}")
+
                 }
                 _searchState.value = SearchState.FINISHED
             }
