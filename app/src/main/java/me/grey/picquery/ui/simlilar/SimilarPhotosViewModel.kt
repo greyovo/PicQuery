@@ -7,10 +7,13 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
@@ -25,13 +28,12 @@ import me.grey.picquery.data.model.Photo
 import me.grey.picquery.domain.SimilarityManager
 import me.grey.picquery.domain.worker.ImageSimilarityCalculationWorker
 import timber.log.Timber
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 
 enum class ErrorType {
-    WORKER_TIMEOUT,
-    CALCULATION_FAILED,
-    NO_SIMILAR_PHOTOS,
-    UNKNOWN
+    WORKER_TIMEOUT, CALCULATION_FAILED, NO_SIMILAR_PHOTOS, UNKNOWN
 }
 
 // Sealed interface for Similar Photos UI State
@@ -39,8 +41,7 @@ sealed interface SimilarPhotosUiState {
     data object Loading : SimilarPhotosUiState
     data object Empty : SimilarPhotosUiState
     data class Error(
-        val type: ErrorType = ErrorType.UNKNOWN,
-        val message: String? = null
+        val type: ErrorType = ErrorType.UNKNOWN, val message: String? = null
     ) : SimilarPhotosUiState
 
     data class Success(val similarPhotoGroups: List<List<Photo>>) : SimilarPhotosUiState
@@ -56,41 +57,72 @@ class SimilarPhotosViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<SimilarPhotosUiState>(SimilarPhotosUiState.Loading)
     val uiState: StateFlow<SimilarPhotosUiState> = _uiState
+    val similarPhotoIds = mutableSetOf<Long>()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun findSimilarPhotos() = viewModelScope.launch {
-
-        val similarPhotoIds = mutableSetOf<Long>()
+        Timber.tag("SimilarPhotosViewModel")
+            .d("start findSimilarPhotos${System.currentTimeMillis()}")
+        val processedPhotoIds = ConcurrentHashMap.newKeySet<Long>()
         val similarGroups = mutableListOf<List<Photo>>()
 
-        objectBoxEmbeddingRepository.getAllEmbeddingsPaginated(1000)
-
-            .collect { embeddingBatch ->
+        objectBoxEmbeddingRepository.getAllEmbeddingsPaginated(2000).collect { embeddingBatch ->
+                // 使用 Flow 处理批次
                 flow {
                     embeddingBatch
-                        .map { it.photoId }
-                        .filter { photoId ->
-                            photoId !in similarPhotoIds
-                        }
-                        .forEach { photoId ->
+                        // 过滤未处理的照片
+                        .filter { embedding ->
+                            embedding.photoId !in processedPhotoIds
+                        }.forEach { baseEmbedding ->
+                            // 防止重复处理
+                            processedPhotoIds.add(baseEmbedding.photoId)
 
-                            val baseEmbedding = objectBoxEmbeddingRepository.getEmbeddingByPhotoId(photoId)
+                            // 查找相似图片
+                            val similarEmbeddings =
+                                objectBoxEmbeddingRepository.findSimilarEmbeddings(
+                                    queryVector = baseEmbedding.data,
+                                    topK = 30,
+                                    similarityThreshold = 0.95f
+                                )
 
-                            val similarEmbeddings = objectBoxEmbeddingRepository.findSimilarEmbeddings(
-                                queryVector = baseEmbedding!!.data,
-                                topK = 30,
-                                similarityThreshold = 0.95f
-                            )
-                            similarPhotoIds.addAll(similarEmbeddings.map { it.get().photoId })
-                            val photos = photoRepository.getPhotoListByIds(similarEmbeddings.map { it.get().photoId })
-                            emit(photos)
+                            // 获取照片并标记为已处理
+                            val photos =
+                                photoRepository.getPhotoListByIds(similarEmbeddings.map { it.get().photoId })
+
+                            // 标记为已处理
+                            processedPhotoIds.addAll(similarEmbeddings.map { it.get().photoId })
+
+                            // 只发出超过1张的相似组
+                            if (photos.size > 1) {
+                                emit(photos)
+                            }
                         }
-                }.flowOn(Dispatchers.IO).collect{
-                    if (it.size > 1) {
-                        similarGroups.add(it)
-                        _uiState.update { SimilarPhotosUiState.Success(similarGroups.toList()) }
+
+
+                }.flowOn(Dispatchers.IO).onCompletion {
+                        Timber.tag("SimilarPhotosViewModel")
+                            .d("end findSimilarPhotos${System.currentTimeMillis()}")
+
+                    }.collect { similarPhotos ->
+                        // 去重
+                        val uniqueSimilarPhotos = similarPhotos.distinctBy { it.id }
+
+                        // 仅添加唯一的相似组
+                        if (uniqueSimilarPhotos.size > 1) {
+                            val existingGroup = similarGroups.find {
+                                it.map { photo -> photo.id }
+                                    .intersect(uniqueSimilarPhotos.map { it.id }.toSet())
+                                    .isNotEmpty()
+                            }
+
+                            if (existingGroup == null) {
+                                similarGroups.add(uniqueSimilarPhotos)
+                                _uiState.update {
+                                    SimilarPhotosUiState.Success(similarGroups.toList())
+                                }
+                            }
+                        }
                     }
-                }
-
             }
     }
 
@@ -118,8 +150,7 @@ class SimilarPhotosViewModel(
             OneTimeWorkRequestBuilder<ImageSimilarityCalculationWorker>().build()
         workManager.enqueue(similarityCalculationWork)
 
-        return workManager.getWorkInfoByIdFlow(similarityCalculationWork.id)
-            .transform { workInfo ->
+        return workManager.getWorkInfoByIdFlow(similarityCalculationWork.id).transform { workInfo ->
                 Timber.tag("SimilarPhotosViewModel").d("Worker state: ${workInfo.state}")
                 emit(workInfo.state)
                 if (workInfo.state.isFinished) return@transform
@@ -132,8 +163,7 @@ class SimilarPhotosViewModel(
             try {
                 // Wait for worker to complete with a timeout
                 withTimeout(30_000) {
-                    calculateSimilarities()
-                        .first { it == WorkInfo.State.SUCCEEDED || it == WorkInfo.State.FAILED }
+                    calculateSimilarities().first { it == WorkInfo.State.SUCCEEDED || it == WorkInfo.State.FAILED }
                 }
             } catch (e: Exception) {
                 Timber.tag("SimilarPhotosViewModel")
@@ -149,8 +179,7 @@ class SimilarPhotosViewModel(
 
             val similarGroups = mutableListOf<List<Photo>>()
             val start = System.currentTimeMillis()
-            similarityManager.groupSimilarPhotos()
-                .catch { e ->
+            similarityManager.groupSimilarPhotos().catch { e ->
                     Timber.tag("SimilarPhotosViewModel").e(e, "Error loading similar photos")
                     _uiState.update {
                         SimilarPhotosUiState.Error(
@@ -158,12 +187,10 @@ class SimilarPhotosViewModel(
                             message = e.localizedMessage ?: "Failed to group similar photos"
                         )
                     }
-                }
-                .onCompletion {
+                }.onCompletion {
                     val end = System.currentTimeMillis()
                     Timber.tag("SimilarPhotosViewModel").d("%sms", (end - start).toString())
-                }
-                .collect { similarGroup ->
+                }.collect { similarGroup ->
                     val photoGroup = similarGroup.mapNotNull { node ->
                         photoRepository.getPhotoById(node.photoId)
                     }
