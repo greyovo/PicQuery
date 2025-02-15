@@ -20,6 +20,7 @@ import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.domain.ImageSearcher
+import timber.log.Timber
 
 enum class SearchState {
     NO_INDEX, // 没有索引
@@ -70,21 +71,23 @@ class SearchViewModel(
     fun startSearch(text: String) {
         if (text.trim().isEmpty()) {
             showToast(context.getString(R.string.empty_search_content_toast))
-            Log.w(TAG, "搜索字段为空")
+            Timber.tag(TAG).w("搜索字段为空")
             return
         }
         _searchText.value = text
         viewModelScope.launch(ioDispatcher) {
             _searchState.value = SearchState.SEARCHING
-            imageSearcher.search(text) { entries ->
-                if (entries.isNotEmpty()) {
-                    val ids = entries.map { it.value }
-                    val photos = repo.getPhotoListByIds(ids)
+            imageSearcher.searchV2(text) { ids ->
+                Timber.tag(TAG).d("searchV2 ids: $ids")
+                if (ids.isNotEmpty()) {
+
+                    val photos = repo.getPhotoListByIds(ids.map { it.first })
+                    _resultList.value = reOrderList(photos, ids.map { it.first })
                     _resultMap.update {
-                        entries.associate { it.value to it.key }.toMutableMap()
+                        ids.associate { it.first to (1.0-it.second) }.toMutableMap()
                     }
-                    // reorder by id
-                    _resultList.value = reOrderList(photos, ids)
+                    Timber.tag(TAG).d("searchV2 photos re-orders: ${_resultList.value.size}")
+
                 }
                 _searchState.value = SearchState.FINISHED
             }

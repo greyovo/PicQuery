@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import me.grey.picquery.common.AppModules
+import me.grey.picquery.data.ObjectBoxDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -27,6 +28,7 @@ class PicQueryApplication : Application() {
             androidLogger()
             androidContext(this@PicQueryApplication)
             modules(AppModules)
+            ObjectBoxDatabase.getDatabase().initialize(this@PicQueryApplication)
         }
     }
 }

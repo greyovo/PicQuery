@@ -1,6 +1,5 @@
 package me.grey.picquery.ui.search
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -33,6 +32,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.common.CentralLoadingProgressBar
+import timber.log.Timber
 import java.io.File
 
 
@@ -60,7 +60,6 @@ fun SearchResultGrid(
                     content = {
                         val padding = Modifier.padding(3.dp)
 
-
                         item(span = { GridItemSpan(3) }) {
                             Box(padding) {
                                 PhotoResultRecommend(
@@ -74,14 +73,14 @@ fun SearchResultGrid(
                                 resultList.size - 1,
                                 key = { resultList[it].id },
                             ) { index ->
-                                Log.e("SearchResultGrid", "index: $index")
+                                Timber.tag("SearchResultGrid").e("index: $index")
                                 Box(padding) {
                                     val photo = resultList[index + 1]
                                     PhotoResultItem(
                                         photo,
-                                        resultMap[photo.id]!!.toFloat(),
+                                        resultMap[photo.id]?.toFloat() ?: 0f,
                                         onItemClick = {
-                                            Log.e("SearchResultGrid", "click: $index")
+                                            Timber.tag("SearchResultGrid").e("click: $index")
                                             onClickPhoto(resultList[index + 1], index + 1)
                                         },
                                     )

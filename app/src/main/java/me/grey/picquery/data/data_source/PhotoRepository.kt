@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.CursorUtil
+import me.grey.picquery.data.model.ObjectBoxEmbedding
 import me.grey.picquery.data.model.Photo
 import java.io.InputStream
 
@@ -195,5 +196,6 @@ class PhotoRepository(private val context: Context) {
             pageIndex++
         }
     }
+
 
 }

@@ -2,9 +2,11 @@ package me.grey.picquery.common
 
 import androidx.work.WorkManager
 import me.grey.picquery.data.AppDatabase
+import me.grey.picquery.data.ObjectBoxDatabase
 import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
+import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
@@ -50,6 +52,7 @@ private val dataModules = module {
     single { get<AppDatabase>().imageSimilarityDao() }
     single { AlbumRepository(androidContext().contentResolver, database = get()) }
     single { EmbeddingRepository(dataSource = get()) }
+    single { ObjectBoxEmbeddingRepository(dataSource = ObjectBoxDatabase.getDatabase().embeddingDao()) }
     single { PhotoRepository(androidContext()) }
     single { PreferenceRepository() }
 }
@@ -60,6 +63,7 @@ private val domainModules = module {
             imageEncoder = get(),
             textEncoder = get(),
             embeddingRepository = get(),
+            objectBoxEmbeddingRepository = get(),
             translator = MLKitTranslator(),
             dispatcher = get()
         )
