@@ -67,6 +67,8 @@ mlkit-translate = "17.0.1"
 # Testing
 junit = "4.13.2"
 espresso = "3.4.0"
+googleOssLicensesPlugin = "0.10.6"
+
 
 [libraries]
 # Compose BOM
@@ -122,6 +124,7 @@ litert-support = { module = "com.google.ai.edge.litert:litert-support", version.
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+google-oss-licenses-plugin = { group = "com.google.android.gms",  name = "oss-licenses-plugin", version.ref  = "googleOssLicensesPlugin" }
 
 # Logging
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
