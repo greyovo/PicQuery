@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -37,7 +38,7 @@ import java.io.File
 @Composable
 fun SimilarPhotosScreen(
     onNavigateBack: () -> Unit,
-    onPhotoClick: (Int, List<Photo>) -> Unit,
+    onPhotoClick: (Int, Int, List<Photo>) -> Unit,
     onConfigUpdate: (Float, Float, Int) -> Unit,
     modifier: Modifier = Modifier,
     similarPhotosViewModel: SimilarPhotosViewModel = koinViewModel(),
@@ -46,7 +47,7 @@ fun SimilarPhotosScreen(
     val configuration = LocalSimilarityConfig.current
     var showConfigBottomSheet by remember { mutableStateOf(false) }
 
-    var lastConfiguration by remember {
+    val lastConfiguration by remember {
         mutableStateOf(
             SimilarityConfiguration(
                 searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
@@ -119,12 +120,13 @@ fun SimilarPhotosScreen(
                 }
 
                 is SimilarPhotosUiState.Success -> {
+                    val handlePhotoClick: (Int, Int, List<Photo>) -> Unit = { groupIndex, photoIndex, photoGroup ->
+                        onPhotoClick(groupIndex, photoIndex, photoGroup)
+                    }
                     SimilarPhotosGroup(
                         modifier = Modifier.fillMaxSize(),
                         photos = state.similarPhotoGroups,
-                        onPhotoClick = { groupIndex, photo ->
-                            onPhotoClick(groupIndex, photo)
-                        }
+                        onPhotoClick = handlePhotoClick
                     )
                 }
 
@@ -172,7 +174,7 @@ private fun ErrorStateView(state: SimilarPhotosUiState.Error) {
 fun SimilarPhotosGroup(
     modifier: Modifier = Modifier,
     photos: List<List<Photo>>,
-    onPhotoClick: (Int, List<Photo>) -> Unit
+    onPhotoClick: (Int, Int, List<Photo>) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -220,7 +222,7 @@ fun SimilarPhotosGroup(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                items(photoGroup) { photo ->
+                itemsIndexed(photoGroup) { photoIndex, photo ->
                     PhotoGroupItem(
                         photo = photo,
                         modifier = Modifier
@@ -229,7 +231,7 @@ fun SimilarPhotosGroup(
                                 elevation = 4.dp,
                                 shape = RoundedCornerShape(2.dp)
                             ),
-                        onClick = { onPhotoClick(groupIndex, photoGroup) }
+                        onClick = { onPhotoClick(groupIndex, photoIndex, photoGroup) }
                     )
                 }
             }

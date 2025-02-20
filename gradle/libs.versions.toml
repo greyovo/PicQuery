@@ -61,7 +61,7 @@ glide-compose = "1.0.0-alpha.1"
 workRuntime = "2.9.0"
 zoomable = "1.5.0"
 permissionx = "1.7.1"
-kotlinx-serialization = "1.7.2"
+kotlinx-serialization = "1.6.3"
 
 # AI & ML
 onnx = "1.16.1"

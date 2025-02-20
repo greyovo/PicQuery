@@ -24,6 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.Saver
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import me.grey.picquery.data.model.Photo
+import me.grey.picquery.data.model.PhotoItem
 import me.grey.picquery.ui.simlilar.LocalSimilarityConfig
 import me.grey.picquery.ui.simlilar.SimilarityConfiguration
 import timber.log.Timber
@@ -112,7 +116,7 @@ fun AppNavHost(
             CompositionLocalProvider(LocalSimilarityConfig provides similarityConfig) {
                 SimilarPhotosScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    onPhotoClick = { groupIndex, _ ->
+                    onPhotoClick = { groupIndex,_, photos ->
                         navController.navigate("${Routes.PhotoDetail.name}/${groupIndex}")
                     },
                     onConfigUpdate = { newSearchThreshold, newSimilarityDelta, newMinGroupSize ->
@@ -144,7 +148,8 @@ fun AppNavHost(
 
             PhotoDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
-                initialPage = groupIndex
+                initialPage = groupIndex,
+                groupIndex = groupIndex,
             )
         }
 

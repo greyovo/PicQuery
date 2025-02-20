@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
@@ -59,7 +60,21 @@ class SimilarPhotosViewModel(
     val uiState: StateFlow<SimilarPhotosUiState> = _uiState
     val similarPhotoIds = mutableSetOf<Long>()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _selectedPhotos = MutableStateFlow<MutableList<Photo>>(mutableListOf<Photo>())
+     val selectedPhotos = _selectedPhotos.asStateFlow()
+
+    fun getPhotosFromGroup(groupIndex: Int) {
+         uiState.value.let { state ->
+            val photos =  if (state is SimilarPhotosUiState.Success) {
+                state.similarPhotoGroups.getOrNull(groupIndex) ?: emptyList()
+            } else {
+                emptyList()
+            }
+             _selectedPhotos.update { photos.toMutableList() }
+
+        }
+    }
+
     fun findSimilarPhotos() = viewModelScope.launch {
         Timber.tag("SimilarPhotosViewModel")
             .d("start findSimilarPhotos${System.currentTimeMillis()}")

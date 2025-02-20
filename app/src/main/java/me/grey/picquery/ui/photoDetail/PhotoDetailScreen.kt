@@ -2,6 +2,7 @@ package me.grey.picquery.ui.photoDetail
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import me.grey.picquery.R
+import me.grey.picquery.ui.simlilar.SimilarPhotosViewModel
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 import java.io.File
@@ -40,16 +42,17 @@ import java.io.File
 fun PhotoDetailScreen(
     onNavigateBack: () -> Unit,
     initialPage: Int = 0,
-    photoDetailViewModel: PhotoDetailViewModel = koinViewModel()
+    groupIndex: Int = 0,
+    photoDetailViewModel: SimilarPhotosViewModel = koinViewModel()
 ) {
 
-    LaunchedEffect(initialPage) {
-        photoDetailViewModel.loadPhotosFromGroup(initialPage)
+    val photoList by photoDetailViewModel.selectedPhotos.collectAsState()
+    LaunchedEffect(groupIndex) {
+        photoDetailViewModel.getPhotosFromGroup(groupIndex)
     }
 
-    val photoList by photoDetailViewModel.photoList.collectAsState()
     val pagerState = rememberPagerState(
-        initialPage = 0,
+        initialPage = initialPage,
         pageCount = { photoList.size }
     )
 
@@ -86,7 +89,7 @@ fun PhotoDetailScreen(
                     IconButton(
                         onClick = {
                             val editIntent = Intent(Intent.ACTION_EDIT).apply {
-                                setDataAndType(currentPhoto!!.uri, "image/*")
+                                setDataAndType(currentPhoto?.uri, "image/*")
                             }
                             externalAlbumLauncher.launch(editIntent)
                         }

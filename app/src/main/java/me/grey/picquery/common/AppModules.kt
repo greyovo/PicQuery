@@ -39,8 +39,12 @@ private val viewModelModules = module {
 
 
     viewModel { SettingViewModel(preferenceRepository = get()) }
-    viewModel { SimilarPhotosViewModel(get(),get(),get(),get(),get()) }
+//    viewModel { SimilarPhotosViewModel(get(),get(),get(),get(),get()) }
     viewModel { PhotoDetailViewModel(get(),get()) }
+
+    single {
+        SimilarPhotosViewModel(get(),get(),get(),get(),get())
+    }
 }
 
 private val dataModules = module {
