@@ -178,21 +178,21 @@ fun PhotoResultItem(
                     contentScale = ContentScale.Crop
                 )
 
-                // ConfidenceTag positioned at the top-right corner
-                ConfidenceTag(
-                    confidenceLevel =searchResult.confidenceLevel,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                )
+                // FIXME: ConfidenceTag positioned at the top-right corner
+//                ConfidenceTag(
+//                    confidenceLevel =searchResult.confidenceLevel,
+//                    modifier = Modifier
+//                        .align(Alignment.TopEnd)
+//                        .padding(8.dp)
+//                )
             }
 
             // Optional: Similarity score text
-            Text(
-                text = "Similarity: ${String.format("%.2f", searchResult.similarityScore)}",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+//            Text(
+//                text = "Similarity: ${String.format("%.2f", searchResult.similarityScore)}",
+//                style = MaterialTheme.typography.bodySmall,
+//                modifier = Modifier.padding(top = 4.dp)
+//            )
         }
     }
 }
