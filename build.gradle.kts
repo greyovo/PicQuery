@@ -8,11 +8,14 @@ buildscript {
             }
         }
         mavenCentral()
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
     dependencies {
         classpath(libs.google.oss.licenses.plugin)  {
             exclude(group = "com.google.protobuf")
         }
+        classpath("io.objectbox:objectbox-gradle-plugin:${libs.versions.objectboxGradlePlugin.get()}")
+
     }
 }
 

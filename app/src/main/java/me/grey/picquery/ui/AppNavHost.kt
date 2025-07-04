@@ -24,10 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.Saver
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import me.grey.picquery.data.model.Photo
-import me.grey.picquery.data.model.PhotoItem
 import me.grey.picquery.ui.simlilar.LocalSimilarityConfig
 import me.grey.picquery.ui.simlilar.SimilarityConfiguration
 import timber.log.Timber
@@ -116,8 +112,8 @@ fun AppNavHost(
             CompositionLocalProvider(LocalSimilarityConfig provides similarityConfig) {
                 SimilarPhotosScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    onPhotoClick = { groupIndex,_, photos ->
-                        navController.navigate("${Routes.PhotoDetail.name}/${groupIndex}")
+                    onPhotoClick = { groupIndex, photoIndex, _ ->
+                        navController.navigate("${Routes.PhotoDetail.name}/${groupIndex}/${photoIndex}")
                     },
                     onConfigUpdate = { newSearchThreshold, newSimilarityDelta, newMinGroupSize ->
                         similarityConfig = SimilarityConfiguration(
@@ -143,12 +139,13 @@ fun AppNavHost(
             )
         }
 
-        composable(Routes.PhotoDetail.name + "/{groupIndex}") { backStackEntry ->
+        composable(Routes.PhotoDetail.name + "/{groupIndex}/{photoIndex}") { backStackEntry ->
             val groupIndex = backStackEntry.arguments?.getString("groupIndex")?.toIntOrNull() ?: 0
+            val photoIndex = backStackEntry.arguments?.getString("photoIndex")?.toIntOrNull() ?: 0
 
             PhotoDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
-                initialPage = groupIndex,
+                initialPage = photoIndex,
                 groupIndex = groupIndex,
             )
         }

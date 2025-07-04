@@ -3,27 +3,28 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    id("io.objectbox")
 }
 
 android {
-    namespace 'me.grey.picquery'
-    compileSdk 34
+    namespace = "me.grey.picquery"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId "me.grey.picquery"
-        minSdk 29
-        targetSdk 35
-        versionCode 8
-        versionName "1.2.0"
+        applicationId = "me.grey.picquery"
+        minSdk = 29
+        targetSdk = 35
+        versionCode = 8
+        versionName = "1.2.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
 
         ndk {
             //noinspection ChromeOsAbiSupport
-            abiFilters 'armeabi-v7a', 'arm64-v8a'
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
         }
     }
 
@@ -31,38 +32,52 @@ android {
         debug {}
 
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = "17"
     }
 
     buildFeatures {
-        compose true
+        compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
-    packagingOptions {
+    packaging {
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
-    buildToolsVersion = '34.0.0'
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
-    def composeBom = platform(libs.compose.bom)
-    implementation composeBom
-    androidTestImplementation composeBom
+    // Bill of Materials
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Implementation dependencies
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.legacy)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.dataStore)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.splashscreen)
 
     // Compose
     implementation(libs.compose.ui)
@@ -70,10 +85,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons.extended)
-    debugImplementation(libs.compose.ui.tooling)
-
-    // SplashScreen
-    implementation(libs.androidx.splashscreen)
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
@@ -87,9 +98,6 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.navigation)
 
-    // DataStore
-    implementation(libs.androidx.dataStore)
-
     // Coroutines
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
@@ -97,23 +105,9 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization)
 
-    // AndroidX
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.legacy)
-    implementation(libs.androidx.test.monitor)
-    implementation(libs.androidx.test.ext)
-    implementation(libs.androidx.lifecycle.livedata)
-    implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.datastore)
-    implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.navigation.compose)
-
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
 
     // Logging
     implementation(libs.timber)
@@ -121,27 +115,37 @@ dependencies {
     // Image Loading
     implementation(libs.glide)
     implementation(libs.glide.compose)
-    annotationProcessor(libs.glide.compiler)
 
     // Other Libraries
     implementation(libs.zoomable)
     implementation(libs.permissionx)
+    implementation(libs.work.runtime)
 
     // AI & ML
     implementation(libs.onnx.runtime)
     implementation(libs.mlkit.translate)
 
-    /// LiteRT
-    implementation libs.litert
-    implementation libs.litert.support
-    implementation libs.litert.gpu.api
-    implementation libs.litert.gpu
+    // LiteRT
+    implementation(libs.litert)
+    implementation(libs.litert.support)
+    implementation(libs.litert.gpu.api)
+    implementation(libs.litert.gpu)
 
-    // Testing
+    // Debug implementation
+    debugImplementation(libs.compose.ui.tooling)
+
+    // Annotation processors
+    annotationProcessor(libs.glide.compiler)
+
+    // KSP
+    ksp(libs.room.compiler)
+
+    // Test implementation
     testImplementation(libs.junit)
+
+    // Android test implementation
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.espresso.core)
-
-    implementation libs.androidx.work.runtime
-    implementation libs.work.runtime
+    androidTestImplementation(libs.androidx.test.monitor)
+    androidTestImplementation(libs.androidx.test.ext)
 }
