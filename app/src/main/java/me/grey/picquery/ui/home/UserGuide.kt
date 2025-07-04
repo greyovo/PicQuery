@@ -31,10 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import java.lang.Float.min
 import me.grey.picquery.R
 import me.grey.picquery.common.InitializeEffect
 import org.koin.androidx.compose.koinViewModel
-import java.lang.Float.min
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -47,7 +47,7 @@ fun UserGuide(
     homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val mediaPermissions = rememberMediaPermissions()
-    InitializeEffect() {
+    InitializeEffect {
         if (mediaPermissions.allPermissionsGranted) {
             homeViewModel.doneRequestPermission()
         }
@@ -67,7 +67,7 @@ fun UserGuide(
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
             },
-            supportingContent = { Text(text = stringResource(R.string.user_guide_tips)) },
+            supportingContent = { Text(text = stringResource(R.string.user_guide_tips)) }
         )
 
         // Step 1
@@ -99,7 +99,6 @@ fun UserGuide(
             onClick = { onFinish() }
         )
 
-
         Box(modifier = Modifier.height(15.dp))
         Button(
             enabled = state.permissionDone,
@@ -107,11 +106,13 @@ fun UserGuide(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             val text =
-                if (state.allFinished) stringResource(R.string.i_got_it)
-                else stringResource(R.string.skip)
+                if (state.allFinished) {
+                    stringResource(R.string.i_got_it)
+                } else {
+                    stringResource(R.string.skip)
+                }
             Text(text = text)
         }
-
     }
 }
 
@@ -122,7 +123,7 @@ private fun StepListItem(
     title: String,
     subtitle: String,
     icon: ImageVector,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     val background =
         when {
@@ -149,7 +150,7 @@ private fun StepListItem(
     OutlinedCard(
         modifier = Modifier
             .padding(vertical = 4.dp),
-        border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.1f, 1f))),
+        border = BorderStroke(1.dp, background.copy(alpha = min(background.alpha + 0.1f, 1f)))
     ) {
         ListItem(
             modifier = Modifier.clickable(enabled = enabled) { onClick() },
@@ -163,7 +164,7 @@ private fun StepListItem(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = color,
+                        tint = color
                     )
                 }
             },
@@ -173,7 +174,7 @@ private fun StepListItem(
                     style = textStyle.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
             },
-            supportingContent = { Text(text = subtitle, style = textStyle) },
+            supportingContent = { Text(text = subtitle, style = textStyle) }
         )
     }
 }

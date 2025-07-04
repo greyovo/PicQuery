@@ -48,7 +48,8 @@ fun LogoText(modifier: Modifier = Modifier, size: Float = DEFAULT_LOGO_SIZE) {
     Row(modifier = modifier) {
         Text(text = stringResource(R.string.logo_part1_pic), style = textStyle)
         Text(
-            text = stringResource(R.string.logo_part2_query), style = textStyle.copy(
+            text = stringResource(R.string.logo_part2_query),
+            style = textStyle.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = (size - 1).sp,
                 color = MaterialTheme.colorScheme.primary

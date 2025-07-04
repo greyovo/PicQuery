@@ -24,7 +24,7 @@ fun SearchScreen(
     searchViewModel: SearchViewModel = koinViewModel()
 ) {
     Log.d("SearchScreen", "initialQuery: $initialQuery")
-    
+
     val resultList by searchViewModel.resultList.collectAsState()
     val searchState by searchViewModel.searchState.collectAsState()
     val resultMap by searchViewModel.resultMap.collectAsState()
@@ -55,7 +55,7 @@ fun SearchScreen(
                 queryText = queryText,
                 onNavigateBack = onNavigateBack,
                 onQueryChange = { searchViewModel.onQueryChange(it) },
-                showBackButton = searchState == SearchState.FINISHED,
+                showBackButton = searchState == SearchState.FINISHED
             )
 
             SearchResultGrid(
@@ -67,5 +67,3 @@ fun SearchScreen(
         }
     }
 }
-
-

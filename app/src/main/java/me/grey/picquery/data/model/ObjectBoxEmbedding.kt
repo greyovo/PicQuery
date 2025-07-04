@@ -20,7 +20,7 @@ data class ObjectBoxEmbedding(
 
     @HnswIndex(
         dimensions = 512,
-        distanceType = VectorDistanceType.COSINE,
+        distanceType = VectorDistanceType.COSINE
     )
     val data: FloatArray // Vector data as FloatArray
 ) : Serializable {

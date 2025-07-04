@@ -22,10 +22,7 @@ import me.grey.picquery.domain.ImageSearcher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchConfigBottomSheet(
-    imageSearcher: ImageSearcher,
-    onDismiss: () -> Unit
-) {
+fun SearchConfigBottomSheet(imageSearcher: ImageSearcher, onDismiss: () -> Unit) {
     var matchThreshold by remember { mutableStateOf(imageSearcher.matchThreshold.value) }
     var topK by remember { mutableStateOf(imageSearcher.topK.value) }
 
@@ -39,7 +36,7 @@ fun SearchConfigBottomSheet(
 
             Text(
                 text = stringResource(R.string.match_threshold_title) +
-                ": ${String.format("%.2f", matchThreshold)}",
+                    ": ${String.format("%.2f", matchThreshold)}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
@@ -56,7 +53,7 @@ fun SearchConfigBottomSheet(
 
             Text(
                 text = stringResource(R.string.top_k_results_title) +
-                ": $topK",
+                    ": $topK",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(

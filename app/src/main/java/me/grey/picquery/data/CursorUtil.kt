@@ -23,7 +23,9 @@ class CursorUtil {
             // When there are images located on the root of the external storage,
             // albumLabel will be null.
             val albumLabel: String? =
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME))
+                cursor.getString(
+                    cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+                )
 
             val path =
                 cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))

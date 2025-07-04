@@ -3,14 +3,22 @@ package me.grey.picquery.feature.clip
 import ai.onnxruntime.OnnxTensor
 import android.content.Context
 import android.graphics.Bitmap
-import kotlinx.coroutines.CoroutineDispatcher
-import me.grey.picquery.feature.ImageEncoderONNX
 import java.nio.FloatBuffer
 import java.util.Collections
+import kotlinx.coroutines.CoroutineDispatcher
+import me.grey.picquery.feature.ImageEncoderONNX
 
-class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorCLIP, private val dispatcher: CoroutineDispatcher) :
+class ImageEncoderCLIP(
+    context: Context,
+    private val preprocessor: PreprocessorCLIP,
+    private val dispatcher: CoroutineDispatcher
+) :
     ImageEncoderONNX(
-        224, "clip-image-int8.ort", context, preprocessor, dispatcher
+        224,
+        "clip-image-int8.ort",
+        context,
+        preprocessor,
+        dispatcher
     ) {
 
     companion object {
@@ -30,7 +38,9 @@ class ImageEncoderCLIP(context: Context, private val preprocessor: PreprocessorC
             for (i in bitmaps.indices) {
                 val tensor = OnnxTensor.createTensor(ortEnv, buffers[i], shape)
                 val output = ortSession?.run(Collections.singletonMap(inputName, tensor))
-                @Suppress("UNCHECKED_CAST") val rawOutput =
+
+                @Suppress("UNCHECKED_CAST")
+                val rawOutput =
                     ((output?.get(0)?.value) as Array<FloatArray>)[0]
                 res.add(rawOutput)
             }

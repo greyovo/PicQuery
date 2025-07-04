@@ -12,6 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import java.util.Collections
+import java.util.SortedMap
+import java.util.TreeMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,15 +50,9 @@ import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.TextEncoder
 import timber.log.Timber
 
-import java.util.Collections
-import java.util.SortedMap
-import java.util.TreeMap
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.system.measureTimeMillis
-
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
     Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
-    Text(R.string.search_target_text, Icons.Outlined.Translate),
+    Text(R.string.search_target_text, Icons.Outlined.Translate)
 }
 
 class ImageSearcher(
@@ -120,7 +119,7 @@ class ImageSearcher(
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun encodePhotoListV2(
         photos: List<Photo>,
-        progressCallback: encodeProgressCallback? = null,
+        progressCallback: encodeProgressCallback? = null
     ): Boolean {
         if (encodingLock) {
             Timber.tag(TAG).w("encodePhotoListV2: Already encoding!")
@@ -145,7 +144,6 @@ class ImageSearcher(
                 }
                 .filterNotNull()
                 .buffer(1000)
-
                 .chunked(100)
                 .onEach { Timber.tag(TAG).d("onEach: ${it.size}") }
                 .onCompletion {
@@ -176,9 +174,9 @@ class ImageSearcher(
                     progressCallback?.invoke(
                         cur.get(),
                         photos.size,
-                        cost / it.size,
+                        cost / it.size
                     )
-                    Timber.tag(TAG).d("cost: ${cost}")
+                    Timber.tag(TAG).d("cost: $cost")
                 }
         }
         return true
@@ -187,7 +185,7 @@ class ImageSearcher(
     suspend fun search(
         text: String,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit,
+        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
     ) {
         translator.translate(
             text,
@@ -204,14 +202,14 @@ class ImageSearcher(
                 }
                 Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
                 showToast("翻译模型出错，请反馈给开发者！")
-            },
+            }
         )
     }
 
     suspend fun searchV2(
         text: String,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit,
+        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
     ) {
         translator.translate(
             text,
@@ -228,7 +226,7 @@ class ImageSearcher(
                 }
                 Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
                 showToast("翻译模型出错，请反馈给开发者！")
-            },
+            }
         )
     }
 
@@ -250,7 +248,7 @@ class ImageSearcher(
     suspend fun searchWithRange(
         image: Bitmap,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit,
+        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
     ) {
         return withContext(dispatcher) {
             if (searchingLock) {
@@ -281,7 +279,7 @@ class ImageSearcher(
     suspend fun searchWithRangeV2(
         image: Bitmap,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit,
+        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
     ) {
         return withContext(dispatcher) {
             if (searchingLock) {
@@ -328,7 +326,6 @@ class ImageSearcher(
 
             Timber.tag(TAG).d("Search result: found ${ans.size} pics")
             return@withContext searchResults.map { it.get().photoId to it.score }.toMutableList()
-
         } finally {
             searchingLock = false
         }
@@ -407,7 +404,7 @@ class ImageSearcher(
 
         Timber.tag(TAG).d(
             "Search configuration updated: " +
-                    "matchThreshold=${_matchThreshold.floatValue}, topK=${_topK.intValue}"
+                "matchThreshold=${_matchThreshold.floatValue}, topK=${_topK.intValue}"
         )
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,12 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import java.io.File
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.common.CentralLoadingProgressBar
 import timber.log.Timber
-import java.io.File
-
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
@@ -42,9 +40,8 @@ fun SearchResultGrid(
     resultList: List<Photo>,
     state: SearchState,
     resultMap: Map<Long, Double>,
-    onClickPhoto: (Photo, Int) -> Unit,
+    onClickPhoto: (Photo, Int) -> Unit
 ) {
-
     when (state) {
         SearchState.NO_INDEX -> UnReadyText()
         SearchState.LOADING -> CentralLoadingProgressBar()
@@ -64,14 +61,14 @@ fun SearchResultGrid(
                             Box(padding) {
                                 PhotoResultRecommend(
                                     photo = resultList[0],
-                                    onItemClick = { onClickPhoto(resultList[0], 0) },
+                                    onItemClick = { onClickPhoto(resultList[0], 0) }
                                 )
                             }
                         }
                         if (resultList.size > 1) {
                             items(
                                 resultList.size - 1,
-                                key = { resultList[it].id },
+                                key = { resultList[it].id }
                             ) { index ->
                                 Timber.tag("SearchResultGrid").e("index: $index")
                                 Box(padding) {
@@ -82,7 +79,7 @@ fun SearchResultGrid(
                                         onItemClick = {
                                             Timber.tag("SearchResultGrid").e("click: $index")
                                             onClickPhoto(resultList[index + 1], index + 1)
-                                        },
+                                        }
                                     )
                                 }
                             }
@@ -91,10 +88,8 @@ fun SearchResultGrid(
                 )
             }
         }
-
     }
 }
-
 
 @Composable
 private fun UnReadyText() {
@@ -104,7 +99,7 @@ private fun UnReadyText() {
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        ElevatedButton(onClick = { /*TODO*/ }) {
+        ElevatedButton(onClick = { }) {
             Text(text = stringResource(id = R.string.start_index_album))
         }
     }
@@ -151,7 +146,7 @@ private fun PhotoResultRecommend(photo: Photo, onItemClick: (photo: Photo) -> Un
             ),
         model = File(photo.path),
         contentDescription = photo.label,
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
     )
 }
 
@@ -164,7 +159,6 @@ fun PhotoResultItem(
     onItemClick: (photo: Photo) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val searchResult = remember { SearchResult(similarity) }
     Box(modifier = modifier.clickable { onItemClick(photo) }) {
         Column {
             Box(modifier = Modifier.aspectRatio(1f)) {
@@ -177,9 +171,9 @@ fun PhotoResultItem(
                     contentScale = ContentScale.Crop
                 )
 
-                // FIXME: ConfidenceTag positioned at the top-right corner
+                // Confidence tag implementation needed
 //                ConfidenceTag(
-//                    confidenceLevel =searchResult.confidenceLevel,
+//                    confidenceLevel = 0f,
 //                    modifier = Modifier
 //                        .align(Alignment.TopEnd)
 //                        .padding(8.dp)
@@ -188,7 +182,7 @@ fun PhotoResultItem(
 
             // Optional: Similarity score text
 //            Text(
-//                text = "Similarity: ${String.format("%.2f", searchResult.similarityScore)}",
+//                text = "Similarity: ${String.format("%.2f", similarity)}",
 //                style = MaterialTheme.typography.bodySmall,
 //                modifier = Modifier.padding(top = 4.dp)
 //            )

@@ -6,9 +6,9 @@ import com.google.android.gms.tasks.Task
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import java.io.File
 import me.grey.picquery.PicQueryApplication
 import me.grey.picquery.common.AssetUtil
-import java.io.File
 
 class MLKitTranslator {
 
@@ -38,16 +38,11 @@ class MLKitTranslator {
         AssetUtil.copyAssetsFolder(
             context,
             ASSET_MODEL_PATH,
-            targetModelDirectory,
+            targetModelDirectory
         )
     }
 
-
-    suspend fun translate(
-        text: String,
-        onSuccess: (String) -> Unit,
-        onError: (Exception) -> Unit,
-    ): Task<String> {
+    suspend fun translate(text: String, onSuccess: (String) -> Unit, onError: (Exception) -> Unit): Task<String> {
         if (shouldCopyModel) {
             copyModelsFromAssets()
         }

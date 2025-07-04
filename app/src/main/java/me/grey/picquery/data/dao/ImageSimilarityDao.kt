@@ -27,7 +27,9 @@ interface ImageSimilarityDao {
     suspend fun deleteByBasePhotoId(photoId: Long)
 
     // 添加一个 查询，查找相似度 在某个范围内的数据
-    @Query("SELECT * FROM image_similarity WHERE similarity_score > :minSimilarityScore AND similarity_score < :maxSimilarityScore")
+    @Query(
+        "SELECT * FROM image_similarity WHERE similarity_score > :minSimilarityScore AND similarity_score < :maxSimilarityScore"
+    )
     suspend fun getSimilaritiesInRange(minSimilarityScore: Float, maxSimilarityScore: Float): List<ImageSimilarity>
 
     @Query("SELECT * FROM image_similarity LIMIT :pageSize OFFSET :offset")

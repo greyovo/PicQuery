@@ -31,6 +31,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,9 +43,6 @@ import me.grey.picquery.data.model.Album
 import me.grey.picquery.domain.AlbumManager
 import me.grey.picquery.ui.common.BackButton
 import org.koin.compose.koinInject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 const val FlagAlbumStatusNormal = 0
 const val FlagAlbumStatusInvalid = 1
@@ -50,11 +50,7 @@ const val FlagAlbumStatusUpdateNeeded = 2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IndexMgrScreen(
-    onNavigateBack: () -> Unit,
-    albumManager: AlbumManager = koinInject(),
-) {
-
+fun IndexMgrScreen(onNavigateBack: () -> Unit, albumManager: AlbumManager = koinInject()) {
     val indexedAlbum = albumManager.searchableAlbumList.collectAsState().value.toMutableStateList()
     val allAlbum = albumManager.getAlbumList()
 
@@ -62,7 +58,7 @@ fun IndexMgrScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.index_mgr_title)) },
-                navigationIcon = { BackButton { onNavigateBack() } },
+                navigationIcon = { BackButton { onNavigateBack() } }
             )
         },
         modifier = Modifier.padding(horizontal = 5.dp)
@@ -71,16 +67,22 @@ fun IndexMgrScreen(
             repeat(indexedAlbum.size) { index ->
                 val album = indexedAlbum[index]
                 if (allAlbum.any { a -> a.id == album.id }) {
-                    val albumNow = allAlbum.find{ item -> item.id == album.id }
+                    val albumNow = allAlbum.find { item -> item.id == album.id }
                     if (albumNow!!.count != album.count || albumNow.timestamp != album.timestamp) {
-                        item { AlbumItem(indexedAlbum, album, albumManager, FlagAlbumStatusUpdateNeeded) }
+                        item {
+                            AlbumItem(
+                                indexedAlbum,
+                                album,
+                                albumManager,
+                                FlagAlbumStatusUpdateNeeded
+                            )
+                        }
                     } else {
                         item { AlbumItem(indexedAlbum, album, albumManager, FlagAlbumStatusNormal) }
                     }
                 } else {
-                    item{ AlbumItem(indexedAlbum, album, albumManager, FlagAlbumStatusInvalid) }
+                    item { AlbumItem(indexedAlbum, album, albumManager, FlagAlbumStatusInvalid) }
                 }
-
             }
         }
     }
@@ -88,9 +90,9 @@ fun IndexMgrScreen(
 
 @Composable
 private fun AlbumItem(
-    indexedAlbum: SnapshotStateList<Album>, 
-    album: Album, 
-    albumManager: AlbumManager, 
+    indexedAlbum: SnapshotStateList<Album>,
+    album: Album,
+    albumManager: AlbumManager,
     albumStatusEnum: Int
 ) {
     var isLoading by remember { mutableStateOf(false) }
@@ -116,19 +118,15 @@ private fun AlbumItem(
 
     ListItem(
         colors = AlbumItemColors(albumStatusEnum),
-        leadingContent = { 
-            AlbumItemLeadingIcon(albumStatusEnum) 
-        },
-        headlineContent = { 
-            AlbumItemHeadline(album.label) 
-        },
-        supportingContent = { 
+        leadingContent = { AlbumItemLeadingIcon(albumStatusEnum) },
+        headlineContent = { AlbumItemHeadline(album.label) },
+        supportingContent = {
             AlbumItemSupportingContent(
-                albumStatusEnum = albumStatusEnum, 
-                album = album, 
-                isLoading = isLoading, 
+                albumStatusEnum = albumStatusEnum,
+                album = album,
+                isLoading = isLoading,
                 isDone = isDone
-            ) 
+            )
         },
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -141,11 +139,7 @@ private fun AlbumItem(
 }
 
 @Composable
-private fun AlbumIndexDeletionDialog(
-    showDialog: Boolean,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
+private fun AlbumIndexDeletionDialog(showDialog: Boolean, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -187,25 +181,20 @@ private fun AlbumItemLeadingIcon(albumStatusEnum: Int) {
 @Composable
 private fun AlbumItemHeadline(label: String) {
     Text(
-        text = label, 
+        text = label,
         style = MaterialTheme.typography.titleMedium
     )
 }
 
 @Composable
-private fun AlbumItemSupportingContent(
-    albumStatusEnum: Int,
-    album: Album,
-    isLoading: Boolean,
-    isDone: Boolean
-) {
+private fun AlbumItemSupportingContent(albumStatusEnum: Int, album: Album, isLoading: Boolean, isDone: Boolean) {
     val dateFmt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val dateStr = dateFmt.format(Date(album.timestamp * 1000))
 
     val descriptionText = buildAnnotatedString {
         append("${stringResource(R.string.album_photo_count)}: ${album.count}\n")
         append("${stringResource(R.string.album_date)}: $dateStr\n")
-        
+
         when (albumStatusEnum) {
             FlagAlbumStatusInvalid -> append(stringResource(R.string.album_invalid_desc))
             FlagAlbumStatusUpdateNeeded -> append(stringResource(R.string.album_update_needed_desc))
@@ -232,7 +221,9 @@ private fun AlbumItemSupportingContent(
 private fun AlbumItemColors(albumStatusEnum: Int) = ListItemDefaults.colors(
     containerColor = when (albumStatusEnum) {
         FlagAlbumStatusInvalid -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
-        FlagAlbumStatusUpdateNeeded -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+        FlagAlbumStatusUpdateNeeded -> MaterialTheme.colorScheme.tertiaryContainer.copy(
+            alpha = 0.3f
+        )
         else -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f)
     },
     headlineColor = when (albumStatusEnum) {
@@ -247,7 +238,11 @@ private fun AlbumItemColors(albumStatusEnum: Int) = ListItemDefaults.colors(
     }
 )
 
-private suspend fun removeIndexByAlbum ( album: Album, albumManager: AlbumManager,dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+private suspend fun removeIndexByAlbum(
+    album: Album,
+    albumManager: AlbumManager,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
     withContext(dispatcher) {
         albumManager.removeSingleAlbumIndex(album)
         albumManager.initDataFlow()

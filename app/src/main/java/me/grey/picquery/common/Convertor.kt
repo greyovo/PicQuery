@@ -8,9 +8,7 @@ package me.grey.picquery.common
  * @param costPerItem In milliseconds
  * @return Seconds in Long that represent the remaining time
  */
-fun calculateRemainingTime(
-    current: Int, total: Int, costPerItem: Long
-): Long {
+fun calculateRemainingTime(current: Int, total: Int, costPerItem: Long): Long {
     if (costPerItem.toInt() == 0) return 0L
     val remainItem = (total - current)
     return (remainItem * (costPerItem) / 1000)

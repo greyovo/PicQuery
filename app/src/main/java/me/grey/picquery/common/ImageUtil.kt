@@ -38,10 +38,7 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
     return inSampleSize
 }
 
-fun decodeSampledBitmapFromFile(
-    pathName: String,
-    size: Size,
-): Bitmap? {
+fun decodeSampledBitmapFromFile(pathName: String, size: Size): Bitmap? {
     // First decode with inJustDecodeBounds=true to check dimensions
     return try {
         BitmapFactory.Options().run {

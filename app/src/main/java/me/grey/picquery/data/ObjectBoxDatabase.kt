@@ -11,7 +11,7 @@ class ObjectBoxDatabase private constructor() {
 
     fun initialize(context: Context) {
         boxStore = MyObjectBox.builder()
-        .androidContext(context.applicationContext)
+            .androidContext(context.applicationContext)
             .build()
     }
 

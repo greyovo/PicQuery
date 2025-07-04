@@ -1,6 +1,7 @@
 package me.grey.picquery.data.data_source
 
 import io.objectbox.query.ObjectWithScore
+import java.util.concurrent.LinkedBlockingDeque
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -9,7 +10,6 @@ import me.grey.picquery.data.dao.ObjectBoxEmbeddingDao
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.ObjectBoxEmbedding
 import me.grey.picquery.data.model.toFloatArray
-import java.util.concurrent.LinkedBlockingDeque
 
 class ObjectBoxEmbeddingRepository(
     private val dataSource: ObjectBoxEmbeddingDao
@@ -103,10 +103,9 @@ class ObjectBoxEmbeddingRepository(
         return dataSource.removeByAlbumId(album.id)
     }
 
-    fun searchByVector(vector: ByteArray):List<ObjectWithScore<ObjectBoxEmbedding>> {
+    fun searchByVector(vector: ByteArray): List<ObjectWithScore<ObjectBoxEmbedding>> {
         return dataSource.searchNearestVectors(vector.toFloatArray())
     }
-
 
     fun searchNearestVectors(
         queryVector: FloatArray,

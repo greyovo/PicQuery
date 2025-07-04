@@ -11,7 +11,6 @@ data class ImageSimilarity(
     @ColumnInfo(name = "photo_id")
     val photoId: Long,
 
-
     @ColumnInfo(name = "similarity_score")
     val similarityScore: Float
 )

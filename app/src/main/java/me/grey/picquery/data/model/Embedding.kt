@@ -7,7 +7,8 @@ import java.io.Serializable
 
 @Entity
 data class Embedding(
-    @PrimaryKey @ColumnInfo(name = "photo_id")
+    @PrimaryKey
+    @ColumnInfo(name = "photo_id")
     val photoId: Long,
 
     @ColumnInfo(name = "album_id")

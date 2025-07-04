@@ -1,0 +1,26 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+
+[*.{kt,kts}]
+# Disable specific ktlint rules
+ktlint_disabled_rules = no-wildcard-imports,filename,package-name,max-line-length,comment-spacing
+# Enable experimental ktlint rules
+ktlint_experimental = true
+# Android style rules
+ktlint_standard_filename = false
+ktlint_standard_class-naming = true
+ktlint_standard_import-ordering = true
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.{md,markdown}]
+trim_trailing_whitespace = false

@@ -9,12 +9,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import java.io.InputStream
 import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.CursorUtil
-import me.grey.picquery.data.model.ObjectBoxEmbedding
 import me.grey.picquery.data.model.Photo
-import java.io.InputStream
-
 
 class PhotoRepository(private val context: Context) {
 
@@ -30,7 +28,7 @@ class PhotoRepository(private val context: Context) {
         MediaStore.Images.Media.SIZE, // in Bytes
         MediaStore.Images.Media.DATE_MODIFIED,
         MediaStore.Images.Media.BUCKET_ID,
-        MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+        MediaStore.Images.Media.BUCKET_DISPLAY_NAME
     )
 
     private val imageCollection: Uri =
@@ -38,10 +36,7 @@ class PhotoRepository(private val context: Context) {
             MediaStore.VOLUME_EXTERNAL
         )
 
-    private fun getPhotoListByAlbumIdFlow(
-        albumId: Long, 
-        pageSize: Int = DEFAULT_PAGE_SIZE
-    ) = flow {
+    private fun getPhotoListByAlbumIdFlow(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
         var pageIndex = 0
         while (true) {
             val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
@@ -56,7 +51,7 @@ class PhotoRepository(private val context: Context) {
     suspend fun getPhotoListByAlbumId(albumId: Long): List<Photo> {
         val result = mutableListOf<Photo>()
         getPhotoListByAlbumIdFlow(albumId).collect {
-                result.addAll(it)
+            result.addAll(it)
         }
 
         return result
@@ -101,7 +96,7 @@ class PhotoRepository(private val context: Context) {
             imageProjection,
             "${MediaStore.Images.Media._ID} = ?",
             arrayOf(id.toString()),
-            null,
+            null
         )
         return queryPhotoById.use { cursor: Cursor? ->
             cursor?.moveToFirst()
@@ -138,7 +133,7 @@ class PhotoRepository(private val context: Context) {
             imageProjection,
             "${MediaStore.Images.Media._ID} IN (${ids.joinToString(",")})",
             arrayOf(),
-            null,
+            null
         )
         val result = query.use { cursor: Cursor? ->
             when (cursor?.count) {
@@ -163,7 +158,6 @@ class PhotoRepository(private val context: Context) {
         return result
     }
 
-
     fun getBitmapFromUri(uri: Uri): Bitmap? {
         return try {
             // 打开输入流
@@ -182,10 +176,7 @@ class PhotoRepository(private val context: Context) {
      * @param pageSize 每批照片的数量
      * @return Flow<List<Photo>> 照片列表流
      */
-    fun getPhotoListByAlbumIdPaginated(
-        albumId: Long, 
-        pageSize: Int = DEFAULT_PAGE_SIZE
-    ) = flow {
+    fun getPhotoListByAlbumIdPaginated(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
         var pageIndex = 0
         while (true) {
             val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
@@ -196,6 +187,4 @@ class PhotoRepository(private val context: Context) {
             pageIndex++
         }
     }
-
-
 }

@@ -1,15 +1,13 @@
 package me.grey.picquery.domain
 
+import java.lang.Float.max
+import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.coroutineScope
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
-import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.PhotoBitmap
-import me.grey.picquery.data.model.toByteArray
 import me.grey.picquery.feature.base.ImageEncoder
 import timber.log.Timber
-import java.lang.Float.max
-import kotlin.system.measureTimeMillis
 
 object EmbeddingUtils {
 
@@ -44,5 +42,4 @@ object EmbeddingUtils {
                 .d("Encode[v2] done! cost: $costSec s, speed: ${items.size / costSec} pic/s")
         }
     }
-
 }

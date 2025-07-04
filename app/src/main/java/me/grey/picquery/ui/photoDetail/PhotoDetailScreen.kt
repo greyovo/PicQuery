@@ -29,15 +29,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import java.io.File
+import kotlin.collections.isNotEmpty
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.simlilar.SimilarPhotosViewModel
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
-import java.io.File
-import kotlin.collections.isNotEmpty
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalGlideComposeApi::class
 )
 @Composable
@@ -57,7 +59,7 @@ fun PhotoDetailScreen(
         initialPage = safeInitialPage,
         pageCount = { photoList.size }
     )
-    
+
     // Ensure pagerState.currentPage is always within bounds of photoList
     LaunchedEffect(photoList.size) {
         if (photoList.isNotEmpty() && pagerState.currentPage >= photoList.size) {
@@ -83,7 +85,9 @@ fun PhotoDetailScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalGlideComposeApi::class
 )
 @Composable
@@ -93,8 +97,11 @@ private fun PhotoDetailScreenContent(
     onNavigateBack: () -> Unit,
     externalAlbumLauncher: androidx.activity.result.ActivityResultLauncher<Intent>
 ) {
-    val currentPhoto = if (photoList.isNotEmpty() && pagerState.currentPage < photoList.size) 
-        photoList[pagerState.currentPage] else null
+    val currentPhoto = if (photoList.isNotEmpty() && pagerState.currentPage < photoList.size) {
+        photoList[pagerState.currentPage]
+    } else {
+        null
+    }
 
     Scaffold(
         topBar = {
@@ -121,20 +128,16 @@ private fun PhotoDetailScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PhotoDetailTopBar(
-    currentPhoto: Photo?,
-    onNavigateBack: () -> Unit,
-    onOpenExternal: () -> Unit
-) {
+private fun PhotoDetailTopBar(currentPhoto: Photo?, onNavigateBack: () -> Unit, onOpenExternal: () -> Unit) {
     TopAppBar(
-        title = { 
+        title = {
             Text(
                 text = if (currentPhoto != null) {
                     stringResource(R.string.photo_details_with_id, currentPhoto.id)
                 } else {
                     stringResource(R.string.photo_details)
                 }
-            ) 
+            )
         },
         navigationIcon = {
             IconButton(onClick = onNavigateBack) {
@@ -151,10 +154,7 @@ private fun PhotoDetailTopBar(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-private fun PhotoPager(
-    photoList: List<Photo>,
-    pagerState: PagerState
-) {
+private fun PhotoPager(photoList: List<Photo>, pagerState: PagerState) {
     HorizontalPager(state = pagerState) { index ->
         if (index < photoList.size) {
             val photo = photoList[index]

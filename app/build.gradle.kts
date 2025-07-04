@@ -4,11 +4,12 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     id("io.objectbox")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 android {
     namespace = "me.grey.picquery"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "me.grey.picquery"
@@ -34,7 +35,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -148,4 +152,30 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.androidx.test.ext)
+}
+
+detekt {
+    toolVersion = "1.23.3"
+    config.setFrom(files("${project.rootDir}/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    autoCorrect = true
+    parallel = true
+    ignoreFailures = true // Set to true to make detekt non-blocking
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "17"
+}
+
+tasks.register<Exec>("installGitHooks") {
+    workingDir = rootProject.rootDir
+    commandLine("cmd", "/c", "${rootProject.rootDir}/scripts/install-hooks.bat")
+
+    doLast {
+        println("Git hooks installed successfully")
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("installGitHooks")
 }

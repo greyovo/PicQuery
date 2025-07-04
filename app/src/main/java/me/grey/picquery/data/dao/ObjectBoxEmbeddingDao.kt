@@ -21,11 +21,7 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
     }
 
     // 按相册ID分页查询嵌入向量
-    fun getEmbeddingsByAlbumIdPaginated(
-        albumId: Long,
-        limit: Int,
-        offset: Int
-    ): List<ObjectBoxEmbedding> {
+    fun getEmbeddingsByAlbumIdPaginated(albumId: Long, limit: Int, offset: Int): List<ObjectBoxEmbedding> {
         return embeddingBox.query {
             equal(ObjectBoxEmbedding_.albumId, albumId)
             orderDesc(ObjectBoxEmbedding_.photoId)
@@ -33,15 +29,10 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
     }
 
     // 按多个相册ID分页查询嵌入向量
-    fun getEmbeddingsByAlbumIdsPaginated(
-        albumIds: List<Long>,
-        limit: Int,
-        offset: Int
-    ): List<ObjectBoxEmbedding> {
+    fun getEmbeddingsByAlbumIdsPaginated(albumIds: List<Long>, limit: Int, offset: Int): List<ObjectBoxEmbedding> {
         return embeddingBox.query {
             `in`(ObjectBoxEmbedding_.albumId, albumIds.toLongArray())
             orderDesc(ObjectBoxEmbedding_.photoId)
-
         }.find(offset.toLong(), limit.toLong())
     }
 
@@ -123,25 +114,16 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
         similarityThreshold: Float = 0.7f,
         albumIds: List<Long>? = null
     ): List<ObjectWithScore<ObjectBoxEmbedding>> {
-
-//        val query =
-//            embeddingBox.query {
-////                `in`(ObjectBoxEmbedding_.albumId, albumIds.toLongArray())
-//                ObjectBoxEmbedding_.data.nearestNeighbors(queryVector, topK)
-//
-//            }
-
         val query =
             embeddingBox
                 .query()
                 .nearestNeighbors(ObjectBoxEmbedding_.data, queryVector, topK)
                 .build()
 
-        val results = query.findWithScores()
-
-//        Timber.d("Vector Search Diagnostics:")
-//        Timber.d("Query Vector Size: ${queryVector.size}")
-//        Timber.d("Total Results: ${results.size}")
+        val results = query.findWithScores().filter { result ->
+            val cosineSimilarity = 1.0 - result.score
+            cosineSimilarity > similarityThreshold
+        }
 
         results.forEachIndexed { index, result ->
             Timber.d("Result $index:")

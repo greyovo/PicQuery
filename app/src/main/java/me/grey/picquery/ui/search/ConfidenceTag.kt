@@ -20,17 +20,14 @@ import androidx.compose.ui.unit.dp
 import me.grey.picquery.R
 
 @Composable
-fun ConfidenceTag(
-    confidenceLevel: SearchResult.ConfidenceLevel,
-    modifier: Modifier = Modifier
-) {
+fun ConfidenceTag(confidenceLevel: SearchResult.ConfidenceLevel, modifier: Modifier = Modifier) {
     val (text, color) = when (confidenceLevel) {
         SearchResult.ConfidenceLevel.LOW ->
-            stringResource(R.string.confidence_low) to Color(0xFFFF9800)  // Deep Red
+            stringResource(R.string.confidence_low) to Color(0xFFFF9800) // Deep Red
         SearchResult.ConfidenceLevel.MEDIUM ->
-            stringResource(R.string.confidence_medium) to Color(0xFFB3FF00)  // Amber
+            stringResource(R.string.confidence_medium) to Color(0xFFB3FF00) // Amber
         SearchResult.ConfidenceLevel.HIGH ->
-            stringResource(R.string.confidence_high) to Color(0xFF388E3C)  // Dark Green
+            stringResource(R.string.confidence_high) to Color(0xFF388E3C) // Dark Green
     }
 
     Row(

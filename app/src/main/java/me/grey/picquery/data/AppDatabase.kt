@@ -13,7 +13,11 @@ import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
 import me.grey.picquery.data.model.ImageSimilarity
 
-@Database(entities = [Embedding::class, Album::class, ImageSimilarity::class], version = 4, exportSchema = false)
+@Database(
+    entities = [Embedding::class, Album::class, ImageSimilarity::class],
+    version = 4,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun embeddingDao(): EmbeddingDao
@@ -31,7 +35,8 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app-db")
+                    "app-db"
+                )
                     .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
                     .fallbackToDestructiveMigrationFrom(1)
                     .build()
@@ -51,12 +56,14 @@ abstract class AppDatabase : RoomDatabase() {
 
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE IF NOT EXISTS image_similarity (\n" +
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS image_similarity (\n" +
                         "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                         "    base_photo_id INTEGER NOT NULL,\n" +
                         "    compared_photo_id INTEGER NOT NULL,\n" +
                         "    similarity_score REAL NOT NULL\n" +
-                        ");");
+                        ");"
+                )
             }
         }
     }

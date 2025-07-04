@@ -7,7 +7,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-
 /**
  * Material Theme Builder
  *
@@ -20,10 +19,7 @@ val AppShapes = Shapes()
 val AppTypography = Typography()
 
 @Composable
-fun PicQueryThemeM3(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-) {
+fun PicQueryThemeM3(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colorScheme = if (darkTheme) {
         DarkColors
     } else {
@@ -32,7 +28,7 @@ fun PicQueryThemeM3(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
-        color = colorScheme.background,
+        color = colorScheme.background
     )
 
     MaterialTheme(

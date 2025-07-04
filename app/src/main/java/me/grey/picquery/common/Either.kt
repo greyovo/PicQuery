@@ -14,20 +14,15 @@ sealed class Either<out L, out R> {
     }
 }
 
-fun <T, R> Either<T, R>.fold(
-    left: (T) -> Any,
-    right: (R) -> Any,
-): Any =
-    when (this) {
-        is Either.Left -> left(value)
-        is Either.Right -> right(value)
-    }
+fun <T, R> Either<T, R>.fold(left: (T) -> Any, right: (R) -> Any): Any = when (this) {
+    is Either.Left -> left(value)
+    is Either.Right -> right(value)
+}
 
-fun <T, R> Either<T, R>.getOrHandle(default: (T) -> R): R =
-    when (this) {
-        is Either.Left -> default(value)
-        is Either.Right -> value
-    }
+fun <T, R> Either<T, R>.getOrHandle(default: (T) -> R): R = when (this) {
+    is Either.Left -> default(value)
+    is Either.Right -> value
+}
 
 suspend fun <R> tryCatch(block: () -> R): Either<Throwable, R> {
     return try {
@@ -37,5 +32,3 @@ suspend fun <R> tryCatch(block: () -> R): Either<Throwable, R> {
         Either.left(e)
     }
 }
-
-
