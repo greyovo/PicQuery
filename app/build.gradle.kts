@@ -166,16 +166,3 @@ detekt {
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     jvmTarget = "17"
 }
-
-tasks.register<Exec>("installGitHooks") {
-    workingDir = rootProject.rootDir
-    commandLine("cmd", "/c", "${rootProject.rootDir}/scripts/install-hooks.bat")
-
-    doLast {
-        println("Git hooks installed successfully")
-    }
-}
-
-tasks.named("preBuild") {
-    dependsOn("installGitHooks")
-}
