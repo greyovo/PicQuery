@@ -18,7 +18,6 @@ import me.grey.picquery.PicQueryApplication
 private val context
     get() = PicQueryApplication.context
 
-
 fun showToast(text: String, longToast: Boolean = false) {
     val duration = if (longToast) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
     Toast.makeText(context, text, duration).show()
@@ -35,7 +34,6 @@ fun InitializeEffect(block: suspend CoroutineScope.() -> Unit) {
     }
 }
 
-
 object Animation {
     /**
      * Value in ms
@@ -50,9 +48,7 @@ object Animation {
     val popInAnimation = slideInHorizontally { width -> width }
     val popUpAnimation = slideOutHorizontally { width -> -width }
 
-    fun enterAnimation(durationMillis: Int): EnterTransition =
-        fadeIn(tween(durationMillis))
+    fun enterAnimation(durationMillis: Int): EnterTransition = fadeIn(tween(durationMillis))
 
-    fun exitAnimation(durationMillis: Int): ExitTransition =
-        fadeOut(tween(durationMillis))
+    fun exitAnimation(durationMillis: Int): ExitTransition = fadeOut(tween(durationMillis))
 }

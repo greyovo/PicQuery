@@ -48,6 +48,7 @@
     <string name="privacy_statement_agree">Sure</string>
     <string name="privacy_statement_decline">Don\'t send</string>
     <string name="share_anonymous_data">Share analytics data</string>
+    <string name="search_error_toast">Error occurred during search</string>
     <string name="share_anonymous_data_statement">For improving your experience. Not containing any personal data</string>
     <string name="skip">Later…</string>
     <string name="external_storage">[External Storage]</string>

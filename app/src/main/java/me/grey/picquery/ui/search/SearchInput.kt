@@ -50,7 +50,7 @@ fun SearchInput(
     onImageSearch: (Uri) -> Unit,
     onQueryChange: (String) -> Unit,
     onNavigateBack: (() -> Unit)? = null,
-    showBackButton: Boolean = false,
+    showBackButton: Boolean = false
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
     val textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f))
@@ -61,14 +61,14 @@ fun SearchInput(
             .padding(horizontal = 14.dp),
         query = queryText,
         onQueryChange = { onQueryChange(it) },
-        onSearch = { 
+        onSearch = {
             onStartSearch(queryText)
             keyboard?.hide()
         },
         active = false,
         onActiveChange = { },
         placeholder = { SearchPlaceholder() },
-        leadingIcon = { 
+        leadingIcon = {
             if (showBackButton && onNavigateBack != null) {
                 BackButton(onClick = onNavigateBack)
             } else {
@@ -85,7 +85,7 @@ fun SearchInput(
                 },
                 onImageSearch = onImageSearch
             )
-        },
+        }
     ) {}
 }
 
@@ -107,7 +107,7 @@ private fun SearchTrailingIcons(
     queryText: String,
     textStyle: TextStyle,
     onClearText: () -> Unit,
-    onImageSearch: (Uri) -> Unit,
+    onImageSearch: (Uri) -> Unit
 ) {
     Row {
         // Clear text button
@@ -133,22 +133,18 @@ private fun ClearTextButton(onClear: () -> Unit) {
 }
 
 @Composable
-private fun rememberImagePicker(
-    onImageSearch: (Uri) -> Unit
-) = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-    if (uri != null) {
-        Timber.tag("PhotoPicker").d("Selected URI: $uri")
-        onImageSearch(uri)
-    } else {
-        Timber.tag("PhotoPicker").d("No media selected")
+private fun rememberImagePicker(onImageSearch: (Uri) -> Unit) =
+    rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            Timber.tag("PhotoPicker").d("Selected URI: $uri")
+            onImageSearch(uri)
+        } else {
+            Timber.tag("PhotoPicker").d("No media selected")
+        }
     }
-}
 
 @Composable
-private fun ImageSearchButton(
-    textStyle: TextStyle,
-    onClick: () -> Unit
-) {
+private fun ImageSearchButton(textStyle: TextStyle, onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
             imageVector = Icons.Default.PhotoCamera,
@@ -169,13 +165,9 @@ private fun BackButton(onClick: () -> Unit) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchSettingsSection(
-    textStyle: TextStyle,
-    onImageSearch: (Uri) -> Unit,
-) {
+private fun SearchSettingsSection(textStyle: TextStyle, onImageSearch: (Uri) -> Unit) {
     var showPickerBottomSheet by remember { mutableStateOf(false) }
 
     // System Picker
@@ -218,7 +210,11 @@ private fun SearchSettingsSection(
                     icon = Icons.Outlined.Image,
                     text = stringResource(R.string.system_album),
                     onClick = {
-                        photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        photoPicker.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
                         showPickerBottomSheet = false
                     }
                 )
@@ -251,11 +247,7 @@ private fun SearchSettingsSection(
 }
 
 @Composable
-private fun PickerOptionItem(
-    icon: ImageVector,
-    text: String,
-    onClick: () -> Unit
-) {
+private fun PickerOptionItem(icon: ImageVector, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -6,13 +6,13 @@ import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import java.nio.FloatBuffer
+import java.util.Collections
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.Preprocessor
-import java.nio.FloatBuffer
-import java.util.Collections
 
 open class ImageEncoderONNX(
     private val dim: Long,
@@ -47,37 +47,36 @@ open class ImageEncoderONNX(
         Log.d(TAG, "Init $TAG")
     }
 
-    override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> =
-        withContext(dispatcher) {
-            Log.d(TAG, "${this@ImageEncoderONNX} Start encoding image...")
+    override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> = withContext(dispatcher) {
+        Log.d(TAG, "${this@ImageEncoderONNX} Start encoding image...")
 
-            val floatBuffer = preprocessor.preprocessBatch(bitmaps) as FloatBuffer
+        val floatBuffer = preprocessor.preprocessBatch(bitmaps) as FloatBuffer
 
-            val inputName = ortSession?.inputNames?.iterator()?.next()
-            val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, dim, dim)
-            ortEnv.use { env ->
-                val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
-                val output: OrtSession.Result? =
-                    ortSession?.run(Collections.singletonMap(inputName, tensor))
-                val resultBuffer = output?.get(0) as OnnxTensor
-                Log.d(TAG, "Finish encoding image!")
+        val inputName = ortSession?.inputNames?.iterator()?.next()
+        val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, dim, dim)
+        ortEnv.use { env ->
+            val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
+            val output: OrtSession.Result? =
+                ortSession?.run(Collections.singletonMap(inputName, tensor))
+            val resultBuffer = output?.get(0) as OnnxTensor
+            Log.d(TAG, "Finish encoding image!")
 
-                val feat = resultBuffer.floatBuffer
-                val embeddingSize = 512
-                val numEmbeddings = feat.capacity() / embeddingSize
-                val embeddings = mutableListOf<FloatArray>()
+            val feat = resultBuffer.floatBuffer
+            val embeddingSize = 512
+            val numEmbeddings = feat.capacity() / embeddingSize
+            val embeddings = mutableListOf<FloatArray>()
 
-                for (i in 0 until numEmbeddings) {
-                    val start = i * embeddingSize
-                    val embeddingArray = FloatArray(embeddingSize)
-                    feat.position(start)
-                    for (j in 0 until embeddingSize) {
-                        embeddingArray[j] = feat[start + j]
-                    }
-                    embeddings.add(embeddingArray)
+            for (i in 0 until numEmbeddings) {
+                val start = i * embeddingSize
+                val embeddingArray = FloatArray(embeddingSize)
+                feat.position(start)
+                for (j in 0 until embeddingSize) {
+                    embeddingArray[j] = feat[start + j]
                 }
-
-                return@withContext embeddings
+                embeddings.add(embeddingArray)
             }
+
+            return@withContext embeddings
         }
+    }
 }

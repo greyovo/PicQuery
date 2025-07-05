@@ -11,16 +11,16 @@ import me.grey.picquery.domain.ImageSearcher
 
 class DisplayViewModel(
     private val photoRepository: PhotoRepository,
-    private val imageSearcher: ImageSearcher,
+    private val imageSearcher: ImageSearcher
 ) : ViewModel() {
 
     private val _photoList = MutableStateFlow<MutableList<Photo>>(mutableListOf())
-    val photoList:StateFlow<MutableList<Photo>> = _photoList
+    val photoList: StateFlow<MutableList<Photo>> = _photoList
 
     fun loadPhotos() {
         viewModelScope.launch {
             val ids = imageSearcher.searchResultIds
-            val list = reorderList(photoRepository.getPhotoListByIds(ids),ids)
+            val list = reorderList(photoRepository.getPhotoListByIds(ids), ids)
             _photoList.emit(list.toMutableList())
         }
     }

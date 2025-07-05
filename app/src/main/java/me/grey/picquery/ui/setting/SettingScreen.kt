@@ -39,20 +39,16 @@ import me.grey.picquery.common.Constants.SOURCE_REPO_URL
 import me.grey.picquery.ui.common.BackButton
 import org.koin.androidx.compose.koinViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(
-    onNavigateBack: () -> Unit,
-    navigateToIndexMgr: () -> Unit,
-) {
+fun SettingScreen(onNavigateBack: () -> Unit, navigateToIndexMgr: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_title)) },
-                navigationIcon = { BackButton { onNavigateBack() } },
+                navigationIcon = { BackButton { onNavigateBack() } }
             )
-        },
+        }
     ) {
         LazyColumn(modifier = Modifier.padding(it)) {
             item {
@@ -83,13 +79,12 @@ private fun UploadLogSettingItem(settingViewModel: SettingViewModel = koinViewMo
                 checked = enable.value,
                 onCheckedChange = { enabled ->
                     settingViewModel.setEnableUploadLog(enabled)
-                },
+                }
             )
         },
         modifier = Modifier.clickable { settingViewModel.setEnableUploadLog(!enable.value) }
     )
 }
-
 
 @Composable
 private fun InformationRow() {
@@ -105,14 +100,17 @@ private fun InformationRow() {
             .padding(bottom = 15.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TextButton(onClick = { launchURL(PRIVACY_URL) }) {
             Text(text = stringResource(R.string.privacy_policy))
         }
         Divider()
         TextButton(onClick = { launchURL(SOURCE_REPO_URL) }) {
-            Icon(imageVector = Icons.Default.Code, contentDescription = stringResource(R.string.github))
+            Icon(
+                imageVector = Icons.Default.Code,
+                contentDescription = stringResource(R.string.github)
+            )
             Box(modifier = Modifier.width(5.dp))
             Text(text = stringResource(R.string.github))
         }

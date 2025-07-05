@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -27,9 +28,8 @@ import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
-import me.grey.picquery.ui.albums.IndexingAlbumState
+import me.grey.picquery.ui.albums.EncodingState
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicInteger
 
 class AlbumManager(
     private val albumRepository: AlbumRepository,
@@ -42,10 +42,10 @@ class AlbumManager(
         private const val TAG = "AlbumViewModel"
     }
 
-    val indexingAlbumState = mutableStateOf(IndexingAlbumState())
+    val encodingState = mutableStateOf(EncodingState())
 
     val isEncoderBusy: Boolean
-        get() = indexingAlbumState.value.isBusy
+        get() = encodingState.value.isBusy
 
     private val albumList = mutableStateListOf<Album>()
     private val _searchableAlbumList = MutableStateFlow<List<Album>>(emptyList())
@@ -64,11 +64,11 @@ class AlbumManager(
 
     private val managerScope = CoroutineScope(
         SupervisorJob() +
-                Dispatchers.Default +
-                CoroutineExceptionHandler { _, exception ->
-                    // 处理协程异常
-                    Timber.tag("AlbumManager").e(exception, "Coroutine error")
-                }
+            Dispatchers.Default +
+            CoroutineExceptionHandler { _, exception ->
+                // 处理协程异常
+                Timber.tag("AlbumManager").e(exception, "Coroutine error")
+            }
     )
 
     fun processAlbums(snapshot: List<Album>) {
@@ -77,7 +77,6 @@ class AlbumManager(
             initDataFlow()
         }
     }
-
 
     suspend fun initAllAlbumList() {
         if (initialized) return
@@ -96,12 +95,12 @@ class AlbumManager(
             // 从数据库中检索已经索引的相册
             // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
             val res = it.toMutableList().sortedByDescending { album: Album -> album.count }
-            _searchableAlbumList.update{res}
+            _searchableAlbumList.update { res }
             Timber.tag(TAG).d("Searchable albums: ${it.size}")
             // 从全部相册减去已经索引的ID，就是未索引的相册
             val unsearchable = albumList.filter { all -> !it.contains(all) }
 
-            _unsearchableAlbumList.update{(unsearchable.toMutableList().sortedByDescending { album: Album -> album.count })}
+            _unsearchableAlbumList.update { (unsearchable.toMutableList().sortedByDescending { album: Album -> album.count }) }
             Timber.tag(TAG).d("Unsearchable albums: ${unsearchable.size}")
         }
     }
@@ -145,8 +144,8 @@ class AlbumManager(
             return
         }
 
-        indexingAlbumState.value =
-            IndexingAlbumState(status = IndexingAlbumState.Status.Loading)
+        encodingState.value =
+            EncodingState(status = EncodingState.Status.Loading)
 
         try {
             val totalPhotos = getTotalPhotoCount(albums)
@@ -158,11 +157,11 @@ class AlbumManager(
                 val chunkSuccess = imageSearcher.encodePhotoListV2(photoChunk) { cur, total, cost ->
                     Log.d(TAG, "Encoded $cur/$total photos, cost: $cost")
                     processedPhotos.addAndGet(cur)
-                    indexingAlbumState.value = indexingAlbumState.value.copy(
+                    encodingState.value = encodingState.value.copy(
                         current = processedPhotos.get(),
                         total = totalPhotos,
                         cost = cost,
-                        status = IndexingAlbumState.Status.Indexing
+                        status = EncodingState.Status.Indexing
                     )
                 }
 
@@ -177,22 +176,22 @@ class AlbumManager(
                 withContext(ioDispatcher) {
                     albumRepository.addAllSearchableAlbum(albums)
                 }
-                indexingAlbumState.value = indexingAlbumState.value.copy(
-                    status = IndexingAlbumState.Status.Finish
+                encodingState.value = encodingState.value.copy(
+                    status = EncodingState.Status.Finish
                 )
             } else {
                 Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error encoding albums", e)
-            indexingAlbumState.value = indexingAlbumState.value.copy(
-                status = IndexingAlbumState.Status.Error
+            encodingState.value = encodingState.value.copy(
+                status = EncodingState.Status.Error
             )
         }
     }
 
     fun clearIndexingState() {
-        indexingAlbumState.value = IndexingAlbumState()
+        encodingState.value = EncodingState()
     }
 
     fun removeSingleAlbumIndex(album: Album) {

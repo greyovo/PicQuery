@@ -1,9 +1,8 @@
 package me.grey.picquery.feature.clip
 
 import android.graphics.Bitmap
-import me.grey.picquery.feature.base.Preprocessor
 import java.nio.FloatBuffer
-
+import me.grey.picquery.feature.base.Preprocessor
 
 class PreprocessorCLIP : Preprocessor {
 
@@ -69,6 +68,4 @@ class PreprocessorCLIP : Preprocessor {
         combinedBuffer.flip()
         return combinedBuffer
     }
-
-
 }

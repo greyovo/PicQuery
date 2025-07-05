@@ -12,6 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import java.util.Collections
+import java.util.SortedMap
+import java.util.TreeMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +40,7 @@ import me.grey.picquery.common.loadThumbnail
 import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.EmbeddingRepository
+import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
@@ -44,21 +50,16 @@ import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.TextEncoder
 import timber.log.Timber
 
-import java.util.Collections
-import java.util.SortedMap
-import java.util.TreeMap
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.system.measureTimeMillis
-
 enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
     Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
-    Text(R.string.search_target_text, Icons.Outlined.Translate),
+    Text(R.string.search_target_text, Icons.Outlined.Translate)
 }
 
 class ImageSearcher(
     private val imageEncoder: ImageEncoder,
     private val textEncoder: TextEncoder,
     private val embeddingRepository: EmbeddingRepository,
+    private val objectBoxEmbeddingRepository: ObjectBoxEmbeddingRepository,
     private val translator: MLKitTranslator,
     private val dispatcher: CoroutineDispatcher
 ) {
@@ -88,7 +89,9 @@ class ImageSearcher(
     }
 
     suspend fun getBaseLine(): FloatArray {
-        val whiteBenchmark = ResourcesCompat.getDrawable(context.resources,R.drawable.white_benchmark,null)?.toBitmap()!!
+        val whiteBenchmark =
+            ResourcesCompat.getDrawable(context.resources, R.drawable.white_benchmark, null)
+                ?.toBitmap()!!
         return imageEncoder.encodeBatch(listOf(whiteBenchmark)).first()
     }
 
@@ -116,7 +119,7 @@ class ImageSearcher(
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun encodePhotoListV2(
         photos: List<Photo>,
-        progressCallback: encodeProgressCallback? = null,
+        progressCallback: encodeProgressCallback? = null
     ): Boolean {
         if (encodingLock) {
             Timber.tag(TAG).w("encodePhotoListV2: Already encoding!")
@@ -141,7 +144,6 @@ class ImageSearcher(
                 }
                 .filterNotNull()
                 .buffer(1000)
-
                 .chunked(100)
                 .onEach { Timber.tag(TAG).d("onEach: ${it.size}") }
                 .onCompletion {
@@ -155,12 +157,13 @@ class ImageSearcher(
                         val deferreds = (0 until loops).map { index ->
                             async {
                                 val start = index * batchSize
-                                if (start>= it.size) return@async
+                                if (start >= it.size) return@async
                                 val end = start + batchSize
                                 saveBitmapsToEmbedding(
                                     it.slice(start until end),
                                     imageEncoder,
-                                    embeddingRepository
+                                    embeddingRepository,
+                                    objectBoxEmbeddingRepository
                                 )
                             }
                         }
@@ -171,9 +174,9 @@ class ImageSearcher(
                     progressCallback?.invoke(
                         cur.get(),
                         photos.size,
-                        cost / it.size,
+                        cost / it.size
                     )
-                    Timber.tag(TAG).d("cost: ${cost}")
+                    Timber.tag(TAG).d("cost: $cost")
                 }
         }
         return true
@@ -182,7 +185,7 @@ class ImageSearcher(
     suspend fun search(
         text: String,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit,
+        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
     ) {
         translator.translate(
             text,
@@ -199,7 +202,31 @@ class ImageSearcher(
                 }
                 Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
                 showToast("翻译模型出错，请反馈给开发者！")
+            }
+        )
+    }
+
+    suspend fun searchV2(
+        text: String,
+        range: List<Album> = searchRange,
+        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
+    ) {
+        translator.translate(
+            text,
+            onSuccess = { translatedText ->
+                CoroutineScope(Dispatchers.Default).launch {
+                    val res = searchWithRangeV2(translatedText, range)
+                    onSuccess(res)
+                }
             },
+            onError = {
+                CoroutineScope(Dispatchers.Default).launch {
+                    val res = searchWithRangeV2(text, range)
+                    onSuccess(res)
+                }
+                Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
+                showToast("翻译模型出错，请反馈给开发者！")
+            }
         )
     }
 
@@ -221,8 +248,8 @@ class ImageSearcher(
     suspend fun searchWithRange(
         image: Bitmap,
         range: List<Album> = searchRange,
-        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit,
-        ) {
+        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
+    ) {
         return withContext(dispatcher) {
             if (searchingLock) {
                 return@withContext
@@ -231,6 +258,76 @@ class ImageSearcher(
             val bitmapFeats = imageEncoder.encodeBatch(mutableListOf(image))
             val results = searchWithVector(range, bitmapFeats[0])
             onSuccess(results)
+        }
+    }
+
+    private suspend fun searchWithRangeV2(
+        text: String,
+        range: List<Album> = searchRange
+    ): MutableList<Pair<Long, Double>> {
+        return withContext(dispatcher) {
+            if (searchingLock) {
+                return@withContext mutableListOf()
+            }
+            searchingLock = true
+            val textFeat = textEncoder.encode(text)
+            Timber.tag(TAG).d("Text feature: ${textFeat.joinToString(",")}")
+            val results = searchWithVectorV2(range, textFeat)
+            return@withContext results
+        }
+    }
+    suspend fun searchWithRangeV2(
+        image: Bitmap,
+        range: List<Album> = searchRange,
+        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
+    ) {
+        return withContext(dispatcher) {
+            if (searchingLock) {
+                return@withContext
+            }
+            searchingLock = true
+            val bitmapFeats = imageEncoder.encodeBatch(mutableListOf(image))
+            val results = searchWithVectorV2(range, bitmapFeats[0])
+            onSuccess(results)
+        }
+    }
+
+    private suspend fun searchWithVectorV2(
+        range: List<Album>,
+        textFeat: FloatArray
+    ): MutableList<Pair<Long, Double>> = withContext(dispatcher) {
+        try {
+            searchingLock = true
+
+            Timber.tag(TAG).d("Search with vector V2")
+
+            val albumIds = if (range.isEmpty() || isSearchAll.value) {
+                Timber.tag(TAG).d("Search from all album")
+                null
+            } else {
+                Timber.tag(TAG).d("Search from: [${range.joinToString { it.label }}]")
+                range.map { it.id }
+            }
+
+            val searchResults = objectBoxEmbeddingRepository.searchNearestVectors(
+                queryVector = textFeat,
+                topK = DEFAULT_TOP_K,
+                similarityThreshold = matchThreshold.value,
+                albumIds = albumIds
+            )
+            Timber.tag(TAG).d("Search result: found ${searchResults.size} pics")
+
+            searchResultIds.clear()
+            val ans = mutableListOf<Long>()
+            searchResults.forEachIndexed { _, pair ->
+                ans.add(pair.get().photoId)
+            }
+            searchResultIds.addAll(ans)
+
+            Timber.tag(TAG).d("Search result: found ${ans.size} pics")
+            return@withContext searchResults.map { it.get().photoId to it.score }.toMutableList()
+        } finally {
+            searchingLock = false
         }
     }
 
@@ -249,14 +346,17 @@ class ImageSearcher(
                 embeddingRepository.getAllEmbeddingsPaginated(SEARCH_BATCH_SIZE)
             } else {
                 Timber.tag(TAG).d("Search from: [${range.joinToString { it.label }}]")
-                embeddingRepository.getEmbeddingsByAlbumIdsPaginated(range.map { it.id }, SEARCH_BATCH_SIZE)
+                embeddingRepository.getEmbeddingsByAlbumIdsPaginated(
+                    range.map { it.id },
+                    SEARCH_BATCH_SIZE
+                )
             }
 
             var totalProcessed = 0
             embeddings.collect { chunk ->
                 Timber.tag(TAG).d("Processing chunk: ${chunk.size}")
                 totalProcessed += chunk.size
-                
+
                 for (emb in chunk) {
                     val sim = calculateSimilarity(emb.data.toFloatArray(), textFeat)
                     Timber.tag(TAG).d("similarity: ${emb.photoId} -> $sim")
@@ -270,7 +370,7 @@ class ImageSearcher(
             Timber.tag(TAG).d("Search result: found ${threadSafeSortedMap.size} pics")
 
             searchResultIds.clear()
-            mutableSetOf<MutableMap. MutableEntry<Double, Long>>().apply {
+            mutableSetOf<MutableMap.MutableEntry<Double, Long>>().apply {
                 addAll(threadSafeSortedMap.entries)
                 searchResultIds.addAll(threadSafeSortedMap.values)
                 Timber.tag(TAG).d("Search result: ${joinToString(",")}")
@@ -304,7 +404,7 @@ class ImageSearcher(
 
         Timber.tag(TAG).d(
             "Search configuration updated: " +
-                    "matchThreshold=${_matchThreshold.floatValue}, topK=${_topK.intValue}"
+                "matchThreshold=${_matchThreshold.floatValue}, topK=${_topK.intValue}"
         )
     }
 }

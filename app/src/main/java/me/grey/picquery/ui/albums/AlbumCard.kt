@@ -25,16 +25,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import me.grey.picquery.data.model.Album
 import java.io.File
-
+import me.grey.picquery.data.model.Album
 
 @Composable
-fun AlbumCard(
-    album: Album,
-    selected: Boolean,
-    onItemClick: (Album) -> Unit,
-) {
+fun AlbumCard(album: Album, selected: Boolean, onItemClick: (Album) -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val padding: Dp by animateDpAsState(if (selected) 10.dp else 6.dp, label = "")
 
@@ -48,7 +43,7 @@ fun AlbumCard(
                 interactionSource = interactionSource,
                 indication = rememberRipple(),
                 onClick = { onItemClick(album) }
-            ),
+            )
         ) {
             Box {
                 AlbumCover(album = album)
@@ -67,7 +62,7 @@ fun AlbumCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = album.count.toString(),
@@ -80,12 +75,9 @@ fun AlbumCard(
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-private fun AlbumCover(
-    album: Album
-) {
+private fun AlbumCover(album: Album) {
     GlideImage(
         modifier = Modifier
             .aspectRatio(1f)
@@ -93,6 +85,6 @@ private fun AlbumCover(
             .clip(MaterialTheme.shapes.medium),
         model = File(album.coverPath),
         contentDescription = album.label,
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
     )
 }

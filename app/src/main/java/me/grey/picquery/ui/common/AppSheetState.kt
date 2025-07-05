@@ -52,17 +52,15 @@ class AppBottomSheetState(
     }
 
     companion object {
-        fun Saver(
-            skipPartiallyExpanded: Boolean = true,
-            confirmValueChange: (SheetValue) -> Boolean = { true }
-        ) = Saver<AppBottomSheetState, Pair<SheetValue, Boolean>>(
-            save = { Pair(it.sheetState.currentValue, it.isVisible) },
-            restore = { savedValue ->
-                AppBottomSheetState(
-                    SheetState(skipPartiallyExpanded, savedValue.first, confirmValueChange),
-                    savedValue.second
-                )
-            }
-        )
+        fun Saver(skipPartiallyExpanded: Boolean = true, confirmValueChange: (SheetValue) -> Boolean = { true }) =
+            Saver<AppBottomSheetState, Pair<SheetValue, Boolean>>(
+                save = { Pair(it.sheetState.currentValue, it.isVisible) },
+                restore = { savedValue ->
+                    AppBottomSheetState(
+                        SheetState(skipPartiallyExpanded, savedValue.first, confirmValueChange),
+                        savedValue.second
+                    )
+                }
+            )
     }
 }

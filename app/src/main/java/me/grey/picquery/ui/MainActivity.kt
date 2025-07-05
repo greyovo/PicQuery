@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Text(text = stringResource(id = R.string.privacy_statement_decline))
                     }
-                },
+                }
             )
         }
     }

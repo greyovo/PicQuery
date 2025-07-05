@@ -1,5 +1,8 @@
 package me.grey.picquery.domain
 
+import java.util.Collections
+import java.util.SortedSet
+import java.util.TreeSet
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +23,6 @@ import me.grey.picquery.data.model.ImageSimilarity
 import me.grey.picquery.data.model.toFloatArray
 import me.grey.picquery.domain.GroupSimilarPhotosUseCase.SimilarityNode
 import timber.log.Timber
-import java.util.Collections
-import java.util.SortedSet
-import java.util.TreeSet
 
 class GroupSimilarPhotosUseCase(
     private val embeddingRepository: EmbeddingRepository,
@@ -35,14 +35,18 @@ class GroupSimilarPhotosUseCase(
         val photoId: Long,
         val similarity: Float
     ) : Comparable<SimilarityNode> {
-        override fun compareTo(other: SimilarityNode): Int =
-            compareValuesBy(this, other,
-                { it.similarity },
-                { it.photoId }
-            )
+        override fun compareTo(other: SimilarityNode): Int = compareValuesBy(
+            this,
+            other,
+            { it.similarity },
+            { it.photoId }
+        )
     }
 
-    private suspend fun execute(photos: List<ImageSimilarity>, dispatcher: CoroutineDispatcher=Dispatchers.IO): List<List<SimilarityNode>> {
+    private suspend fun execute(
+        photos: List<ImageSimilarity>,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ): List<List<SimilarityNode>> {
         val defers = mutableListOf<Deferred<List<List<SimilarityNode>>>>()
         val visit = Collections.synchronizedSet(mutableSetOf<Long>())
         val remainingPhotos = TreeSet<SimilarityNode>(
@@ -74,7 +78,12 @@ class GroupSimilarPhotosUseCase(
                 if (similarPhotos.size >= minGroupSize) {
                     val inputs = similarPhotos.sortedBy { it.photoId }
                     // use doubleCheckSimilarity can also group similar photos
-                    val lists = async(dispatcher) { unionFindSimilarityGroups(inputs,similarityThreshold) }
+                    val lists = async(dispatcher) {
+                        unionFindSimilarityGroups(
+                            inputs,
+                            similarityThreshold
+                        )
+                    }
                     defers.add(lists)
                 }
             }
@@ -90,16 +99,14 @@ class GroupSimilarPhotosUseCase(
      */
     private fun unionFindSimilarityGroups(
         photos: List<SimilarityNode>,
-        similarityThreshold: Float = 0.95f,
+        similarityThreshold: Float = 0.95f
     ): List<List<SimilarityNode>> {
-
         val embeddings = embeddingRepository.getByPhotoIds(photos.map { it.photoId }.toLongArray())
 
         val unionFind = UnionFind(photos.size)
 
         for (i in photos.indices) {
             for (j in i + 1 until photos.size) {
-
                 val similarity = calculateSimilarity(
                     embeddings[i].data.toFloatArray(),
                     embeddings[j].data.toFloatArray()
@@ -118,76 +125,7 @@ class GroupSimilarPhotosUseCase(
         }
     }
 
-
-    /**
-     * Double check the similarity of the photos in the group.
-     * @param similarGroup The group of photos to check for similarity.
-     * @param similarityThreshold The threshold to consider two photos as similar.
-     * @return A list of similar photo groups.
-     */
-    @Suppress("unused")
-    private fun doubleCheckSimilarity(
-        similarGroup: List<SimilarityNode>,
-        similarityThreshold: Float = 0.98f
-    ): List<List<SimilarityNode>> {
-        val embeddings =
-            embeddingRepository.getByPhotoIds(similarGroup.map { it.photoId }.toLongArray())
-                .sortedBy { it.photoId }
-
-        // Create an adjacency list representation of the graph
-        val graph = mutableMapOf<Long, MutableSet<Long>>()
-
-        // Build graph edges based on similarity
-        for (i in similarGroup.indices) {
-            for (j in i + 1 until similarGroup.size) {
-                val similarity = calculateSimilarity(
-                    embeddings[i].data.toFloatArray(),
-                    embeddings[j].data.toFloatArray()
-                )
-
-                if (similarity > similarityThreshold.toDouble()) {
-                    val photoId1 = similarGroup[i].photoId
-                    val photoId2 = similarGroup[j].photoId
-
-                    graph.getOrPut(photoId1) { mutableSetOf() }.add(photoId2)
-                    graph.getOrPut(photoId2) { mutableSetOf() }.add(photoId1)
-                }
-            }
-        }
-
-        // Find connected components (similar photo groups)
-        val visited = mutableSetOf<Long>()
-        val similarGroups = mutableListOf<List<SimilarityNode>>()
-
-        fun dfs(photoId: Long, currentGroup: MutableList<SimilarityNode>) {
-            visited.add(photoId)
-            currentGroup.add(similarGroup.first { it.photoId == photoId })
-
-            graph[photoId]?.forEach { neighborId ->
-                if (neighborId !in visited) {
-                    dfs(neighborId, currentGroup)
-                }
-            }
-        }
-
-        // Perform DFS to find connected components
-        for (node in similarGroup) {
-            if (node.photoId !in visited) {
-                val currentGroup = mutableListOf<SimilarityNode>()
-                dfs(node.photoId, currentGroup)
-
-                // Only add groups with at least 2 photos
-                if (currentGroup.size > 1) {
-                    similarGroups.add(currentGroup)
-                }
-            }
-        }
-
-        return similarGroups
-    }
-
-    suspend operator fun invoke(photos: List<ImageSimilarity>): List<List<SimilarityNode>> =
-        execute(photos)
+    suspend operator fun invoke(photos: List<ImageSimilarity>): List<List<SimilarityNode>> = execute(photos)
 
     companion object {
 
@@ -226,7 +164,7 @@ class SimilarityManager(
         newSimilarityThreshold?.let { similarityThreshold = it }
         newSimilarityDelta?.let { similarityDelta = it }
         newMinGroupSize?.let { minGroupSize = it }
-        
+
         // Recreate the use case with updated parameters
         groupSimilarPhotosUseCase = GroupSimilarPhotosUseCase(
             embeddingRepository,

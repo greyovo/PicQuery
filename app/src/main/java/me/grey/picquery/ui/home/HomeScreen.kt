@@ -67,7 +67,7 @@ fun HomeScreen(
     navigateToSearch: (String) -> Unit,
     navigateToSearchWitImage: (Uri) -> Unit,
     navigateToSetting: () -> Unit,
-    navigateToSimilar: () -> Unit,
+    navigateToSimilar: () -> Unit
 ) {
     InitPermissions()
 
@@ -79,7 +79,7 @@ fun HomeScreen(
     if (albumListSheetState.isVisible) {
         AddAlbumBottomSheet(
             sheetState = albumListSheetState,
-            onStartIndexing = { homeViewModel.doneIndexAlbum() },
+            onStartIndexing = { homeViewModel.doneIndexAlbum() }
         )
     }
 
@@ -124,7 +124,7 @@ private fun MainContent(
             .padding(padding)
             .fillMaxHeight(0.75f),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SearchSection(
             userGuideVisible = userGuideVisible,
@@ -152,10 +152,10 @@ private fun SearchSection(
     AnimatedVisibility(visible = !userGuideVisible) {
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LogoRow(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp))
-            
+
             val searchText by homeViewModel.searchText.collectAsState()
             SearchInput(
                 queryText = searchText,
@@ -169,7 +169,7 @@ private fun SearchSection(
                     if (uri.toString().isNotEmpty()) {
                         navigateToSearchWitImage(uri)
                     }
-                },
+                }
             )
         }
     }
@@ -186,13 +186,13 @@ private fun GuideSection(
         val scope = rememberCoroutineScope()
         val currentStep = remember { homeViewModel.currentGuideState }
         val mediaPermissions = rememberMediaPermissions()
-        
+
         UserGuide(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
             onRequestPermission = { mediaPermissions.launchMultiplePermissionRequest() },
             onOpenAlbum = { scope.launch { albumListSheetState.show() } },
             onFinish = { homeViewModel.finishGuide() },
-            state = currentStep.value,
+            state = currentStep.value
         )
     }
 }
@@ -201,7 +201,7 @@ private fun GuideSection(
 @Composable
 fun rememberMediaPermissions(
     homeViewModel: HomeViewModel = koinViewModel(),
-    albumManager: AlbumManager = koinInject(),
+    albumManager: AlbumManager = koinInject()
 ): MultiplePermissionsState {
     val scope = rememberCoroutineScope()
     return rememberMultiplePermissionsState(
@@ -211,7 +211,7 @@ fun rememberMediaPermissions(
                 homeViewModel.doneRequestPermission()
                 scope.launch { albumManager.initAllAlbumList() }
             }
-        },
+        }
     )
 }
 
@@ -335,7 +335,7 @@ private fun HomeTopBar(
             onDismiss = { showSearchFilterBottomSheet = false }
         )
     }
-    if (showSearchRangeBottomSheet){
+    if (showSearchRangeBottomSheet) {
         SearchRangeBottomSheet(dismiss = {
             showSearchRangeBottomSheet = false
         })

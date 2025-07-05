@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -27,26 +28,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import java.io.File
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.ui.common.BackButton
 import org.koin.androidx.compose.koinViewModel
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimilarPhotosScreen(
     onNavigateBack: () -> Unit,
-    onPhotoClick: (Int, List<Photo>) -> Unit,
+    onPhotoClick: (Int, Int, List<Photo>) -> Unit,
     onConfigUpdate: (Float, Float, Int) -> Unit,
     modifier: Modifier = Modifier,
-    similarPhotosViewModel: SimilarPhotosViewModel = koinViewModel(),
+    similarPhotosViewModel: SimilarPhotosViewModel = koinViewModel()
 ) {
     val uiState by similarPhotosViewModel.uiState.collectAsState()
     val configuration = LocalSimilarityConfig.current
     var showConfigBottomSheet by remember { mutableStateOf(false) }
 
-    var lastConfiguration by remember {
+    val lastConfiguration by remember {
         mutableStateOf(
             SimilarityConfiguration(
                 searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
@@ -62,16 +63,15 @@ fun SimilarPhotosScreen(
         if (configuration.searchImageSimilarityThreshold != lastConfiguration.searchImageSimilarityThreshold ||
             configuration.similarityGroupDelta != lastConfiguration.similarityGroupDelta
         ) {
-
             similarPhotosViewModel.resetState()
-            similarPhotosViewModel.updateSimilarityConfiguration(
-                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-                similarityDelta = configuration.similarityGroupDelta
-            )
-            lastConfiguration = SimilarityConfiguration(
-                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-                similarityGroupDelta = configuration.similarityGroupDelta
-            )
+//            similarPhotosViewModel.updateSimilarityConfiguration(
+//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
+//                similarityDelta = configuration.similarityGroupDelta
+//            )
+//            lastConfiguration = SimilarityConfiguration(
+//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
+//                similarityGroupDelta = configuration.similarityGroupDelta
+//            )
         }
     }
 
@@ -79,7 +79,7 @@ fun SimilarPhotosScreen(
 
     LaunchedEffect(similarPhotosViewModel) {
         if (uiState is SimilarPhotosUiState.Loading && !hasLoadedInitially.value) {
-            similarPhotosViewModel.loadSimilarPhotos()
+            similarPhotosViewModel.findSimilarPhotos()
             hasLoadedInitially.value = true
         }
     }
@@ -119,12 +119,13 @@ fun SimilarPhotosScreen(
                 }
 
                 is SimilarPhotosUiState.Success -> {
+                    val handlePhotoClick: (Int, Int, List<Photo>) -> Unit = { groupIndex, photoIndex, photoGroup ->
+                        onPhotoClick(groupIndex, photoIndex, photoGroup)
+                    }
                     SimilarPhotosGroup(
                         modifier = Modifier.fillMaxSize(),
                         photos = state.similarPhotoGroups,
-                        onPhotoClick = { groupIndex, photo ->
-                            onPhotoClick(groupIndex, photo)
-                        }
+                        onPhotoClick = handlePhotoClick
                     )
                 }
 
@@ -172,7 +173,7 @@ private fun ErrorStateView(state: SimilarPhotosUiState.Error) {
 fun SimilarPhotosGroup(
     modifier: Modifier = Modifier,
     photos: List<List<Photo>>,
-    onPhotoClick: (Int, List<Photo>) -> Unit
+    onPhotoClick: (Int, Int, List<Photo>) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -190,7 +191,7 @@ fun SimilarPhotosGroup(
                     it.timestamp * 1000,
                     DateUtils.MINUTE_IN_MILLIS,
                     DateUtils.WEEK_IN_MILLIS,
-                    DateUtils.FORMAT_SHOW_TIME,
+                    DateUtils.FORMAT_SHOW_TIME
                 ).toString()
             } ?: "Group ${groupIndex + 1}"
 
@@ -220,7 +221,7 @@ fun SimilarPhotosGroup(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                items(photoGroup) { photo ->
+                itemsIndexed(photoGroup) { photoIndex, photo ->
                     PhotoGroupItem(
                         photo = photo,
                         modifier = Modifier
@@ -229,7 +230,7 @@ fun SimilarPhotosGroup(
                                 elevation = 4.dp,
                                 shape = RoundedCornerShape(2.dp)
                             ),
-                        onClick = { onPhotoClick(groupIndex, photoGroup) }
+                        onClick = { onPhotoClick(groupIndex, photoIndex, photoGroup) }
                     )
                 }
             }
@@ -239,11 +240,7 @@ fun SimilarPhotosGroup(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun PhotoGroupItem(
-    photo: Photo,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun PhotoGroupItem(photo: Photo, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
@@ -325,10 +322,7 @@ fun ErrorView(
 }
 
 @Composable
-fun EmptyStateView(
-    message: String = "No photos to display",
-    icon: ImageVector = Icons.Outlined.ImageNotSupported
-) {
+fun EmptyStateView(message: String = "No photos to display", icon: ImageVector = Icons.Outlined.ImageNotSupported) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -358,10 +352,7 @@ fun EmptyStateView(
 }
 
 @Composable
-fun GenericErrorView(
-    message: String? = "An unexpected error occurred",
-    onRetry: (() -> Unit)? = null
-) {
+fun GenericErrorView(message: String? = "An unexpected error occurred", onRetry: (() -> Unit)? = null) {
     ErrorView(
         title = "Oops! Something went wrong",
         message = message,

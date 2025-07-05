@@ -1,11 +1,10 @@
 package me.grey.picquery.ui.albums
 
-
-data class IndexingAlbumState(
+data class EncodingState(
     val status: Status = Status.None,
     val total: Int = 0,
     val current: Int = 0,
-    val cost: Long = 0, // Time cost for encoding each item
+    val cost: Long = 0 // Time cost for encoding each item
 ) {
     enum class Status {
         None, Loading, Indexing, Finish, Error
@@ -20,7 +19,7 @@ data class IndexingAlbumState(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IndexingAlbumState
+        other as EncodingState
 
         if (status != other.status) return false
         if (total != other.total) return false

@@ -31,3 +31,4 @@ website/docs/.vitepress/cache/
 website/docs/.vitepress/dist/
 website/docs/.vitepress/dist-ssr/
 node_modules/
+/.vscode/

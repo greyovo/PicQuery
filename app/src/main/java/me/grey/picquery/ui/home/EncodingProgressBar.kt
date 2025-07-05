@@ -23,23 +23,21 @@ import androidx.compose.ui.unit.dp
 import me.grey.picquery.R
 import me.grey.picquery.common.calculateRemainingTime
 import me.grey.picquery.domain.AlbumManager
-import me.grey.picquery.ui.albums.IndexingAlbumState
+import me.grey.picquery.ui.albums.EncodingState
 import org.koin.compose.koinInject
 
 @Composable
-fun EncodingProgressBar(
-    albumManager: AlbumManager = koinInject(),
-) {
-    val state by remember { albumManager.indexingAlbumState }
+fun EncodingProgressBar(albumManager: AlbumManager = koinInject()) {
+    val state by remember { albumManager.encodingState }
     var progress = (state.current.toDouble() / state.total).toFloat()
     if (progress.isNaN()) progress = 0.0f
-    val finished = state.status == IndexingAlbumState.Status.Finish
+    val finished = state.status == EncodingState.Status.Finish
 
     fun onClickOk() {
         albumManager.clearIndexingState()
     }
 
-    AnimatedVisibility(visible = state.status != IndexingAlbumState.Status.None) {
+    AnimatedVisibility(visible = state.status != EncodingState.Status.None) {
         BottomAppBar {
             Column(
                 Modifier
@@ -49,7 +47,7 @@ fun EncodingProgressBar(
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = stringResource(
@@ -68,16 +66,19 @@ fun EncodingProgressBar(
                         enabled = finished
                     ) {
                         Text(
-                            text = if (finished) stringResource(R.string.finish_button)
-                            else stringResource(R.string.estimate_remain_time) +
+                            text = if (finished) {
+                                stringResource(R.string.finish_button)
+                            } else {
+                                stringResource(R.string.estimate_remain_time) +
                                     " ${DateUtils.formatElapsedTime(remain)}"
+                            }
                         )
                     }
                 }
                 Box(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
                     progress = { progress },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

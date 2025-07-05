@@ -32,7 +32,8 @@ class PreprocessorMobileCLIPv2 : Preprocessor {
         tensorImage = imageProcessor.process(tensorImage)
 
         val tensor = TensorBuffer.createFixedSize(
-            intArrayOf(1, 3, IMAGE_SIZE, IMAGE_SIZE), DataType.FLOAT32
+            intArrayOf(1, 3, IMAGE_SIZE, IMAGE_SIZE),
+            DataType.FLOAT32
         )
         tensor.loadBuffer(tensorImage.buffer)
         return tensor

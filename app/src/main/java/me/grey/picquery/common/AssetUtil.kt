@@ -1,12 +1,12 @@
 package me.grey.picquery.common
 
 import android.content.Context
+import java.io.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.*
 
 object AssetUtil {
 
@@ -30,7 +30,7 @@ object AssetUtil {
                 }
             }.fold(
                 left = { Timber.tag(TAG).e(it, "copyAssetsFolder: ") },
-                right = { Timber.tag(TAG).d("copyAssetsFolder: Success") },
+                right = { Timber.tag(TAG).d("copyAssetsFolder: Success") }
             )
         }
     }
@@ -83,7 +83,6 @@ object AssetUtil {
                 }
                 os.flush()
             }
-
         }
     }
 

@@ -3,6 +3,9 @@ package me.grey.picquery.feature.mobileclip2
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import java.io.FileNotFoundException
+import java.nio.FloatBuffer
+import kotlin.system.measureTimeMillis
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.ImageEncoder
 import org.tensorflow.lite.DataType
@@ -10,18 +13,12 @@ import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.gpu.GpuDelegateFactory
-
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import timber.log.Timber
-import java.io.FileNotFoundException
-import java.nio.FloatBuffer
-import kotlin.system.measureTimeMillis
-
 
 class ImageEncoderMobileCLIPv2(context: Context, private val preprocessor: PreprocessorMobileCLIPv2) :
     ImageEncoder {
     private val interpreter: Interpreter
-
 
     companion object {
         private const val TAG = "ImageEncoderLiteRT"

@@ -1,11 +1,11 @@
 package me.grey.picquery.data.data_source
 
+import java.util.concurrent.LinkedBlockingDeque
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Embedding
-import java.util.concurrent.LinkedBlockingDeque
 
 class EmbeddingRepository(
     private val dataSource: EmbeddingDao
@@ -88,7 +88,7 @@ class EmbeddingRepository(
         return dataSource.upsertAll(list)
     }
 
-    fun removeByAlbum(album: Album){
+    fun removeByAlbum(album: Album) {
         return dataSource.removeByAlbumId(album.id)
     }
 }

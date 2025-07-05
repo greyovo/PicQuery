@@ -44,20 +44,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import java.io.File
 import me.grey.picquery.R
 import me.grey.picquery.data.model.Photo
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.koin.androidx.compose.koinViewModel
-import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayScreen(
-    initialPage: Int,
-    onNavigateBack: () -> Unit,
-    displayViewModel: DisplayViewModel = koinViewModel()
-) {
+fun DisplayScreen(initialPage: Int, onNavigateBack: () -> Unit, displayViewModel: DisplayViewModel = koinViewModel()) {
     val photoList by displayViewModel.photoList.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -95,15 +91,12 @@ fun DisplayScreen(
                         }
                     }
                 )
-
             }
-
         }
     ) {
         it.apply { }
         HorizontalPager(state = pagerState) { index ->
             ZoomablePagerImage(photo = photoList[index]) {
-
             }
         }
     }
@@ -120,7 +113,7 @@ private fun TopPhotoInfoBar(currentPhoto: Photo) {
             text = currentPhoto.label,
             style = titleStyle,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            overflow = TextOverflow.Ellipsis
         )
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -147,27 +140,20 @@ private fun TopPhotoInfoBar(currentPhoto: Photo) {
                     currentPhoto.timestamp * 1000,
                     DateUtils.MINUTE_IN_MILLIS,
                     DateUtils.WEEK_IN_MILLIS,
-                    DateUtils.FORMAT_SHOW_TIME,
+                    DateUtils.FORMAT_SHOW_TIME
                 ).toString(),
-                style = bodyStyle,
+                style = bodyStyle
             )
         }
-
     }
 }
 
-
-
 @OptIn(
-    ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalGlideComposeApi::class
 )
 @Composable
-fun ZoomablePagerImage(
-    modifier: Modifier = Modifier,
-    photo: Photo,
-    maxScale: Float = 5f,
-    onItemClick: () -> Unit
-) {
+fun ZoomablePagerImage(modifier: Modifier = Modifier, photo: Photo, maxScale: Float = 5f, onItemClick: () -> Unit) {
     val zoomState = rememberZoomState(maxScale = maxScale)
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -188,7 +174,6 @@ fun ZoomablePagerImage(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onDoubleClick = {
-
                     },
                     onClick = onItemClick,
                     onLongClick = { showDialog = true }
@@ -196,18 +181,13 @@ fun ZoomablePagerImage(
                 .zoomable(zoomState = zoomState),
             model = File(photo.path),
             contentDescription = photo.label,
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Fit
         )
     }
 }
 
 @Composable
-private fun openWithExternalApp(
-    callback:() -> Unit,
-    photo: Photo,
-    context: Context
-) {
-
+private fun openWithExternalApp(callback: () -> Unit, photo: Photo, context: Context) {
     AlertDialog(
         onDismissRequest = { callback() },
         title = { Text(stringResource(R.string.open_with_external_app)) },
@@ -230,5 +210,4 @@ private fun openWithExternalApp(
             }
         }
     )
-
 }

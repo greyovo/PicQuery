@@ -1,8 +1,8 @@
 package me.grey.picquery.feature.mobileclip
 
 import android.graphics.Bitmap
-import me.grey.picquery.feature.base.Preprocessor
 import java.nio.FloatBuffer
+import me.grey.picquery.feature.base.Preprocessor
 
 class PreprocessorMobileCLIP : Preprocessor {
 

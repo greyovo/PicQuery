@@ -2,9 +2,11 @@ package me.grey.picquery.common
 
 import androidx.work.WorkManager
 import me.grey.picquery.data.AppDatabase
+import me.grey.picquery.data.ObjectBoxDatabase
 import me.grey.picquery.data.dao.EmbeddingDao
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
+import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
@@ -35,10 +37,13 @@ private val viewModelModules = module {
         DisplayViewModel(photoRepository = get(), imageSearcher = get())
     }
 
-
     viewModel { SettingViewModel(preferenceRepository = get()) }
-    viewModel { SimilarPhotosViewModel(get(),get(),get(),get()) }
-    viewModel { PhotoDetailViewModel(get(),get()) }
+
+    viewModel { PhotoDetailViewModel(get(), get()) }
+
+    single {
+        SimilarPhotosViewModel(get(), get(), get(), get(), get())
+    }
 }
 
 private val dataModules = module {
@@ -50,6 +55,11 @@ private val dataModules = module {
     single { get<AppDatabase>().imageSimilarityDao() }
     single { AlbumRepository(androidContext().contentResolver, database = get()) }
     single { EmbeddingRepository(dataSource = get()) }
+    single {
+        ObjectBoxEmbeddingRepository(
+            dataSource = ObjectBoxDatabase.getDatabase().embeddingDao()
+        )
+    }
     single { PhotoRepository(androidContext()) }
     single { PreferenceRepository() }
 }
@@ -60,6 +70,7 @@ private val domainModules = module {
             imageEncoder = get(),
             textEncoder = get(),
             embeddingRepository = get(),
+            objectBoxEmbeddingRepository = get(),
             translator = MLKitTranslator(),
             dispatcher = get()
         )
@@ -76,7 +87,7 @@ private val domainModules = module {
 
     single { MLKitTranslator() }
 
-    single { SimilarityManager(get(),get()) }
+    single { SimilarityManager(get(), get()) }
 }
 
 val workManagerModule = module {
@@ -84,5 +95,11 @@ val workManagerModule = module {
 }
 
 // need inject encoder here
-val AppModules = listOf(dispatchersKoinModule, viewModelModules, dataModules, modulesCLIP, domainModules, workManagerModule)
-
+val AppModules = listOf(
+    dispatchersKoinModule,
+    viewModelModules,
+    dataModules,
+    modulesCLIP,
+    domainModules,
+    workManagerModule
+)

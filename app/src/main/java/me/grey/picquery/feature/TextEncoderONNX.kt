@@ -5,10 +5,10 @@ import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
 import android.util.Log
-import me.grey.picquery.common.AssetUtil
-import me.grey.picquery.feature.base.TextEncoder
 import java.nio.IntBuffer
 import java.nio.LongBuffer
+import me.grey.picquery.common.AssetUtil
+import me.grey.picquery.feature.base.TextEncoder
 
 abstract class TextEncoderONNX(private val context: Context) : TextEncoder {
     private val TAG = this.javaClass.simpleName

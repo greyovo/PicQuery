@@ -43,7 +43,7 @@ import org.koin.compose.koinInject
 fun SearchFilterBottomSheet(
     sheetState: AppBottomSheetState,
     imageSearcher: ImageSearcher = koinInject(),
-    albumManager: AlbumManager = koinInject(),
+    albumManager: AlbumManager = koinInject()
 ) {
     val scope = rememberCoroutineScope()
     val candidates = albumManager.searchableAlbumList.value.toMutableStateList()
@@ -68,7 +68,7 @@ fun SearchFilterBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = { closeFilter() },
-        sheetState = sheetState.sheetState,
+        sheetState = sheetState.sheetState
     ) {
         ListItem(
             headlineContent = {
@@ -96,7 +96,7 @@ fun SearchFilterBottomSheet(
             trailingContent = {
                 Switch(
                     checked = searchAll.value,
-                    onCheckedChange = { searchAll.value = it },
+                    onCheckedChange = { searchAll.value = it }
                 )
             }
         )
@@ -105,12 +105,12 @@ fun SearchFilterBottomSheet(
             EmptyAlbumTips(onClose = { closeFilter() })
         } else {
             Box(modifier = Modifier.padding(bottom = 55.dp)) {
-                SearchAbleAlbums(
+                SearchFilterAlbums(
                     enabled = !searchAll.value,
                     candidates = candidates,
                     selectedList = selectedList,
                     onAdd = { selectedList.add(it) },
-                    onRemove = { selectedList.remove(it) },
+                    onRemove = { selectedList.remove(it) }
                 )
             }
         }
@@ -122,14 +122,13 @@ fun SearchFilterBottomSheet(
     ExperimentalMaterial3Api::class
 )
 @Composable
-private fun SearchAbleAlbums(
+private fun SearchFilterAlbums(
     enabled: Boolean,
     candidates: List<Album>,
     selectedList: List<Album>,
     onAdd: (Album) -> Unit,
-    onRemove: (Album) -> Unit,
+    onRemove: (Album) -> Unit
 ) {
-
     FlowRow(
         Modifier.padding(horizontal = 12.dp)
     ) {
@@ -141,7 +140,7 @@ private fun SearchAbleAlbums(
                 iconColor = MaterialTheme.colorScheme.primary,
                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
             )
 
             ElevatedFilterChip(
@@ -156,7 +155,7 @@ private fun SearchAbleAlbums(
                         } else {
                             Icons.Outlined.AddCircleOutline
                         },
-                        contentDescription = "",
+                        contentDescription = ""
                     )
                 },
                 selected = selected.value,

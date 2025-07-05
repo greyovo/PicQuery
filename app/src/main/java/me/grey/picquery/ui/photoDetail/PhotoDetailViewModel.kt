@@ -15,7 +15,7 @@ import me.grey.picquery.domain.SimilarityManager
 class PhotoDetailViewModel(
     private val similarityManager: SimilarityManager,
     private val photoRepository: PhotoRepository,
-    private val  dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
     private val _photoList = MutableStateFlow<List<Photo>>(emptyList())
     val photoList: StateFlow<List<Photo>> = _photoList
@@ -32,7 +32,9 @@ class PhotoDetailViewModel(
                 _photoList.update { photos }
             } else {
                 similarityManager.groupSimilarPhotos().collect {
-                    val updatedSimilarGroup = similarityManager.getSimilarityGroupByIndex(groupIndex)
+                    val updatedSimilarGroup = similarityManager.getSimilarityGroupByIndex(
+                        groupIndex
+                    )
                     if (updatedSimilarGroup != null) {
                         val photos = updatedSimilarGroup.mapNotNull { photoNode ->
                             photoRepository.getPhotoById(photoNode.photoId)

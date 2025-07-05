@@ -37,7 +37,7 @@ class AlbumRepository(
             albumCollection,
             albumProjection,
             null,
-            null,
+            null
         )
         val albumList = mutableListOf<Album>()
         queryAlbums.use { cursor: Cursor? ->
@@ -59,7 +59,7 @@ class AlbumRepository(
                                     label = photo.albumLabel,
                                     coverPath = photo.path,
                                     timestamp = photo.timestamp,
-                                    count = 1,
+                                    count = 1
                                 )
                             )
                         } else {

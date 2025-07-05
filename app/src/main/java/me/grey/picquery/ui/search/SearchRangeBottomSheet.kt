@@ -52,21 +52,21 @@ fun SearchRangeBottomSheet(
     val candidates by albumManager.searchableAlbumList.collectAsState()
     val selectedList = remember { mutableStateListOf<Album>() }
     selectedList.addAll(imageSearcher.searchRange.toList())
-    var searchAll by imageSearcher.isSearchAll
+    val searchAll = remember { mutableStateOf(imageSearcher.isSearchAll.value) }
 
     val canSave = remember {
-        derivedStateOf { searchAll || selectedList.isNotEmpty() }
+        derivedStateOf { searchAll.value || selectedList.isNotEmpty() }
     }
 
     fun saveFilter() {
         scope.launch {
-            imageSearcher.updateRange(selectedList, searchAll)
+            imageSearcher.updateRange(selectedList, searchAll.value)
             dismiss()
         }
     }
 
     ModalBottomSheet(
-        onDismissRequest = dismiss,
+        onDismissRequest = dismiss
     ) {
         ListItem(
             headlineContent = {
@@ -89,12 +89,12 @@ fun SearchRangeBottomSheet(
         )
 
         ListItem(
-            modifier = Modifier.clickable { searchAll = !searchAll },
+            modifier = Modifier.clickable { searchAll.value = !searchAll.value },
             headlineContent = { Text(text = stringResource(R.string.all_albums)) },
             trailingContent = {
                 Switch(
-                    checked = searchAll,
-                    onCheckedChange = { searchAll = it },
+                    checked = searchAll.value,
+                    onCheckedChange = { searchAll.value = it }
                 )
             }
         )
@@ -103,12 +103,12 @@ fun SearchRangeBottomSheet(
             EmptyAlbumTips(onClose = dismiss)
         } else {
             Box(modifier = Modifier.padding(bottom = 55.dp)) {
-                SearchAbleAlbums(
-                    enabled = !searchAll,
+                SearchRangeAlbums(
+                    enabled = !searchAll.value,
                     candidates = candidates,
                     selectedList = selectedList,
                     onAdd = { selectedList.add(it) },
-                    onRemove = { selectedList.remove(it) },
+                    onRemove = { selectedList.remove(it) }
                 )
             }
         }
@@ -117,29 +117,29 @@ fun SearchRangeBottomSheet(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SearchAbleAlbums(
+private fun SearchRangeAlbums(
     enabled: Boolean,
     candidates: List<Album>,
     selectedList: List<Album>,
     onAdd: (Album) -> Unit,
-    onRemove: (Album) -> Unit,
+    onRemove: (Album) -> Unit
 ) {
     FlowRow(modifier = Modifier.padding(horizontal = 12.dp)) {
         val colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,  // 浅色背景
-            labelColor = MaterialTheme.colorScheme.onSurface,  // 文字颜色
-            iconColor = MaterialTheme.colorScheme.onSurfaceVariant,  // 图标颜色
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            labelColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             selectedContainerColor = MaterialTheme.colorScheme.primary,
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
         )
         repeat(candidates.size) { index ->
             val album = candidates[index]
-            val selected by remember { mutableStateOf(selectedList.contains(album)) }
-            AlbumFilterChip(
+            val selected = remember { mutableStateOf(selectedList.contains(album)) }
+            AlbumRangeFilterChip(
                 album = album,
                 enabled = enabled,
-                isSelected = selected,
+                isSelected = selected.value,
                 onAdd = onAdd,
                 onRemove = onRemove,
                 colors = colors
@@ -149,7 +149,7 @@ private fun SearchAbleAlbums(
 }
 
 @Composable
-private fun AlbumFilterChip(
+private fun AlbumRangeFilterChip(
     album: Album,
     enabled: Boolean,
     isSelected: Boolean,
@@ -165,7 +165,7 @@ private fun AlbumFilterChip(
             if (enabled) {
                 selected = !selected
                 if (selected) onAdd(album) else onRemove(album)
-            }else{
+            } else {
                 Toast.makeText(context, "Please turn off select all first!", Toast.LENGTH_SHORT).show()
             }
         },
@@ -179,7 +179,9 @@ private fun AlbumFilterChip(
                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                 )
             }
-        } else null,
+        } else {
+            null
+        },
         modifier = Modifier.padding(8.dp)
     )
 }
