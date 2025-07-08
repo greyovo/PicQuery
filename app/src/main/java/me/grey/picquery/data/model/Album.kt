@@ -30,6 +30,4 @@ data class Album(
     override fun hashCode(): Int {
         return id.hashCode()
     }
-
 }
-

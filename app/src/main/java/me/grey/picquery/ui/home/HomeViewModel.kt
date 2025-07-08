@@ -11,14 +11,14 @@ import me.grey.picquery.domain.ImageSearcher
 
 data class UserGuideTaskState(
     val permissionDone: Boolean = false,
-    val indexDone: Boolean = false,
+    val indexDone: Boolean = false
 ) {
     val allFinished: Boolean
         get() = permissionDone && indexDone
 }
 
 class HomeViewModel(
-    private val imageSearcher: ImageSearcher,
+    private val imageSearcher: ImageSearcher
 ) : ViewModel() {
 
     companion object {
@@ -62,5 +62,4 @@ class HomeViewModel(
     fun finishGuide() {
         userGuideVisible.value = false
     }
-
 }

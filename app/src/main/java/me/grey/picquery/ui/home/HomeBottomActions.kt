@@ -24,15 +24,11 @@ import androidx.compose.ui.unit.dp
 import me.grey.picquery.R
 
 @Composable
-fun HomeBottomActions(
-    onClickManageAlbum: () -> Unit,
-    navigateToSetting: () -> Unit,
-    navigateToSimilar: () -> Unit,
-) {
+fun HomeBottomActions(onClickManageAlbum: () -> Unit, navigateToSetting: () -> Unit, navigateToSimilar: () -> Unit) {
     Row(
         modifier = Modifier.padding(bottom = 15.dp),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         IndexAlbumButton(onClick = onClickManageAlbum)
         VerticalDivider(
@@ -54,8 +50,9 @@ fun HomeBottomActions(
 private fun SettingButton(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
-            imageVector = Icons.Default.Settings, contentDescription = "Settings",
-            tint = MaterialTheme.colorScheme.primary,
+            imageVector = Icons.Default.Settings,
+            contentDescription = "Settings",
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -63,9 +60,9 @@ private fun SettingButton(onClick: () -> Unit) {
 @Composable
 private fun IndexAlbumButton(onClick: () -> Unit) {
     TextButton(
-        onClick = { onClick() },
+        onClick = { onClick() }
     ) {
-        Icon( imageVector = Icons.Default.Photo, contentDescription = "")
+        Icon(imageVector = Icons.Default.Photo, contentDescription = "")
         Box(modifier = Modifier.width(5.dp))
         Text(text = stringResource(R.string.index_album_btn))
     }
@@ -74,13 +71,15 @@ private fun IndexAlbumButton(onClick: () -> Unit) {
 @Composable
 private fun SimilarPhotoButton(onClick: () -> Unit) {
     TextButton(
-        onClick = { onClick() },
+        onClick = { onClick() }
     ) {
-        Icon(modifier = Modifier
-            .height(24.dp)
-            .width(24.dp),
+        Icon(
+            modifier = Modifier
+                .height(24.dp)
+                .width(24.dp),
             painter = painterResource(id = R.drawable.ic_similar),
-            contentDescription = "")
+            contentDescription = ""
+        )
         Box(modifier = Modifier.width(5.dp))
         Text(text = stringResource(R.string.similar_photos))
     }

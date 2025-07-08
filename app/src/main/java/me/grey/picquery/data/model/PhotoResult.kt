@@ -17,10 +17,9 @@ data class PhotoResult(
     val albumLabel: String,
 
     // Similarity Score, for Ranking
-    val score: Float,
+    val score: Float
 ) {
     override fun toString(): String {
         return "PhotoResult(score=$score, id=$id, label='$label', albumLabel=$albumLabel path=$path)"
     }
 }
-

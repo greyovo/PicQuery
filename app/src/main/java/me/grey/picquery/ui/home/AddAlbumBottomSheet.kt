@@ -53,18 +53,19 @@ fun AddAlbumBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = { closeSheet() },
-        sheetState = sheetState.sheetState,
+        sheetState = sheetState.sheetState
     ) {
         val list by albumManager.unsearchableAlbumList.collectAsState()
         if (list.isEmpty()) {
             EmptyAlbumTips(
-                onClose = { closeSheet() },
+                onClose = { closeSheet() }
             )
         } else {
             val selectedList = remember { albumManager.albumsToEncode }
             val noAlbumTips = stringResource(R.string.no_album_selected)
             AlbumSelectionList(
-                list, selectedList,
+                list,
+                selectedList,
                 onStartIndexing = {
                     val snapshot = albumManager.albumsToEncode.toList()
                     albumManager.albumsToEncode.clear()
@@ -88,9 +89,7 @@ fun AddAlbumBottomSheet(
 }
 
 @Composable
-fun EmptyAlbumTips(
-    onClose: () -> Unit
-) {
+fun EmptyAlbumTips(onClose: () -> Unit) {
     Column(
         Modifier
             .height(180.dp)
@@ -111,14 +110,13 @@ fun EmptyAlbumTips(
     }
 }
 
-
 @Composable
 fun AlbumSelectionList(
     list: List<Album>,
     selectedList: List<Album>,
     onStartIndexing: () -> Unit,
     onToggleSelectAll: () -> Unit,
-    onSelectItem: (Album) -> Unit,
+    onSelectItem: (Album) -> Unit
 ) {
     var selectedPhotoCount = 0L
     selectedList.forEach {
@@ -147,10 +145,11 @@ fun AlbumSelectionList(
                 Row {
                     TextButton(onClick = { onToggleSelectAll() }) {
                         Text(
-                            text = if (list.size == selectedList.size)
+                            text = if (list.size == selectedList.size) {
                                 stringResource(R.string.unselect_all)
-                            else
+                            } else {
                                 stringResource(R.string.select_all)
+                            }
                         )
                     }
                     Box(modifier = Modifier.width(5.dp))
@@ -170,7 +169,7 @@ fun AlbumSelectionList(
         content = {
             items(
                 list.size,
-                key = { list[it].id },
+                key = { list[it].id }
             ) { index ->
                 val selected = selectedList.contains(list[index])
                 val item = list[index]
@@ -179,7 +178,7 @@ fun AlbumSelectionList(
                     selected = selected,
                     onItemClick = {
                         onSelectItem(item)
-                    },
+                    }
                 )
             }
         }

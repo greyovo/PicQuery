@@ -1,0 +1,22 @@
+#!/bin/sh
+
+echo "Running ktlint check..."
+./gradlew ktlintCheck --daemon
+
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "ktlint check failed, please fix the above issues before committing"
+  exit 1
+fi
+
+echo "Running detekt..."
+./gradlew detekt --daemon
+
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "detekt check failed, please fix the above issues before committing"
+  exit 1
+fi
+
+echo "All checks passed!"
+exit 0
