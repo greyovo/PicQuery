@@ -1,7 +1,9 @@
 package me.grey.picquery.ui.home
 
 import AppBottomSheetState
+import LogoImage
 import LogoRow
+import LogoText
 import SearchInput
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -284,7 +286,9 @@ private fun HomeTopBar(
     navigateToSetting: () -> Unit
 ) {
     TopAppBar(
-        title = { Text("PicQuery") },
+        title = {
+            LogoText(size = 20f)
+        },
         actions = {
             IconButton(onClick = onClickHelpButton) {
                 Icon(

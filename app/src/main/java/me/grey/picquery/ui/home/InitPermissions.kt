@@ -13,9 +13,12 @@ fun InitPermissions(homeViewModel: HomeViewModel = koinViewModel(), albumManager
     val mediaPermissions = rememberMediaPermissions()
     InitializeEffect {
         if (mediaPermissions.allPermissionsGranted) {
+            // 权限已授予，初始化相册列表
             albumManager.initAllAlbumList()
+            homeViewModel.doneRequestPermission()
         } else {
-            homeViewModel.showUserGuide()
+            // 没有权限，显示引导（但只在没有数据的情况下）
+            // userGuideVisible 的状态由 HomeViewModel 的 init 决定
         }
     }
 }

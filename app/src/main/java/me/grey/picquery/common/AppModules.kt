@@ -27,7 +27,8 @@ import org.koin.dsl.module
 private val viewModelModules = module {
     viewModel {
         HomeViewModel(
-            imageSearcher = get()
+            imageSearcher = get(),
+            preferenceRepository = get()
         )
     }
     viewModel {
