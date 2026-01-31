@@ -72,7 +72,9 @@ private val domainModules = module {
             embeddingRepository = get(),
             objectBoxEmbeddingRepository = get(),
             translator = MLKitTranslator(),
-            dispatcher = get()
+            dispatcher = get(),
+            preferenceRepository = get(),
+            scope = get(),
         )
     }
     single {

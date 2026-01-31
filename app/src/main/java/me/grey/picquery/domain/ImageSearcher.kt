@@ -41,6 +41,7 @@ import me.grey.picquery.common.preprocess
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
+import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.data.model.Photo
 import me.grey.picquery.data.model.PhotoBitmap
@@ -61,7 +62,9 @@ class ImageSearcher(
     private val embeddingRepository: EmbeddingRepository,
     private val objectBoxEmbeddingRepository: ObjectBoxEmbeddingRepository,
     private val translator: MLKitTranslator,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
+    private val preferenceRepository: PreferenceRepository,
+    private val scope: CoroutineScope
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
@@ -81,6 +84,18 @@ class ImageSearcher(
 
     private val _topK = mutableIntStateOf(DEFAULT_TOP_K)
     val topK: State<Int> = _topK
+
+    private var isInitialized = false
+
+    suspend fun initialize() {
+        if (!isInitialized) {
+            val (savedThreshold, savedTopK) = preferenceRepository.loadSearchConfigurationSync()
+            _matchThreshold.floatValue = savedThreshold
+            _topK.intValue = savedTopK
+            isInitialized = true
+            Timber.tag(TAG).d("Search configuration loaded: matchThreshold=$savedThreshold, topK=$savedTopK")
+        }
+    }
 
     fun updateRange(range: List<Album>, searchAll: Boolean) {
         searchRange.clear()
@@ -311,7 +326,7 @@ class ImageSearcher(
 
             val searchResults = objectBoxEmbeddingRepository.searchNearestVectors(
                 queryVector = textFeat,
-                topK = DEFAULT_TOP_K,
+                topK = topK.value,
                 similarityThreshold = matchThreshold.value,
                 albumIds = albumIds
             )
@@ -386,7 +401,7 @@ class ImageSearcher(
         map: SortedMap<Double, Long>,
         candidate: Pair<Long, Double>
     ) {
-        if (map.size >= DEFAULT_TOP_K) {
+        if (map.size >= topK.value) {
             val min = map.lastKey()
             if (candidate.second >= min) {
                 map[candidate.second] = candidate.first
@@ -399,8 +414,13 @@ class ImageSearcher(
 
     fun updateSearchConfiguration(newMatchThreshold: Float, newTopK: Int) {
         _matchThreshold.floatValue = newMatchThreshold.coerceIn(0.1f, 0.5f)
-
         _topK.intValue = newTopK.coerceIn(10, 100)
+
+        scope.launch {
+            preferenceRepository.saveSearchConfiguration(_matchThreshold.floatValue, _topK.intValue)
+        }
+
+
 
         Timber.tag(TAG).d(
             "Search configuration updated: " +

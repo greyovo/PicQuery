@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.grey.picquery.R
 import me.grey.picquery.data.data_source.PreferenceRepository
+import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.theme.PicQueryThemeM3
 import org.koin.android.ext.android.get
 import org.koin.androidx.compose.KoinAndroidContext
@@ -32,10 +33,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private val preferenceRepo: PreferenceRepository = get()
+    private val imageSearcher: ImageSearcher = get()
 
     @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize search configuration
+        lifecycleScope.launch {
+            imageSearcher.initialize()
+        }
 
         val agreeStateFlow = preferenceRepo.getAgreement()
             .stateIn(
