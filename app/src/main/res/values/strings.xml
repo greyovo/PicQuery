@@ -28,6 +28,11 @@
     <string name="search_placeholder">Describe your photo</string>
     <string name="busy_when_add_album_toast">We are busy! Please add albums later</string>
     <string name="no_album_selected">No albums selected!</string>
+    <string name="quick_actions_title">Quick Actions</string>
+    <string name="quick_actions_subtitle">Quick access to common features</string>
+    <string name="menu_index_albums_short">Index</string>
+    <string name="similar_photos_short">Similar</string>
+    <string name="menu_search_range_short">Range</string>
     <string name="search_range_selection_title">Search Filter</string>
     <string name="search_range_selection_subtitle">Change the search scope</string>
     <string name="all_albums">All albums</string>
