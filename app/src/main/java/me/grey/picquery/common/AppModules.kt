@@ -15,6 +15,7 @@ import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
 import me.grey.picquery.domain.SearchConfigurationService
 import me.grey.picquery.domain.SearchOrchestrator
+import me.grey.picquery.domain.SimilarityConfigurationService
 import me.grey.picquery.domain.SimilarityManager
 import me.grey.picquery.feature.clip.modulesCLIP
 import me.grey.picquery.ui.display.DisplayViewModel
@@ -113,6 +114,13 @@ private val domainModules = module {
         )
     }
 
+    // Similarity configuration service - Manages similarity grouping configuration
+    single {
+        SimilarityConfigurationService(
+            scope = get()
+        )
+    }
+
     // Album manager
     single {
         AlbumManager(
@@ -125,7 +133,13 @@ private val domainModules = module {
     }
 
     // Similarity manager
-    single { SimilarityManager(get(), get()) }
+    single {
+        SimilarityManager(
+            imageSimilarityDao = get(),
+            embeddingRepository = get(),
+            configurationService = get()
+        )
+    }
 }
 
 val workManagerModule = module {

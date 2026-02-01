@@ -176,12 +176,14 @@ fun SimilarPhotosGroup(
     onPhotoClick: (Int, Int, List<Photo>) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        items(photos) { photoGroup ->
-            val groupIndex = photos.indexOf(photoGroup)
+        itemsIndexed(
+            items = photos,
+            key = { index, group -> "${index}_${group.firstOrNull()?.id ?: 0L}" }
+        ) { groupIndex, photoGroup ->
 
             // Use first photo's modification time as group title
             val firstPhoto = photoGroup.firstOrNull()
@@ -195,43 +197,61 @@ fun SimilarPhotosGroup(
                 ).toString()
             } ?: "Group ${groupIndex + 1}"
 
-            // Group header with more prominent styling
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
             ) {
-                Text(
-                    text = groupTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    // Group header with clearer hierarchy
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = groupTitle,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                Text(
-                    text = stringResource(R.string.photo_group_count, photoGroup.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                        AssistChip(
+                            onClick = { },
+                            label = {
+                                Text(
+                                    text = stringResource(R.string.photo_group_count, photoGroup.size),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            },
+                            enabled = false
+                        )
+                    }
 
-            // Horizontal scrollable row of photos in the group
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                itemsIndexed(photoGroup) { photoIndex, photo ->
-                    PhotoGroupItem(
-                        photo = photo,
-                        modifier = Modifier
-                            .size(140.dp)
-                            .shadow(
-                                elevation = 4.dp,
-                                shape = RoundedCornerShape(2.dp)
-                            ),
-                        onClick = { onPhotoClick(groupIndex, photoIndex, photoGroup) }
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Horizontal scrollable row of photos in the group
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp)
+                    ) {
+                        itemsIndexed(
+                            items = photoGroup,
+                            key = { _, photo -> photo.id }
+                        ) { photoIndex, photo ->
+                            PhotoGroupItem(
+                                photo = photo,
+                                modifier = Modifier.size(152.dp),
+                                onClick = { onPhotoClick(groupIndex, photoIndex, photoGroup) }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -246,14 +266,8 @@ fun PhotoGroupItem(photo: Photo, modifier: Modifier = Modifier, onClick: () -> U
     Box(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(
-                RoundedCornerShape(
-                    topStart = 2.dp,
-                    topEnd = 2.dp,
-                    bottomStart = 2.dp,
-                    bottomEnd = 2.dp
-                )
-            )
+            .clip(RoundedCornerShape(12.dp))
+            .shadow(2.dp, RoundedCornerShape(12.dp))
             .combinedClickable(
                 interactionSource = interactionSource,
                 indication = rememberRipple(),

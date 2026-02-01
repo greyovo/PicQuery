@@ -21,7 +21,6 @@ import me.grey.picquery.data.dao.ImageSimilarityDao
 import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.model.ImageSimilarity
 import me.grey.picquery.data.model.toFloatArray
-import me.grey.picquery.domain.GroupSimilarPhotosUseCase.SimilarityNode
 import timber.log.Timber
 
 class GroupSimilarPhotosUseCase(
@@ -143,50 +142,45 @@ class GroupSimilarPhotosUseCase(
 class SimilarityManager(
     private val imageSimilarityDao: ImageSimilarityDao,
     private val embeddingRepository: EmbeddingRepository,
-    private var similarityThreshold: Float = 0.96f,
-    private var similarityDelta: Float = 0.02f,
-    private var minGroupSize: Int = 2,
+    private val configurationService: SimilarityConfigurationService,
     private val pageSize: Int = 1000
 ) {
-    // Update the method to include similarityDelta
     var groupSimilarPhotosUseCase = GroupSimilarPhotosUseCase(
         embeddingRepository,
-        similarityThreshold,
-        similarityDelta,
-        minGroupSize
+        configurationService.getSimilarityThreshold(),
+        configurationService.getSimilarityDelta(),
+        configurationService.getMinGroupSize()
     )
+        private set
 
-    fun updateConfiguration(
-        newSimilarityThreshold: Float? = null,
-        newSimilarityDelta: Float? = null,
-        newMinGroupSize: Int? = null
-    ) {
-        newSimilarityThreshold?.let { similarityThreshold = it }
-        newSimilarityDelta?.let { similarityDelta = it }
-        newMinGroupSize?.let { minGroupSize = it }
+    init {
+        // Watch configuration changes and update use case
+        configurationService.similarityThreshold.hashCode() // Trigger observation if needed
+    }
 
-        // Recreate the use case with updated parameters
+    fun updateUseCaseConfiguration() {
         groupSimilarPhotosUseCase = GroupSimilarPhotosUseCase(
             embeddingRepository,
-            similarityThreshold,
-            similarityDelta,
-            minGroupSize
+            configurationService.getSimilarityThreshold(),
+            configurationService.getSimilarityDelta(),
+            configurationService.getMinGroupSize()
         )
         // Reset cached groups when configuration changes
         synchronized(cacheLock) {
             _cachedSimilarityGroups.clear()
             isFullyLoaded = false
         }
+        Timber.tag("SimilarityManager").d("UseCase configuration updated")
     }
 
     // Rest of the existing code remains the same
-    private val _cachedSimilarityGroups = mutableListOf<List<SimilarityNode>>()
+    private val _cachedSimilarityGroups = mutableListOf<List<GroupSimilarPhotosUseCase.SimilarityNode>>()
     private val cacheLock = Any()
 
     private var isFullyLoaded = false
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun groupSimilarPhotos(): Flow<List<SimilarityNode>> = flow {
+    fun groupSimilarPhotos(): Flow<List<GroupSimilarPhotosUseCase.SimilarityNode>> = flow {
         val cachedGroups = synchronized(cacheLock) {
             _cachedSimilarityGroups.toList()
         }
@@ -200,7 +194,7 @@ class SimilarityManager(
             _cachedSimilarityGroups.clear()
         }
 
-        val allSimilarityGroups = mutableListOf<List<SimilarityNode>>()
+        val allSimilarityGroups = mutableListOf<List<GroupSimilarPhotosUseCase.SimilarityNode>>()
 
         imageSimilarityDao.getAllSimilaritiesFlow(pageSize)
             .map { similaritiesPage ->
@@ -228,7 +222,7 @@ class SimilarityManager(
         }
     }
 
-    fun getSimilarityGroupByIndex(index: Int): List<SimilarityNode>? {
+    fun getSimilarityGroupByIndex(index: Int): List<GroupSimilarPhotosUseCase.SimilarityNode>? {
         synchronized(cacheLock) {
             if (!isFullyLoaded) return null
 
@@ -248,7 +242,7 @@ class SimilarityManager(
     }
 
     @Suppress("unused")
-    fun getAllCachedSimilarityGroups(): List<List<SimilarityNode>> {
+    fun getAllCachedSimilarityGroups(): List<List<GroupSimilarPhotosUseCase.SimilarityNode>> {
         synchronized(cacheLock) {
             return if (isFullyLoaded) _cachedSimilarityGroups.toList() else emptyList()
         }
