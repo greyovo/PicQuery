@@ -26,7 +26,7 @@ plugins {
     // Add ktlint plugin
     id("org.jlleitschuh.gradle.ktlint") version "11.5.1" apply false
     // Add detekt plugin
-    id("io.gitlab.arturbosch.detekt") version "1.23.3" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.23.8" apply false
 }
 
 // Apply ktlint to all projects

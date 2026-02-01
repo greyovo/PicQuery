@@ -1,30 +1,34 @@
 package me.grey.picquery.ui.home
 
-import AppBottomSheetState
+import me.grey.picquery.ui.common.AppBottomSheetState
+import LogoImage
 import LogoRow
+import LogoText
 import SearchInput
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,6 +46,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.InternalTextApi
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -56,7 +61,7 @@ import me.grey.picquery.ui.search.SearchConfigBottomSheet
 import me.grey.picquery.ui.search.SearchRangeBottomSheet
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import rememberAppBottomSheetState
+import me.grey.picquery.ui.common.rememberAppBottomSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +79,18 @@ fun HomeScreen(
     val userGuideVisible = remember { homeViewModel.userGuideVisible }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val albumListSheetState = rememberAppBottomSheetState()
+    val imageSearcher: ImageSearcher = koinInject()
+    var showSearchFilterBottomSheet by remember { mutableStateOf(false) }
+    var showSearchRangeBottomSheet by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val busyHint = stringResource(R.string.busy_when_add_album_toast)
+    val onOpenIndexAlbums: () -> Unit = {
+        if (!albumManager.isEncoderBusy) {
+            scope.launch { albumListSheetState.show() }
+        } else {
+            showToast(busyHint)
+        }
+    }
 
     // Handle bottom sheet
     if (albumListSheetState.isVisible) {
@@ -91,11 +108,11 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(
                 onClickHelpButton = homeViewModel::showUserGuide,
+                onOpenIndexAlbums = onOpenIndexAlbums,
+                onOpenSearchRange = { showSearchRangeBottomSheet = true },
+                onOpenSearchConfig = { showSearchFilterBottomSheet = true },
                 navigateToSimilar = navigateToSimilar,
-                navigateToSetting = navigateToSetting,
-                albumListSheetState = albumListSheetState,
-                albumManager = albumManager,
-                imageSearcher = koinInject()
+                navigateToSetting = navigateToSetting
             )
         }
     ) { padding ->
@@ -105,8 +122,25 @@ fun HomeScreen(
             homeViewModel = homeViewModel,
             navigateToSearch = navigateToSearch,
             navigateToSearchWitImage = navigateToSearchWitImage,
-            albumListSheetState = albumListSheetState
+            albumListSheetState = albumListSheetState,
+            onOpenIndexAlbums = onOpenIndexAlbums,
+            onOpenSearchRange = { showSearchRangeBottomSheet = true },
+            onOpenSearchConfig = { showSearchFilterBottomSheet = true },
+            navigateToSimilar = navigateToSimilar,
+            navigateToSetting = navigateToSetting
         )
+    }
+
+    if (showSearchFilterBottomSheet) {
+        SearchConfigBottomSheet(
+            imageSearcher = imageSearcher,
+            onDismiss = { showSearchFilterBottomSheet = false }
+        )
+    }
+    if (showSearchRangeBottomSheet) {
+        SearchRangeBottomSheet(dismiss = {
+            showSearchRangeBottomSheet = false
+        })
     }
 }
 
@@ -117,20 +151,30 @@ private fun MainContent(
     homeViewModel: HomeViewModel,
     navigateToSearch: (String) -> Unit,
     navigateToSearchWitImage: (Uri) -> Unit,
-    albumListSheetState: AppBottomSheetState
+    albumListSheetState: AppBottomSheetState,
+    onOpenIndexAlbums: () -> Unit,
+    onOpenSearchRange: () -> Unit,
+    onOpenSearchConfig: () -> Unit,
+    navigateToSimilar: () -> Unit,
+    navigateToSetting: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .padding(padding)
-            .fillMaxHeight(0.75f),
-        verticalArrangement = Arrangement.Center,
+            .fillMaxSize(),
+        verticalArrangement = if (userGuideVisible) Arrangement.Center else Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SearchSection(
             userGuideVisible = userGuideVisible,
             homeViewModel = homeViewModel,
             navigateToSearch = navigateToSearch,
-            navigateToSearchWitImage = navigateToSearchWitImage
+            navigateToSearchWitImage = navigateToSearchWitImage,
+            onOpenIndexAlbums = onOpenIndexAlbums,
+            onOpenSearchRange = onOpenSearchRange,
+            onOpenSearchConfig = onOpenSearchConfig,
+            navigateToSimilar = navigateToSimilar,
+            navigateToSetting = navigateToSetting
         )
 
         GuideSection(
@@ -147,10 +191,16 @@ private fun SearchSection(
     userGuideVisible: Boolean,
     homeViewModel: HomeViewModel,
     navigateToSearch: (String) -> Unit,
-    navigateToSearchWitImage: (Uri) -> Unit
+    navigateToSearchWitImage: (Uri) -> Unit,
+    onOpenIndexAlbums: () -> Unit,
+    onOpenSearchRange: () -> Unit,
+    onOpenSearchConfig: () -> Unit,
+    navigateToSimilar: () -> Unit,
+    navigateToSetting: () -> Unit
 ) {
     AnimatedVisibility(visible = !userGuideVisible) {
         Column(
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -170,6 +220,16 @@ private fun SearchSection(
                         navigateToSearchWitImage(uri)
                     }
                 }
+            )
+
+            Spacer(modifier = Modifier.size(24.dp))
+
+            QuickActionsSection(
+                onOpenIndexAlbums = onOpenIndexAlbums,
+                onOpenSearchRange = onOpenSearchRange,
+                onOpenSearchConfig = onOpenSearchConfig,
+                navigateToSimilar = navigateToSimilar,
+                navigateToSetting = navigateToSetting
             )
         }
     }
@@ -219,107 +279,17 @@ fun rememberMediaPermissions(
 @Composable
 private fun HomeTopBar(
     onClickHelpButton: () -> Unit,
+    onOpenIndexAlbums: () -> Unit,
+    onOpenSearchRange: () -> Unit,
+    onOpenSearchConfig: () -> Unit,
     navigateToSimilar: () -> Unit,
-    navigateToSetting: () -> Unit,
-    albumListSheetState: AppBottomSheetState = rememberAppBottomSheetState(),
-    albumManager: AlbumManager = koinInject(),
-    imageSearcher: ImageSearcher = koinInject()
+    navigateToSetting: () -> Unit
 ) {
-    var showSearchFilterBottomSheet by remember { mutableStateOf(false) }
-    var showSearchRangeBottomSheet by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val hint = stringResource(R.string.busy_when_add_album_toast)
     TopAppBar(
-        title = { Text("PicQuery") },
+        title = {
+            LogoText(size = 20f)
+        },
         actions = {
-            Box {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.similar_photos)) },
-                        onClick = {
-                            expanded = false
-                            navigateToSimilar()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painterResource(R.drawable.ic_similar),
-                                contentDescription = "Similar Photos",
-                                modifier = Modifier.size(width = 24.dp, height = 24.dp)
-                            )
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_index_albums)) },
-                        onClick = {
-                            expanded = false
-                            if (!albumManager.isEncoderBusy) {
-                                scope.launch { albumListSheetState.show() }
-                            } else {
-                                showToast(hint)
-                            }
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Index Albums"
-                            )
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_search_range)) },
-                        onClick = {
-                            expanded = false
-                            showSearchRangeBottomSheet = true
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.FilterList,
-                                contentDescription = "Search Range"
-                            )
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.image_search_config_title)) },
-                        onClick = {
-                            expanded = false
-                            showSearchFilterBottomSheet = true
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Search Configuration"
-                            )
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_settings)) },
-                        onClick = {
-                            expanded = false
-                            navigateToSetting()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = "Settings"
-                            )
-                        }
-                    )
-                }
-            }
-
             IconButton(onClick = onClickHelpButton) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Help,
@@ -328,16 +298,108 @@ private fun HomeTopBar(
             }
         }
     )
+}
 
-    if (showSearchFilterBottomSheet) {
-        SearchConfigBottomSheet(
-            imageSearcher = imageSearcher,
-            onDismiss = { showSearchFilterBottomSheet = false }
+@Composable
+private fun QuickActionsSection(
+    onOpenIndexAlbums: () -> Unit,
+    onOpenSearchRange: () -> Unit,
+    onOpenSearchConfig: () -> Unit,
+    navigateToSimilar: () -> Unit,
+    navigateToSetting: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.quick_actions_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            QuickActionButton(
+                title = stringResource(R.string.menu_index_albums_short),
+                onClick = onOpenIndexAlbums
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            QuickActionButton(
+                title = stringResource(R.string.similar_photos_short),
+                onClick = navigateToSimilar
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_similar),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            QuickActionButton(
+                title = stringResource(R.string.menu_search_range_short),
+                onClick = onOpenSearchRange
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.FilterList,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            QuickActionButton(
+                title = stringResource(R.string.menu_settings),
+                onClick = navigateToSetting
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
-    if (showSearchRangeBottomSheet) {
-        SearchRangeBottomSheet(dismiss = {
-            showSearchRangeBottomSheet = false
-        })
+}
+
+@Composable
+private fun QuickActionButton(
+    title: String,
+    onClick: () -> Unit,
+    icon: @Composable () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.medium
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            icon()
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
     }
 }

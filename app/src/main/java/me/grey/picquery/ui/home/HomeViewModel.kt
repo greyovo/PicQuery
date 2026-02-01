@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.grey.picquery.domain.ImageSearcher
+import timber.log.Timber
 
 data class UserGuideTaskState(
     val permissionDone: Boolean = false,
@@ -18,7 +19,8 @@ data class UserGuideTaskState(
 }
 
 class HomeViewModel(
-    private val imageSearcher: ImageSearcher
+    private val imageSearcher: ImageSearcher,
+    private val preferenceRepository: me.grey.picquery.data.data_source.PreferenceRepository
 ) : ViewModel() {
 
     companion object {
@@ -38,10 +40,25 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            if (!imageSearcher.hasEmbedding()) {
-                userGuideVisible.value = true
+            // 检查用户是否已经完成过引导
+            val guideCompleted = preferenceRepository.isUserGuideCompleted()
+            val hasData = imageSearcher.hasEmbedding()
+            
+            if (guideCompleted || hasData) {
+                // 用户已经完成引导或有索引数据，不需要显示引导
+                currentGuideState.value = UserGuideTaskState(
+                    permissionDone = true,
+                    indexDone = true
+                )
+                userGuideVisible.value = false
+                
+                // 如果有数据但标记未设置，更新标记
+                if (hasData && !guideCompleted) {
+                    preferenceRepository.setUserGuideCompleted(true)
+                }
             } else {
-                currentGuideState.value = currentGuideState.value.copy(indexDone = true)
+                // 首次使用，需要显示引导
+                userGuideVisible.value = true
             }
         }
     }
@@ -51,7 +68,7 @@ class HomeViewModel(
     }
 
     fun doneRequestPermission() {
-        Log.d(TAG, "doneRequestPermission")
+        Timber.tag(TAG).d("doneRequestPermission")
         currentGuideState.value = currentGuideState.value.copy(permissionDone = true)
     }
 
@@ -61,5 +78,9 @@ class HomeViewModel(
 
     fun finishGuide() {
         userGuideVisible.value = false
+        // 标记用户已完成引导
+        viewModelScope.launch {
+            preferenceRepository.setUserGuideCompleted(true)
+        }
     }
 }

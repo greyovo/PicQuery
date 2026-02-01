@@ -27,6 +27,11 @@
     <string name="search_placeholder">描述你想要的照片</string>
     <string name="busy_when_add_album_toast">正在索引中，请稍后再添加更多相册</string>
     <string name="no_album_selected">未选择任何相册！</string>
+    <string name="quick_actions_title">快捷功能</string>
+    <string name="quick_actions_subtitle">快速访问常用功能</string>
+    <string name="menu_index_albums_short">索引</string>
+    <string name="similar_photos_short">相似</string>
+    <string name="menu_search_range_short">范围</string>
     <string name="search_range_selection_title">搜索范围</string>
     <string name="search_range_selection_subtitle">从已索引的相册中筛选</string>
     <string name="all_albums">全部相册</string>
@@ -123,4 +128,8 @@
     <string name="select_image_source">选择图片来源</string>
     <string name="system_album">系统相册</string>
     <string name="external_album">外部相册</string>
+
+    <!-- Translation Error Strings -->
+    <string name="translation_error_log">中文->英文翻译出错！\n%1$s</string>
+    <string name="translation_error_toast">翻译模型出错，请反馈给开发者！</string>
 </resources>

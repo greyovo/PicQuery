@@ -21,6 +21,7 @@ class PreferenceRepository {
         val ENABLE_UPLOAD_LOG = booleanPreferencesKey("ENABLE_UPLOAD_LOG")
         val SEARCH_MATCH_THRESHOLD = floatPreferencesKey("SEARCH_MATCH_THRESHOLD")
         val SEARCH_TOP_K = intPreferencesKey("SEARCH_TOP_K")
+        val USER_GUIDE_COMPLETED = booleanPreferencesKey("USER_GUIDE_COMPLETED")
     }
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -66,18 +67,6 @@ class PreferenceRepository {
         }
     }
 
-    suspend fun loadSearchConfiguration(): Pair<Float, Int> {
-        var matchThreshold = 0.20f
-        var topK = 30
-
-        context.dataStore.data.collect { preferences ->
-            matchThreshold = preferences[SEARCH_MATCH_THRESHOLD] ?: 0.20f
-            topK = preferences[SEARCH_TOP_K] ?: 30
-        }
-
-        return Pair(matchThreshold, topK)
-    }
-
     suspend fun loadSearchConfigurationSync(): Pair<Float, Int> {
         val preferences = context.dataStore.data.first()
 
@@ -85,5 +74,16 @@ class PreferenceRepository {
         val topK = preferences[SEARCH_TOP_K] ?: 30
 
         return Pair(matchThreshold, topK)
+    }
+
+    suspend fun isUserGuideCompleted(): Boolean {
+        val preferences = context.dataStore.data.first()
+        return preferences[USER_GUIDE_COMPLETED] ?: false
+    }
+
+    suspend fun setUserGuideCompleted(completed: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[USER_GUIDE_COMPLETED] = completed
+        }
     }
 }

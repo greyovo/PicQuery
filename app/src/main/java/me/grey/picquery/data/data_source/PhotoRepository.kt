@@ -8,8 +8,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import java.io.InputStream
+import timber.log.Timber
 import kotlinx.coroutines.flow.flow
 import me.grey.picquery.data.CursorUtil
 import me.grey.picquery.data.model.Photo
@@ -36,16 +36,24 @@ class PhotoRepository(private val context: Context) {
             MediaStore.VOLUME_EXTERNAL
         )
 
-    private fun getPhotoListByAlbumIdFlow(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
+    /**
+     * Generic paginated photo flow - reusable for both internal and external use
+     * @param albumId Album ID
+     * @param pageSize Photos per batch
+     * @return Flow of photo lists
+     */
+    private fun getPaginatedPhotoFlow(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
         var pageIndex = 0
         while (true) {
             val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
-            if (photos.isEmpty()) {
-                break
-            }
+            if (photos.isEmpty()) break
             emit(photos)
             pageIndex++
         }
+    }
+
+    private fun getPhotoListByAlbumIdFlow(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
+        getPaginatedPhotoFlow(albumId, pageSize).collect { emit(it) }
     }
 
     suspend fun getPhotoListByAlbumId(albumId: Long): List<Photo> {
@@ -128,25 +136,29 @@ class PhotoRepository(private val context: Context) {
     }
 
     fun getPhotoListByIds(ids: List<Long>): List<Photo> {
+        if (ids.isEmpty()) return emptyList()
+
+        // Use parameterized query to prevent SQL injection
+        val placeholders = ids.joinToString(",") { "?" }
         val query = context.contentResolver.query(
             imageCollection,
             imageProjection,
-            "${MediaStore.Images.Media._ID} IN (${ids.joinToString(",")})",
-            arrayOf(),
+            "${MediaStore.Images.Media._ID} IN ($placeholders)",
+            ids.map { it.toString() }.toTypedArray(),
             null
         )
         val result = query.use { cursor: Cursor? ->
             when (cursor?.count) {
                 null -> {
-                    Log.e(TAG, "getPhotoListByIds, cursor null")
+                    Timber.tag(TAG).e("getPhotoListByIds, cursor null")
                     emptyList()
                 }
                 0 -> {
-                    Log.w(TAG, "getPhotoListByIds, need ${ids.size} but found 0!")
+                    Timber.tag(TAG).w("getPhotoListByIds, need ${ids.size} but found 0!")
                     emptyList()
                 }
                 else -> {
-                    // 开始从结果中迭代查找，cursor最初从-1开始
+                    // Iterate through results, cursor starts at -1
                     val photoList = mutableListOf<Photo>()
                     while (cursor.moveToNext()) {
                         photoList.add(CursorUtil.getPhoto(cursor))
@@ -160,9 +172,9 @@ class PhotoRepository(private val context: Context) {
 
     fun getBitmapFromUri(uri: Uri): Bitmap? {
         return try {
-            // 打开输入流
+            // Open input stream
             val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-            // 解码输入流为 Bitmap
+            // Decode input stream to Bitmap
             BitmapFactory.decodeStream(inputStream)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -171,20 +183,10 @@ class PhotoRepository(private val context: Context) {
     }
 
     /**
-     * 分批获取相册中的照片，以 Flow 形式返回
-     * @param albumId 相册ID
-     * @param pageSize 每批照片的数量
-     * @return Flow<List<Photo>> 照片列表流
+     * Get photos from album in batches, returns as Flow
+     * @param albumId Album ID
+     * @param pageSize Number of photos per batch
+     * @return Flow<List<Photo>> Photo list flow
      */
-    fun getPhotoListByAlbumIdPaginated(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = flow {
-        var pageIndex = 0
-        while (true) {
-            val photos = getPhotoListByPage(albumId, pageIndex, pageSize)
-            if (photos.isEmpty()) {
-                break
-            }
-            emit(photos)
-            pageIndex++
-        }
-    }
+    fun getPhotoListByAlbumIdPaginated(albumId: Long, pageSize: Int = DEFAULT_PAGE_SIZE) = getPaginatedPhotoFlow(albumId, pageSize)
 }

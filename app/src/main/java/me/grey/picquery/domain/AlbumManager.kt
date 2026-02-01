@@ -2,7 +2,6 @@
 
 package me.grey.picquery.domain
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -39,7 +38,7 @@ class AlbumManager(
     private val ioDispatcher: CoroutineDispatcher
 ) {
     companion object {
-        private const val TAG = "AlbumViewModel"
+        private const val TAG = "AlbumManager"
     }
 
     val encodingState = mutableStateOf(EncodingState())
@@ -66,7 +65,7 @@ class AlbumManager(
         SupervisorJob() +
             Dispatchers.Default +
             CoroutineExceptionHandler { _, exception ->
-                // 处理协程异常
+                // Handle coroutine exceptions
                 Timber.tag("AlbumManager").e(exception, "Coroutine error")
             }
     )
@@ -81,7 +80,7 @@ class AlbumManager(
     suspend fun initAllAlbumList() {
         if (initialized) return
         withContext(ioDispatcher) {
-            // 本机中的相册
+            // Get all albums from device
             val albums = albumRepository.getAllAlbums()
             albumList.addAll(albums)
             Timber.tag(TAG).d("ALL albums: ${albums.size}")
@@ -92,12 +91,12 @@ class AlbumManager(
 
     suspend fun initDataFlow() {
         searchableAlbumFlow().collect {
-            // 从数据库中检索已经索引的相册
-            // 有些相册可能已经索引但已被删除，因此要从全部相册中筛选，而不能直接返回数据库的结果
+            // Retrieve indexed albums from database
+            // Some albums may have been indexed but deleted, so filter from all albums
             val res = it.toMutableList().sortedByDescending { album: Album -> album.count }
             _searchableAlbumList.update { res }
             Timber.tag(TAG).d("Searchable albums: ${it.size}")
-            // 从全部相册减去已经索引的ID，就是未索引的相册
+            // Unsearchable albums = all albums - indexed albums
             val unsearchable = albumList.filter { all -> !it.contains(all) }
 
             _unsearchableAlbumList.update { (unsearchable.toMutableList().sortedByDescending { album: Album -> album.count }) }
@@ -123,7 +122,7 @@ class AlbumManager(
     }
 
     /**
-     * 获取多个相册的照片流
+     * Get photo flow for multiple albums
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getPhotosFlow(albums: List<Album>) = albums.asFlow()
@@ -132,7 +131,7 @@ class AlbumManager(
         }
 
     /**
-     * 获取相册列表的照片总数
+     * Get total photo count for album list
      */
     private suspend fun getTotalPhotoCount(albums: List<Album>): Int = withContext(ioDispatcher) {
         albums.sumOf { album -> photoRepository.getImageCountInAlbum(album.id) }
@@ -155,7 +154,7 @@ class AlbumManager(
             getPhotosFlow(albums).collect { photoChunk ->
 
                 val chunkSuccess = imageSearcher.encodePhotoListV2(photoChunk) { cur, total, cost ->
-                    Log.d(TAG, "Encoded $cur/$total photos, cost: $cost")
+                    Timber.tag(TAG).d("Encoded $cur/$total photos, cost: $cost")
                     processedPhotos.addAndGet(cur)
                     encodingState.value = encodingState.value.copy(
                         current = processedPhotos.get(),
@@ -167,12 +166,12 @@ class AlbumManager(
 
                 if (!chunkSuccess) {
                     success = false
-                    Log.w(TAG, "Failed to encode photo chunk, size: ${photoChunk.size}")
+                    Timber.tag(TAG).w("Failed to encode photo chunk, size: ${photoChunk.size}")
                 }
             }
 
             if (success) {
-                Log.i(TAG, "Encoded ${albums.size} album(s) with $totalPhotos photos!")
+                Timber.tag(TAG).i("Encoded ${albums.size} album(s) with $totalPhotos photos!")
                 withContext(ioDispatcher) {
                     albumRepository.addAllSearchableAlbum(albums)
                 }
@@ -180,10 +179,10 @@ class AlbumManager(
                     status = EncodingState.Status.Finish
                 )
             } else {
-                Log.w(TAG, "encodePhotoList failed! Maybe too much request.")
+                Timber.tag(TAG).w("encodePhotoList failed! Maybe too much request.")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error encoding albums", e)
+            Timber.tag(TAG).e(e, "Error encoding albums")
             encodingState.value = encodingState.value.copy(
                 status = EncodingState.Status.Error
             )

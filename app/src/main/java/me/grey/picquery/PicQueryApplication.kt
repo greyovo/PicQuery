@@ -1,6 +1,5 @@
 package me.grey.picquery
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import me.grey.picquery.common.AppModules
@@ -13,14 +12,20 @@ import timber.log.Timber
 class PicQueryApplication : Application() {
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        lateinit var context: Context
+        private lateinit var appContext: Context
         private const val TAG = "PicQueryApp"
+
+        /**
+         * 获取 Application Context，避免内存泄漏
+         * 总是返回 applicationContext 而不是直接持有引用
+         */
+        val context: Context
+            get() = appContext.applicationContext
     }
 
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        appContext = this
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }

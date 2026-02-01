@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,7 +40,6 @@ fun AlbumCard(album: Album, selected: Boolean, onItemClick: (Album) -> Unit) {
         Column(
             Modifier.clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(),
                 onClick = { onItemClick(album) }
             )
         ) {
