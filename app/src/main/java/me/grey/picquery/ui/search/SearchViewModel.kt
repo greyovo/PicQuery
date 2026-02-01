@@ -60,12 +60,14 @@ class SearchViewModel(
         }
 
     init {
-        Log.d(TAG, "init!!! SearchViewModel")
+        Timber.tag(TAG).d("init!!! SearchViewModel")
     }
 
     fun onQueryChange(query: String) {
-        _searchState.value = SearchState.READY
+        if (query==_searchText.value) return
+        Timber.tag(TAG).d("onQueryChange: $query")
         _searchText.value = query
+        _searchState.value = SearchState.READY
     }
 
     fun startSearch(text: String) {

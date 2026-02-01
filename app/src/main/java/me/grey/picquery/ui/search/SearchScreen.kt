@@ -1,7 +1,6 @@
 package me.grey.picquery.ui.search
 
 import SearchInput
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -9,7 +8,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.InternalTextApi
 import androidx.core.net.toUri
 import me.grey.picquery.data.model.Photo
@@ -23,27 +23,26 @@ fun SearchScreen(
     onNavigateBack: () -> Unit,
     searchViewModel: SearchViewModel = koinViewModel()
 ) {
-    Log.d("SearchScreen", "initialQuery: $initialQuery")
 
     val resultList by searchViewModel.resultList.collectAsState()
     val searchState by searchViewModel.searchState.collectAsState()
     val resultMap by searchViewModel.resultMap.collectAsState()
-    val initialQueryDone = remember { mutableStateOf(false) }
+    var initialQueryDone by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(initialQuery) {
         searchViewModel.onQueryChange(initialQuery)
     }
     val queryText by searchViewModel.searchText.collectAsState()
 
     LaunchedEffect(queryText) {
-        if (!initialQueryDone.value && queryText.isNotEmpty()) {
+        if (!initialQueryDone && queryText.isNotEmpty()) {
             if (queryText.startsWith("content")) {
                 searchViewModel.startSearch(queryText.toUri())
                 searchViewModel.onQueryChange("")
             } else {
                 searchViewModel.startSearch(queryText)
             }
-            initialQueryDone.value = true
+            initialQueryDone = true
         }
     }
 

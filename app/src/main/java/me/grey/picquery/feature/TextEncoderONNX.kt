@@ -9,6 +9,7 @@ import java.nio.IntBuffer
 import java.nio.LongBuffer
 import me.grey.picquery.common.AssetUtil
 import me.grey.picquery.feature.base.TextEncoder
+import timber.log.Timber
 
 abstract class TextEncoderONNX(private val context: Context) : TextEncoder {
     private val TAG = this.javaClass.simpleName
@@ -22,7 +23,7 @@ abstract class TextEncoderONNX(private val context: Context) : TextEncoder {
     }
 
     init {
-        Log.d(TAG, "Init $TAG")
+        Timber.tag(TAG).d("Init $TAG")
     }
 
     override fun encode(input: String): FloatArray {

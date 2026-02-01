@@ -18,7 +18,6 @@ import me.grey.picquery.domain.SearchOrchestrator
 import me.grey.picquery.domain.SimilarityConfigurationService
 import me.grey.picquery.domain.SimilarityManager
 import me.grey.picquery.feature.clip.modulesCLIP
-import me.grey.picquery.feature.mobileclip2.modulesMobileCLIP2
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.photoDetail.PhotoDetailViewModel
@@ -26,7 +25,7 @@ import me.grey.picquery.ui.search.SearchViewModel
 import me.grey.picquery.ui.setting.SettingViewModel
 import me.grey.picquery.ui.simlilar.SimilarPhotosViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 private val viewModelModules = module {
