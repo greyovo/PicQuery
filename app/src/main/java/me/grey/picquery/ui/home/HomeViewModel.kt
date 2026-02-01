@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.grey.picquery.domain.ImageSearcher
+import timber.log.Timber
 
 data class UserGuideTaskState(
     val permissionDone: Boolean = false,
@@ -67,7 +68,7 @@ class HomeViewModel(
     }
 
     fun doneRequestPermission() {
-        Log.d(TAG, "doneRequestPermission")
+        Timber.tag(TAG).d("doneRequestPermission")
         currentGuideState.value = currentGuideState.value.copy(permissionDone = true)
     }
 

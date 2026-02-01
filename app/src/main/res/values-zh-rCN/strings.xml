@@ -128,4 +128,8 @@
     <string name="select_image_source">选择图片来源</string>
     <string name="system_album">系统相册</string>
     <string name="external_album">外部相册</string>
+
+    <!-- Translation Error Strings -->
+    <string name="translation_error_log">中文->英文翻译出错！\n%1$s</string>
+    <string name="translation_error_toast">翻译模型出错，请反馈给开发者！</string>
 </resources>

@@ -67,18 +67,6 @@ class PreferenceRepository {
         }
     }
 
-    suspend fun loadSearchConfiguration(): Pair<Float, Int> {
-        var matchThreshold = 0.20f
-        var topK = 30
-
-        context.dataStore.data.collect { preferences ->
-            matchThreshold = preferences[SEARCH_MATCH_THRESHOLD] ?: 0.20f
-            topK = preferences[SEARCH_TOP_K] ?: 30
-        }
-
-        return Pair(matchThreshold, topK)
-    }
-
     suspend fun loadSearchConfigurationSync(): Pair<Float, Int> {
         val preferences = context.dataStore.data.first()
 

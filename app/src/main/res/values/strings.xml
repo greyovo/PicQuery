@@ -130,4 +130,8 @@
     <string name="select_image_source">Select Image Source</string>
     <string name="system_album">System Album</string>
     <string name="external_album">External Album</string>
+
+    <!-- Translation Error Strings -->
+    <string name="translation_error_log">Chinese to English translation error!\n%1$s</string>
+    <string name="translation_error_toast">Translation model error, please report to developer!</string>
 </resources>

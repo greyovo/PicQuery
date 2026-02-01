@@ -10,8 +10,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import java.util.Collections
 import java.util.SortedMap
 import java.util.TreeMap
@@ -19,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -51,9 +48,9 @@ import me.grey.picquery.feature.base.ImageEncoder
 import me.grey.picquery.feature.base.TextEncoder
 import timber.log.Timber
 
-enum class SearchTarget(val labelResId: Int, val icon: ImageVector) {
-    Image(R.string.search_target_image, Icons.Outlined.ImageSearch),
-    Text(R.string.search_target_text, Icons.Outlined.Translate)
+sealed class SearchTarget(val labelResId: Int, val icon: ImageVector) {
+    data object Image : SearchTarget(R.string.search_target_image, Icons.Outlined.ImageSearch)
+    data object Text : SearchTarget(R.string.search_target_text, Icons.Outlined.Translate)
 }
 
 class ImageSearcher(
@@ -68,6 +65,7 @@ class ImageSearcher(
 ) {
     companion object {
         private const val TAG = "ImageSearcher"
+
         const val DEFAULT_MATCH_THRESHOLD = 0.20f
         const val DEFAULT_TOP_K = 30
         private const val SEARCH_BATCH_SIZE = 1000
@@ -101,17 +99,6 @@ class ImageSearcher(
         searchRange.clear()
         searchRange.addAll(range.sortedByDescending { it.count })
         isSearchAll.value = searchAll
-    }
-
-    suspend fun getBaseLine(): FloatArray {
-        val whiteBenchmark =
-            ResourcesCompat.getDrawable(context.resources, R.drawable.white_benchmark, null)
-                ?.toBitmap()!!
-        return imageEncoder.encodeBatch(listOf(whiteBenchmark)).first()
-    }
-
-    fun updateTarget(target: SearchTarget) {
-        searchTarget.value = target
     }
 
     suspend fun hasEmbedding(): Boolean {
@@ -197,28 +184,53 @@ class ImageSearcher(
         return true
     }
 
+    /**
+     * Generic helper to handle translation and search with fallback on error.
+     * @param text The text to search for (will be translated if needed)
+     * @param range The album range to search within
+     * @param searchFunction The actual search function to execute
+     * @param onSuccess Callback with search results
+     */
+    private suspend fun <T> translateAndSearch(
+        text: String,
+        range: List<Album>,
+        searchFunction: suspend (String, List<Album>) -> T,
+        onSuccess: suspend (T) -> Unit
+    ) {
+        translator.translate(
+            text,
+            onSuccess = { translatedText ->
+                scope.launch {
+                    val res = searchFunction(translatedText, range)
+                    onSuccess(res)
+                }
+            },
+            onError = { error ->
+                scope.launch {
+                    val res = searchFunction(text, range)
+                    onSuccess(res)
+                }
+                handleError(error)
+            }
+        )
+    }
+
+    /**
+     * Handle translation errors with logging and user notification.
+     */
+    private fun handleError(error: Throwable) {
+        Timber.tag("MLTranslator").e(
+            context.getString(R.string.translation_error_log, error.message)
+        )
+        showToast(context.getString(R.string.translation_error_toast))
+    }
+
     suspend fun search(
         text: String,
         range: List<Album> = searchRange,
         onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
     ) {
-        translator.translate(
-            text,
-            onSuccess = { translatedText ->
-                CoroutineScope(Dispatchers.Default).launch {
-                    val res = searchWithRange(translatedText, range)
-                    onSuccess(res)
-                }
-            },
-            onError = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val res = searchWithRange(text, range)
-                    onSuccess(res)
-                }
-                Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
-                showToast("翻译模型出错，请反馈给开发者！")
-            }
-        )
+        translateAndSearch(text, range, ::searchWithRange, onSuccess)
     }
 
     suspend fun searchV2(
@@ -226,23 +238,7 @@ class ImageSearcher(
         range: List<Album> = searchRange,
         onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
     ) {
-        translator.translate(
-            text,
-            onSuccess = { translatedText ->
-                CoroutineScope(Dispatchers.Default).launch {
-                    val res = searchWithRangeV2(translatedText, range)
-                    onSuccess(res)
-                }
-            },
-            onError = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val res = searchWithRangeV2(text, range)
-                    onSuccess(res)
-                }
-                Timber.tag("MLTranslator").e("中文->英文翻译出错！\n${it.message}")
-                showToast("翻译模型出错，请反馈给开发者！")
-            }
-        )
+        translateAndSearch(text, range, ::searchWithRangeV2, onSuccess)
     }
 
     private suspend fun searchWithRange(
@@ -257,22 +253,6 @@ class ImageSearcher(
             val textFeat = textEncoder.encode(text)
             val results = searchWithVector(range, textFeat)
             return@withContext results
-        }
-    }
-
-    suspend fun searchWithRange(
-        image: Bitmap,
-        range: List<Album> = searchRange,
-        onSuccess: suspend (MutableSet<MutableMap.MutableEntry<Double, Long>>) -> Unit
-    ) {
-        return withContext(dispatcher) {
-            if (searchingLock) {
-                return@withContext
-            }
-            searchingLock = true
-            val bitmapFeats = imageEncoder.encodeBatch(mutableListOf(image))
-            val results = searchWithVector(range, bitmapFeats[0])
-            onSuccess(results)
         }
     }
 
@@ -340,6 +320,7 @@ class ImageSearcher(
             searchResultIds.addAll(ans)
 
             Timber.tag(TAG).d("Search result: found ${ans.size} pics")
+            @Suppress("ReplaceSingleLineLet")
             return@withContext searchResults.map { it.get().photoId to it.score }.toMutableList()
         } finally {
             searchingLock = false
