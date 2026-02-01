@@ -1,6 +1,6 @@
 package me.grey.picquery.ui.home
 
-import AppBottomSheetState
+import me.grey.picquery.ui.common.AppBottomSheetState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

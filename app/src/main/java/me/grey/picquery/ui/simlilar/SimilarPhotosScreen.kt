@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.ImageNotSupported
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -64,14 +63,6 @@ fun SimilarPhotosScreen(
             configuration.similarityGroupDelta != lastConfiguration.similarityGroupDelta
         ) {
             similarPhotosViewModel.resetState()
-//            similarPhotosViewModel.updateSimilarityConfiguration(
-//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-//                similarityDelta = configuration.similarityGroupDelta
-//            )
-//            lastConfiguration = SimilarityConfiguration(
-//                searchImageSimilarityThreshold = configuration.searchImageSimilarityThreshold,
-//                similarityGroupDelta = configuration.similarityGroupDelta
-//            )
         }
     }
 
@@ -270,7 +261,6 @@ fun PhotoGroupItem(photo: Photo, modifier: Modifier = Modifier, onClick: () -> U
             .shadow(2.dp, RoundedCornerShape(12.dp))
             .combinedClickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(),
                 onClick = onClick
             )
     ) {

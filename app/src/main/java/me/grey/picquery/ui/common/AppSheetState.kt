@@ -2,42 +2,40 @@
  * SPDX-FileCopyrightText: 2023 IacobIacob01
  * SPDX-License-Identifier: Apache-2.0
  */
+package me.grey.picquery.ui.common
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberAppBottomSheetState(): AppBottomSheetState {
+    val isVisibleState = rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    return rememberSaveable(saver = AppBottomSheetState.Saver()) {
-        AppBottomSheetState(sheetState)
-    }
+
+    return AppBottomSheetState(sheetState, isVisibleState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 class AppBottomSheetState(
-    val sheetState: SheetState
+    val sheetState: SheetState,
+    private val isVisibleState: MutableState<Boolean>
 ) {
 
-    var isVisible by mutableStateOf(false)
-        private set
-
-    internal constructor(sheetState: SheetState, isVisible: Boolean) : this(sheetState) {
-        this.isVisible = isVisible
-    }
+    val isVisible: Boolean
+        get() = isVisibleState.value
 
     suspend fun show() {
         if (!isVisible) {
-            isVisible = true
+            isVisibleState.value = true
             delay(10)
             sheetState.show()
         }
@@ -47,20 +45,7 @@ class AppBottomSheetState(
         if (isVisible) {
             sheetState.hide()
             delay(10)
-            isVisible = false
+            isVisibleState.value = false
         }
-    }
-
-    companion object {
-        fun Saver(skipPartiallyExpanded: Boolean = true, confirmValueChange: (SheetValue) -> Boolean = { true }) =
-            Saver<AppBottomSheetState, Pair<SheetValue, Boolean>>(
-                save = { Pair(it.sheetState.currentValue, it.isVisible) },
-                restore = { savedValue ->
-                    AppBottomSheetState(
-                        SheetState(skipPartiallyExpanded, savedValue.first, confirmValueChange),
-                        savedValue.second
-                    )
-                }
-            )
     }
 }

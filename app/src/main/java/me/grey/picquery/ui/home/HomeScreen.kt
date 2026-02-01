@@ -1,6 +1,6 @@
 package me.grey.picquery.ui.home
 
-import AppBottomSheetState
+import me.grey.picquery.ui.common.AppBottomSheetState
 import LogoImage
 import LogoRow
 import LogoText
@@ -61,7 +61,7 @@ import me.grey.picquery.ui.search.SearchConfigBottomSheet
 import me.grey.picquery.ui.search.SearchRangeBottomSheet
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
-import rememberAppBottomSheetState
+import me.grey.picquery.ui.common.rememberAppBottomSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
