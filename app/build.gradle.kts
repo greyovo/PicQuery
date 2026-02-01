@@ -119,6 +119,8 @@ dependencies {
     // Image Loading
     implementation(libs.glide)
     implementation(libs.glide.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
 
     // Other Libraries
     implementation(libs.zoomable)

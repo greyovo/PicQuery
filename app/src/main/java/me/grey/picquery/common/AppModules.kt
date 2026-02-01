@@ -10,8 +10,11 @@ import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
+import me.grey.picquery.domain.EmbeddingService
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
+import me.grey.picquery.domain.SearchConfigurationService
+import me.grey.picquery.domain.SearchOrchestrator
 import me.grey.picquery.domain.SimilarityManager
 import me.grey.picquery.feature.clip.modulesCLIP
 import me.grey.picquery.ui.display.DisplayViewModel
@@ -66,18 +69,51 @@ private val dataModules = module {
 }
 
 private val domainModules = module {
+    // Translation service
+    single { MLKitTranslator() }
+
+    // Encoding service - Handles image and text encoding
     single {
-        ImageSearcher(
+        EmbeddingService(
+            context = androidContext(),
             imageEncoder = get(),
             textEncoder = get(),
             embeddingRepository = get(),
             objectBoxEmbeddingRepository = get(),
-            translator = MLKitTranslator(),
-            dispatcher = get(),
-            preferenceRepository = get(),
-            scope = get(),
+            dispatcher = get()
         )
     }
+
+    // Search configuration service - Manages search configuration
+    single {
+        SearchConfigurationService(
+            preferenceRepository = get(),
+            scope = get()
+        )
+    }
+
+    // Search orchestrator - Coordinates search operations
+    single {
+        SearchOrchestrator(
+            embeddingService = get(),
+            configurationService = get(),
+            objectBoxEmbeddingRepository = get(),
+            translator = get(),
+            dispatcher = get(),
+            scope = get()
+        )
+    }
+
+    // Image searcher - External interface for search functionality
+    single {
+        ImageSearcher(
+            embeddingService = get(),
+            configurationService = get(),
+            searchOrchestrator = get()
+        )
+    }
+
+    // Album manager
     single {
         AlbumManager(
             albumRepository = get(),
@@ -88,8 +124,7 @@ private val domainModules = module {
         )
     }
 
-    single { MLKitTranslator() }
-
+    // Similarity manager
     single { SimilarityManager(get(), get()) }
 }
 
