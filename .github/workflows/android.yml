@@ -5,9 +5,21 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Existing release tag to upload the APK to, for example v1.1.4"
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -24,3 +36,63 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew assembleDebug
+
+  release-apk:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.release.tag_name || inputs.release_tag }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Validate signing secrets
+      run: |
+        missing=0
+        for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+          if [ -z "${!name}" ]; then
+            echo "::error::Missing required repository secret: $name"
+            missing=1
+          fi
+        done
+        exit "$missing"
+
+    - name: Decode release keystore
+      run: |
+        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build signed release APK
+      run: |
+        ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file="$RUNNER_TEMP/release.keystore" \
+          -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_PASSWORD" \
+          -Pandroid.injected.signing.key.alias="$ANDROID_KEY_ALIAS" \
+          -Pandroid.injected.signing.key.password="$ANDROID_KEY_PASSWORD"
+
+    - name: Prepare release asset
+      run: |
+        mkdir -p release-assets
+        cp app/build/outputs/apk/release/app-release.apk "release-assets/PicQuery-${RELEASE_TAG}.apk"
+
+    - name: Upload APK to GitHub Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release upload "$RELEASE_TAG" "release-assets/PicQuery-${RELEASE_TAG}.apk" --clobber
