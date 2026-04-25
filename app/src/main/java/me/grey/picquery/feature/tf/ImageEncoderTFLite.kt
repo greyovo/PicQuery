@@ -7,12 +7,14 @@ import me.grey.picquery.feature.mobileclip2.PreprocessorMobileCLIPv2
 class ImageEncoderTFLite(
     context: Context,
     preprocessor: PreprocessorMobileCLIPv2,
-    dispatcher: CoroutineDispatcher
+    dispatcher: CoroutineDispatcher,
+    runtimeConfig: TFLiteRuntimeConfig = TFLiteRuntimeConfig.Default
 ) : ImageEncoderTF(
     context = context,
     modelPath = MODEL_PATH,
     preprocessor = preprocessor,
-    dispatcher = dispatcher
+    dispatcher = dispatcher,
+    runtimeConfig = runtimeConfig
 ) {
     companion object {
         const val MODEL_PATH = "image_model.tflite"

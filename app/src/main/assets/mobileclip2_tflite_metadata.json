@@ -5,6 +5,7 @@
   "image": {
     "file": "image_model.tflite",
     "input_dtype": "float32",
+    "quantization": "none",
     "input_shape": [
       1,
       3,
@@ -13,8 +14,9 @@
     ]
   },
   "text": {
-    "file": "text_model.tflite",
+    "file": "text_model_dynamic_wi8.tflite",
     "input_dtype": "int32",
+    "quantization": "dynamic_wi8_afp32",
     "input_shape": [
       1,
       77

@@ -12,7 +12,7 @@ import timber.log.Timber
 
 abstract class TextEncoderTF(
     private val context: Context,
-    useGpuDelegate: Boolean = true
+    private val runtimeConfig: TFLiteRuntimeConfig = TFLiteRuntimeConfig.Default
 ) : TextEncoder {
     abstract val modelPath: String
 
@@ -21,11 +21,23 @@ abstract class TextEncoderTF(
         TFLiteInterpreterSession.fromAsset(
             context = context,
             modelPath = modelPath,
-            useGpuDelegate = useGpuDelegate
+            runtimeConfig = runtimeConfig
         )
     }
     private val session: TFLiteInterpreterSession by sessionDelegate
     private val interpreter get() = session.interpreter
+    private val inputDataType by lazy {
+        interpreter.getInputTensor(0).dataType()
+    }
+    private val outputDataType by lazy {
+        interpreter.getOutputTensor(0).dataType()
+    }
+    private val outputElementCount by lazy {
+        TFLiteTensorShape.outputElementCount(interpreter.getOutputTensor(0).shape())
+    }
+    private val outputBuffer = ThreadLocal.withInitial {
+        FloatBuffer.allocate(outputElementCount)
+    }
 
     init {
         Timber.tag(TAG).d("Init $TAG")
@@ -33,20 +45,19 @@ abstract class TextEncoderTF(
 
     override fun encode(input: String): FloatArray {
         val tokenIds = tokenizer.tokenize(input).first
-        val inputBuffer = tokenIds.toInputBuffer(interpreter.getInputTensor(0).dataType())
-        val outputTensor = interpreter.getOutputTensor(0)
-        require(outputTensor.dataType() == DataType.FLOAT32) {
-            "Unsupported TF text output type: ${outputTensor.dataType()}"
+        val inputBuffer = tokenIds.toInputBuffer(inputDataType)
+        require(outputDataType == DataType.FLOAT32) {
+            "Unsupported TF text output type: $outputDataType"
         }
 
-        val outputBuffer = FloatBuffer.allocate(
-            TFLiteTensorShape.outputElementCount(outputTensor.shape())
-        )
-        interpreter.run(inputBuffer, outputBuffer)
-        outputBuffer.rewind()
+        val threadOutputBuffer = outputBuffer.get().apply { clear() }
+        synchronized(interpreter) {
+            interpreter.run(inputBuffer, threadOutputBuffer)
+        }
+        threadOutputBuffer.rewind()
 
-        val output = FloatArray(outputBuffer.capacity())
-        outputBuffer.get(output)
+        val output = FloatArray(outputElementCount)
+        threadOutputBuffer.get(output)
         return output
     }
 

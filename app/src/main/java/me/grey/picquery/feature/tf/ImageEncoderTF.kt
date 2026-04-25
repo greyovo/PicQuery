@@ -17,14 +17,20 @@ open class ImageEncoderTF(
     modelPath: String,
     private val preprocessor: Preprocessor,
     private val dispatcher: CoroutineDispatcher,
-    useGpuDelegate: Boolean = true
+    runtimeConfig: TFLiteRuntimeConfig = TFLiteRuntimeConfig.Default
 ) : ImageEncoder {
     private val session = TFLiteInterpreterSession.fromAsset(
         context = context,
         modelPath = modelPath,
-        useGpuDelegate = useGpuDelegate
+        runtimeConfig = runtimeConfig
     )
     private val interpreter = session.interpreter
+    private val outputElementCount = TFLiteTensorShape.outputElementCount(
+        interpreter.getOutputTensor(0).shape()
+    )
+    private val outputBuffer = ThreadLocal.withInitial {
+        FloatBuffer.allocate(outputElementCount)
+    }
 
     override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> = withContext(dispatcher) {
         bitmaps.map { bitmap ->
@@ -38,13 +44,14 @@ open class ImageEncoderTF(
 
     private fun encodeInput(input: Any): FloatArray {
         val inputBuffer = input.asTFLiteInputBuffer()
-        val outputShape = interpreter.getOutputTensor(0).shape()
-        val outputBuffer = FloatBuffer.allocate(TFLiteTensorShape.outputElementCount(outputShape))
-        interpreter.run(inputBuffer, outputBuffer)
-        outputBuffer.rewind()
+        val threadOutputBuffer = outputBuffer.get().apply { clear() }
+        synchronized(interpreter) {
+            interpreter.run(inputBuffer, threadOutputBuffer)
+        }
+        threadOutputBuffer.rewind()
 
-        val output = FloatArray(outputBuffer.capacity())
-        outputBuffer.get(output)
+        val output = FloatArray(outputElementCount)
+        threadOutputBuffer.get(output)
         Timber.tag(TAG).d("Finish encoding image with TF model")
         return output
     }

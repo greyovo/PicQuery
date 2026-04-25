@@ -25,30 +25,33 @@ class TFLiteInterpreterSession private constructor(
         fun fromAsset(
             context: Context,
             modelPath: String,
-            useGpuDelegate: Boolean = true,
-            numThreads: Int = 4
+            runtimeConfig: TFLiteRuntimeConfig = TFLiteRuntimeConfig.Default
         ): TFLiteInterpreterSession {
             val modelFile = AssetUtil.assetFile(context, modelPath)
                 ?: throw FileNotFoundException("Model: $modelPath not exist.")
             val options = Interpreter.Options()
-            val gpuDelegate = configureDelegate(options, useGpuDelegate, numThreads)
+            val gpuDelegate = configureDelegate(options, runtimeConfig)
             return TFLiteInterpreterSession(Interpreter(modelFile, options), gpuDelegate)
         }
 
         private fun configureDelegate(
             options: Interpreter.Options,
-            useGpuDelegate: Boolean,
-            numThreads: Int
+            runtimeConfig: TFLiteRuntimeConfig
         ): GpuDelegate? {
-            if (!useGpuDelegate) {
-                options.setNumThreads(numThreads)
+            options.setNumThreads(runtimeConfig.numThreads)
+
+            if (!runtimeConfig.useGpuDelegate) {
+                Timber.tag(TAG).d(
+                    "Run TFLite on CPU with ${runtimeConfig.numThreads} threads"
+                )
                 return null
             }
 
             val compatList = CompatibilityList()
             if (!compatList.isDelegateSupportedOnThisDevice) {
-                Timber.tag(TAG).d("GPU is not supported, run on $numThreads threads on CPU")
-                options.setNumThreads(numThreads)
+                Timber.tag(TAG).d(
+                    "GPU is not supported, run on ${runtimeConfig.numThreads} threads on CPU"
+                )
                 return null
             }
 
