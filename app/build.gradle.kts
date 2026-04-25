@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.kapt)
     id("io.objectbox")
     id("io.gitlab.arturbosch.detekt")
 }
@@ -57,21 +58,18 @@ android {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
-
-    sourceSets {
-        getByName("debug") {
-            java.srcDir("build/generated/source/kapt/debug")
-        }
-        getByName("release") {
-            java.srcDir("build/generated/source/kapt/release")
-        }
-    }
 }
 
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
+}
+
+val kotlinVersion = "2.3.21"
+
+configurations.matching { it.name == "composeMappingProducerClasspath" }.configureEach {
+    resolutionStrategy.force("org.jetbrains.kotlin:compose-group-mapping:$kotlinVersion")
 }
 
 dependencies {
