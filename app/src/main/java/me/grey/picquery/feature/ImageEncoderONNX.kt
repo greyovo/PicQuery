@@ -52,31 +52,30 @@ open class ImageEncoderONNX(
 
         val floatBuffer = preprocessor.preprocessBatch(bitmaps) as FloatBuffer
 
-        val inputName = ortSession?.inputNames?.iterator()?.next()
+        val session = checkNotNull(ortSession) { "ONNX image encoder session is closed." }
+        val inputName = session.inputNames.iterator().next()
         val shape: LongArray = longArrayOf(bitmaps.size.toLong(), 3, dim, dim)
-        ortEnv.use { env ->
-            val tensor = OnnxTensor.createTensor(env, floatBuffer, shape)
-            val output: OrtSession.Result? =
-                ortSession?.run(Collections.singletonMap(inputName, tensor))
-            val resultBuffer = output?.get(0) as OnnxTensor
-            Log.d(TAG, "Finish encoding image!")
+        OnnxTensor.createTensor(ortEnv, floatBuffer, shape).use { tensor ->
+            session.run(Collections.singletonMap(inputName, tensor)).use { output ->
+                val resultBuffer = output.get(0) as OnnxTensor
+                val feat = resultBuffer.floatBuffer
+                val embeddingSize = 512
+                val numEmbeddings = feat.capacity() / embeddingSize
+                val embeddings = mutableListOf<FloatArray>()
 
-            val feat = resultBuffer.floatBuffer
-            val embeddingSize = 512
-            val numEmbeddings = feat.capacity() / embeddingSize
-            val embeddings = mutableListOf<FloatArray>()
-
-            for (i in 0 until numEmbeddings) {
-                val start = i * embeddingSize
-                val embeddingArray = FloatArray(embeddingSize)
-                feat.position(start)
-                for (j in 0 until embeddingSize) {
-                    embeddingArray[j] = feat[start + j]
+                for (i in 0 until numEmbeddings) {
+                    val start = i * embeddingSize
+                    val embeddingArray = FloatArray(embeddingSize)
+                    feat.position(start)
+                    for (j in 0 until embeddingSize) {
+                        embeddingArray[j] = feat[start + j]
+                    }
+                    embeddings.add(embeddingArray)
                 }
-                embeddings.add(embeddingArray)
-            }
 
-            return@withContext embeddings
+                Log.d(TAG, "Finish encoding image!")
+                return@withContext embeddings
+            }
         }
     }
 }

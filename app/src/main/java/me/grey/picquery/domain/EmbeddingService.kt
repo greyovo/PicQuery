@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.loadThumbnail
-import me.grey.picquery.common.preprocess
-import me.grey.picquery.data.data_source.EmbeddingRepository
 import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.model.ObjectBoxEmbedding
 import me.grey.picquery.data.model.Photo
@@ -40,7 +38,6 @@ class EmbeddingService(
     private val context: Context,
     private val imageEncoder: ImageEncoder,
     private val textEncoder: TextEncoder,
-    private val embeddingRepository: EmbeddingRepository,
     private val objectBoxEmbeddingRepository: ObjectBoxEmbeddingRepository,
     private val dispatcher: CoroutineDispatcher
 ) {
@@ -65,7 +62,7 @@ class EmbeddingService(
      */
     suspend fun hasEmbedding(): Boolean {
         return withContext(dispatcher) {
-            val total = embeddingRepository.getTotalCount()
+            val total = objectBoxEmbeddingRepository.getTotalCount()
             Timber.tag(TAG).d("Total embedding count $total")
             total > 0
         }
@@ -123,7 +120,6 @@ class EmbeddingService(
                 .chunked(CHUNK_SIZE)
                 .onEach { Timber.tag(TAG).d("Processing batch: ${it.size}") }
                 .onCompletion {
-                    embeddingRepository.updateCache()
                     encodingLock = false
                     Timber.tag(TAG).i("Encoding completed")
                 }
@@ -153,8 +149,7 @@ class EmbeddingService(
             Timber.tag(TAG).w("Unsupported file: '${photo.path}', skip encoding")
             return null
         }
-        val prepBitmap = preprocess(thumbnailBitmap)
-        return PhotoBitmap(photo, prepBitmap)
+        return PhotoBitmap(photo, thumbnailBitmap)
     }
 
     /**
@@ -163,15 +158,15 @@ class EmbeddingService(
     private suspend fun saveBatchToEmbedding(items: List<PhotoBitmap>) {
         val embeddings = imageEncoder.encodeBatch(items.map { it.bitmap })
 
-        embeddings.forEachIndexed { index, feat ->
-            objectBoxEmbeddingRepository.update(
+        objectBoxEmbeddingRepository.updateAll(
+            embeddings.mapIndexed { index, feat ->
                 ObjectBoxEmbedding(
                     photoId = items[index].photo.id,
                     albumId = items[index].photo.albumID,
                     data = feat
                 )
-            )
-        }
+            }
+        )
     }
 
     private fun Any.runtimeName(): String = this::class.java.name

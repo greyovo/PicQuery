@@ -39,26 +39,30 @@ abstract class TextEncoderONNX(private val context: Context) : TextEncoder {
             ortSession = ortEnv.createSession(AssetUtil.assetFilePath(context, modelPath), options)
         }
 
-        val inputName = ortSession?.inputNames?.iterator()?.next()
-        ortEnv.use { env ->
-
-            val tensor = when (modelType) {
-                0 -> OnnxTensor.createTensor(env, intBuffer, shape)
-                1 -> {
-                    val longBuffer = LongBuffer.allocate(intBuffer.capacity()).apply {
-                        while (intBuffer.hasRemaining()) {
-                            put(intBuffer.get().toLong())
-                        }
-                        flip()
+        val session = checkNotNull(ortSession) { "ONNX text encoder session is closed." }
+        val inputName = session.inputNames.iterator().next()
+        val tensor = when (modelType) {
+            0 -> OnnxTensor.createTensor(ortEnv, intBuffer, shape)
+            1 -> {
+                val longBuffer = LongBuffer.allocate(intBuffer.capacity()).apply {
+                    while (intBuffer.hasRemaining()) {
+                        put(intBuffer.get().toLong())
                     }
-                    OnnxTensor.createTensor(env, longBuffer, shape)
+                    flip()
                 }
-
-                else -> throw IllegalArgumentException("Unknown buffer type")
+                OnnxTensor.createTensor(ortEnv, longBuffer, shape)
             }
-            val output = ortSession?.run(mapOf(Pair(inputName!!, tensor)))
-            val resultBuffer = output?.get(0) as OnnxTensor
-            return (resultBuffer.floatBuffer).array()
+
+            else -> throw IllegalArgumentException("Unknown buffer type")
+        }
+        tensor.use {
+            session.run(mapOf(Pair(inputName, tensor))).use { output ->
+                val resultBuffer = output.get(0) as OnnxTensor
+                val floatBuffer = resultBuffer.floatBuffer
+                val result = FloatArray(floatBuffer.remaining())
+                floatBuffer.get(result)
+                return result
+            }
         }
     }
 }

@@ -26,27 +26,28 @@ class ImageEncoderCLIP(
     }
 
     override suspend fun encodeBatch(bitmaps: List<Bitmap>): List<FloatArray> {
-        val inputName = ortSession?.inputNames?.iterator()?.next()
+        val session = checkNotNull(ortSession) { "ONNX image encoder session is closed." }
+        val inputName = session.inputNames.iterator().next()
 
-        ortEnv.use {
-            val floatBuffer = (preprocessor.preprocessBatch(bitmaps)).array()!!
-            val buffers = splitFloatBuffer(FloatBuffer.wrap(floatBuffer), bitmaps.size)
+        val floatBuffer = (preprocessor.preprocessBatch(bitmaps)).array()!!
+        val buffers = splitFloatBuffer(FloatBuffer.wrap(floatBuffer), bitmaps.size)
 
-            // Correct shape calculation
-            val shape: LongArray = longArrayOf(1, 3, INPUT.toLong(), INPUT.toLong())
-            val res = mutableListOf<FloatArray>()
-            for (i in bitmaps.indices) {
-                val tensor = OnnxTensor.createTensor(ortEnv, buffers[i], shape)
-                val output = ortSession?.run(Collections.singletonMap(inputName, tensor))
+        // Correct shape calculation
+        val shape: LongArray = longArrayOf(1, 3, INPUT.toLong(), INPUT.toLong())
+        val res = mutableListOf<FloatArray>()
+        for (i in bitmaps.indices) {
+            OnnxTensor.createTensor(ortEnv, buffers[i], shape).use { tensor ->
+                session.run(Collections.singletonMap(inputName, tensor)).use { output ->
 
-                @Suppress("UNCHECKED_CAST")
-                val rawOutput =
-                    ((output?.get(0)?.value) as Array<FloatArray>)[0]
-                res.add(rawOutput)
+                    @Suppress("UNCHECKED_CAST")
+                    val rawOutput =
+                        ((output.get(0).value) as Array<FloatArray>)[0]
+                    res.add(rawOutput)
+                }
             }
-
-            return res
         }
+
+        return res
     }
 
     private fun splitFloatBuffer(buffer: FloatBuffer, parts: Int): List<FloatBuffer> {

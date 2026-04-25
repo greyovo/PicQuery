@@ -51,6 +51,12 @@ private fun whitespaceClean(text: String): String {
     return cleanedText
 }
 
+internal fun utf8ByteValues(token: String): IntArray {
+    return token.toByteArray(Charsets.UTF_8)
+        .map { it.toInt() and 0xFF }
+        .toIntArray()
+}
+
 class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") : Tokenizer() {
     companion object {
         private const val START_TOKEN = "<|startoftext|>"
@@ -149,7 +155,7 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") : Tokeniz
 
 //        return bpe_tokens
         for (token in matches) {
-            val encodedToken = token.toByteArray().map { byteEncoder[it.toInt()] }.joinToString("")
+            val encodedToken = utf8ByteValues(token).map { byteEncoder.getValue(it) }.joinToString("")
             for (bpeToken in bpe(encodedToken).split(" ")) {
                 bpeTokens.add(encoder.getValue(bpeToken))
             }

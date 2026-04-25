@@ -79,7 +79,6 @@ private val domainModules = module {
             context = androidContext(),
             imageEncoder = get(),
             textEncoder = get(),
-            embeddingRepository = get(),
             objectBoxEmbeddingRepository = get(),
             dispatcher = get()
         )

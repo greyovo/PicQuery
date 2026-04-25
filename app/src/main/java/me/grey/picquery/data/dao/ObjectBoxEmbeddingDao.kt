@@ -114,16 +114,13 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
         similarityThreshold: Float = 0.7f,
         albumIds: List<Long>? = null
     ): List<ObjectWithScore<ObjectBoxEmbedding>> {
-        val query =
-            embeddingBox
-                .query()
-                .nearestNeighbors(ObjectBoxEmbedding_.data, queryVector, topK)
-                .build()
-
-        val results = query.findWithScores().filter { result ->
-            val cosineSimilarity = 1.0 - result.score
-            cosineSimilarity > similarityThreshold
-        }
+        val results = searchNearestVectorsByScope(
+            queryVector = queryVector,
+            topK = topK,
+            similarityThreshold = similarityThreshold,
+            albumIds = albumIds,
+            includeThreshold = false
+        )
 
         results.forEachIndexed { index, result ->
             Timber.d("Result $index:")
@@ -141,27 +138,57 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
         similarityThreshold: Float = 0.95f,
         albumIds: List<Long>? = null
     ): List<ObjectWithScore<ObjectBoxEmbedding>> {
-        val query =
-            embeddingBox
-                .query()
-                .nearestNeighbors(ObjectBoxEmbedding_.data, queryVector, topK)
-                .build()
+        val results = searchNearestVectorsByScope(
+            queryVector = queryVector,
+            topK = topK,
+            similarityThreshold = similarityThreshold,
+            albumIds = albumIds,
+            includeThreshold = true
+        ).onEach { result ->
+            val cosineSimilarity = 1.0 - result.score
 
-        val results = query.findWithScores()
-            .filter { result ->
-
-                val cosineSimilarity = 1.0 - result.score
-
-                Timber.d("Photo ID: ${result.get().photoId}")
-                Timber.d("Score: ${result.score}")
-                Timber.d("Cosine Similarity: $cosineSimilarity")
-                Timber.d("Similarity Condition: ${cosineSimilarity >= similarityThreshold}")
-
-                cosineSimilarity >= similarityThreshold
-            }
+            Timber.d("Photo ID: ${result.get().photoId}")
+            Timber.d("Score: ${result.score}")
+            Timber.d("Cosine Similarity: $cosineSimilarity")
+            Timber.d("Similarity Condition: ${cosineSimilarity >= similarityThreshold}")
+        }
 
         Timber.d("Filtered Results Count: ${results.size}")
 
         return results
+    }
+
+    private fun searchNearestVectorsByScope(
+        queryVector: FloatArray,
+        topK: Int,
+        similarityThreshold: Float,
+        albumIds: List<Long>?,
+        includeThreshold: Boolean
+    ): List<ObjectWithScore<ObjectBoxEmbedding>> {
+        if (albumIds != null && albumIds.isEmpty()) {
+            return emptyList()
+        }
+
+        val queryBuilder = embeddingBox.query()
+        if (albumIds != null) {
+            queryBuilder.`in`(ObjectBoxEmbedding_.albumId, albumIds.toLongArray())
+        }
+
+        val query = queryBuilder
+            .nearestNeighbors(ObjectBoxEmbedding_.data, queryVector, topK)
+            .build()
+
+        return try {
+            query.findWithScores().filter { result ->
+                val cosineSimilarity = 1.0 - result.score
+                if (includeThreshold) {
+                    cosineSimilarity >= similarityThreshold
+                } else {
+                    cosineSimilarity > similarityThreshold
+                }
+            }
+        } finally {
+            query.close()
+        }
     }
 }
