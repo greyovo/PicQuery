@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -49,6 +48,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
@@ -57,7 +57,15 @@ android {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
-    buildToolsVersion = "34.0.0"
+
+    sourceSets {
+        getByName("debug") {
+            java.srcDir("build/generated/source/kapt/debug")
+        }
+        getByName("release") {
+            java.srcDir("build/generated/source/kapt/release")
+        }
+    }
 }
 
 kotlin {
@@ -94,7 +102,6 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
-    implementation(libs.accompanist.navigation.animation)
     implementation(libs.accompanist.permissions)
 
     // Koin
@@ -135,9 +142,12 @@ dependencies {
 
     // LiteRT
     implementation(libs.litert)
-    implementation(libs.litert.support)
+    implementation(libs.litert.support.api)
     implementation(libs.litert.gpu.api)
     implementation(libs.litert.gpu)
+
+    // ObjectBox
+    implementation(libs.objectbox.kotlin)
 
     // Debug implementation
     debugImplementation(libs.compose.ui.tooling)

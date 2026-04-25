@@ -1,0 +1,23 @@
+{
+  "model": "MobileCLIP2-S0",
+  "pretrained": "dfndr2b",
+  "normalized_outputs": true,
+  "image": {
+    "file": "image_model.tflite",
+    "input_dtype": "float32",
+    "input_shape": [
+      1,
+      3,
+      256,
+      256
+    ]
+  },
+  "text": {
+    "file": "text_model.tflite",
+    "input_dtype": "int32",
+    "input_shape": [
+      1,
+      77
+    ]
+  }
+}

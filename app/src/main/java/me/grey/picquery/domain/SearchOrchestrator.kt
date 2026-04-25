@@ -50,10 +50,11 @@ class SearchOrchestrator(
         isSearchAll: Boolean,
         onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
     ) {
-        translateAndSearch(text, range, isSearchAll) { translatedText ->
-            // Encode text to vector before searching
-            val textVector = embeddingService.encodeText(translatedText)
-            performVectorSearchV2(textVector, range, isSearchAll, onSuccess)
+        translateAndSearch(text) { translatedText ->
+            val candidates = ChineseQueryExpander.mergeCandidates(text, translatedText)
+            Timber.tag(TAG).i("Text search candidates for '$text': ${candidates.joinToString()}")
+            val results = performTextCandidateSearch(candidates, range, isSearchAll)
+            onSuccess(results)
         }
     }
 
@@ -80,7 +81,8 @@ class SearchOrchestrator(
 
             try {
                 val imageFeatures = embeddingService.encodeBitmap(bitmap)
-                performVectorSearchV2(imageFeatures, range, isSearchAll, onSuccess)
+                val results = performVectorSearchResults(imageFeatures, range, isSearchAll)
+                onSuccess(results)
             } finally {
                 searchingLock = false
             }
@@ -92,8 +94,6 @@ class SearchOrchestrator(
      */
     private suspend fun translateAndSearch(
         text: String,
-        range: List<Album>,
-        isSearchAll: Boolean,
         searchFunction: suspend (String) -> Unit
     ) {
         translator.translate(
@@ -126,15 +126,48 @@ class SearchOrchestrator(
     /**
      * Perform vector search V2 using ObjectBox
      */
-    private suspend fun performVectorSearchV2(
+    private suspend fun performTextCandidateSearch(
+        candidates: List<String>,
+        range: List<Album>,
+        isSearchAll: Boolean
+    ): MutableList<Pair<Long, Double>> = withContext(dispatcher) {
+        if (searchingLock) {
+            Timber.tag(TAG).w("Search already in progress")
+            return@withContext mutableListOf()
+        }
+
+        searchingLock = true
+        try {
+            val mergedScores = linkedMapOf<Long, Double>()
+
+            candidates.forEach { candidate ->
+                val textVector = embeddingService.encodeText(candidate)
+                val candidateResults = performVectorSearchResults(textVector, range, isSearchAll)
+                Timber.tag(TAG).d("Candidate '$candidate' returned ${candidateResults.size} result(s)")
+
+                candidateResults.forEach { (photoId, score) ->
+                    val previousScore = mergedScores[photoId]
+                    if (previousScore == null || score < previousScore) {
+                        mergedScores[photoId] = score
+                    }
+                }
+            }
+
+            mergedScores.entries
+                .sortedBy { it.value }
+                .map { it.key to it.value }
+                .toMutableList()
+        } finally {
+            searchingLock = false
+        }
+    }
+
+    private suspend fun performVectorSearchResults(
         queryVector: FloatArray,
         range: List<Album>,
-        isSearchAll: Boolean,
-        onSuccess: suspend (MutableList<Pair<Long, Double>>) -> Unit
-    ) = withContext(dispatcher) {
+        isSearchAll: Boolean
+    ): MutableList<Pair<Long, Double>> = withContext(dispatcher) {
         try {
-            searchingLock = true
-
             Timber.tag(TAG).d("Starting vector search V2")
 
             val albumIds = if (range.isEmpty() || isSearchAll) {
@@ -154,10 +187,10 @@ class SearchOrchestrator(
 
             Timber.tag(TAG).d("Search completed: found ${searchResults.size} results")
 
-            val results = searchResults.map { it.get().photoId to it.score }.toMutableList()
-            onSuccess(results)
-        } finally {
-            searchingLock = false
+            searchResults.map { it.get().photoId to it.score }.toMutableList()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Vector search failed")
+            mutableListOf()
         }
     }
 }

@@ -21,7 +21,6 @@ buildscript {
 plugins {
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.android.library).apply(false)
-    alias(libs.plugins.kotlin.android).apply(false)
     alias(libs.plugins.ksp).apply(false)
     // Add ktlint plugin
     id("org.jlleitschuh.gradle.ktlint") version "11.5.1" apply false

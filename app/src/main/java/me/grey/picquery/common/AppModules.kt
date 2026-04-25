@@ -17,7 +17,7 @@ import me.grey.picquery.domain.SearchConfigurationService
 import me.grey.picquery.domain.SearchOrchestrator
 import me.grey.picquery.domain.SimilarityConfigurationService
 import me.grey.picquery.domain.SimilarityManager
-import me.grey.picquery.feature.clip.modulesCLIP
+import me.grey.picquery.feature.tf.modulesTF
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.photoDetail.PhotoDetailViewModel
@@ -146,12 +146,12 @@ val workManagerModule = module {
     single { WorkManager.getInstance(get()) }
 }
 
-// need inject encoder here
+// need inject encoder here. Use modulesTF instead of modulesCLIP to run TFLite assets.
 val AppModules = listOf(
     dispatchersKoinModule,
     viewModelModules,
     dataModules,
-    modulesCLIP,
+    modulesTF,
     domainModules,
     workManagerModule
 )

@@ -18,6 +18,7 @@ local.properties
 *.pt
 *.onnx
 *.ort
+*.tflite
 
 # Python
 venv

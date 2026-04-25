@@ -52,6 +52,13 @@ class EmbeddingService(
 
     private var encodingLock = false
 
+    init {
+        Timber.tag(TAG).i(
+            "Embedding runtime selected: imageEncoder=${imageEncoder.runtimeName()}, " +
+                "textEncoder=${textEncoder.runtimeName()}"
+        )
+    }
+
 
     /**
      * Check if embeddings exist
@@ -69,6 +76,7 @@ class EmbeddingService(
      */
     suspend fun encodeText(text: String): FloatArray {
         return withContext(dispatcher) {
+            Timber.tag(TAG).i("Encoding text with ${textEncoder.runtimeName()}")
             textEncoder.encode(text)
         }
     }
@@ -78,6 +86,7 @@ class EmbeddingService(
      */
     suspend fun encodeBitmap(bitmap: Bitmap): FloatArray {
         return withContext(dispatcher) {
+            Timber.tag(TAG).i("Encoding bitmap with ${imageEncoder.runtimeName()}")
             imageEncoder.encodeBatch(listOf(bitmap))[0]
         }
     }
@@ -99,7 +108,9 @@ class EmbeddingService(
             return false
         }
 
-        Timber.tag(TAG).i("encodePhotoList started with ${photos.size} photos")
+        Timber.tag(TAG).i(
+            "encodePhotoList started with ${photos.size} photos using ${imageEncoder.runtimeName()}"
+        )
         encodingLock = true
 
         withContext(dispatcher) {
@@ -162,4 +173,6 @@ class EmbeddingService(
             )
         }
     }
+
+    private fun Any.runtimeName(): String = this::class.java.name
 }

@@ -1,10 +1,10 @@
-package me.grey.picquery.feature.mobileclip2
+package me.grey.picquery.feature.tf
 
 import android.content.Context
 import kotlinx.coroutines.CoroutineDispatcher
-import me.grey.picquery.feature.tf.ImageEncoderTF
+import me.grey.picquery.feature.mobileclip2.PreprocessorMobileCLIPv2
 
-class ImageEncoderMobileCLIPv2(
+class ImageEncoderTFLite(
     context: Context,
     preprocessor: PreprocessorMobileCLIPv2,
     dispatcher: CoroutineDispatcher
@@ -15,6 +15,6 @@ class ImageEncoderMobileCLIPv2(
     dispatcher = dispatcher
 ) {
     companion object {
-        const val MODEL_PATH = "mobileclip-image.tflite"
+        const val MODEL_PATH = "image_model.tflite"
     }
 }

@@ -5,7 +5,6 @@ package me.grey.picquery.domain
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +28,12 @@ import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.model.Album
 import me.grey.picquery.ui.albums.EncodingState
 import timber.log.Timber
+
+internal fun aggregateAlbumEncodingProgress(
+    completedBeforeChunk: Int,
+    currentInChunk: Int,
+    total: Int
+): Int = (completedBeforeChunk + currentInChunk).coerceIn(0, total)
 
 class AlbumManager(
     private val albumRepository: AlbumRepository,
@@ -148,16 +153,23 @@ class AlbumManager(
 
         try {
             val totalPhotos = getTotalPhotoCount(albums)
-            val processedPhotos = AtomicInteger(0)
+            var processedPhotos = 0
             var success = true
 
             getPhotosFlow(albums).collect { photoChunk ->
+                val completedBeforeChunk = processedPhotos
+                var currentChunkProgress = 0
 
                 val chunkSuccess = imageSearcher.encodePhotoListV2(photoChunk) { cur, total, cost ->
-                    Timber.tag(TAG).d("Encoded $cur/$total photos, cost: $cost")
-                    processedPhotos.addAndGet(cur)
+                    currentChunkProgress = cur.coerceIn(0, total)
+                    val currentProgress = aggregateAlbumEncodingProgress(
+                        completedBeforeChunk = completedBeforeChunk,
+                        currentInChunk = currentChunkProgress,
+                        total = totalPhotos
+                    )
+                    Timber.tag(TAG).d("Encoded $currentProgress/$totalPhotos photos, cost: $cost")
                     encodingState.value = encodingState.value.copy(
-                        current = processedPhotos.get(),
+                        current = currentProgress,
                         total = totalPhotos,
                         cost = cost,
                         status = EncodingState.Status.Indexing
@@ -167,6 +179,12 @@ class AlbumManager(
                 if (!chunkSuccess) {
                     success = false
                     Timber.tag(TAG).w("Failed to encode photo chunk, size: ${photoChunk.size}")
+                } else {
+                    processedPhotos = aggregateAlbumEncodingProgress(
+                        completedBeforeChunk = completedBeforeChunk,
+                        currentInChunk = currentChunkProgress,
+                        total = totalPhotos
+                    )
                 }
             }
 

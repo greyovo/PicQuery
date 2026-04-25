@@ -50,8 +50,18 @@ _PicQuery_ 的核心技术基于OpenAI的[CLIP模型](https://github.com/openai/
 
 将文件放入`app\src\main\assets`目录即可使用。
 
+## 使用 TF / TFLite 模型构建
+
+要通过 LiteRT 运行 TensorFlow Lite 模型，请将以下文件放入`app\src\main\assets`：
+
+- `image_model.tflite`
+- `text_model.tflite`
+
+图像模型应接受与`PreprocessorMobileCLIPv2`一致的 MobileCLIP 风格预处理输入；文本模型应接受 CLIP BPE token ids，输入类型支持`INT32`或`INT64`。
+可通过`python script/model-MobileCLIP2/export_mobileclip2_tflite.py`导出默认的 MobileCLIP2-S0 资产。
+
 ## 选择模型模块
-在`val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)`中选择需要的模块，Clip对应modulesCLIP模块，mobile-clip对应modulesMobileCLIP模块
+在`val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules)`中选择需要的模块，CLIP 对应`modulesCLIP`模块，mobile-clip 对应`modulesMobileCLIP`模块，TF/TFLite 对应`modulesTF`模块。
 
 ## FAQ
 ### Issue 1
@@ -60,7 +70,7 @@ java.lang.RuntimeException: java.lang.reflect.InvocationTarget Exception
 
 ### Issue 2
 java.io.FileNotFoundException: clip-image-int8.ort
-> Make sure the model files are in the correct directory, if you are using mobile-clip, make sure you are using the correct model files, and change the module to modulesMobileCLIP
+> Make sure the model files are in the correct directory. If you are using mobile-clip or TF/TFLite, make sure you are using the correct model files and change the module to modulesMobileCLIP or modulesTF.
 
 ## 致谢
 

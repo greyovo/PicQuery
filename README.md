@@ -53,8 +53,18 @@ To build this project, you need to obtain a quantized CLIP model.
 
 Put them into `app\src\main\assets` and you're ready to go.
 
+## Build & Run TF / TFLite
+
+To run a TensorFlow Lite model through LiteRT, put these files into `app\src\main\assets`:
+
+- `image_model.tflite`
+- `text_model.tflite`
+
+The image model should accept the same MobileCLIP-style preprocessed input used by `PreprocessorMobileCLIPv2`, and the text model should accept CLIP BPE token ids as `INT32` or `INT64`.
+You can export the default MobileCLIP2-S0 assets with `python script/model-MobileCLIP2/export_mobileclip2_tflite.py`.
+
 ## Choose module
-val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) pick the module you want，Clip pair to modulesCLIP module， mobile-clip pair to modulesMobileCLIP module
+val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) pick the module you want，Clip pair to modulesCLIP module， mobile-clip pair to modulesMobileCLIP module， TF/TFLite pair to modulesTF module
 
 ## FAQ
 ### Issue 1
@@ -63,7 +73,7 @@ java.lang.RuntimeException: java.lang.reflect.InvocationTarget Exception
 
 ### Issue 2
 java.io.FileNotFoundException: clip-image-int8.ort
-> Make sure the model files are in the correct directory, if you are using mobile-clip, make sure you are using the correct model files, and change the module to modulesMobileCLIP
+> Make sure the model files are in the correct directory. If you are using mobile-clip or TF/TFLite, make sure you are using the correct model files and change the module to modulesMobileCLIP or modulesTF.
 
 ## Acknowledgment
 
