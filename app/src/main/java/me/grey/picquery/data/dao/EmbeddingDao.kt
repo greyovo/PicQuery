@@ -22,7 +22,7 @@ interface EmbeddingDao {
     fun getAllByPhotoIds(photoIds: LongArray): List<Embedding>
 
     @Query(
-        "SELECT * FROM $tableName WHERE album_id IS (:albumId)"
+        "SELECT * FROM $tableName WHERE album_id = :albumId"
     )
     fun getAllByAlbumId(albumId: Long): List<Embedding>
 
@@ -47,7 +47,7 @@ interface EmbeddingDao {
     fun removeByPhotoIds(photoIds: LongArray): Unit
 
     @Query(
-        "SELECT photo_id FROM $tableName WHERE album_id IS (:albumId)"
+        "SELECT photo_id FROM $tableName WHERE album_id = :albumId"
     )
     fun getPhotoIdsByAlbumId(albumId: Long): List<Long>
 
