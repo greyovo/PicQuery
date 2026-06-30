@@ -91,4 +91,18 @@ class EmbeddingRepository(
     fun removeByAlbum(album: Album) {
         return dataSource.removeByAlbumId(album.id)
     }
+
+    /**
+     * 根据照片ID列表批量删除嵌入向量（用于增量更新）
+     */
+    fun removeByPhotoIds(photoIds: LongArray) {
+        return dataSource.removeByPhotoIds(photoIds)
+    }
+
+    /**
+     * 仅获取指定相册下已索引的照片ID列表
+     */
+    fun getPhotoIdsByAlbumId(albumId: Long): List<Long> {
+        return dataSource.getPhotoIdsByAlbumId(albumId)
+    }
 }

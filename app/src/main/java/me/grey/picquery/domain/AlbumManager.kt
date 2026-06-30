@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.grey.picquery.PicQueryApplication.Companion.context
 import me.grey.picquery.R
+import me.grey.picquery.common.encodeProgressCallback
 import me.grey.picquery.common.showToast
 import me.grey.picquery.data.data_source.AlbumRepository
 import me.grey.picquery.data.data_source.EmbeddingRepository
@@ -35,6 +36,7 @@ class AlbumManager(
     private val photoRepository: PhotoRepository,
     private val embeddingRepository: EmbeddingRepository,
     private val imageSearcher: ImageSearcher,
+    private val albumUpdateService: AlbumUpdateService,
     private val ioDispatcher: CoroutineDispatcher
 ) {
     companion object {
@@ -196,5 +198,115 @@ class AlbumManager(
     fun removeSingleAlbumIndex(album: Album) {
         embeddingRepository.removeByAlbum(album)
         albumRepository.removeSearchableAlbum(album)
+    }
+
+    // ============ 增量更新功能 ============
+
+    /**
+     * 检测已索引相册的变更（不执行更新）
+     *
+     * @param album 已索引的相册
+     * @return 变更描述，包含新增和删除的照片信息
+     */
+    suspend fun detectAlbumChanges(album: Album): AlbumChange {
+        return albumUpdateService.detectChanges(album)
+    }
+
+    /**
+     * 批量检测多个已索引相册的变更
+     *
+     * @param albums 已索引的相册列表
+     * @return 有变更的相册列表
+     */
+    suspend fun detectAlbumChangesBatch(albums: List<Album>): List<AlbumChange> {
+        return albums.map { detectAlbumChanges(it) }.filter { it.hasChanges }
+    }
+
+    /**
+     * 增量更新单个相册的编码向量
+     *
+     * 流程：
+     * 1. 检测相册变更（新增/删除照片）
+     * 2. 删除已移除照片的向量
+     * 3. 编码新增照片并存储向量
+     * 4. 更新相册元数据
+     *
+     * @param album 已索引的相册
+     * @param progressCallback 编码进度回调
+     * @return 更新结果
+     */
+    suspend fun updateAlbum(
+        album: Album,
+        progressCallback: encodeProgressCallback? = null
+    ): AlbumUpdateResult {
+        if (isEncoderBusy) {
+            Timber.tag(TAG).w("updateAlbum: encoder is busy, aborting")
+            return AlbumUpdateResult.Success(
+                album = album,
+                addedCount = 0,
+                removedCount = 0,
+                allEncoded = false
+            )
+        }
+
+        encodingState.value = EncodingState(status = EncodingState.Status.Loading)
+
+        try {
+            val result = albumUpdateService.updateAlbum(album, progressCallback)
+            if (result is AlbumUpdateResult.Success) {
+                encodingState.value = EncodingState(status = EncodingState.Status.Finish)
+            }
+            return result
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to update album: ${album.label}")
+            encodingState.value = EncodingState(status = EncodingState.Status.Error)
+            return AlbumUpdateResult.Success(
+                album = album,
+                addedCount = 0,
+                removedCount = 0,
+                allEncoded = false
+            )
+        }
+    }
+
+    /**
+     * 对已检测到的变更执行增量更新
+     *
+     * @param change 变更描述（由 [detectAlbumChanges] 产生）
+     * @param progressCallback 编码进度回调
+     * @return 更新结果
+     */
+    suspend fun applyAlbumUpdate(
+        change: AlbumChange,
+        progressCallback: encodeProgressCallback? = null
+    ): AlbumUpdateResult {
+        if (isEncoderBusy) {
+            Timber.tag(TAG).w("applyAlbumUpdate: encoder is busy, aborting")
+            return AlbumUpdateResult.Success(
+                album = change.album,
+                addedCount = 0,
+                removedCount = 0,
+                allEncoded = false
+            )
+        }
+
+        encodingState.value = EncodingState(status = EncodingState.Status.Loading)
+
+        try {
+            val result = albumUpdateService.applyUpdate(change, progressCallback)
+            if (result is AlbumUpdateResult.Success) {
+                encodingState.value = EncodingState(status = EncodingState.Status.Finish)
+            }
+            return result
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to apply update for album: ${change.album.label}")
+            encodingState.value = EncodingState(status = EncodingState.Status.Error)
+            return AlbumUpdateResult.Success(
+                album = change.album,
+                addedCount = 0,
+                removedCount = 0,
+                allEncoded = false
+            )
+        }
     }
 }

@@ -41,6 +41,16 @@ interface EmbeddingDao {
     )
     fun removeByAlbumId(albumId: Long): Unit
 
+    @Query(
+        "DELETE FROM $tableName WHERE photo_id IN (:photoIds)"
+    )
+    fun removeByPhotoIds(photoIds: LongArray): Unit
+
+    @Query(
+        "SELECT photo_id FROM $tableName WHERE album_id IS (:albumId)"
+    )
+    fun getPhotoIdsByAlbumId(albumId: Long): List<Long>
+
     @Upsert
     fun upsertAll(embeddings: List<Embedding>)
 

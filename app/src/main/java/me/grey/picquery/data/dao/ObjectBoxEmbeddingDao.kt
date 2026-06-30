@@ -93,6 +93,21 @@ class ObjectBoxEmbeddingDao(private val embeddingBox: Box<ObjectBoxEmbedding>) {
         }.remove()
     }
 
+    // 根据照片ID列表批量删除嵌入向量（用于增量更新）
+    fun removeByPhotoIds(photoIds: LongArray) {
+        if (photoIds.isEmpty()) return
+        embeddingBox.query {
+            `in`(ObjectBoxEmbedding_.photoId, photoIds)
+        }.remove()
+    }
+
+    // 仅查询指定相册下已索引的照片ID列表（高效，不加载向量数据）
+    fun getPhotoIdsByAlbumId(albumId: Long): List<Long> {
+        return embeddingBox.query {
+            equal(ObjectBoxEmbedding_.albumId, albumId)
+        }.property(ObjectBoxEmbedding_.photoId).find()
+    }
+
     // 批量更新或插入嵌入向量
     fun upsertAll(embeddings: List<ObjectBoxEmbedding>) {
         embeddingBox.put(embeddings)

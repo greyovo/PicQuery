@@ -71,6 +71,8 @@ mlkit-translate = "17.0.3"
 junit = "4.13.2"
 espresso = "3.4.0"
 googleOssLicensesPlugin = "0.10.10"
+mockk = "1.13.16"
+coroutines-test = "1.10.2"
 
 
 [libraries]
@@ -153,6 +155,8 @@ mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
 
 # SplashScreen
 androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splashscreen" }

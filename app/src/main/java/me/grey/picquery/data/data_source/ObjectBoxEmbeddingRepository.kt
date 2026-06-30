@@ -103,6 +103,20 @@ class ObjectBoxEmbeddingRepository(
         return dataSource.removeByAlbumId(album.id)
     }
 
+    /**
+     * 根据照片ID列表批量删除嵌入向量（用于增量更新时移除已删除照片的向量）
+     */
+    fun removeByPhotoIds(photoIds: LongArray) {
+        return dataSource.removeByPhotoIds(photoIds)
+    }
+
+    /**
+     * 仅获取指定相册下已索引的照片ID列表（不加载向量数据，高效）
+     */
+    fun getPhotoIdsByAlbumId(albumId: Long): List<Long> {
+        return dataSource.getPhotoIdsByAlbumId(albumId)
+    }
+
     fun searchByVector(vector: ByteArray): List<ObjectWithScore<ObjectBoxEmbedding>> {
         return dataSource.searchNearestVectors(vector.toFloatArray())
     }

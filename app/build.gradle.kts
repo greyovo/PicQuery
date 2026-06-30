@@ -58,6 +58,10 @@ android {
         }
     }
     buildToolsVersion = "34.0.0"
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 kotlin {
@@ -150,6 +154,8 @@ dependencies {
 
     // Test implementation
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
 
     // Android test implementation
     androidTestImplementation(libs.androidx.test.ext)

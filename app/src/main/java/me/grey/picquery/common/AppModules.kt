@@ -10,6 +10,7 @@ import me.grey.picquery.data.data_source.ObjectBoxEmbeddingRepository
 import me.grey.picquery.data.data_source.PhotoRepository
 import me.grey.picquery.data.data_source.PreferenceRepository
 import me.grey.picquery.domain.AlbumManager
+import me.grey.picquery.domain.AlbumUpdateService
 import me.grey.picquery.domain.EmbeddingService
 import me.grey.picquery.domain.ImageSearcher
 import me.grey.picquery.domain.MLKitTranslator
@@ -128,7 +129,20 @@ private val domainModules = module {
             photoRepository = get(),
             embeddingRepository = get(),
             imageSearcher = get(),
+            albumUpdateService = get(),
             ioDispatcher = get()
+        )
+    }
+
+    // Album update service - 增量更新服务
+    single {
+        AlbumUpdateService(
+            photoRepository = get(),
+            objectBoxEmbeddingRepository = get(),
+            embeddingRepository = get(),
+            albumRepository = get(),
+            embeddingService = get(),
+            dispatcher = get()
         )
     }
 
