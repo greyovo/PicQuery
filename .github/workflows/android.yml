@@ -43,13 +43,8 @@ jobs:
     - name: Check release tooling
       run: python3 -m unittest discover -s scripts/tests -v
 
-    - name: Prepare Android SDK
-      run: |
-        sdkmanager "cmdline-tools;22.0"
-        "$ANDROID_HOME/cmdline-tools/22.0/bin/sdkmanager" \
-          "platforms;android-37.0" "build-tools;36.0.0" \
-          "ndk;29.0.14206865" "cmake;3.22.1"
-
+    # Missing platforms, build tools, NDK and CMake are auto-installed by the
+    # Android Gradle plugin; hosted runners pre-accept the SDK licenses.
     - name: Restore model assets
       env:
         MODELS_URL: ${{ vars.MODELS_URL }}
@@ -115,17 +110,6 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Prepare Android SDK
-      run: |
-        sdkmanager "cmdline-tools;22.0"
-        sdk="$ANDROID_HOME/cmdline-tools/22.0/bin/sdkmanager"
-        if [ -f release-source/app/build.gradle ]; then
-          "$sdk" "platforms;android-34" "build-tools;34.0.0" "build-tools;36.0.0"
-        else
-          "$sdk" "platforms;android-37.0" "build-tools;36.0.0" \
-            "ndk;29.0.14206865" "cmake;3.22.1"
-        fi
-
     - name: Restore models matching the release tag
       env:
         MODELS_URL: ${{ inputs.models_url || vars.MODELS_URL }}
@@ -158,8 +142,13 @@ jobs:
 
     - name: Verify signatures and packaged models
       run: |
+        apksigner="$(ls "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1)"
+        if [ -z "$apksigner" ]; then
+          echo "::error::apksigner not found under $ANDROID_HOME/build-tools"
+          exit 1
+        fi
         python3 scripts/release_assets.py apks release-source release-assets \
-          --tag "$RELEASE_TAG" --apksigner "$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          --tag "$RELEASE_TAG" --apksigner "$apksigner"
 
     - name: Upload APK to GitHub Release
       env:
