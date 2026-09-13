@@ -73,6 +73,6 @@ v1 文件是官方 checkpoint 重新导出的产物，不是缺失的原 App Mob
 
 ## 发布与 CI
 
-用于 CI 前，应验证无登录即可下载原始 ZIP，且字节与固定校验值一致。共享文件夹是手动下载入口，不要将其地址填入 CI 的 `MODELS_URL`。分享/预览页面或 HTML 下载确认响应不是模型 ZIP 直链。CI 需要无登录即可返回 ZIP 字节的下载地址及对应压缩包 SHA-256。[manifest.json](manifest.json)中的单个 ZIP 下载地址在验证前保持未设置。
+用于 CI 前，应验证无登录即可下载原始 ZIP，且字节与固定校验值一致。共享文件夹是手动下载入口，不要将其地址填入 CI 的 `MODELS_URL`。分享/预览页面或 HTML 下载确认响应不是模型 ZIP 直链。CI 需要无登录即可返回 ZIP 字节的下载地址及对应压缩包 SHA-256。`picquery-mobileclip2-app-20260913.zip` 的已验证直链已记录在 [manifest.json](manifest.json) 中；其余下载包的地址在按同样方式验证前保持未设置。
 
 已发布下载包应保持不变；模型字节变更时生成新包和校验值。模型遵循其上游条款：[Apple 模型许可](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS)和 [OpenAI CLIP 许可](https://github.com/openai/CLIP/blob/main/LICENSE)。

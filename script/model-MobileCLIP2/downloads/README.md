@@ -73,6 +73,6 @@ The full [ORT comparison matrix](../ort_benchmark_models.json) requires the App 
 
 ## Publication and CI
 
-For CI, verify the original ZIP can be downloaded without signing in and that its bytes match the pinned checksum. The shared folder is a manual download entry point; do not assign its URL to CI's `MODELS_URL`. A sharing/preview page or HTML download-confirmation response is not a direct model ZIP URL. CI needs an unauthenticated download that returns ZIP bytes and a matching archive SHA-256. Individual ZIP download URLs remain unset in [manifest.json](manifest.json) until verified.
+For CI, verify the original ZIP can be downloaded without signing in and that its bytes match the pinned checksum. The shared folder is a manual download entry point; do not assign its URL to CI's `MODELS_URL`. A sharing/preview page or HTML download-confirmation response is not a direct model ZIP URL. CI needs an unauthenticated download that returns ZIP bytes and a matching archive SHA-256. The verified direct URL for `picquery-mobileclip2-app-20260913.zip` is recorded in [manifest.json](manifest.json); the other bundles' URLs remain unset until verified the same way.
 
 Keep published bundles immutable; changed model bytes require a new bundle and checksum. Model assets retain their upstream terms: [Apple model license](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS) and [OpenAI CLIP license](https://github.com/openai/CLIP/blob/main/LICENSE).

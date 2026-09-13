@@ -3,9 +3,9 @@
   "publication_status": "uploaded",
   "upload_status_source": "maintainer_confirmation",
   "folder_url": "https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing",
-  "remote_download_verified": false,
-  "verified_at_utc": "2026-09-13T11:33:16.988089+00:00",
-  "verification_scope": "Local model identity and full ZIP decompression checks; no remote download, inference, accuracy or timing rerun.",
+  "remote_download_verified": true,
+  "verified_at_utc": "2026-09-13T14:04:53+00:00",
+  "verification_scope": "Local model identity and full ZIP decompression checks; anonymous direct download of the app bundle returned bytes matching its pinned ZIP SHA-256; no inference, accuracy or timing rerun.",
   "packages": [
     {
       "file": "picquery-mobileclip2-app-20260913.zip",
@@ -14,7 +14,7 @@
       "sha256": "559b3ac69b85c67860f88a5e17411aee17ea7414ad41b999e66d1be80aab2e44",
       "model_count": 4,
       "entry_count": 7,
-      "download_url": null,
+      "download_url": "https://drive.usercontent.google.com/download?id=1ncFrCZJ8-7fy0xswsrM7_ZFZBY6OTw38&export=download&confirm=t",
       "entries": [
         {
           "file": "mobileclip2_s0_image.onnx",

@@ -12,6 +12,8 @@ This branch integrates Apple's **MobileCLIP2-S0 / dfndr2b** through two Android 
 
 Published releases may use earlier models. Build this branch for the configuration below.
 
+Download APKs from a release's **Assets** section. Maintainers can follow the [APK publishing and historical backfill guide](docs/releases.md) to attach missing APKs.
+
 ## Build and install
 
 | Requirement | Version |
