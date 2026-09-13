@@ -27,7 +27,7 @@
 
 ### 准备模型资产
 
-模型二进制文件由 Git 忽略。首次构建前，请[导出模型](script/model-MobileCLIP2/README_zh.md#reproduce-the-models)或取得匹配的产物，放入 `app/src/main/assets/`，并保留共享的 `bpe_vocab_gz` 和内置 `mlkit/` 资产。
+模型二进制文件由 Git 忽略。请从 [Google Drive](https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing) 下载预导出的 App 包，按[SHA-256 校验与安装步骤](script/model-MobileCLIP2/downloads/README_zh.md)将模型放入 `app/src/main/assets/`。也可以自行[导出模型](script/model-MobileCLIP2/README_zh.md#reproduce-the-models)。保留共享的 `bpe_vocab_gz` 和内置 `mlkit/` 资产。
 
 | 变体 | 图像资产 | 文本资产 | 两个模型合计 |
 |---|---|---|---:|

@@ -27,7 +27,7 @@ Set your SDK location in Android Studio or `local.properties`. Use the included 
 
 ### Prepare model assets
 
-Model binaries are Git-ignored. Before building a fresh checkout, [export the models](script/model-MobileCLIP2/README.md#reproduce-the-models) or obtain matching artifacts and place them in `app/src/main/assets/`. Retain the shared `bpe_vocab_gz` and bundled `mlkit/` assets.
+Model binaries are Git-ignored. Download the prebuilt App bundle from [Google Drive](https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing), then follow the [SHA-256 verification and installation steps](script/model-MobileCLIP2/downloads/README.md) to place the models in `app/src/main/assets/`. You can also [export the models](script/model-MobileCLIP2/README.md#reproduce-the-models). Retain the shared `bpe_vocab_gz` and bundled `mlkit/` assets.
 
 | Flavor | Image asset | Text asset | Model pair size |
 |---|---|---|---:|

@@ -4,7 +4,7 @@
 
 本指南说明当前 Android 模型契约、ONNX/TFLite/ORT 导出方法，以及独立的精度和计时实验。所有命令从仓库根目录运行。新实验使用独立输出目录；归档报告只描述其记录时的模型与运行库。
 
-[模型契约](#input-and-output-contract) · [源模型导出](#reproduce-the-models) · [ORT 导出](#ort-export-and-v1-comparison) · [混合 INT8](#image-int8-quantization) · [Android 检查](#run-on-android) · [历史模型](#historical-models)
+[下载包与校验值](downloads/README_zh.md) · [模型契约](#input-and-output-contract) · [源模型导出](#reproduce-the-models) · [ORT 导出](#ort-export-and-v1-comparison) · [混合 INT8](#image-int8-quantization) · [Android 检查](#run-on-android) · [历史模型](#historical-models)
 
 ## 当前 App 配置
 
@@ -16,6 +16,8 @@
 | `tflite` | `image_model.tflite` | `text_model_dynamic_wi8.tflite` | 105.73 MiB |
 
 两者均使用 FP32 图像推理、动态 INT8 文本权重及归一化 FP32 输出。表中是模型文件体积，不是 APK 大小或进程内存。完整 FP32 文本导出仅作离线参照；其中 `text_model.tflite` 不打入当前 APK。模型二进制文件由 Git 忽略；准备 `app/src/main/assets/` 时保留共享的 `bpe_vocab_gz` 和 `mlkit/` 资产。
+
+App、ORT/混合 INT8、v1 和旧 CLIP 下载包已上传至 [Google Drive 文件夹](https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing)。[下载包说明](downloads/README_zh.md)列出文件名、校验值和安装位置。安装前请校验下载 ZIP 的 SHA-256；也可以继续从源码导出。
 
 ## 环境
 

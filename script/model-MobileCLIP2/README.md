@@ -4,7 +4,7 @@ English | [中文](README_zh.md) · [App quick start](../../README.md) · [Repor
 
 This guide covers the current Android model contract, reproducible ONNX/TFLite/ORT exports, and separate accuracy and timing experiments. Run commands from the repository root. Use a separate output directory for a new experiment; archived reports describe their original artifacts and runtimes.
 
-[Model contract](#input-and-output-contract) · [Source export](#reproduce-the-models) · [ORT export](#ort-export-and-v1-comparison) · [Mixed INT8](#image-int8-quantization) · [Android checks](#run-on-android) · [Historical models](#historical-models)
+[Download bundles and checksums](downloads/README.md) · [Model contract](#input-and-output-contract) · [Source export](#reproduce-the-models) · [ORT export](#ort-export-and-v1-comparison) · [Mixed INT8](#image-int8-quantization) · [Android checks](#run-on-android) · [Historical models](#historical-models)
 
 ## Current App configuration
 
@@ -16,6 +16,8 @@ The active `modulesMobileCLIP2` module uses official **MobileCLIP2-S0 / dfndr2b*
 | `tflite` | `image_model.tflite` | `text_model_dynamic_wi8.tflite` | 105.73 MiB |
 
 Both use FP32 image inference, dynamic INT8 text weights and normalized FP32 outputs. These are model-file sizes, not APK sizes or process memory. Full FP32 text exports are offline references; in particular, `text_model.tflite` is excluded from current APKs. Model binaries are Git-ignored; retain the shared `bpe_vocab_gz` and `mlkit/` assets when preparing `app/src/main/assets/`.
+
+Prebuilt App, ORT/mixed INT8, v1 and legacy CLIP bundles have been uploaded to this [Google Drive folder](https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing). The [download bundle guide](downloads/README.md) lists filenames, checksums and installation paths. Verify the downloaded ZIP's SHA-256 before installing it; source export remains available.
 
 ## Environment
 
