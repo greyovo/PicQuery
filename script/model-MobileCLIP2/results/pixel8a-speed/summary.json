@@ -1,0 +1,707 @@
+{
+  "metadata": {
+    "device_serial": "43231JEKB22129",
+    "model": "Pixel 8a",
+    "soc": "Tensor G3",
+    "android": "17",
+    "fingerprint": "google/akita_beta/akita:17/CP41.260814.003.B1/16166531:user/release-keys",
+    "page_size": "4096",
+    "package": "me.grey.picquery.mobileclip2.onnx",
+    "started_utc": "2026-09-13T06:17:37.2591479Z",
+    "sample_count": 100,
+    "warmup_count": 10,
+    "sustain_seconds_first_round": 60,
+    "cooldown_seconds": 30,
+    "rounds": 2,
+    "note": "Fresh app process per model; fixed forward/reverse order. USB charging and screen state are not changed. PSS snapshots are not peak memory. No album indexing or personal media access.",
+    "runs": [
+      {
+        "model": "v2_s0_onnx_int8",
+        "round": 1,
+        "report": "v2_s0_onnx_int8-r1.json",
+        "started_utc": "2026-09-13T06:17:37.4716451Z",
+        "finished_utc": "2026-09-13T06:18:52.3064991Z"
+      },
+      {
+        "model": "v2_s0_tflite_int8",
+        "round": 1,
+        "report": "v2_s0_tflite_int8-r1.json",
+        "started_utc": "2026-09-13T06:19:22.8009780Z",
+        "finished_utc": "2026-09-13T06:21:23.2438361Z"
+      },
+      {
+        "model": "v1_s0_onnx_int8",
+        "round": 1,
+        "report": "v1_s0_onnx_int8-r1.json",
+        "started_utc": "2026-09-13T06:21:53.8600534Z",
+        "finished_utc": "2026-09-13T06:23:20.5068146Z"
+      },
+      {
+        "model": "v1_s2_onnx_int8",
+        "round": 1,
+        "report": "v1_s2_onnx_int8-r1.json",
+        "started_utc": "2026-09-13T06:23:50.9261555Z",
+        "finished_utc": "2026-09-13T06:25:40.6142133Z"
+      },
+      {
+        "model": "legacy_clip_int8",
+        "round": 1,
+        "report": "legacy_clip_int8-r1.json",
+        "started_utc": "2026-09-13T06:26:11.0924586Z",
+        "finished_utc": "2026-09-13T06:27:33.0378098Z"
+      },
+      {
+        "model": "legacy_clip_int8",
+        "round": 2,
+        "report": "legacy_clip_int8-r2.json",
+        "started_utc": "2026-09-13T06:28:03.7417086Z",
+        "finished_utc": "2026-09-13T06:28:25.5325826Z"
+      },
+      {
+        "model": "v1_s2_onnx_int8",
+        "round": 2,
+        "report": "v1_s2_onnx_int8-r2.json",
+        "started_utc": "2026-09-13T06:28:56.2532094Z",
+        "finished_utc": "2026-09-13T06:29:40.5063512Z"
+      },
+      {
+        "model": "v1_s0_onnx_int8",
+        "round": 2,
+        "report": "v1_s0_onnx_int8-r2.json",
+        "started_utc": "2026-09-13T06:30:11.0603169Z",
+        "finished_utc": "2026-09-13T06:30:36.6084224Z"
+      },
+      {
+        "model": "v2_s0_tflite_int8",
+        "round": 2,
+        "report": "v2_s0_tflite_int8-r2.json",
+        "started_utc": "2026-09-13T06:31:07.2069540Z",
+        "finished_utc": "2026-09-13T06:31:49.0102576Z"
+      },
+      {
+        "model": "v2_s0_onnx_int8",
+        "round": 2,
+        "report": "v2_s0_onnx_int8-r2.json",
+        "started_utc": "2026-09-13T06:32:19.6261702Z",
+        "finished_utc": "2026-09-13T06:32:33.7850514Z"
+      }
+    ],
+    "completed_utc": "2026-09-13T06:32:34.4691574Z",
+    "status": "complete"
+  },
+  "percentile_method": "nearest rank",
+  "models": {
+    "v1_s0_onnx_int8": {
+      "label": "MobileCLIP v1 S0 · ONNX",
+      "runtime_versions": [
+        "1.23.2"
+      ],
+      "image_sha256": "902b795d7914aaa686401d671414499d406cd0bdf25c82623c9fc6f5799627c0",
+      "text_sha256": "1df5c27c6770fff13efc1b68548cb4d86ac3cb8feba8ca836c383e63d07e3eed",
+      "temperature_c_range": [
+        37.2,
+        37.6
+      ],
+      "thermal_statuses": [
+        0
+      ],
+      "battery_plugged_values": [
+        2
+      ],
+      "max_observed_single_tower_process_pss_mib": 208.3310546875,
+      "sustained_image": {
+        "reload_ms": 128.836792,
+        "first_invoke_after_reload_ms": 180.991455,
+        "segments": [
+          {
+            "count": 158,
+            "mean_ms": 95.13131705063284,
+            "min_ms": 77.511963,
+            "max_ms": 166.126547,
+            "p50_ms": 93.34904,
+            "p95_ms": 125.771281,
+            "p99_ms": 128.600179,
+            "from_s": 0,
+            "to_s": 15.089046272,
+            "elapsed_s": 15.089046272,
+            "images_per_second": 10.471172077535002
+          },
+          {
+            "count": 120,
+            "mean_ms": 124.60185558333335,
+            "min_ms": 116.356852,
+            "max_ms": 131.085734,
+            "p50_ms": 123.954956,
+            "p95_ms": 129.294353,
+            "p99_ms": 130.84139,
+            "from_s": 15.089046272,
+            "to_s": 30.10737294,
+            "elapsed_s": 15.018326668,
+            "images_per_second": 7.99023770442333
+          },
+          {
+            "count": 120,
+            "mean_ms": 123.08077600000003,
+            "min_ms": 108.200155,
+            "max_ms": 142.994588,
+            "p50_ms": 123.494182,
+            "p95_ms": 130.557088,
+            "p99_ms": 137.28951,
+            "from_s": 30.10737294,
+            "to_s": 45.002991152,
+            "elapsed_s": 14.895618212,
+            "images_per_second": 8.056060399247295
+          },
+          {
+            "count": 121,
+            "mean_ms": 124.24510448760334,
+            "min_ms": 111.914185,
+            "max_ms": 139.944621,
+            "p50_ms": 123.696371,
+            "p95_ms": 129.415527,
+            "p99_ms": 139.614584,
+            "from_s": 45.002991152,
+            "to_s": 60.100195546,
+            "elapsed_s": 15.097204394,
+            "images_per_second": 8.014728875770428
+          }
+        ],
+        "actual_elapsed_s": 60.16867691,
+        "count": 519,
+        "images_per_second": 8.6257505840841
+      },
+      "image": {
+        "count": 200,
+        "mean_ms": 76.867855055,
+        "min_ms": 69.312378,
+        "max_ms": 88.518432,
+        "p50_ms": 76.934163,
+        "p95_ms": 80.628255,
+        "p99_ms": 82.11088,
+        "round_p50_ms": [
+          76.487752,
+          77.370646
+        ],
+        "load_ms": [
+          171.884074,
+          190.335815
+        ],
+        "first_invoke_ms": [
+          142.555624,
+          249.748413
+        ]
+      },
+      "text": {
+        "count": 200,
+        "mean_ms": 15.372537435,
+        "min_ms": 13.38383,
+        "max_ms": 20.167806,
+        "p50_ms": 15.2441,
+        "p95_ms": 17.178467,
+        "p99_ms": 18.441406,
+        "round_p50_ms": [
+          14.946086,
+          15.375325
+        ],
+        "load_ms": [
+          124.095744,
+          141.457886
+        ],
+        "first_invoke_ms": [
+          93.903158,
+          51.784505
+        ]
+      }
+    },
+    "v1_s2_onnx_int8": {
+      "label": "MobileCLIP v1 S2 · ONNX",
+      "runtime_versions": [
+        "1.23.2"
+      ],
+      "image_sha256": "de61a9ad86c8ae357f0a7c7f3c29773b4d83b6bf93842411cc191c080a8e6ad8",
+      "text_sha256": "151abc70744ad095b7e4a88cd53c8d3df1cf5ec37cfd5cfea1cc96e54180e4d4",
+      "temperature_c_range": [
+        36.9,
+        37.4
+      ],
+      "thermal_statuses": [
+        0,
+        1
+      ],
+      "battery_plugged_values": [
+        2
+      ],
+      "max_observed_single_tower_process_pss_mib": 309.900390625,
+      "sustained_image": {
+        "reload_ms": 483.944377,
+        "first_invoke_after_reload_ms": 467.87557,
+        "segments": [
+          {
+            "count": 42,
+            "mean_ms": 359.5298521428571,
+            "min_ms": 341.23287,
+            "max_ms": 682.854493,
+            "p50_ms": 351.343384,
+            "p95_ms": 358.018067,
+            "p99_ms": 682.854493,
+            "from_s": 0,
+            "to_s": 15.170927213,
+            "elapsed_s": 15.170927213,
+            "images_per_second": 2.7684530688414424
+          },
+          {
+            "count": 43,
+            "mean_ms": 348.94591458139536,
+            "min_ms": 318.297282,
+            "max_ms": 369.408244,
+            "p50_ms": 349.38265,
+            "p95_ms": 363.592693,
+            "p99_ms": 369.408244,
+            "from_s": 15.170927213,
+            "to_s": 30.238508478,
+            "elapsed_s": 15.067581265,
+            "images_per_second": 2.853809064888425
+          },
+          {
+            "count": 42,
+            "mean_ms": 353.95093573809527,
+            "min_ms": 318.179729,
+            "max_ms": 411.984375,
+            "p50_ms": 352.510336,
+            "p95_ms": 368.481324,
+            "p99_ms": 411.984375,
+            "from_s": 30.238508478,
+            "to_s": 45.231691673,
+            "elapsed_s": 14.993183195,
+            "images_per_second": 2.8012730488083655
+          },
+          {
+            "count": 42,
+            "mean_ms": 350.64595566666657,
+            "min_ms": 326.613892,
+            "max_ms": 370.825033,
+            "p50_ms": 351.08195,
+            "p95_ms": 363.653117,
+            "p99_ms": 370.825033,
+            "from_s": 45.231691673,
+            "to_s": 60.027327829,
+            "elapsed_s": 14.795636156,
+            "images_per_second": 2.8386748333878127
+          }
+        ],
+        "actual_elapsed_s": 60.093233591,
+        "count": 169,
+        "images_per_second": 2.8122966580601956
+      },
+      "image": {
+        "count": 200,
+        "mean_ms": 232.81720266,
+        "min_ms": 203.83077,
+        "max_ms": 308.170613,
+        "p50_ms": 228.264282,
+        "p95_ms": 268.939087,
+        "p99_ms": 304.670655,
+        "round_p50_ms": [
+          228.264282,
+          228.08077
+        ],
+        "load_ms": [
+          378.547567,
+          341.104411
+        ],
+        "first_invoke_ms": [
+          288.67867,
+          312.615804
+        ]
+      },
+      "text": {
+        "count": 200,
+        "mean_ms": 29.456814214999998,
+        "min_ms": 23.559652,
+        "max_ms": 37.254435,
+        "p50_ms": 29.2441,
+        "p95_ms": 33.406657,
+        "p99_ms": 34.541056,
+        "round_p50_ms": [
+          31.105103,
+          28.368002
+        ],
+        "load_ms": [
+          290.532227,
+          336.568767
+        ],
+        "first_invoke_ms": [
+          151.135539,
+          133.865275
+        ]
+      }
+    },
+    "v2_s0_onnx_int8": {
+      "label": "MobileCLIP2 S0 · ONNX",
+      "runtime_versions": [
+        "1.23.2"
+      ],
+      "image_sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+      "text_sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+      "temperature_c_range": [
+        35.2,
+        36.8
+      ],
+      "thermal_statuses": [
+        0
+      ],
+      "battery_plugged_values": [
+        2
+      ],
+      "max_observed_single_tower_process_pss_mib": 224.9619140625,
+      "sustained_image": {
+        "reload_ms": 149.901937,
+        "first_invoke_after_reload_ms": 166.41569,
+        "segments": [
+          {
+            "count": 200,
+            "mean_ms": 74.92032272,
+            "min_ms": 70.394491,
+            "max_ms": 83.256389,
+            "p50_ms": 74.736776,
+            "p95_ms": 78.00175,
+            "p99_ms": 81.20105,
+            "from_s": 0,
+            "to_s": 15.038128181,
+            "elapsed_s": 15.038128181,
+            "images_per_second": 13.299527547097984
+          },
+          {
+            "count": 187,
+            "mean_ms": 80.11350995187168,
+            "min_ms": 73.484131,
+            "max_ms": 92.214559,
+            "p50_ms": 80.507772,
+            "p95_ms": 86.342488,
+            "p99_ms": 88.702393,
+            "from_s": 15.038128181,
+            "to_s": 30.069888442,
+            "elapsed_s": 15.031760261,
+            "images_per_second": 12.44032613300604
+          },
+          {
+            "count": 141,
+            "mean_ms": 105.5282349219858,
+            "min_ms": 80.583212,
+            "max_ms": 137.725301,
+            "p50_ms": 95.335205,
+            "p95_ms": 125.828125,
+            "p99_ms": 133.395711,
+            "from_s": 30.069888442,
+            "to_s": 45.062348329,
+            "elapsed_s": 14.992459887,
+            "images_per_second": 9.404727513879257
+          },
+          {
+            "count": 122,
+            "mean_ms": 122.35377850819675,
+            "min_ms": 110.375448,
+            "max_ms": 144.963461,
+            "p50_ms": 121.882731,
+            "p95_ms": 127.76294,
+            "p99_ms": 140.772624,
+            "from_s": 45.062348329,
+            "to_s": 60.060577503,
+            "elapsed_s": 14.998229174,
+            "images_per_second": 8.134293627909862
+          }
+        ],
+        "actual_elapsed_s": 60.115313994,
+        "count": 650,
+        "images_per_second": 10.81255268940083
+      },
+      "image": {
+        "count": 200,
+        "mean_ms": 73.887074615,
+        "min_ms": 67.750081,
+        "max_ms": 133.081502,
+        "p50_ms": 73.004802,
+        "p95_ms": 79.742146,
+        "p99_ms": 88.640014,
+        "round_p50_ms": [
+          71.371135,
+          74.91508
+        ],
+        "load_ms": [
+          200.990967,
+          192.986979
+        ],
+        "first_invoke_ms": [
+          163.391561,
+          195.885051
+        ]
+      },
+      "text": {
+        "count": 200,
+        "mean_ms": 20.99998295,
+        "min_ms": 18.497517,
+        "max_ms": 29.307658,
+        "p50_ms": 20.886597,
+        "p95_ms": 23.59371,
+        "p99_ms": 24.529664,
+        "round_p50_ms": [
+          20.129272,
+          21.391031
+        ],
+        "load_ms": [
+          269.125611,
+          276.766886
+        ],
+        "first_invoke_ms": [
+          95.424723,
+          136.757121
+        ]
+      }
+    },
+    "v2_s0_tflite_int8": {
+      "label": "MobileCLIP2 S0 · TFLite",
+      "runtime_versions": [
+        "2.20.0-dev0+selfbuilt"
+      ],
+      "image_sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+      "text_sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649",
+      "temperature_c_range": [
+        36.4,
+        36.8
+      ],
+      "thermal_statuses": [
+        0
+      ],
+      "battery_plugged_values": [
+        2
+      ],
+      "max_observed_single_tower_process_pss_mib": 210.7734375,
+      "sustained_image": {
+        "reload_ms": 38.218017,
+        "first_invoke_after_reload_ms": 323.966309,
+        "segments": [
+          {
+            "count": 45,
+            "mean_ms": 333.8750607555554,
+            "min_ms": 320.667359,
+            "max_ms": 344.339844,
+            "p50_ms": 338.40035,
+            "p95_ms": 341.88387,
+            "p99_ms": 344.339844,
+            "from_s": 0,
+            "to_s": 15.068176033,
+            "elapsed_s": 15.068176033,
+            "images_per_second": 2.986426485956092
+          },
+          {
+            "count": 44,
+            "mean_ms": 338.76016434090894,
+            "min_ms": 333.389079,
+            "max_ms": 343.989786,
+            "p50_ms": 338.807332,
+            "p95_ms": 341.996297,
+            "p99_ms": 343.989786,
+            "from_s": 15.068176033,
+            "to_s": 30.016770726,
+            "elapsed_s": 14.948594693,
+            "images_per_second": 2.943420495613808
+          },
+          {
+            "count": 45,
+            "mean_ms": 332.3435023777777,
+            "min_ms": 315.077189,
+            "max_ms": 344.11613,
+            "p50_ms": 337.037761,
+            "p95_ms": 342.164307,
+            "p99_ms": 344.11613,
+            "from_s": 30.016770726,
+            "to_s": 45.058211814,
+            "elapsed_s": 15.041441088,
+            "images_per_second": 2.9917346174962463
+          },
+          {
+            "count": 46,
+            "mean_ms": 329.4722680869565,
+            "min_ms": 317.265828,
+            "max_ms": 344.368164,
+            "p50_ms": 323.028076,
+            "p95_ms": 342.289063,
+            "p99_ms": 344.368164,
+            "from_s": 45.058211814,
+            "to_s": 60.256682606,
+            "elapsed_s": 15.198470792,
+            "images_per_second": 3.0266202849968935
+          }
+        ],
+        "actual_elapsed_s": 60.301453439,
+        "count": 180,
+        "images_per_second": 2.9850026779551038
+      },
+      "image": {
+        "count": 200,
+        "mean_ms": 317.28361893,
+        "min_ms": 300.17452,
+        "max_ms": 346.703329,
+        "p50_ms": 314.964559,
+        "p95_ms": 337.549723,
+        "p99_ms": 342.975097,
+        "round_p50_ms": [
+          323.575114,
+          309.344279
+        ],
+        "load_ms": [
+          58.633993,
+          47.440389
+        ],
+        "first_invoke_ms": [
+          417.005575,
+          327.168051
+        ]
+      },
+      "text": {
+        "count": 200,
+        "mean_ms": 42.165375795,
+        "min_ms": 40.194214,
+        "max_ms": 44.184692,
+        "p50_ms": 42.023519,
+        "p95_ms": 43.528646,
+        "p99_ms": 43.882121,
+        "round_p50_ms": [
+          42.949137,
+          41.410441
+        ],
+        "load_ms": [
+          97.598714,
+          90.702881
+        ],
+        "first_invoke_ms": [
+          58.289307,
+          47.153035
+        ]
+      }
+    },
+    "legacy_clip_int8": {
+      "label": "历史 CLIP · ORT（双 INT8）",
+      "runtime_versions": [
+        "1.23.2"
+      ],
+      "image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+      "text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+      "temperature_c_range": [
+        36.9,
+        37.8
+      ],
+      "thermal_statuses": [
+        0,
+        1
+      ],
+      "battery_plugged_values": [
+        2
+      ],
+      "max_observed_single_tower_process_pss_mib": 332.4169921875,
+      "sustained_image": {
+        "reload_ms": 353.926798,
+        "first_invoke_after_reload_ms": 102.563599,
+        "segments": [
+          {
+            "count": 457,
+            "mean_ms": 32.706298665207854,
+            "min_ms": 28.665202,
+            "max_ms": 42.378133,
+            "p50_ms": 32.506714,
+            "p95_ms": 35.921753,
+            "p99_ms": 40.149048,
+            "from_s": 0,
+            "to_s": 15.013598966,
+            "elapsed_s": 15.013598966,
+            "images_per_second": 30.439070674188674
+          },
+          {
+            "count": 351,
+            "mean_ms": 42.52342337321939,
+            "min_ms": 33.475831,
+            "max_ms": 55.404093,
+            "p50_ms": 44.038778,
+            "p95_ms": 50.705119,
+            "p99_ms": 53.864542,
+            "from_s": 15.013598966,
+            "to_s": 30.009955704,
+            "elapsed_s": 14.996356738,
+            "images_per_second": 23.4056848694846
+          },
+          {
+            "count": 315,
+            "mean_ms": 47.1867017111111,
+            "min_ms": 41.213745,
+            "max_ms": 55.27124,
+            "p50_ms": 47.061768,
+            "p95_ms": 51.339477,
+            "p99_ms": 52.688518,
+            "from_s": 30.009955704,
+            "to_s": 45.012488019,
+            "elapsed_s": 15.002532315,
+            "images_per_second": 20.996455357410106
+          },
+          {
+            "count": 319,
+            "mean_ms": 46.789660482758606,
+            "min_ms": 41.103109,
+            "max_ms": 71.028931,
+            "p50_ms": 46.429688,
+            "p95_ms": 51.732381,
+            "p99_ms": 55.282186,
+            "from_s": 45.012488019,
+            "to_s": 60.014076242,
+            "elapsed_s": 15.001588223,
+            "images_per_second": 21.264415157784324
+          }
+        ],
+        "actual_elapsed_s": 60.065957712,
+        "count": 1442,
+        "images_per_second": 24.006942616548287
+      },
+      "image": {
+        "count": 200,
+        "mean_ms": 28.64904541,
+        "min_ms": 25.796875,
+        "max_ms": 34.480591,
+        "p50_ms": 28.50061,
+        "p95_ms": 31.131877,
+        "p99_ms": 32.706543,
+        "round_p50_ms": [
+          28.524699,
+          28.465617
+        ],
+        "load_ms": [
+          401.737061,
+          440.682658
+        ],
+        "first_invoke_ms": [
+          89.686361,
+          131.557658
+        ]
+      },
+      "text": {
+        "count": 200,
+        "mean_ms": 24.887573659999997,
+        "min_ms": 21.184407,
+        "max_ms": 32.675782,
+        "p50_ms": 24.481486,
+        "p95_ms": 27.985555,
+        "p99_ms": 30.63505,
+        "round_p50_ms": [
+          23.928304,
+          25.568848
+        ],
+        "load_ms": [
+          227.317505,
+          227.253215
+        ],
+        "first_invoke_ms": [
+          119.671916,
+          83.679769
+        ]
+      }
+    }
+  }
+}

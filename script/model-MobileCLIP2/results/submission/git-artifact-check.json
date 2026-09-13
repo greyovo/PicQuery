@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "preserved_index_artifacts": 321,
+  "bilingual_pairs": [
+    ".",
+    "script\\model-MobileCLIP2",
+    "script\\model-MobileCLIP2\\results",
+    "script\\model-MobileCLIP2\\results\\image-int8",
+    "script\\model-MobileCLIP2\\results\\image-int8\\pixel8a-accuracy",
+    "script\\model-MobileCLIP2\\results\\ort-comparison",
+    "script\\model-MobileCLIP2\\tests",
+    "app\\src\\main\\cpp\\third_party\\litert"
+  ],
+  "frozen_measurement_sha256": {
+    "script/model-MobileCLIP2/results/image-int8/accuracy.json": "f15594d6f86316a18f65e256784749813829b58623642107a1d2dda14a34ad79",
+    "script/model-MobileCLIP2/results/image-int8/accuracy-manifest.json": "64aea9c8432f0a6ce95e70050e7e1096e1b594edde51a8e48040120b51358c42"
+  },
+  "staged_files": 327
+}

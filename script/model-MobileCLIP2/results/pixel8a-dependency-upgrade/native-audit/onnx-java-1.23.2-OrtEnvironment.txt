@@ -1,0 +1,23 @@
+Compiled from "OrtEnvironment.java"
+public final class ai.onnxruntime.OrtEnvironment implements java.lang.AutoCloseable {
+  public static final java.lang.String DEFAULT_NAME;
+  public static synchronized ai.onnxruntime.OrtEnvironment getEnvironment();
+  public static ai.onnxruntime.OrtEnvironment getEnvironment(java.lang.String);
+  public static ai.onnxruntime.OrtEnvironment getEnvironment(ai.onnxruntime.OrtLoggingLevel);
+  public static synchronized ai.onnxruntime.OrtEnvironment getEnvironment(ai.onnxruntime.OrtLoggingLevel, java.lang.String);
+  public static synchronized ai.onnxruntime.OrtEnvironment getEnvironment(ai.onnxruntime.OrtLoggingLevel, java.lang.String, ai.onnxruntime.OrtEnvironment$ThreadingOptions);
+  public ai.onnxruntime.OrtSession createSession(java.lang.String) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession createSession(java.lang.String, ai.onnxruntime.OrtSession$SessionOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession createSession(java.nio.ByteBuffer, ai.onnxruntime.OrtSession$SessionOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession createSession(java.nio.ByteBuffer) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession createSession(byte[], ai.onnxruntime.OrtSession$SessionOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession createSession(byte[]) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtTrainingSession createTrainingSession(java.lang.String, java.lang.String, java.lang.String, java.lang.String) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtTrainingSession createTrainingSession(java.lang.String, java.lang.String, java.lang.String, java.lang.String, ai.onnxruntime.OrtSession$SessionOptions) throws ai.onnxruntime.OrtException;
+  public boolean isTrainingEnabled();
+  public void setTelemetry(boolean) throws ai.onnxruntime.OrtException;
+  public java.lang.String getVersion();
+  public java.lang.String toString();
+  public static java.util.EnumSet<ai.onnxruntime.OrtProvider> getAvailableProviders();
+  public void close();
+}

@@ -1,0 +1,6 @@
+Uploaded cifar100-images.f32: 1,572,864,000 bytes
+Uploaded cifar100-tokens.i32: 30,800 bytes
+Uploaded imagenette-images.f32: 3,086,745,600 bytes
+Uploaded imagenette-tokens.i32: 3,080 bytes
+Uploaded manifest.json: 2,145 bytes
+Upload complete; instrumentation independently verifies model and input SHA256.

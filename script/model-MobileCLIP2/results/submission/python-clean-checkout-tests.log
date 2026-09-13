@@ -1,0 +1,26 @@
+test_synthetic_artifact_contracts (test_image_int8_device.TestImageInt8Device.test_synthetic_artifact_contracts) ... <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+ok
+test_synthetic_artifact_contracts (test_image_int8_report.TestImageInt8Report.test_synthetic_artifact_contracts) ... ok
+test_archived_accuracy_counts_and_aggregates (test_report_archive.TestReportArchive.test_archived_accuracy_counts_and_aggregates) ... ok
+test_bilingual_tables_match (test_report_archive.TestReportArchive.test_bilingual_tables_match) ... ok
+test_device_speed_tables_match_raw_timings (test_report_archive.TestReportArchive.test_device_speed_tables_match_raw_timings) ... ok
+test_generated_accuracy_tables_match_json (test_report_archive.TestReportArchive.test_generated_accuracy_tables_match_json) ... ok
+test_index_accuracy_tables_match_json (test_report_archive.TestReportArchive.test_index_accuracy_tables_match_json) ... ok
+test_missing_raw_arrays_explicitly_skip (test_report_archive.TestReportArchive.test_missing_raw_arrays_explicitly_skip) ... ok
+test_ort_host_summary_matches_raw_timings (test_report_archive.TestReportArchive.test_ort_host_summary_matches_raw_timings) ... ok
+test_paired_phone_counts_and_intervals (test_report_archive.TestReportArchive.test_paired_phone_counts_and_intervals) ... ok
+test_phone_archive_hash_chain_and_shared_text (test_report_archive.TestReportArchive.test_phone_archive_hash_chain_and_shared_text) ... ok
+test_phone_raw_arrays_when_available (test_report_archive.TestReportArchive.test_phone_raw_arrays_when_available) ... skipped 'Raw .f32 arrays are not in Git; regenerate phone exports to rehash and inspect vectors'
+test_does_not_invent_provenance_for_missing_receipt (test_tflite_diagnostics.DiagnosticProvenanceTest.test_does_not_invent_provenance_for_missing_receipt) ... ok
+test_does_not_reuse_hashes_from_different_measurements (test_tflite_diagnostics.DiagnosticProvenanceTest.test_does_not_reuse_hashes_from_different_measurements) ... ok
+test_preserves_recorded_hashes_and_measured_statistics (test_tflite_diagnostics.DiagnosticProvenanceTest.test_preserves_recorded_hashes_and_measured_statistics) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 9.609s
+
+OK (skipped=1)
+Verified complete phone embeddings for 2 x 5,925 images; wrote /tmp/mobileclip-report-ilwbker4/README.md
+Device evaluator: 55 offline checks passed.
+Report validator: 46 offline checks passed.
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

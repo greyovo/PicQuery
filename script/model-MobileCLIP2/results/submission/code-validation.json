@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "status": "passed_with_expected_optional_feature_skip",
+  "created_at_utc": "2026-09-13T09:21:29.927240+00:00",
+  "android_integration_commit": "4d65dea90e0c12368420c7f0e16e1316699c510b",
+  "scope": {
+    "en": "Submission-time source, report and archived-data verification. No model calibration, inference benchmark or full accuracy experiment was rerun. Synthetic-test log messages are not measurements.",
+    "zh": "提交前源码、报告及归档数据验证；未重新校准模型、进行推理测速或运行全量准确率实验。合成测试日志不是测量结果。"
+  },
+  "syntax": {
+    "python_files": 26,
+    "powershell_files": 2,
+    "unix_wrapper_bash_syntax": "passed"
+  },
+  "cli_help": {
+    "status": "passed",
+    "scripts": 19,
+    "evidence": "python-cli-checks.json"
+  },
+  "clean_checkout_tests": {
+    "status": "passed",
+    "tests_run": 15,
+    "passed": 14,
+    "skipped": 1,
+    "environment": "WSL Ubuntu 24.04, Python 3.12, existing MobileCLIP evaluation dependencies",
+    "command": "python -m unittest discover -s script/model-MobileCLIP2/tests -v",
+    "snapshot": "git checkout-index --all into a new build directory; only staged Git files, without ignored model/input/feature artifacts",
+    "report_validator_checks": 46,
+    "device_evaluator_checks": 55,
+    "archive_test_methods": 10,
+    "diagnostic_provenance_test_methods": 3,
+    "skip_reason": "Raw .f32 arrays are deliberately excluded from Git; this one optional test explicitly skips in a clean checkout.",
+    "evidence": "python-clean-checkout-tests.log"
+  },
+  "local_feature_check": {
+    "status": "passed",
+    "tests_run": 1,
+    "raw_feature_files": 8,
+    "command": "python -m unittest discover -s script/model-MobileCLIP2/tests -p test_report_archive.py -k phone_raw_arrays -v",
+    "scope": "Existing phone output arrays: recorded SHA256, finite/nonzero vectors and byte-identical shared text outputs. No inference rerun.",
+    "evidence": "python-local-feature-check.log"
+  },
+  "measurement_preservation": {
+    "status": "passed",
+    "immutable_files": 11,
+    "all_host_and_phone_dataset_metrics_and_predictions_unchanged": true,
+    "evidence": "measurement-preservation.json"
+  },
+  "bilingual_and_git_checks": {
+    "status": "passed",
+    "readme_pairs": 8,
+    "local_documentation_links_and_anchors_verified": 174,
+    "checks": [
+      "Equal numeric tables and command blocks",
+      "Archived artifact bytes equal staged Git blobs",
+      "No model, APK or .f32 binary staged",
+      "Executable LF Unix Gradle wrapper",
+      "git diff --cached --check"
+    ],
+    "evidence": "git-artifact-check.json",
+    "scope": "Snapshot audit ran before these verification receipts were added; historical measurement bytes remain unchanged."
+  },
+  "source_sha256": [
+    {
+      "file": "script/model-MobileCLIP2/benchmark_mobileclip2.py",
+      "sha256": "3649609b1a7ca852d3115fa63cb05d818f0865cac0f67a7515d400e70cdcd0d0"
+    },
+    {
+      "file": "script/model-MobileCLIP2/benchmark_versions.py",
+      "sha256": "a1f1dc8fa87db4d66a59ad1804dd7a2c061012b2b1902dbed24a9a005f8e05dc"
+    },
+    {
+      "file": "script/model-MobileCLIP2/check_image_int8_device_parity.py",
+      "sha256": "80dfb6e9638a2d9405f7c7127db0dfd722f07488810307b1f996a12a35b16da7"
+    },
+    {
+      "file": "script/model-MobileCLIP2/diagnose_device_tflite.py",
+      "sha256": "dde85900fabb552f5ee33bd7da567261892da1b6ab04cfef9689d3e0de3a43d5"
+    },
+    {
+      "file": "script/model-MobileCLIP2/evaluate_accuracy.py",
+      "sha256": "63b6635393983ec7a69a8a86a2ab9301a4df88542a0d49ca9a17a19309c2df5b"
+    },
+    {
+      "file": "script/model-MobileCLIP2/evaluate_image_int8_device.py",
+      "sha256": "54b2d37ebbcdbbbc715bdc8341f27b08673732c2719bb6de9fc4fada90687d4d"
+    },
+    {
+      "file": "script/model-MobileCLIP2/export_mobileclip2_onnx.py",
+      "sha256": "ccdafa7547a361cbeb33f77417b407677dd4b1ce79835184cdd9e0cc17956e4c"
+    },
+    {
+      "file": "script/model-MobileCLIP2/export_mobileclip2_ort.py",
+      "sha256": "08e854caf6dd67b15d878be69796f07bcd39f46be212ee4759300c1afe8b207f"
+    },
+    {
+      "file": "script/model-MobileCLIP2/export_mobileclip2_tflite.py",
+      "sha256": "dc5d094b7c85544c6c0cb5c892776accdb9ba8bfe635b2fb807f0729126f2434"
+    },
+    {
+      "file": "script/model-MobileCLIP2/make_reference_fixture.py",
+      "sha256": "e84a28bfd7c43a30b095b256613f10354be6cea63c8f27fa37e56e3ced085afe"
+    },
+    {
+      "file": "script/model-MobileCLIP2/prepare_accuracy_models.py",
+      "sha256": "d4b02efecae130a93d192fd6ffff01d2665f4b56a40cdedbc546851d4f9587e5"
+    },
+    {
+      "file": "script/model-MobileCLIP2/prepare_device_benchmark.py",
+      "sha256": "5aaf97101aaaa542d078c09cac2484c2f41ea4917a9245e9b617cd5ea9f1a329"
+    },
+    {
+      "file": "script/model-MobileCLIP2/prepare_image_int8_device_accuracy.py",
+      "sha256": "604b108272c57c6ae5e91ff3744ff6dbdec9dcace91309a5938b645c2d412eb8"
+    },
+    {
+      "file": "script/model-MobileCLIP2/quantize_mobileclip2_image.py",
+      "sha256": "16d2de71b0d3f78f9d785f42aa6efebab3a00c141c6926647aaf6edd36ffa583"
+    },
+    {
+      "file": "script/model-MobileCLIP2/quantize_tflite_dynamic.py",
+      "sha256": "86f2ab1aa545afd0973be8d8a4c4617844aa4629d9df9f391b2ec132ccceccc9"
+    },
+    {
+      "file": "script/model-MobileCLIP2/render_accuracy_report.py",
+      "sha256": "aaf3900ba3eeacf803d419fa4884f75655e0145f7e2896111e66957605404e8c"
+    },
+    {
+      "file": "script/model-MobileCLIP2/render_image_int8_report.py",
+      "sha256": "91116c760ba32c7e6f72d391925afd129a61cc7585e68e0813e7d965ca27b311"
+    },
+    {
+      "file": "script/model-MobileCLIP2/run_image_int8_device_accuracy.py",
+      "sha256": "fe6fcfa47046eab0797db770dafa1268107cca62f14cd443914ad69aa9a82c73"
+    },
+    {
+      "file": "script/model-MobileCLIP2/summarize_device_benchmark.py",
+      "sha256": "a4cf43ed67878381c9357573b20065396b06feecddd4dd0d9c931af8713c4d11"
+    },
+    {
+      "file": "script/model-MobileCLIP2/summarize_tflite_diagnostics.py",
+      "sha256": "093449343840e051d276318a89ff002022f6ab7ef70990fc82d3aee5fa04767f"
+    },
+    {
+      "file": "script/model-MobileCLIP2/tests/fixture_support.py",
+      "sha256": "6c011416056362b03d8905edb5f8f8ae27fe8a00f00f76c49cd5e4b03f7be7eb"
+    },
+    {
+      "file": "script/model-MobileCLIP2/tests/test_image_int8_device.py",
+      "sha256": "ab914bb6580097db838482f11d23fe94a2232a90dc14f7384cced4b788f1aa6c"
+    },
+    {
+      "file": "script/model-MobileCLIP2/tests/test_image_int8_report.py",
+      "sha256": "4fa53a220f9a5c0bb8850533feb17c3900aadea1daa05acdda6781fd48ecb9b6"
+    },
+    {
+      "file": "script/model-MobileCLIP2/tests/test_report_archive.py",
+      "sha256": "4b13cca8c3a8b4716f5b738ec49b5d78f69474c51c963d5eb9996ce535ee0256"
+    },
+    {
+      "file": "script/model-MobileCLIP2/tests/test_tflite_diagnostics.py",
+      "sha256": "765236330085d92adcabc1d904b9f7ba7a7857bfc85af7e4fe1a36d0396d3fed"
+    },
+    {
+      "file": "script/model-MobileCLIP2/upload_device_benchmark.py",
+      "sha256": "4be96671ae3d2342205727e8a3f9b53da9ef57899f0872224fa6865602ddf71c"
+    }
+  ],
+  "evidence_files": [
+    {
+      "file": "python-clean-checkout-tests.log",
+      "sha256": "cff8dc104f7d3ed796ee09fb65c0e63fcab0b28f78749e237aec5b9981ba3f83"
+    },
+    {
+      "file": "python-local-feature-check.log",
+      "sha256": "58f03f9b749da232f7eae9d5d9bc3ec3fc6703a60b4635763e56d469f1e9f265"
+    },
+    {
+      "file": "python-cli-checks.json",
+      "sha256": "aab5f5b6978b3ff1f137674d0f539992709c0c8906ec9d560263a985414dfd61"
+    },
+    {
+      "file": "measurement-preservation.json",
+      "sha256": "f35e884addfc8aa10448de086397fcbfaa2a922da71827b8af6b86ba087b23e3"
+    },
+    {
+      "file": "git-artifact-check.json",
+      "sha256": "fd9ae7628a342dfb116644259237a119103431c753455ae65586cbcab64711c3"
+    }
+  ],
+  "changes": {
+    "en": "Paired English/Chinese guides and reports, reusable offline validation, byte-preserving evidence attributes and historical diagnostic provenance repair. Removed temporary diagnostics and generated tensors from the commit boundary.",
+    "zh": "补齐中英指南与报告、可复用离线校验、证据字节保留规则，并修复历史诊断来源误标。临时诊断副本及生成张量不入库。"
+  },
+  "limits": [
+    "Archived JSON supports independent metric and hash audits; full ranking/inference reproduction needs regenerated models and feature arrays.",
+    "The current Android runtime retains FP32 image and dynamic INT8 text defaults. Mixed image INT8 is an independently evaluated candidate.",
+    "Android build/device checks and known static findings are recorded separately in android-validation.json."
+  ]
+}

@@ -1,0 +1,1305 @@
+{
+  "schema_version": 1,
+  "status": "passed_with_existing_static_findings",
+  "created_at_utc": "2026-09-13T09:14:37.339971+00:00",
+  "scope": {
+    "en": "Submission-time build, static analysis and packaged-model functional checks only. No latency benchmark or full-dataset accuracy evaluation was rerun. Timings contained in the raw smoke-test reports are incidental and must not replace historical measurements.",
+    "zh": "本轮仅做提交前构建、静态检查和打包模型功能验证，未重新运行测速或全量准确率评测。原始功能测试报告中的耗时仅为附带记录，不能替代历史测量。"
+  },
+  "base_git_commit": "4d728e927f617efaf1b94cf0c96325ce5791fdc4",
+  "source_state": "Submission working tree, including staged and unstaged changes relative to base_git_commit; hashes captured after final compilation and functional verification.",
+  "environment": {
+    "jdk": "17",
+    "gradle": "9.6.0",
+    "agp": "9.4.0",
+    "kotlin": "2.4.20",
+    "compile_sdk": 37,
+    "target_sdk": 35,
+    "min_sdk": 29,
+    "ndk": "29.0.14206865",
+    "cmake": "3.22.1",
+    "device": "Pixel 8a",
+    "device_serial": "43231JEKB22129",
+    "device_sdk": 37,
+    "device_page_size_bytes": 4096,
+    "runtime_artifacts": {
+      "onnxruntime-android": "1.29.0",
+      "litert": "1.4.2"
+    },
+    "windows_temp_workaround": "Use an existing short directory for TEMP, TMP and JAVA_TOOL_OPTIONS=-Djava.io.tmpdir=<absolute directory>; this run used build/java-tmp."
+  },
+  "commands": {
+    "baseline": ".\\gradlew.bat :app:testOnnxDebugUnitTest --rerun :app:testTfliteDebugUnitTest --rerun :app:ktlintCheck :app:detekt --console=plain --no-parallel --continue -I build/mobileclip2-readonly-detekt.init.gradle",
+    "final": ".\\gradlew.bat :app:testOnnxDebugUnitTest --rerun :app:testTfliteDebugUnitTest --rerun :app:assembleOnnxDebug :app:assembleTfliteDebug :app:assembleOnnxDebugAndroidTest :app:assembleTfliteDebugAndroidTest :app:ktlintCheck :app:lintOnnxDebug :app:lintTfliteDebug :app:detekt --console=plain --no-parallel --continue",
+    "source_inventory": ".\\gradlew.bat :app:runKtlintCheckOverMainSourceSet --rerun :app:runKtlintCheckOverTestSourceSet --rerun :app:runKtlintCheckOverAndroidTestSourceSet --rerun :app:runKtlintCheckOverKotlinScripts --rerun :app:ktlintCheck :app:detekt --console=plain --no-parallel -I build/mobileclip2-commit-ktlint-inventory.init.gradle",
+    "head_detekt": ".\\gradlew.bat :app:detekt --rerun --console=plain --no-parallel -I build/mobileclip2-commit-head-detekt.init.gradle",
+    "head_snapshot": "git archive <base_git_commit> app/src/main/java; extract to build/mobileclip2-commit-head. Archived init scripts are in android-logs/.",
+    "install": "adb -s <serial> install -r -t <main-or-test-apk>",
+    "packaged_models": "adb -s <serial> shell am instrument -w -r -e class me.grey.picquery.feature.MobileCLIP2InstrumentedTest me.grey.picquery.mobileclip2.<flavor>.test/androidx.test.runner.AndroidJUnitRunner",
+    "default_benchmark_skip": "adb -s <serial> shell am instrument -w -r -e class me.grey.picquery.feature.MobileCLIPVersionsBenchmarkTest me.grey.picquery.mobileclip2.<flavor>.test/androidx.test.runner.AndroidJUnitRunner",
+    "zipalign": "zipalign -c -P 16 4 <main-apk>"
+  },
+  "unit_tests": {
+    "onnx": {
+      "status": "passed",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "class": "me.grey.picquery.common.ConvertorTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "3b0a3d52b610a7f55f7735c02e42f96e2cd94d425c836eebbc9f763557b4903a"
+        },
+        {
+          "class": "me.grey.picquery.domain.AlbumManagerProgressTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "a9e4eba07efeba3e74c14475627275cd6eedaadc729033add8a46a8db1558892"
+        },
+        {
+          "class": "me.grey.picquery.domain.ChineseQueryExpanderTest",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "42df6586438341b521dd82cbf34e8a9105f5c2db5c77355e940bf1ee65c801e0"
+        },
+        {
+          "class": "me.grey.picquery.ExampleUnitTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "37e5d52f39f76382273e92f5afaffa85ee15cfd2beefd16d552325ccab9d136f"
+        },
+        {
+          "class": "me.grey.picquery.feature.BPETokenizerTest",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "8021a4721b4520f3f80e8cd08d7170279d518a1e83178d53ea0d9ad7ae77dfae"
+        },
+        {
+          "class": "me.grey.picquery.feature.tf.TFLiteRuntimeConfigTest",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "2112d6193ef929033ea43961da06d821fee044811fbb441db198dc7753187619"
+        },
+        {
+          "class": "me.grey.picquery.feature.tf.TFLiteTensorShapeTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "a8741efecc98102594bb695c91d79efcd6cb61efd002d654877022cca6ce786d"
+        }
+      ]
+    },
+    "tflite": {
+      "status": "passed",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "class": "me.grey.picquery.common.ConvertorTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "75566898d81a929903b8531d09d6bfe278630a375dd67b019d5b6da5610a00b4"
+        },
+        {
+          "class": "me.grey.picquery.domain.AlbumManagerProgressTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "a8a5cc5d8625606441288300e3182c61c6ef2884ebd8eb2466af1db1887a0866"
+        },
+        {
+          "class": "me.grey.picquery.domain.ChineseQueryExpanderTest",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "43ac6f55bf397080aede3c4f03efee630b8ac12bbb506abfe09bf13ba3c4b707"
+        },
+        {
+          "class": "me.grey.picquery.ExampleUnitTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "927866bf65e671c17e8aa4e124cf73d0448e666de030d31d5f918474e128ce40"
+        },
+        {
+          "class": "me.grey.picquery.feature.BPETokenizerTest",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "88d675fee2a93076a79c844e7bd8364b04b9f933a3afa7969d69675d51f6d731"
+        },
+        {
+          "class": "me.grey.picquery.feature.tf.TFLiteRuntimeConfigTest",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "af92c390907fa8cecae12753b3cd0a859f85513c3bf4c67ca9e47a845b8bce16"
+        },
+        {
+          "class": "me.grey.picquery.feature.tf.TFLiteTensorShapeTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "raw_report_sha256": "dfd688d2997cf4a2e52e3fa3e548f64a43de331c763a546641f81b0d2de68b2f"
+        }
+      ]
+    }
+  },
+  "kotlin_and_java_compilation": "passed for both debug main and androidTest APKs",
+  "android_lint": {
+    "onnx": {
+      "status": "passed",
+      "counts": {
+        "Warning": 50,
+        "Hint": 5
+      },
+      "issue_id_counts": {
+        "DefaultLocale": 1,
+        "OldTargetApi": 1,
+        "SelectedPhotoAccess": 1,
+        "GradleDependency": 1,
+        "ComposableNaming": 2,
+        "BinaryOperationInTimber": 1,
+        "LogNotTimber": 8,
+        "PluralsCandidate": 2,
+        "ObsoleteSdkInt": 1,
+        "AutoboxingStateCreation": 5,
+        "UnusedResources": 25,
+        "MonochromeLauncherIcon": 2,
+        "IconLocation": 1,
+        "UseKtx": 4
+      },
+      "raw_report_sha256": "21ba3be59fae027fe52006794c18727fd77e8075d364c08fe5283d96ba7689b3"
+    },
+    "tflite": {
+      "status": "passed",
+      "counts": {
+        "Warning": 50,
+        "Hint": 5
+      },
+      "issue_id_counts": {
+        "DefaultLocale": 1,
+        "OldTargetApi": 1,
+        "SelectedPhotoAccess": 1,
+        "GradleDependency": 1,
+        "ComposableNaming": 2,
+        "BinaryOperationInTimber": 1,
+        "LogNotTimber": 8,
+        "PluralsCandidate": 2,
+        "ObsoleteSdkInt": 1,
+        "AutoboxingStateCreation": 5,
+        "UnusedResources": 25,
+        "MonochromeLauncherIcon": 2,
+        "IconLocation": 1,
+        "UseKtx": 4
+      },
+      "raw_report_sha256": "21ba3be59fae027fe52006794c18727fd77e8075d364c08fe5283d96ba7689b3"
+    }
+  },
+  "ktlint": {
+    "status": "passed",
+    "version": "1.8.0",
+    "scanned_kotlin_file_count": 123,
+    "scanned_kotlin_script_count": 1,
+    "actual_task_inputs": [
+      {
+        "scope": "main",
+        "task": "runKtlintCheckOverMainSourceSet",
+        "count": 110,
+        "files": [
+          "app/src/main/java/me/grey/picquery/PicQueryApplication.kt",
+          "app/src/main/java/me/grey/picquery/common/Algorithm.kt",
+          "app/src/main/java/me/grey/picquery/common/AppModules.kt",
+          "app/src/main/java/me/grey/picquery/common/AssetUtil.kt",
+          "app/src/main/java/me/grey/picquery/common/Callback.kt",
+          "app/src/main/java/me/grey/picquery/common/Constants.kt",
+          "app/src/main/java/me/grey/picquery/common/Convertor.kt",
+          "app/src/main/java/me/grey/picquery/common/CoroutineExt.kt",
+          "app/src/main/java/me/grey/picquery/common/Either.kt",
+          "app/src/main/java/me/grey/picquery/common/ImageUtil.kt",
+          "app/src/main/java/me/grey/picquery/common/Routes.kt",
+          "app/src/main/java/me/grey/picquery/common/UiUtil.kt",
+          "app/src/main/java/me/grey/picquery/data/AppDatabase.kt",
+          "app/src/main/java/me/grey/picquery/data/CursorUtil.kt",
+          "app/src/main/java/me/grey/picquery/data/ObjectBoxDatabase.kt",
+          "app/src/main/java/me/grey/picquery/data/dao/AlbumDao.kt",
+          "app/src/main/java/me/grey/picquery/data/dao/EmbeddingDao.kt",
+          "app/src/main/java/me/grey/picquery/data/dao/ImageSimilarityDao.kt",
+          "app/src/main/java/me/grey/picquery/data/dao/ObjectBoxEmbeddingDao.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/AlbumRepository.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/EmbeddingRepository.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/IAlbumQuery.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/ObjectBoxEmbeddingRepository.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/PhotoRepository.kt",
+          "app/src/main/java/me/grey/picquery/data/data_source/PreferenceRepository.kt",
+          "app/src/main/java/me/grey/picquery/data/model/Album.kt",
+          "app/src/main/java/me/grey/picquery/data/model/Converters.kt",
+          "app/src/main/java/me/grey/picquery/data/model/Embedding.kt",
+          "app/src/main/java/me/grey/picquery/data/model/ImageSimilarity.kt",
+          "app/src/main/java/me/grey/picquery/data/model/ObjectBoxEmbedding.kt",
+          "app/src/main/java/me/grey/picquery/data/model/Photo.kt",
+          "app/src/main/java/me/grey/picquery/data/model/PhotoBitmap.kt",
+          "app/src/main/java/me/grey/picquery/data/model/PhotoResult.kt",
+          "app/src/main/java/me/grey/picquery/domain/AlbumManager.kt",
+          "app/src/main/java/me/grey/picquery/domain/ChineseQueryExpander.kt",
+          "app/src/main/java/me/grey/picquery/domain/EmbeddingService.kt",
+          "app/src/main/java/me/grey/picquery/domain/EmbeddingUtils.kt",
+          "app/src/main/java/me/grey/picquery/domain/ImageSearcher.kt",
+          "app/src/main/java/me/grey/picquery/domain/MLKitTranslator.kt",
+          "app/src/main/java/me/grey/picquery/domain/SearchConfigurationService.kt",
+          "app/src/main/java/me/grey/picquery/domain/SearchOrchestrator.kt",
+          "app/src/main/java/me/grey/picquery/domain/SimilarityConfigurationService.kt",
+          "app/src/main/java/me/grey/picquery/domain/SimilarityManager.kt",
+          "app/src/main/java/me/grey/picquery/domain/UnionFind.kt",
+          "app/src/main/java/me/grey/picquery/feature/BPETokenizer.kt",
+          "app/src/main/java/me/grey/picquery/feature/ImageEncoderONNX.kt",
+          "app/src/main/java/me/grey/picquery/feature/TextEncoderONNX.kt",
+          "app/src/main/java/me/grey/picquery/feature/base/ImageEncoder.kt",
+          "app/src/main/java/me/grey/picquery/feature/base/Preprocessor.kt",
+          "app/src/main/java/me/grey/picquery/feature/base/TextEncoder.kt",
+          "app/src/main/java/me/grey/picquery/feature/base/Tokenizer.kt",
+          "app/src/main/java/me/grey/picquery/feature/clip/ImageEncoderCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/clip/ModuleCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/clip/PreprocessorCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/clip/TextEncoderCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip/ImageEncoderMobileCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip/ModulesMobileCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip/PreprocessorMobileCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip/TextEncoderMobileCLIP.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip2/ImageEncoderMobileCLIPv2.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip2/MobileCLIP2Session.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip2/ModulesMobileCLIPv2.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip2/PreprocessorMobileCLIPv2.kt",
+          "app/src/main/java/me/grey/picquery/feature/mobileclip2/TextEncoderMobileCLIPv2.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTFLite.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/ModulesTF.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/NativeXnnpackDelegate.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/TFLiteInterpreterSession.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/TFLiteRuntimeConfig.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/TFLiteTensorShape.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt",
+          "app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTFLite.kt",
+          "app/src/main/java/me/grey/picquery/theme/Color.kt",
+          "app/src/main/java/me/grey/picquery/theme/ThemeM3.kt",
+          "app/src/main/java/me/grey/picquery/ui/AppNavHost.kt",
+          "app/src/main/java/me/grey/picquery/ui/MainActivity.kt",
+          "app/src/main/java/me/grey/picquery/ui/albums/AlbumCard.kt",
+          "app/src/main/java/me/grey/picquery/ui/albums/EncodingState.kt",
+          "app/src/main/java/me/grey/picquery/ui/common/AppSheetState.kt",
+          "app/src/main/java/me/grey/picquery/ui/common/BackButton.kt",
+          "app/src/main/java/me/grey/picquery/ui/common/Loading.kt",
+          "app/src/main/java/me/grey/picquery/ui/common/Logo.kt",
+          "app/src/main/java/me/grey/picquery/ui/display/DisplayScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/display/DisplayViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/AddAlbumBottomSheet.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/EncodingProgressBar.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/HomeBottomActions.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/HomeViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/InitPermissions.kt",
+          "app/src/main/java/me/grey/picquery/ui/home/UserGuide.kt",
+          "app/src/main/java/me/grey/picquery/ui/indexmgr/IndexMgrScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/photoDetail/PhotoDetailScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/photoDetail/PhotoDetailViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/ConfidenceTag.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchConfigBottomSheet.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchFilterBottomSheet.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchInput.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchRangeBottomSheet.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchResult.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchResultList.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/search/SearchViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/setting/SettingViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/simlilar/SimilarPhotosScreen.kt",
+          "app/src/main/java/me/grey/picquery/ui/simlilar/SimilarPhotosViewModel.kt",
+          "app/src/main/java/me/grey/picquery/ui/simlilar/SimilarityConfigBottomSheet.kt",
+          "app/src/main/java/me/grey/picquery/ui/simlilar/SimilarityConfiguration.kt"
+        ]
+      },
+      {
+        "scope": "test",
+        "task": "runKtlintCheckOverTestSourceSet",
+        "count": 8,
+        "files": [
+          "app/src/test/java/me/grey/picquery/ExampleUnitTest.kt",
+          "app/src/test/java/me/grey/picquery/TestPhotoRepository.kt",
+          "app/src/test/java/me/grey/picquery/common/ConvertorTest.kt",
+          "app/src/test/java/me/grey/picquery/domain/AlbumManagerProgressTest.kt",
+          "app/src/test/java/me/grey/picquery/domain/ChineseQueryExpanderTest.kt",
+          "app/src/test/java/me/grey/picquery/feature/BPETokenizerTest.kt",
+          "app/src/test/java/me/grey/picquery/feature/tf/TFLiteRuntimeConfigTest.kt",
+          "app/src/test/java/me/grey/picquery/feature/tf/TFLiteTensorShapeTest.kt"
+        ]
+      },
+      {
+        "scope": "androidTest",
+        "task": "runKtlintCheckOverAndroidTestSourceSet",
+        "count": 5,
+        "files": [
+          "app/src/androidTest/java/me/grey/picquery/ExampleInstrumentedTest.kt",
+          "app/src/androidTest/java/me/grey/picquery/TopkTest.kt",
+          "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIP2InstrumentedTest.kt",
+          "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIP2PreprocessorTest.kt",
+          "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIPVersionsBenchmarkTest.kt"
+        ]
+      },
+      {
+        "scope": "kotlinScripts",
+        "task": "runKtlintCheckOverKotlinScripts",
+        "count": 1,
+        "files": [
+          "app/build.gradle.kts"
+        ]
+      }
+    ],
+    "baseline_file": "app/config/ktlint/baseline.xml",
+    "baseline_sha256": "10805726a50fdcb575b2a586fb8b81cbbfafa6f7fccefa879fb899be60cf55e0",
+    "baseline_remaining_files": 45,
+    "baseline_remaining_entries": 157,
+    "new_mobileclip2_runtime_and_instrumentation_files_have_no_baseline_exemptions": true
+  },
+  "detekt": {
+    "task_exit_status": "success; existing ignoreFailures=true is retained",
+    "version": "1.23.8",
+    "auto_correct": false,
+    "current_findings": 26,
+    "base_commit_findings": 26,
+    "added_findings": 0,
+    "removed_findings": 0,
+    "comparison_method": "Run the same Detekt task/tool/config against current main Kotlin and an untouched git archive of base_git_commit main Kotlin. Compare multisets of relative source path, rule ID and exact message; ignore line-number shifts. All 26 fingerprints match.",
+    "config_sha256": "b77c9ea41c122f900fe688524b06206df12d726e9d6ec127ae206a5edd398066",
+    "current_and_base_fingerprints": [
+      {
+        "file": "app/src/main/java/me/grey/picquery/common/Constants.kt",
+        "rule": "detekt.MayBeConst",
+        "message": "DIM can be a `const val`."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/common/ImageUtil.kt",
+        "rule": "detekt.ReturnCount",
+        "message": "Function loadThumbnail has 4 return statements which exceeds the limit of 3."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/data/CursorUtil.kt",
+        "rule": "detekt.UtilityClassWithPublicConstructor",
+        "message": "The class CursorUtil only contains utility functions. Consider defining it as an object."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/data/data_source/AlbumRepository.kt",
+        "rule": "detekt.NestedBlockDepth",
+        "message": "Function getAllAlbums is nested too deeply."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/data/model/Embedding.kt",
+        "rule": "detekt.SerialVersionUIDInSerializableClass",
+        "message": "The class Embedding implements the `Serializable` interface and should thus define a `serialVersionUID`."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/data/model/ObjectBoxEmbedding.kt",
+        "rule": "detekt.SerialVersionUIDInSerializableClass",
+        "message": "The class ObjectBoxEmbedding implements the `Serializable` interface and should thus define a `serialVersionUID`."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/domain/EmbeddingUtils.kt",
+        "rule": "detekt.MayBeConst",
+        "message": "TAG can be a `const val`."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/domain/EmbeddingUtils.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `embeddingRepository` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/BPETokenizer.kt",
+        "rule": "detekt.LoopWithTooManyJumpStatements",
+        "message": "The loop contains more than one break or continue statement. The code should be refactored to increase readability."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/ImageEncoderONNX.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/TextEncoderONNX.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/clip/PreprocessorCLIP.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Variable names should match the pattern: [a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/clip/PreprocessorCLIP.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Variable names should match the pattern: [a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/mobileclip/PreprocessorMobileCLIP.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Variable names should match the pattern: [a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/mobileclip/PreprocessorMobileCLIP.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Variable names should match the pattern: [a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/feature/mobileclip/PreprocessorMobileCLIP.kt",
+        "rule": "detekt.VariableNaming",
+        "message": "Variable names should match the pattern: [a-z][A-Za-z0-9]*"
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/AppNavHost.kt",
+        "rule": "detekt.LongMethod",
+        "message": "The function AppNavHost is too long (118). The maximum length is 100."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.LongParameterList",
+        "message": "The function MainContent(padding: PaddingValues, userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, albumListSheetState: AppBottomSheetState, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.LongParameterList",
+        "message": "The function SearchSection(userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `navigateToSetting` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `navigateToSimilar` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `onOpenIndexAlbums` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `onOpenSearchConfig` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `onOpenSearchConfig` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/home/HomeScreen.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `onOpenSearchRange` is unused."
+      },
+      {
+        "file": "app/src/main/java/me/grey/picquery/ui/search/SearchResultList.kt",
+        "rule": "detekt.UnusedParameter",
+        "message": "Function parameter `similarity` is unused."
+      }
+    ]
+  },
+  "functional_tests": {
+    "status": "passed",
+    "per_flavor_packaged_tests": 1,
+    "per_flavor_parameterized_methods_skipped": 2,
+    "skip_proof": "Each no-modelId instrumentation log contains exactly two INSTRUMENTATION_STATUS_CODE: -4 assumption results.",
+    "final_device_state": "ONNX MainActivity restored",
+    "full_accuracy_export_ran": false,
+    "latency_benchmark_ran": false
+  },
+  "artifacts": [
+    {
+      "flavor": "onnx",
+      "apk_sha256": "18edfd16d608a71b6ebd7535cc7c14a75246fe8e45f6d1f387a0a4b189da2a28",
+      "test_apk_sha256": "93b25a2764b70f17438d2695f8296fd84e4359ac00c7d18c74a88e7a3c2bdd88",
+      "packaged_models": "passed",
+      "device_report_sha256": "54a4c3002fa31892355b16e97a0789d89c8562006bcc49c41ea894d5d3eff4f1",
+      "benchmark_tests_skipped": 2,
+      "application_id": "me.grey.picquery.mobileclip2.onnx",
+      "apk_file": "app/build/outputs/apk/onnx/debug/app-onnx-debug.apk",
+      "apk_bytes": 308046532,
+      "test_apk_file": "app/build/outputs/apk/androidTest/onnx/debug/app-onnx-debug-androidTest.apk",
+      "test_apk_bytes": 1802049,
+      "asset_count": 24,
+      "model_assets": [
+        {
+          "file": "mobileclip2_s0_image.onnx",
+          "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+          "bytes": 45557999,
+          "compression": 0
+        },
+        {
+          "file": "mobileclip2_s0_text_int8.onnx",
+          "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+          "bytes": 64423473,
+          "compression": 0
+        }
+      ],
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "native_libraries": [
+        {
+          "file": "lib/arm64-v8a/libandroidx.graphics.path.so",
+          "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libdatastore_shared_counter.so",
+          "sha256": "178f89a2c6c9234ddf980dd4cd1f3616186a46b2b932aafa6707abd04c5fd76a",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libobjectbox-jni.so",
+          "sha256": "358e3c707a78bc6d58c5b6e26bd08c367b98595f1c1b7d9a2fc60ae71796142c",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libonnxruntime.so",
+          "sha256": "c97321396afba4acf3f888a6fd6deefbf69749d55b151af3ef265d2fa35f5501",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+          "sha256": "540b3725a4b73dce4b89bf39055c168e458366ae8b942492539f63eb129cb1ab",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libpicquery_xnnpack.so",
+          "sha256": "2bfc3345b48001a3aae926f584b1321226f54457b8e744d1868af17597460740",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+          "sha256": "03d7eae3457e3805d7173875e777cb7f79ccf9f837e394ebdb555415a3503c58",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtensorflowlite_jni.so",
+          "sha256": "3ba28ce98b0e6ab7e417b9cc8d9ad0e7e1616ef86dd83cf1ea16ef109a029fa4",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtranslate_jni.so",
+          "sha256": "45040ff0cdd194d6e601589d759e6f1ba733de5f95790f76cc3e2046919046be",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+          "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+          "sha256": "b4a465c02ee3ab581128ce8fedf83b40f6868c73c74b88e98908803229947e6a",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libobjectbox-jni.so",
+          "sha256": "9137ee53bbcf0c7ee44d3ba7bd936c5ed841609fcfc4365b637026d8241b2921",
+          "elf_load_alignment_bytes": [
+            4096,
+            4096,
+            4096
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libonnxruntime.so",
+          "sha256": "a7015dc7f085893f8125dbb56545456a38f9e0fe909f8da034e45fee03d0f255",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+          "sha256": "e97a8581ffeadeac36806c9d32c4f1ee9dd2ab79b144b06563b77eb314493939",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+          "sha256": "becf27a048aaeeec80e670618e88d1022b642a486f95bca1ab30b1e9fdf793d4",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+          "sha256": "222374e093dd0bd492f044f04c53cfb383754b4c5b96ef6b2bd266be9425461e",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+          "sha256": "5c3280cba72ed9563cfa47c39b79670bc8f4c2ed26ff545874b33dba805d8e4b",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtranslate_jni.so",
+          "sha256": "9a7ebc4b29b51a54cc695ae57c736bc6676c6ddbcd4f75a3aed4547ab1c9e551",
+          "elf_load_alignment_bytes": [
+            4096,
+            4096,
+            4096
+          ]
+        }
+      ],
+      "zipalign_16kb_check": "passed",
+      "runtime_version_from_library": "1.29.0",
+      "image_cpu_threads": 4,
+      "text_cpu_threads": 4,
+      "native_xnnpack_thread_pools": {
+        "image": false,
+        "text": false
+      },
+      "functional_cosines": {
+        "image_vs_official": 0.9999999999930824,
+        "text_vs_official": 0.9861419721763685,
+        "text_vs_matching_quantized_host": 0.9981252312701274,
+        "dog_image_vs_dog_text": 0.26693425438454993,
+        "dog_vs_black_image": 0.08720486765270155,
+        "dog_vs_car_text": 0.7687590889234265
+      }
+    },
+    {
+      "flavor": "tflite",
+      "apk_sha256": "913b2fd5b6a48324f36012e90378a9416a015a02f301e462665d5a35396b10de",
+      "test_apk_sha256": "c771b261990168de22a1d2ce36986099e672d63d10a60ecb0066ddc424336c1b",
+      "packaged_models": "passed",
+      "device_report_sha256": "cf0fb41164f6567fbfa15042e799fd27112409366a5541995b3de69263948168",
+      "benchmark_tests_skipped": 2,
+      "application_id": "me.grey.picquery.mobileclip2.tflite",
+      "apk_file": "app/build/outputs/apk/tflite/debug/app-tflite-debug.apk",
+      "apk_bytes": 308926909,
+      "test_apk_file": "app/build/outputs/apk/androidTest/tflite/debug/app-tflite-debug-androidTest.apk",
+      "test_apk_bytes": 1801861,
+      "asset_count": 24,
+      "model_assets": [
+        {
+          "file": "image_model.tflite",
+          "sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+          "bytes": 45608600,
+          "compression": 0
+        },
+        {
+          "file": "text_model_dynamic_wi8.tflite",
+          "sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649",
+          "bytes": 65253264,
+          "compression": 0
+        }
+      ],
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a"
+      ],
+      "native_libraries": [
+        {
+          "file": "lib/arm64-v8a/libandroidx.graphics.path.so",
+          "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libdatastore_shared_counter.so",
+          "sha256": "178f89a2c6c9234ddf980dd4cd1f3616186a46b2b932aafa6707abd04c5fd76a",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libobjectbox-jni.so",
+          "sha256": "358e3c707a78bc6d58c5b6e26bd08c367b98595f1c1b7d9a2fc60ae71796142c",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libonnxruntime.so",
+          "sha256": "c97321396afba4acf3f888a6fd6deefbf69749d55b151af3ef265d2fa35f5501",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+          "sha256": "540b3725a4b73dce4b89bf39055c168e458366ae8b942492539f63eb129cb1ab",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libpicquery_xnnpack.so",
+          "sha256": "2bfc3345b48001a3aae926f584b1321226f54457b8e744d1868af17597460740",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+          "sha256": "03d7eae3457e3805d7173875e777cb7f79ccf9f837e394ebdb555415a3503c58",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtensorflowlite_jni.so",
+          "sha256": "3ba28ce98b0e6ab7e417b9cc8d9ad0e7e1616ef86dd83cf1ea16ef109a029fa4",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/arm64-v8a/libtranslate_jni.so",
+          "sha256": "45040ff0cdd194d6e601589d759e6f1ba733de5f95790f76cc3e2046919046be",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+          "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+          "sha256": "b4a465c02ee3ab581128ce8fedf83b40f6868c73c74b88e98908803229947e6a",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libobjectbox-jni.so",
+          "sha256": "9137ee53bbcf0c7ee44d3ba7bd936c5ed841609fcfc4365b637026d8241b2921",
+          "elf_load_alignment_bytes": [
+            4096,
+            4096,
+            4096
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libonnxruntime.so",
+          "sha256": "a7015dc7f085893f8125dbb56545456a38f9e0fe909f8da034e45fee03d0f255",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+          "sha256": "e97a8581ffeadeac36806c9d32c4f1ee9dd2ab79b144b06563b77eb314493939",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+          "sha256": "becf27a048aaeeec80e670618e88d1022b642a486f95bca1ab30b1e9fdf793d4",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+          "sha256": "222374e093dd0bd492f044f04c53cfb383754b4c5b96ef6b2bd266be9425461e",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+          "sha256": "5c3280cba72ed9563cfa47c39b79670bc8f4c2ed26ff545874b33dba805d8e4b",
+          "elf_load_alignment_bytes": [
+            16384,
+            16384,
+            16384
+          ]
+        },
+        {
+          "file": "lib/armeabi-v7a/libtranslate_jni.so",
+          "sha256": "9a7ebc4b29b51a54cc695ae57c736bc6676c6ddbcd4f75a3aed4547ab1c9e551",
+          "elf_load_alignment_bytes": [
+            4096,
+            4096,
+            4096
+          ]
+        }
+      ],
+      "zipalign_16kb_check": "passed",
+      "runtime_version_from_library": "2.22.0-dev0+selfbuilt",
+      "image_cpu_threads": 4,
+      "text_cpu_threads": 2,
+      "native_xnnpack_thread_pools": {
+        "image": true,
+        "text": true
+      },
+      "functional_cosines": {
+        "image_vs_official": 0.9999999999921574,
+        "text_vs_official": 0.9996581106658124,
+        "text_vs_matching_quantized_host": 0.999631740265315,
+        "dog_image_vs_dog_text": 0.2650386276085439,
+        "dog_vs_black_image": 0.08720487024668729,
+        "dog_vs_car_text": 0.7647841190386632
+      }
+    }
+  ],
+  "source_sha256": [
+    {
+      "file": ".editorconfig",
+      "sha256": "227d3e3120d253e93d1719118bf9aff628fb1a5f74f6d46550deea172a78bece",
+      "bytes": 773
+    },
+    {
+      "file": "app/build.gradle.kts",
+      "sha256": "b2852a7a6fa6ba0809a90e4eabf5abc2d036f66d2ed90a9474873e4c72e11aeb",
+      "bytes": 8092
+    },
+    {
+      "file": "app/config/ktlint/baseline.xml",
+      "sha256": "10805726a50fdcb575b2a586fb8b81cbbfafa6f7fccefa879fb899be60cf55e0",
+      "bytes": 16958
+    },
+    {
+      "file": "app/src/androidTest/assets/mobileclip2/reference_dog_256.json",
+      "sha256": "635bfdceea6987663dbf2eac5253c5f79eaf9367fce836a06a055f1f84730fee",
+      "bytes": 57682
+    },
+    {
+      "file": "app/src/androidTest/assets/mobileclip2/reference_dog_256.png",
+      "sha256": "aa899eed33b4038a367c653f5ad85016eb1c9e33f138b2a0c8904da8402fcfea",
+      "bytes": 111405
+    },
+    {
+      "file": "app/src/androidTest/cpp/xnnpack_thread_probe.cpp",
+      "sha256": "52c91dab9f013d0ddd0dbd1e2b7f2901654f6cdbe216c4b173df1d53356d90dd",
+      "bytes": 5066
+    },
+    {
+      "file": "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIP2InstrumentedTest.kt",
+      "sha256": "b7e7952ca1b2c3313d79a48c8a20b770cc6f765ed82fc71c1e38e60afd6dabb4",
+      "bytes": 14950
+    },
+    {
+      "file": "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIP2PreprocessorTest.kt",
+      "sha256": "b55a51bd2320408ea5735c1e74d92c65552cdb20f0308c3db9f065a836636c33",
+      "bytes": 6242
+    },
+    {
+      "file": "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIPVersionsBenchmarkTest.kt",
+      "sha256": "cc9d01c7534d5c912b24fd95eeeb8944d835f2be7505538e94e6e3e631a4c6f6",
+      "bytes": 39316
+    },
+    {
+      "file": "app/src/main/AndroidManifest.xml",
+      "sha256": "108f90b8a65653f997853edcf6e4b6fb738438648e0dafd3d879682665007e39",
+      "bytes": 1658
+    },
+    {
+      "file": "app/src/main/assets/mobileclip2_onnx_metadata.json",
+      "sha256": "c7e774c0adb5f1967c4b48c67ea157b17f92008f6fd5776991e54cfdafb1a06e",
+      "bytes": 2479
+    },
+    {
+      "file": "app/src/main/assets/mobileclip2_ort_metadata.json",
+      "sha256": "24ed99bd2264860048e1a410a74297623cbcbaa6aaa5290e69e15eaa0fa8e63c",
+      "bytes": 13129
+    },
+    {
+      "file": "app/src/main/assets/mobileclip2_required_operators_and_types.config",
+      "sha256": "66118f34e307d95b9ede6a05a79a10df32d6efb20cd729970d741a1be551ee76",
+      "bytes": 1069
+    },
+    {
+      "file": "app/src/main/cpp/CMakeLists.txt",
+      "sha256": "380b8ad1fb58e3e6ddc4d9ddb0850899227677346909d201c5be867dbf8c5d7d",
+      "bytes": 528
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/README.md",
+      "sha256": "2c9010cc1187a8e7a5c5ab4712f29e90e9cd6ac26262d3712d307b922347d58b",
+      "bytes": 4164
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/README_zh.md",
+      "sha256": "56ac52cf3b509705b39ad26cf36d8867320bc17a99cbb5259718a0749da9ebc3",
+      "bytes": 3998
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/include/tflite/converter/core/c/tflite_types.h",
+      "sha256": "76837feb95e43f7585ecb5980df7895bccd53491d642d7b066d7595e20aa798b",
+      "bytes": 2896
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/include/tflite/core/c/c_api_types.h",
+      "sha256": "4fa7782fefa01473f45ff19316640c0e6d8334dcca630eaebcf358790502f4c6",
+      "bytes": 6047
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/include/tflite/core/c/common.h",
+      "sha256": "02971b2fd9ac651bee055a803751c744c89eb86095d5fac13fb1b64666a6931b",
+      "bytes": 74428
+    },
+    {
+      "file": "app/src/main/cpp/third_party/litert/include/tflite/delegates/xnnpack/xnnpack_delegate.h",
+      "sha256": "f8d46497a2f502642e0b4095296c82f328ec92831846d782f3869ad7ab190ee3",
+      "bytes": 10267
+    },
+    {
+      "file": "app/src/main/cpp/xnnpack_delegate.cpp",
+      "sha256": "bfd6f4ea194ff257f1eebe675823824af725438c217b857943c7b095d2a10946",
+      "bytes": 6230
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/common/AppModules.kt",
+      "sha256": "4b0d8233e1ac1545d5e8f4cfea3abfaa2c44346bb1bd5fe2774ad25338f98c06",
+      "bytes": 4726
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/domain/ChineseQueryExpander.kt",
+      "sha256": "d3c3476ebede8b451d3f7fad58dd7df4adcce7f70e175f0ae67ddcc3ee4a3de3",
+      "bytes": 2891
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/BPETokenizer.kt",
+      "sha256": "5b9587f96634682eda1b6326c5941e88faa058f8145132aad25f766dadb448ab",
+      "bytes": 6734
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/mobileclip2/ImageEncoderMobileCLIPv2.kt",
+      "sha256": "ac762746cb68aebef9523fdab252e502b7d35cd5d6e7ea2fb2e2354f5665e1b2",
+      "bytes": 1755
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/mobileclip2/MobileCLIP2Session.kt",
+      "sha256": "b27d722798ad0a93a3a25b759d93f26a39acb285bbab4cc7a1113fbd75a8b3b2",
+      "bytes": 7507
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/mobileclip2/ModulesMobileCLIPv2.kt",
+      "sha256": "c323285f67794d6569872f861ee0f63dc812499270202d525fdd3cd0a544f32c",
+      "bytes": 693
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/mobileclip2/PreprocessorMobileCLIPv2.kt",
+      "sha256": "13038edb1941a488b22d5c17735deb40bed5d1d07c425dfaeeaf93406b267811",
+      "bytes": 3511
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/mobileclip2/TextEncoderMobileCLIPv2.kt",
+      "sha256": "6b4504465745dab64669325474001eb993e2e23c65bad8a241d3a74f41794911",
+      "bytes": 1103
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/tf/NativeXnnpackDelegate.kt",
+      "sha256": "75e2b2778a6d5755cd7c0026e21bfb6dd0120b15f475d66141912b7985b6299b",
+      "bytes": 1803
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/tf/TFLiteInterpreterSession.kt",
+      "sha256": "4929957374c7fec14f55582a92d5d67f7b63c5252922fb640a01eb6757ffa29d",
+      "bytes": 4186
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/feature/tf/TFLiteRuntimeConfig.kt",
+      "sha256": "e881ae27138bc9c0175cb2c2eb5ba4835f477f13930e78590e60e93d15c14cc5",
+      "bytes": 513
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/ui/indexmgr/IndexMgrScreen.kt",
+      "sha256": "dd0eb1665e0d94ca7b66d1c657e1631cf6400157cc4c362509b555e09c4283a4",
+      "bytes": 9656
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/ui/search/SearchFilterBottomSheet.kt",
+      "sha256": "84e019805deadc9f078d3689c722498b6de9cbf5ed23f2690bde1d43d409852c",
+      "bytes": 6568
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt",
+      "sha256": "194c36aa4832d016b4caa2db7be77787ce8e0d9ca0293d2ac017cdb822d55b18",
+      "bytes": 5892
+    },
+    {
+      "file": "app/src/main/java/me/grey/picquery/ui/simlilar/SimilarityConfigBottomSheet.kt",
+      "sha256": "edaeeef310cf46a345d4b5fbd2a49c1f6d0757bc96ea877692e0e2f59cd68377",
+      "bytes": 4080
+    },
+    {
+      "file": "app/src/main/res/values-zh-rCN/strings.xml",
+      "sha256": "fb25c6a0d2ad35099be39a45f0d42e87d198a9824459afc6297673aa9455da80",
+      "bytes": 8857
+    },
+    {
+      "file": "app/src/main/res/values/strings.xml",
+      "sha256": "e590640da5ee38764730e5e63ba525561ff2ebdaa1812fd6fe4ff58cd445e830",
+      "bytes": 9061
+    },
+    {
+      "file": "app/src/test/java/me/grey/picquery/domain/ChineseQueryExpanderTest.kt",
+      "sha256": "38a3fc0138a464777459f3a4b5faa4a619fa6f2b331ceca874a42e600d6fce2c",
+      "bytes": 2461
+    },
+    {
+      "file": "app/src/test/java/me/grey/picquery/feature/BPETokenizerTest.kt",
+      "sha256": "e6d7e5dc638cdeab97aafd5b8e5c8ffccb1c25aee8447c948385602f3479442a",
+      "bytes": 1285
+    },
+    {
+      "file": "app/src/test/java/me/grey/picquery/feature/tf/TFLiteRuntimeConfigTest.kt",
+      "sha256": "c89e57c3429dc2287b8b8425e21d2108991723e6753c1d62193203a16f878239",
+      "bytes": 1146
+    },
+    {
+      "file": "build.gradle.kts",
+      "sha256": "67591624899088160b2ed87544f04e701d04db3783d1b334789801b4a5908e0b",
+      "bytes": 1774
+    },
+    {
+      "file": "gradle.properties",
+      "sha256": "052b48ae5729187dd45328132ab2b652f6ef40e6923b3ca262357bdee6a81701",
+      "bytes": 1393
+    },
+    {
+      "file": "gradle/libs.versions.toml",
+      "sha256": "c6b6a4161ce06638f724e05e80afdbb34e2a2a65a9f66525afaaefb26ac422d8",
+      "bytes": 8401
+    },
+    {
+      "file": "gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "e845e909e4a770b3d2e2f4d4a4c019d183f03e2acb851c305d7f48130c509438",
+      "bytes": 326
+    }
+  ],
+  "evidence_files": [
+    {
+      "file": "android-logs/onnx-benchmark-no-arguments.log",
+      "sha256": "5c1aaba96b0768433894412ff409e4d8e6df530275ec2b555b715fdbf579fd61",
+      "bytes": 2097
+    },
+    {
+      "file": "android-logs/onnx-install-main.log",
+      "sha256": "c4aa470acafcf8576c15b0f0b5ae7e852d1ec5413372d0e6a9272e788e1306d3",
+      "bytes": 38
+    },
+    {
+      "file": "android-logs/onnx-install-test.log",
+      "sha256": "c4aa470acafcf8576c15b0f0b5ae7e852d1ec5413372d0e6a9272e788e1306d3",
+      "bytes": 38
+    },
+    {
+      "file": "android-logs/onnx-packaged-models.log",
+      "sha256": "2f0e036aa92d91c75eef7d2c8266a660e41515f2d0c6c19f0f39b9eb3ce36150",
+      "bytes": 857
+    },
+    {
+      "file": "android-logs/restore-onnx.log",
+      "sha256": "0b4b55f10b0de17d815d67eda223013ebdac25b3adcfa5804b6146b644f5050d",
+      "bytes": 93
+    },
+    {
+      "file": "android-logs/tflite-benchmark-no-arguments.log",
+      "sha256": "941e462f436a73b47291cacf2bc647229423e3b5fc83a1e7092fbd19805c5bce",
+      "bytes": 2097
+    },
+    {
+      "file": "android-logs/tflite-install-main.log",
+      "sha256": "c4aa470acafcf8576c15b0f0b5ae7e852d1ec5413372d0e6a9272e788e1306d3",
+      "bytes": 38
+    },
+    {
+      "file": "android-logs/tflite-install-test.log",
+      "sha256": "c4aa470acafcf8576c15b0f0b5ae7e852d1ec5413372d0e6a9272e788e1306d3",
+      "bytes": 38
+    },
+    {
+      "file": "android-logs/tflite-packaged-models.log",
+      "sha256": "2f0e036aa92d91c75eef7d2c8266a660e41515f2d0c6c19f0f39b9eb3ce36150",
+      "bytes": 857
+    },
+    {
+      "file": "android-onnx-device-report.json",
+      "sha256": "54a4c3002fa31892355b16e97a0789d89c8562006bcc49c41ea894d5d3eff4f1",
+      "bytes": 29305
+    },
+    {
+      "file": "android-tflite-device-report.json",
+      "sha256": "cf0fb41164f6567fbfa15042e799fd27112409366a5541995b3de69263948168",
+      "bytes": 29283
+    },
+    {
+      "file": "android-logs/build-checks.log",
+      "sha256": "5d6a7c55b7c4d590778b9880318e4d3109f610d5718615738231b819764ec1b9",
+      "bytes": 23727
+    },
+    {
+      "file": "android-logs/source-audit.log",
+      "sha256": "9b89ae416ab84074b37e61dd1dba23f8c8e8c089daa55d73693d23c41f14c892",
+      "bytes": 10107
+    },
+    {
+      "file": "android-logs/head-detekt.log",
+      "sha256": "8cf972fb1712027bb8f86862538cd5dbdd789c837e0e214f930dba0f95955f23",
+      "bytes": 7282
+    },
+    {
+      "file": "android-logs/head-detekt.xml",
+      "sha256": "22c67e2218b43d558027cc049fdc3d0519270f872b9de1ca078b824a2a941850",
+      "bytes": 7051
+    },
+    {
+      "file": "android-logs/head-detekt.init.gradle",
+      "sha256": "963d5b87baa68e375a4c4d489a3018c01ada5e3088af2686d201d79548ff42af",
+      "bytes": 702
+    },
+    {
+      "file": "android-logs/ktlint-inventory.init.gradle",
+      "sha256": "ffe099b9238e5a508d10ace4d29d8355d9c915f8a2b4e99c4cc525d5069e06ff",
+      "bytes": 971
+    },
+    {
+      "file": "android-logs/current-detekt.xml",
+      "sha256": "a97839f8a0d448f059d565c7e375848894a808107298499b5930c64cccdb03f6",
+      "bytes": 6601
+    }
+  ],
+  "changes_in_cleanup": [
+    "Skip external-fixture benchmark/accuracy methods without modelId; explicit modelId behavior is unchanged.",
+    "Ktlint includes Kotlin in java/ source roots and uses the existing baseline; formatted this-session runtime/tests and removed their baseline exemptions.",
+    "Removed duplicate androidx.test.ext dependency and disabled Detekt auto-correction.",
+    "No model bytes, model precision, preprocessing logic or production inference behavior changed."
+  ],
+  "limitations": [
+    "Debug builds and targeted physical-device functional tests were verified; no release/R8 build was run in this cleanup pass.",
+    "The Pixel 8a uses 4096-byte pages. APK zipalign and native ELF inspection are static evidence, not a 16KB-device compatibility claim.",
+    "Both APKs still contain 4096-byte ELF LOAD alignment in armeabi-v7a/libobjectbox-jni.so and armeabi-v7a/libtranslate_jni.so. Their arm64-v8a counterparts and the new XNNPACK bridge meet 16384-byte ELF alignment.",
+    "Ktlint retains 157 existing baseline entries across 45 files. Detekt retains the 26 verified historical findings. Android Lint retains 55 warnings per flavor.",
+    "The initial Java invocation failed before compilation with a loopback/temp-path environment error; the documented JDK17/short-temp invocation completed all checks."
+  ]
+}

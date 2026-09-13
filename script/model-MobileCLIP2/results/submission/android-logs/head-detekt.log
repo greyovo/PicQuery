@@ -1,0 +1,45 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:\github\PicQuery\PicQuery\build\java-tmp
+Type-safe project accessors is an incubating feature.
+
+> Task :app:detekt
+Property 'style>OptionalWhenBraces' is deprecated. Same functionality is implemented in BracesOnWhenStatements.
+Property 'naming>FunctionNaming>ignoreOverridden' is deprecated. This configuration is ignored and will be removed in the future.
+Property 'naming>VariableNaming>ignoreOverridden' is deprecated. This configuration is ignored and will be removed in the future.
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\data\data_source\AlbumRepository.kt:35:9: Function getAllAlbums is nested too deeply. [NestedBlockDepth]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\AppNavHost.kt:32:5: The function AppNavHost is too long (118). The maximum length is 100. [LongMethod]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:148:24: The function MainContent(padding: PaddingValues, userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, albumListSheetState: AppBottomSheetState, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8. [LongParameterList]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:190:26: The function SearchSection(userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8. [LongParameterList]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\clip\PreprocessorCLIP.kt:9:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\clip\PreprocessorCLIP.kt:10:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\ImageEncoderONNX.kt:26:17: Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:9:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:10:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:11:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\TextEncoderONNX.kt:15:17: Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\common\Constants.kt:20:9: DIM can be a `const val`. [MayBeConst]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\common\ImageUtil.kt:91:13: Function loadThumbnail has 4 return statements which exceeds the limit of 3. [ReturnCount]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\data\CursorUtil.kt:10:1: The class CursorUtil only contains utility functions. Consider defining it as an object. [UtilityClassWithPublicConstructor]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\data\model\Embedding.kt:9:12: The class Embedding implements the `Serializable` interface and should thus define a `serialVersionUID`. [SerialVersionUIDInSerializableClass]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\data\model\ObjectBoxEmbedding.kt:11:12: The class ObjectBoxEmbedding implements the `Serializable` interface and should thus define a `serialVersionUID`. [SerialVersionUIDInSerializableClass]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\domain\EmbeddingUtils.kt:18:9: Function parameter `embeddingRepository` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\domain\EmbeddingUtils.kt:14:9: TAG can be a `const val`. [MayBeConst]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\feature\BPETokenizer.kt:114:9: The loop contains more than one break or continue statement. The code should be refactored to increase readability. [LoopWithTooManyJumpStatements]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:282:5: Function parameter `onOpenIndexAlbums` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:283:5: Function parameter `onOpenSearchRange` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:284:5: Function parameter `onOpenSearchConfig` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:285:5: Function parameter `navigateToSimilar` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:286:5: Function parameter `navigateToSetting` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:307:5: Function parameter `onOpenSearchConfig` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\build\mobileclip2-commit-head\app\src\main\java\me\grey\picquery\ui\search\SearchResultList.kt:156:5: Function parameter `similarity` is unused. [UnusedParameter]
+
+
+[Incubating] Problems report is available at: file:///F:/github/PicQuery/PicQuery/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 2s
+1 actionable task: 1 executed

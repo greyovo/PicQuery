@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "immutable_files": {
+    "accuracy-results.json": "4b9606111c33a12655369d48dc726c3f70603eed803e0a9b897e6c43859bbee5",
+    "accuracy-results-manifest.json": "64aea9c8432f0a6ce95e70050e7e1096e1b594edde51a8e48040120b51358c42",
+    "speed-comparison.json": "3ad0079d0c89fabeba0d40af711358bd1ce15faed0c0b605416d573fb12cac6b",
+    "ort-comparison/host.json": "fb408d87d392a58224981c875f827f134bbdad8810564c972b6f26a0a60edaf2",
+    "ort-comparison/host-amd64.json": "c54f2b855b40cdd826a38c86d6299fd4219791a7ae888f2e24a04351ff928c13",
+    "ort-comparison/pixel8a/summary.json": "166bcc85fb9a683e067ad937243fedad1c26d82612012e3de264b18be3ba2161",
+    "image-int8/accuracy.json": "f15594d6f86316a18f65e256784749813829b58623642107a1d2dda14a34ad79",
+    "image-int8/accuracy-manifest.json": "64aea9c8432f0a6ce95e70050e7e1096e1b594edde51a8e48040120b51358c42",
+    "image-int8/pixel8a/run-metadata.json": "5da79bb05891f2d489a0865abec41b986d55da37e8e17d6fb8d20882303a2c45",
+    "image-int8/pixel8a-accuracy/run-metadata.json": "a97ac25ad2d743170bb602ab62e56e7e92f95ae63f1ab3ae28a104f42dc2a324",
+    "image-int8/pixel8a-accuracy/manifest.json": "91905d07aeaf8504ce4e51471aa60f95e7ba5f801a06a279f20c96eb215a1649"
+  },
+  "host_derived_metrics_unchanged": true,
+  "phone_derived_metrics_unchanged": true,
+  "bilingual_tables_verified": true,
+  "phone_text_outputs_byte_identical": true
+}

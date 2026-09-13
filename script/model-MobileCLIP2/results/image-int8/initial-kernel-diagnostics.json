@@ -1,0 +1,221 @@
+{
+  "runtime": "1.29.0",
+  "reference": {
+    "path": "/mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_s0_image.onnx",
+    "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+    "optimization": "GraphOptimizationLevel.ORT_ENABLE_ALL",
+    "arm_qdq_allowed": false,
+    "norms": [
+      1.0000001027774037,
+      0.9999999542660548,
+      1.0000001052310568,
+      1.0000000269433595,
+      0.9999999407292512
+    ],
+    "optimized_ops": {
+      "com.microsoft.nchwc:Conv": 92,
+      "com.microsoft:Gelu": 27,
+      "com.microsoft.nchwc:ReorderOutput": 10,
+      ":Conv": 4,
+      "com.microsoft.nchwc:ReorderInput": 8,
+      ":ReduceMean": 3,
+      ":Mul": 11,
+      ":Div": 4,
+      ":Erf": 3,
+      ":Add": 7,
+      ":Reshape": 8,
+      "com.microsoft:FusedMatMul": 4,
+      ":Split": 2,
+      ":Squeeze": 6,
+      ":Transpose": 10,
+      ":Softmax": 2,
+      ":MatMul": 2,
+      ":Gemm": 3,
+      ":BatchNormalization": 1,
+      ":GlobalAveragePool": 1,
+      ":Flatten": 1,
+      ":ReduceL2": 1
+    }
+  },
+  "samples": 5,
+  "variants": {
+    "quant-default": {
+      "path": "/mnt/f/github/PicQuery/PicQuery/build/mobileclip2-image-int8/mobileclip2_s0_image_int8.onnx",
+      "sha256": "dfec5cd1a178ba3ebbdac5ab3e1fc4823d0ab1aac7ee58ea799b2476d401571d",
+      "optimization": "GraphOptimizationLevel.ORT_ENABLE_ALL",
+      "arm_qdq_allowed": false,
+      "norms": [
+        0.9999997279700013,
+        1.0000003020760202,
+        1.0000000524058887,
+        1.0000000155909814,
+        0.99999996141273
+      ],
+      "optimized_ops": {
+        ":QuantizeLinear": 136,
+        ":DequantizeLinear": 324,
+        ":Conv": 69,
+        ":Div": 31,
+        ":Erf": 30,
+        ":Add": 52,
+        ":Mul": 69,
+        ":Transpose": 58,
+        "com.microsoft:QLinearConv": 26,
+        ":ReduceMean": 3,
+        ":Sigmoid": 3,
+        ":BatchNormalization": 2,
+        ":Reshape": 8,
+        ":QLinearMatMul": 6,
+        ":Split": 2,
+        ":Squeeze": 6,
+        "com.microsoft:QLinearSoftmax": 2,
+        "com.microsoft:QGemm": 2,
+        ":GlobalAveragePool": 1,
+        ":Flatten": 1,
+        ":Gemm": 1,
+        ":ReduceL2": 1
+      },
+      "cosines_vs_fp32": [
+        0.1322662712161864,
+        0.11281021919572698,
+        0.06812762244197199,
+        0.15108918145215547,
+        0.1455625894012563
+      ],
+      "max_absolute_error_vs_fp32": [
+        0.20510311797261238,
+        0.2813715487718582,
+        0.3389952480792999,
+        0.2570781260728836,
+        0.2542800083756447
+      ]
+    },
+    "quant-no-optimization": {
+      "path": "/mnt/f/github/PicQuery/PicQuery/build/mobileclip2-image-int8/mobileclip2_s0_image_int8.onnx",
+      "sha256": "dfec5cd1a178ba3ebbdac5ab3e1fc4823d0ab1aac7ee58ea799b2476d401571d",
+      "optimization": "GraphOptimizationLevel.ORT_DISABLE_ALL",
+      "arm_qdq_allowed": false,
+      "norms": [
+        0.9999997176366873,
+        1.0000000300202216,
+        0.9999997550950274,
+        1.0000003596434197,
+        1.0000001234112113
+      ],
+      "optimized_ops": {
+        ":QuantizeLinear": 174,
+        ":DequantizeLinear": 424,
+        ":Conv": 95,
+        ":Div": 31,
+        ":Erf": 30,
+        ":Add": 52,
+        ":Mul": 69,
+        ":ReduceMean": 3,
+        ":Relu": 3,
+        ":Sigmoid": 3,
+        ":BatchNormalization": 2,
+        ":Reshape": 8,
+        ":Transpose": 12,
+        ":MatMul": 6,
+        ":Split": 2,
+        ":Squeeze": 6,
+        ":Softmax": 2,
+        ":Gemm": 3,
+        ":GlobalAveragePool": 1,
+        ":Flatten": 1,
+        ":ReduceL2": 1
+      },
+      "cosines_vs_fp32": [
+        0.1414174998365051,
+        0.1053863494117927,
+        0.06250400109077657,
+        0.13625478734149313,
+        0.15207221554333936
+      ],
+      "max_absolute_error_vs_fp32": [
+        0.19686194136738777,
+        0.2878788709640503,
+        0.3439132571220398,
+        0.2611280754208565,
+        0.27299629151821136
+      ]
+    },
+    "quant-arm": {
+      "path": "/mnt/f/github/PicQuery/PicQuery/build/mobileclip2-image-int8/mobileclip2_s0_image_int8.onnx",
+      "sha256": "dfec5cd1a178ba3ebbdac5ab3e1fc4823d0ab1aac7ee58ea799b2476d401571d",
+      "optimization": "GraphOptimizationLevel.ORT_ENABLE_ALL",
+      "arm_qdq_allowed": true,
+      "norms": [
+        0.9999999889456564,
+        0.9999995729699394,
+        1.000000158674049,
+        1.0000000458252127,
+        0.9999998411065191
+      ],
+      "optimized_ops": {
+        ":QuantizeLinear": 47,
+        ":Transpose": 15,
+        "com.microsoft:QLinearConv": 95,
+        ":DequantizeLinear": 76,
+        ":Div": 31,
+        ":Erf": 30,
+        ":Add": 33,
+        ":Mul": 69,
+        "com.microsoft:QLinearAdd": 19,
+        ":ReduceMean": 3,
+        ":Sigmoid": 3,
+        ":BatchNormalization": 2,
+        ":Reshape": 8,
+        ":QLinearMatMul": 6,
+        ":Split": 2,
+        ":Squeeze": 6,
+        "com.microsoft:QLinearSoftmax": 2,
+        "com.microsoft:QGemm": 3,
+        ":GlobalAveragePool": 1,
+        ":Flatten": 1,
+        ":ReduceL2": 1
+      },
+      "cosines_vs_fp32": [
+        0.13603218958759022,
+        0.12898099776525052,
+        0.07875218039687282,
+        0.1422857392061523,
+        0.14522524139617288
+      ],
+      "max_absolute_error_vs_fp32": [
+        0.20254773646593094,
+        0.2622922658920288,
+        0.3502657413482666,
+        0.2616697773337364,
+        0.26926298439502716
+      ]
+    },
+    "ort-arm": {
+      "path": "/mnt/f/github/PicQuery/PicQuery/build/mobileclip2-image-int8/mobileclip2_s0_image_int8.ort",
+      "sha256": "7ad6e4c48b22f759b426dfdbde6d78757a9c164f7102bdebaeedb2134e38383e",
+      "optimization": "GraphOptimizationLevel.ORT_ENABLE_ALL",
+      "arm_qdq_allowed": true,
+      "norms": [
+        0.9999999889456564,
+        0.9999995729699394,
+        1.000000158674049,
+        1.0000000458252127,
+        0.9999998411065191
+      ],
+      "cosines_vs_fp32": [
+        0.13603218958759022,
+        0.12898099776525052,
+        0.07875218039687282,
+        0.1422857392061523,
+        0.14522524139617288
+      ],
+      "max_absolute_error_vs_fp32": [
+        0.20254773646593094,
+        0.2622922658920288,
+        0.3502657413482666,
+        0.2616697773337364,
+        0.26926298439502716
+      ]
+    }
+  }
+}

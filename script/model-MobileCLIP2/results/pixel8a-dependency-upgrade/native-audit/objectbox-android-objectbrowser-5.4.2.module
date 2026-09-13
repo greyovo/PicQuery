@@ -1,0 +1,123 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.objectbox",
+    "module": "objectbox-android-objectbrowser",
+    "version": "5.4.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "adminIncludedBasicReleaseVariantAdminIncludedBasicReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-java",
+          "version": {
+            "requires": "5.4.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "objectbox-android-objectbrowser-5.4.2.aar",
+          "url": "objectbox-android-objectbrowser-5.4.2.aar",
+          "size": 25538,
+          "sha512": "ed5e9f8a1e717f8ecf63a5a3e352380d4081984af5898ee33e54e900ce75d52e34bce5eef3f6b7d377ae60df91effffa7ae7dee54c3d8f82f77e6a2de432b9e3",
+          "sha256": "b1950ef5302dc87abc9a72c1887643a4736e1a43028f4f03e9a74c1cdba87d74",
+          "sha1": "1b3000ac9d8597976f8d0eb8545df8ac59a90a24",
+          "md5": "cbb938527d902cb0ca4e5dc2acfcfd8f"
+        }
+      ]
+    },
+    {
+      "name": "adminIncludedBasicReleaseVariantAdminIncludedBasicReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-android-db-admin",
+          "version": {
+            "requires": "5.4.2"
+          }
+        },
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-java",
+          "version": {
+            "requires": "5.4.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "objectbox-android-objectbrowser-5.4.2.aar",
+          "url": "objectbox-android-objectbrowser-5.4.2.aar",
+          "size": 25538,
+          "sha512": "ed5e9f8a1e717f8ecf63a5a3e352380d4081984af5898ee33e54e900ce75d52e34bce5eef3f6b7d377ae60df91effffa7ae7dee54c3d8f82f77e6a2de432b9e3",
+          "sha256": "b1950ef5302dc87abc9a72c1887643a4736e1a43028f4f03e9a74c1cdba87d74",
+          "sha1": "1b3000ac9d8597976f8d0eb8545df8ac59a90a24",
+          "md5": "cbb938527d902cb0ca4e5dc2acfcfd8f"
+        }
+      ]
+    },
+    {
+      "name": "adminIncludedBasicReleaseVariantAdminIncludedBasicReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "objectbox-android-objectbrowser-5.4.2-sources.jar",
+          "url": "objectbox-android-objectbrowser-5.4.2-sources.jar",
+          "size": 15047,
+          "sha512": "45bce5a0a5608570735588bd8084690cd13a35e85241c273d41a6bb634c9b3dee0a406f56829c6e9d5f1a251597354a472634fb6f615896e951f8ee25125f73a",
+          "sha256": "dcf2fceb23bef41ce8e3cd4a4b7707be7243f4a8c31c793e7af3597fc6e0fd55",
+          "sha1": "208d0c607d7c600ba4e83d0d6e87efe89dc81e61",
+          "md5": "164ff49f3f301a6663c2a589cd15b155"
+        }
+      ]
+    },
+    {
+      "name": "adminIncludedBasicReleaseVariantAdminIncludedBasicReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "objectbox-android-objectbrowser-5.4.2-javadoc.jar",
+          "url": "objectbox-android-objectbrowser-5.4.2-javadoc.jar",
+          "size": 331312,
+          "sha512": "b1afd3908a2ffc018718cce238c0ecd0593adf219e94e07211a0128a5d91dd59ed51488a555d05f219ebeadff8e800d5c7ccb7a0ad8fba3a20c03fdd4d8a200a",
+          "sha256": "fa6785dbe6758a50e3cf1d1279d5be7991f2051e2b7d5c353b36d362b596db19",
+          "sha1": "4966846e240f5847498f1e07ddc8fe655d197c50",
+          "md5": "3dc315c3c09bc373881582128479cbbe"
+        }
+      ]
+    }
+  ]
+}

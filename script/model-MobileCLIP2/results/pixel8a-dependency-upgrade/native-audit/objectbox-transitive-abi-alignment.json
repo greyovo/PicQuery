@@ -1,0 +1,202 @@
+[
+  {
+    "coordinate": "io.objectbox:objectbox-android-db:5.4.2",
+    "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-android-db/5.4.2/objectbox-android-db-5.4.2.aar",
+    "sha256": "fcda54e5e91f6fb70dcc83d1c2595552bc198c08cadfe4f7f287bb415912348a",
+    "bytes": 3512664,
+    "native_libraries": [
+      {
+        "name": "jni/arm64-v8a/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "358e3c707a78bc6d58c5b6e26bd08c367b98595f1c1b7d9a2fc60ae71796142c",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2516272,
+            "vaddr": 2532656,
+            "align": 16384
+          },
+          {
+            "offset": 2572864,
+            "vaddr": 2605632,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "jni/armeabi-v7a/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "9137ee53bbcf0c7ee44d3ba7bd936c5ed841609fcfc4365b637026d8241b2921",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 1674544,
+            "vaddr": 1678640,
+            "align": 4096
+          },
+          {
+            "offset": 1703096,
+            "vaddr": 1711288,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "jni/x86/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "3c908672db7e7a558f1a3e9525b16a99cf4981b850a5f9f3884a871ad8ea90ee",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 2672400,
+            "vaddr": 2676496,
+            "align": 4096
+          },
+          {
+            "offset": 2700800,
+            "vaddr": 2708992,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "jni/x86_64/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "62832c38a36ca9bb5390b9bfd8b64ed71c287e846b6cdbc467a8a0a3b253b13c",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2545248,
+            "vaddr": 2561632,
+            "align": 16384
+          },
+          {
+            "offset": 2601104,
+            "vaddr": 2633872,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      }
+    ]
+  },
+  {
+    "coordinate": "io.objectbox:objectbox-android-db-admin:5.4.2",
+    "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-android-db-admin/5.4.2/objectbox-android-db-admin-5.4.2.aar",
+    "sha256": "be70189c2c37e84102f6cb1455cbda17d85b846cf741ee13e3654238fcf07cd3",
+    "bytes": 7822465,
+    "native_libraries": [
+      {
+        "name": "jni/arm64-v8a/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "3c8a614bece57122bd4009ff92867a972ba10c8c1654363e0a9089aae11f7930",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 4359104,
+            "vaddr": 4375488,
+            "align": 16384
+          },
+          {
+            "offset": 4443472,
+            "vaddr": 4476240,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "jni/armeabi-v7a/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "b32baa81cdbdd79bd52cc7ce74a9f6d8a2c25f6ba42c9e4d33acb9a1c02993f8",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 3130864,
+            "vaddr": 3134960,
+            "align": 4096
+          },
+          {
+            "offset": 3173984,
+            "vaddr": 3182176,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "jni/x86/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "08c106abe8c54d25ab27177d9be77c0c96789268cd2b81d92a13d9292e425829",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 4609488,
+            "vaddr": 4613584,
+            "align": 4096
+          },
+          {
+            "offset": 4652448,
+            "vaddr": 4660640,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "jni/x86_64/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "e9434022b9eb95438813fb3b5be8cce393d453246b58cbed6203b31bdb408131",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 4542544,
+            "vaddr": 4558928,
+            "align": 16384
+          },
+          {
+            "offset": 4626752,
+            "vaddr": 4659520,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      }
+    ]
+  }
+]

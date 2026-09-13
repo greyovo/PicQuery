@@ -1,0 +1,63 @@
+
+Elf file type is DYN (Shared object file)
+Entry point 0x0
+There are 9 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR           0x000034 0x00000034 0x00000034 0x00120 0x00120 R   0x4
+  LOAD           0x000000 0x00000000 0x00000000 0x1552a40 0x1552a40 R E 0x4000
+  LOAD           0x1552a40 0x01556a40 0x01556a40 0x56fa8 0x575c0 RW  0x4000
+  LOAD           0x15a99e8 0x015b19e8 0x015b19e8 0x02ac0 0x0e248 RW  0x4000
+  DYNAMIC        0x15a75cc 0x015ab5cc 0x015ab5cc 0x00100 0x00100 RW  0x4
+  GNU_RELRO      0x1552a40 0x01556a40 0x01556a40 0x56fa8 0x575c0 R   0x1
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x0
+  NOTE           0x000154 0x00000154 0x00000154 0x000bc 0x000bc R   0x4
+  EXIDX          0x0963d8 0x000963d8 0x000963d8 0x514b0 0x514b0 R   0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .note.android.ident .note.gnu.build-id .dynsym .gnu.version .gnu.version_d .gnu.version_r .gnu.hash .dynstr .rel.dyn .ARM.exidx .rel.plt .ARM.extab .rodata .ARM.extabmalloc_hook .ARM.extab__lcxx_override .text malloc_hook __lcxx_override .plt 
+   02     .data.rel.ro .fini_array .init_array .dynamic .got .got.plt .relro_padding 
+   03     .data .bss 
+   04     .dynamic 
+   05     .data.rel.ro .fini_array .init_array .dynamic .got .got.plt .relro_padding 
+   06     
+   07     .note.android.ident .note.gnu.build-id 
+   08     .ARM.exidx 
+   None   .comment .ARM.attributes .shstrtab 
+Dynamic section at offset 0x15a75cc contains 32 entries:
+  Tag        Type           Name/Value
+  0x0000001d (RUNPATH)      Library runpath: [$ORIGIN]
+  0x00000001 (NEEDED)       Shared library: [libdl.so]
+  0x00000001 (NEEDED)       Shared library: [liblog.so]
+  0x00000001 (NEEDED)       Shared library: [libandroid.so]
+  0x00000001 (NEEDED)       Shared library: [libm.so]
+  0x00000001 (NEEDED)       Shared library: [libc.so]
+  0x0000000e (SONAME)       Library soname: [libonnxruntime.so]
+  0x0000001e (FLAGS)        BIND_NOW 
+  0x6ffffffb (FLAGS_1)      NOW 
+  0x00000011 (REL)          0x25c8
+  0x00000012 (RELSZ)        605712 (bytes)
+  0x00000013 (RELENT)       8 (bytes)
+  0x6ffffffa (RELCOUNT)     75680
+  0x00000017 (JMPREL)       0xe7888
+  0x00000002 (PLTRELSZ)     2208 (bytes)
+  0x00000003 (PLTGOT)       0x15ad58c
+  0x00000014 (PLTREL)       REL
+  0x00000006 (SYMTAB)       0x210
+  0x0000000b (SYMENT)       16 (bytes)
+  0x00000005 (STRTAB)       0x1868
+  0x0000000a (STRSZ)        3422 (bytes)
+  0x6ffffef5 (GNU_HASH)     0x17f8
+  0x00000019 (INIT_ARRAY)   0x15ab530
+  0x0000001b (INIT_ARRAYSZ) 156 (bytes)
+  0x0000001a (FINI_ARRAY)   0x15ab528
+  0x0000001c (FINI_ARRAYSZ) 8 (bytes)
+  0x6ffffff0 (VERSYM)       0x1500
+  0x6ffffffc (VERDEF)       0x1760
+  0x6ffffffd (VERDEFNUM)    2
+  0x6ffffffe (VERNEED)      0x1798
+  0x6fffffff (VERNEEDNUM)   3
+  0x00000000 (NULL)         0x0

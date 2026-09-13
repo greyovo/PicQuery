@@ -1,0 +1,116 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:\github\PicQuery\PicQuery\build\java-tmp
+Type-safe project accessors is an incubating feature.
+> Task :app:loadKtlintReporters UP-TO-DATE
+> Task :app:runKtlintCheckOverAndroidTestDebugSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestOnnxDebugSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestOnnxDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestOnnxSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestOnnxSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestReleaseSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestTfliteDebugSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestTfliteDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestTfliteSourceSet NO-SOURCE
+> Task :app:ktlintAndroidTestTfliteSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverDebugSourceSet NO-SOURCE
+> Task :app:ktlintDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverOnnxDebugSourceSet NO-SOURCE
+> Task :app:ktlintOnnxDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverOnnxReleaseSourceSet NO-SOURCE
+> Task :app:ktlintOnnxReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverOnnxSourceSet NO-SOURCE
+> Task :app:ktlintOnnxSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverReleaseSourceSet NO-SOURCE
+> Task :app:ktlintReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestDebugSourceSet NO-SOURCE
+> Task :app:ktlintTestDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestFixturesDebugSourceSet NO-SOURCE
+> Task :app:ktlintTestFixturesDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestFixturesOnnxSourceSet NO-SOURCE
+> Task :app:ktlintTestFixturesOnnxSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestFixturesReleaseSourceSet NO-SOURCE
+> Task :app:ktlintTestFixturesReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestFixturesSourceSet NO-SOURCE
+> Task :app:ktlintTestFixturesSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestFixturesTfliteSourceSet NO-SOURCE
+> Task :app:ktlintTestFixturesTfliteSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestOnnxDebugSourceSet NO-SOURCE
+> Task :app:ktlintTestOnnxDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestOnnxSourceSet NO-SOURCE
+> Task :app:ktlintTestOnnxSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestReleaseSourceSet NO-SOURCE
+> Task :app:ktlintTestReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestTfliteDebugSourceSet NO-SOURCE
+> Task :app:ktlintTestTfliteDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTestTfliteSourceSet NO-SOURCE
+> Task :app:ktlintTestTfliteSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTfliteDebugSourceSet NO-SOURCE
+> Task :app:ktlintTfliteDebugSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTfliteReleaseSourceSet NO-SOURCE
+> Task :app:ktlintTfliteReleaseSourceSetCheck SKIPPED
+> Task :app:runKtlintCheckOverTfliteSourceSet NO-SOURCE
+> Task :app:ktlintTfliteSourceSetCheck SKIPPED
+
+> Task :app:detekt
+Property 'style>OptionalWhenBraces' is deprecated. Same functionality is implemented in BracesOnWhenStatements.
+Property 'naming>FunctionNaming>ignoreOverridden' is deprecated. This configuration is ignored and will be removed in the future.
+Property 'naming>VariableNaming>ignoreOverridden' is deprecated. This configuration is ignored and will be removed in the future.
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\data\data_source\AlbumRepository.kt:35:9: Function getAllAlbums is nested too deeply. [NestedBlockDepth]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\AppNavHost.kt:32:5: The function AppNavHost is too long (118). The maximum length is 100. [LongMethod]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:148:24: The function MainContent(padding: PaddingValues, userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, albumListSheetState: AppBottomSheetState, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8. [LongParameterList]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:190:26: The function SearchSection(userGuideVisible: Boolean, homeViewModel: HomeViewModel, navigateToSearch: (String) -> Unit, navigateToSearchWitImage: (Uri) -> Unit, onOpenIndexAlbums: () -> Unit, onOpenSearchRange: () -> Unit, onOpenSearchConfig: () -> Unit, navigateToSimilar: () -> Unit, navigateToSetting: () -> Unit) has too many parameters. The current threshold is set to 8. [LongParameterList]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\clip\PreprocessorCLIP.kt:9:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\clip\PreprocessorCLIP.kt:10:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\ImageEncoderONNX.kt:26:17: Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:9:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:10:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\mobileclip\PreprocessorMobileCLIP.kt:11:9: Variable names should match the pattern: [a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\TextEncoderONNX.kt:15:17: Private variable names should match the pattern: (_)?[a-z][A-Za-z0-9]* [VariableNaming]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\common\Constants.kt:20:9: DIM can be a `const val`. [MayBeConst]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\common\ImageUtil.kt:91:13: Function loadThumbnail has 4 return statements which exceeds the limit of 3. [ReturnCount]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\data\CursorUtil.kt:10:1: The class CursorUtil only contains utility functions. Consider defining it as an object. [UtilityClassWithPublicConstructor]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\data\model\Embedding.kt:9:12: The class Embedding implements the `Serializable` interface and should thus define a `serialVersionUID`. [SerialVersionUIDInSerializableClass]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\data\model\ObjectBoxEmbedding.kt:11:12: The class ObjectBoxEmbedding implements the `Serializable` interface and should thus define a `serialVersionUID`. [SerialVersionUIDInSerializableClass]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\domain\EmbeddingUtils.kt:18:9: Function parameter `embeddingRepository` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\domain\EmbeddingUtils.kt:14:9: TAG can be a `const val`. [MayBeConst]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\feature\BPETokenizer.kt:112:9: The loop contains more than one break or continue statement. The code should be refactored to increase readability. [LoopWithTooManyJumpStatements]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:282:5: Function parameter `onOpenIndexAlbums` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:283:5: Function parameter `onOpenSearchRange` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:284:5: Function parameter `onOpenSearchConfig` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:285:5: Function parameter `navigateToSimilar` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:286:5: Function parameter `navigateToSetting` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\home\HomeScreen.kt:307:5: Function parameter `onOpenSearchConfig` is unused. [UnusedParameter]
+F:\github\PicQuery\PicQuery\app\src\main\java\me\grey\picquery\ui\search\SearchResultList.kt:156:5: Function parameter `similarity` is unused. [UnusedParameter]
+
+
+> Task :app:runKtlintCheckOverMainSourceSet
+Verified ktlint source count: main=110
+
+> Task :app:runKtlintCheckOverTestSourceSet
+Verified ktlint source count: test=8
+
+> Task :app:ktlintTestSourceSetCheck UP-TO-DATE
+
+> Task :app:runKtlintCheckOverKotlinScripts
+Verified ktlint source count: kotlinScripts=1
+
+> Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+
+> Task :app:runKtlintCheckOverAndroidTestSourceSet
+Verified ktlint source count: androidTest=5
+
+> Task :app:ktlintAndroidTestSourceSetCheck
+> Task :app:ktlintMainSourceSetCheck
+> Task :app:ktlintCheck
+
+[Incubating] Problems report is available at: file:///F:/github/PicQuery/PicQuery/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 5s
+10 actionable tasks: 7 executed, 3 up-to-date

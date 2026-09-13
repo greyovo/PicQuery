@@ -1,0 +1,858 @@
+[
+  {
+    "apk": "F:\\github\\PicQuery\\PicQuery\\app\\build\\outputs\\apk\\onnx\\debug\\app-onnx-debug.apk",
+    "mtime_utc": "2026-09-13T07:10:10.050987+00:00",
+    "native_libraries": [
+      {
+        "name": "lib/arm64-v8a/libandroidx.graphics.path.so",
+        "bits": 64,
+        "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 7232,
+            "vaddr": 23616,
+            "align": 16384
+          },
+          {
+            "offset": 8144,
+            "vaddr": 40912,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libdatastore_shared_counter.so",
+        "bits": 64,
+        "sha256": "96c1396995cc8ee32c85b88cb414a67a7327f7f5faa1195d241bc2fe1579266d",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 16384,
+            "vaddr": 16384,
+            "align": 16384
+          },
+          {
+            "offset": 32768,
+            "vaddr": 32768,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "378568fe735b00a6b78c83c1c6b968f88a97a35c16712434dd49898c044dbd59",
+        "exact_aar_match": "io.objectbox:objectbox-android:5.1.0",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2481296,
+            "vaddr": 2497680,
+            "align": 16384
+          },
+          {
+            "offset": 2537832,
+            "vaddr": 2570600,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libonnxruntime.so",
+        "bits": 64,
+        "sha256": "b67e18edab9f63f8672c2d4843266e226558099f1aaefe66bd033fdbe365987b",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 18898176,
+            "vaddr": 18914560,
+            "align": 16384
+          },
+          {
+            "offset": 19337872,
+            "vaddr": 19370640,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+        "bits": 64,
+        "sha256": "ebe51b6a8781949e6b36973b6c2c630e090b5fdda9626bb7998aae4597fd467d",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 73088,
+            "vaddr": 89472,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libpicquery_xnnpack.so",
+        "bits": 64,
+        "sha256": "abe9c3117e39a1f079d3e3971e8d734b0387cc0093d3c0c3a8a4fddf776a87f8",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 360128,
+            "vaddr": 376512,
+            "align": 16384
+          },
+          {
+            "offset": 379264,
+            "vaddr": 412032,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+        "bits": 64,
+        "sha256": "828dbf1a5c97b4ce6c00da227bbe84aa5afe98612ffc69feefc2d15de96d575a",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2441216,
+            "vaddr": 2441216,
+            "align": 16384
+          },
+          {
+            "offset": 2498648,
+            "vaddr": 2515032,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtensorflowlite_jni.so",
+        "bits": 64,
+        "sha256": "70b6d8f09cfa72158b142a54c84d978670523e420267273a9948a0f40fb535c9",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 4259840,
+            "vaddr": 4259840,
+            "align": 16384
+          },
+          {
+            "offset": 4297096,
+            "vaddr": 4313480,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtranslate_jni.so",
+        "bits": 64,
+        "sha256": "45040ff0cdd194d6e601589d759e6f1ba733de5f95790f76cc3e2046919046be",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 14450688,
+            "vaddr": 14450688,
+            "align": 16384
+          },
+          {
+            "offset": 15157744,
+            "vaddr": 15174128,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+        "bits": 32,
+        "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 5312,
+            "vaddr": 21696,
+            "align": 16384
+          },
+          {
+            "offset": 5772,
+            "vaddr": 38540,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+        "bits": 32,
+        "sha256": "b3aaaf476444e2773db581f36efeba2ee829f3d0a79741ad8cb60f44ed69bb2c",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 16384,
+            "vaddr": 16384,
+            "align": 16384
+          },
+          {
+            "offset": 32768,
+            "vaddr": 32768,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "ffbfec6a877d7ce72ee662d88300ff489afe5bb2bcc1f3fe50a8952bd6f1d788",
+        "exact_aar_match": "io.objectbox:objectbox-android:5.1.0",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 1646288,
+            "vaddr": 1650384,
+            "align": 4096
+          },
+          {
+            "offset": 1674808,
+            "vaddr": 1683000,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "lib/armeabi-v7a/libonnxruntime.so",
+        "bits": 32,
+        "sha256": "d037b824ea613419aaa76cb245259a8acc1acca063fef28fb6f2e902b596368c",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 13766368,
+            "vaddr": 13782752,
+            "align": 16384
+          },
+          {
+            "offset": 13986352,
+            "vaddr": 14019120,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+        "bits": 32,
+        "sha256": "c1b525356c1b13d0ea270479545116754fb1689887696db1cde4e151f9b0ad28",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 48160,
+            "vaddr": 64544,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+        "bits": 32,
+        "sha256": "e23fe6718b7b9bb0ef7c79e8c1e480a12f4ddbfd7a75dac7ac1b25d20033ae8a",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 226352,
+            "vaddr": 242736,
+            "align": 16384
+          },
+          {
+            "offset": 235940,
+            "vaddr": 268708,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+        "bits": 32,
+        "sha256": "1b40d6e9e06d14096280f9b0929a35c7c2b4a5c279db2e765f6e93a66e13e9c9",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 1507328,
+            "vaddr": 1507328,
+            "align": 16384
+          },
+          {
+            "offset": 1537600,
+            "vaddr": 1553984,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+        "bits": 32,
+        "sha256": "7612a66a1e320b693ea2f2d926542cead519a63e4d349bfed703a19e67023c36",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2539520,
+            "vaddr": 2539520,
+            "align": 16384
+          },
+          {
+            "offset": 2559192,
+            "vaddr": 2575576,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtranslate_jni.so",
+        "bits": 32,
+        "sha256": "9a7ebc4b29b51a54cc695ae57c736bc6676c6ddbcd4f75a3aed4547ab1c9e551",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 10067968,
+            "vaddr": 10067968,
+            "align": 4096
+          },
+          {
+            "offset": 10433136,
+            "vaddr": 10437232,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      }
+    ]
+  },
+  {
+    "apk": "F:\\github\\PicQuery\\PicQuery\\app\\build\\outputs\\apk\\tflite\\debug\\app-tflite-debug.apk",
+    "mtime_utc": "2026-09-13T07:10:11.830819+00:00",
+    "native_libraries": [
+      {
+        "name": "lib/arm64-v8a/libandroidx.graphics.path.so",
+        "bits": 64,
+        "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 7232,
+            "vaddr": 23616,
+            "align": 16384
+          },
+          {
+            "offset": 8144,
+            "vaddr": 40912,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libdatastore_shared_counter.so",
+        "bits": 64,
+        "sha256": "96c1396995cc8ee32c85b88cb414a67a7327f7f5faa1195d241bc2fe1579266d",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 16384,
+            "vaddr": 16384,
+            "align": 16384
+          },
+          {
+            "offset": 32768,
+            "vaddr": 32768,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libobjectbox-jni.so",
+        "bits": 64,
+        "sha256": "378568fe735b00a6b78c83c1c6b968f88a97a35c16712434dd49898c044dbd59",
+        "exact_aar_match": "io.objectbox:objectbox-android:5.1.0",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2481296,
+            "vaddr": 2497680,
+            "align": 16384
+          },
+          {
+            "offset": 2537832,
+            "vaddr": 2570600,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libonnxruntime.so",
+        "bits": 64,
+        "sha256": "b67e18edab9f63f8672c2d4843266e226558099f1aaefe66bd033fdbe365987b",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 18898176,
+            "vaddr": 18914560,
+            "align": 16384
+          },
+          {
+            "offset": 19337872,
+            "vaddr": 19370640,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+        "bits": 64,
+        "sha256": "ebe51b6a8781949e6b36973b6c2c630e090b5fdda9626bb7998aae4597fd467d",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 73088,
+            "vaddr": 89472,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libpicquery_xnnpack.so",
+        "bits": 64,
+        "sha256": "abe9c3117e39a1f079d3e3971e8d734b0387cc0093d3c0c3a8a4fddf776a87f8",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 360128,
+            "vaddr": 376512,
+            "align": 16384
+          },
+          {
+            "offset": 379264,
+            "vaddr": 412032,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+        "bits": 64,
+        "sha256": "828dbf1a5c97b4ce6c00da227bbe84aa5afe98612ffc69feefc2d15de96d575a",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2441216,
+            "vaddr": 2441216,
+            "align": 16384
+          },
+          {
+            "offset": 2498648,
+            "vaddr": 2515032,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtensorflowlite_jni.so",
+        "bits": 64,
+        "sha256": "70b6d8f09cfa72158b142a54c84d978670523e420267273a9948a0f40fb535c9",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 4259840,
+            "vaddr": 4259840,
+            "align": 16384
+          },
+          {
+            "offset": 4297096,
+            "vaddr": 4313480,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/arm64-v8a/libtranslate_jni.so",
+        "bits": 64,
+        "sha256": "45040ff0cdd194d6e601589d759e6f1ba733de5f95790f76cc3e2046919046be",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 14450688,
+            "vaddr": 14450688,
+            "align": 16384
+          },
+          {
+            "offset": 15157744,
+            "vaddr": 15174128,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+        "bits": 32,
+        "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 5312,
+            "vaddr": 21696,
+            "align": 16384
+          },
+          {
+            "offset": 5772,
+            "vaddr": 38540,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+        "bits": 32,
+        "sha256": "b3aaaf476444e2773db581f36efeba2ee829f3d0a79741ad8cb60f44ed69bb2c",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 16384,
+            "vaddr": 16384,
+            "align": 16384
+          },
+          {
+            "offset": 32768,
+            "vaddr": 32768,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libobjectbox-jni.so",
+        "bits": 32,
+        "sha256": "ffbfec6a877d7ce72ee662d88300ff489afe5bb2bcc1f3fe50a8952bd6f1d788",
+        "exact_aar_match": "io.objectbox:objectbox-android:5.1.0",
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 1646288,
+            "vaddr": 1650384,
+            "align": 4096
+          },
+          {
+            "offset": 1674808,
+            "vaddr": 1683000,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      },
+      {
+        "name": "lib/armeabi-v7a/libonnxruntime.so",
+        "bits": 32,
+        "sha256": "d037b824ea613419aaa76cb245259a8acc1acca063fef28fb6f2e902b596368c",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 13766368,
+            "vaddr": 13782752,
+            "align": 16384
+          },
+          {
+            "offset": 13986352,
+            "vaddr": 14019120,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+        "bits": 32,
+        "sha256": "c1b525356c1b13d0ea270479545116754fb1689887696db1cde4e151f9b0ad28",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 48160,
+            "vaddr": 64544,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+        "bits": 32,
+        "sha256": "e23fe6718b7b9bb0ef7c79e8c1e480a12f4ddbfd7a75dac7ac1b25d20033ae8a",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 226352,
+            "vaddr": 242736,
+            "align": 16384
+          },
+          {
+            "offset": 235940,
+            "vaddr": 268708,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+        "bits": 32,
+        "sha256": "1b40d6e9e06d14096280f9b0929a35c7c2b4a5c279db2e765f6e93a66e13e9c9",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 1507328,
+            "vaddr": 1507328,
+            "align": 16384
+          },
+          {
+            "offset": 1537600,
+            "vaddr": 1553984,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+        "bits": 32,
+        "sha256": "7612a66a1e320b693ea2f2d926542cead519a63e4d349bfed703a19e67023c36",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 16384
+          },
+          {
+            "offset": 2539520,
+            "vaddr": 2539520,
+            "align": 16384
+          },
+          {
+            "offset": 2559192,
+            "vaddr": 2575576,
+            "align": 16384
+          }
+        ],
+        "elf_16kb_aligned": true
+      },
+      {
+        "name": "lib/armeabi-v7a/libtranslate_jni.so",
+        "bits": 32,
+        "sha256": "9a7ebc4b29b51a54cc695ae57c736bc6676c6ddbcd4f75a3aed4547ab1c9e551",
+        "exact_aar_match": null,
+        "load_segments": [
+          {
+            "offset": 0,
+            "vaddr": 0,
+            "align": 4096
+          },
+          {
+            "offset": 10067968,
+            "vaddr": 10067968,
+            "align": 4096
+          },
+          {
+            "offset": 10433136,
+            "vaddr": 10437232,
+            "align": 4096
+          }
+        ],
+        "elf_16kb_aligned": false
+      }
+    ]
+  }
+]

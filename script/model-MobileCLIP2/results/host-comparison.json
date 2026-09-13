@@ -1,0 +1,846 @@
+{
+  "created_utc": "2026-09-13T01:53:04.383371+00:00",
+  "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "precision": "image FP32 / text dynamic INT8 weights, same as previous app",
+  "threads": 4,
+  "warmup": 3,
+  "repeats": 5,
+  "timing_scope": "Host CPU, inference only, per sample; excludes preprocessing and tokenization. Not Android latency.",
+  "evaluation_scope": "Small conversion/ranking smoke test; not an accuracy benchmark.",
+  "images": [
+    "dog1.jpg",
+    "dog2.jpg",
+    "astronaut.jpg",
+    "leaning_tower.jpg",
+    "pottery.jpg"
+  ],
+  "texts": [
+    "a photo of a dog",
+    "a photo of a cat",
+    "a photo of a red car",
+    "a city at night",
+    "a mountain landscape",
+    "a sandy beach",
+    "a plate of food",
+    "a technical diagram",
+    "a flower",
+    "a person",
+    "an astronaut in a space suit",
+    "the leaning tower of Pisa",
+    "handmade pottery"
+  ],
+  "image_sha256": {
+    "dog1.jpg": "828986ba0cdd909e3f6029d357938efba67d236350f724224b2e45cf0af0841f",
+    "dog2.jpg": "91c383f13fe7baf1c5306def5f50cc5bb0241e64065c081ad57671d33c503891",
+    "astronaut.jpg": "874dba0332a5a9a6a9268e732745f57c7ba21bc733867463daaae4a766f0a03f",
+    "leaning_tower.jpg": "6c4f164de83969d75acc2dd9231d2793131125f9fcb9034bbb45660e40cd2ffc",
+    "pottery.jpg": "fafc9f88fad9d96bd5eaba1238eb40861e550d03169f22c616797df0910e548e"
+  },
+  "versions": {
+    "onnxruntime": "1.25.0",
+    "ai-edge-litert": "2.1.4",
+    "open_clip_torch": "3.3.0",
+    "numpy": "2.4.4"
+  },
+  "models": {
+    "onnx_image": {
+      "file": "mobileclip2_s0_image.onnx",
+      "bytes": 45557999,
+      "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+      "load_ms": 288.67302100002235,
+      "mean_ms": 14.490643800008911,
+      "median_ms": 13.532516000054784,
+      "p95_ms": 18.777486799990577,
+      "invocations": 25,
+      "operators": {
+        "Conv": 95,
+        "Constant": 118,
+        "Div": 33,
+        "Erf": 30,
+        "Add": 54,
+        "Mul": 89,
+        "ReduceMean": 3,
+        "Relu": 3,
+        "Sigmoid": 3,
+        "BatchNormalization": 2,
+        "Shape": 4,
+        "Slice": 4,
+        "Concat": 2,
+        "Reshape": 8,
+        "Transpose": 10,
+        "MatMul": 8,
+        "Split": 2,
+        "Squeeze": 6,
+        "Cast": 4,
+        "Sqrt": 6,
+        "Softmax": 2,
+        "GlobalAveragePool": 1,
+        "Flatten": 1,
+        "Gemm": 1,
+        "ReduceL2": 1
+      },
+      "int8_initializer_elements": 0,
+      "uint8_initializer_elements": 0
+    },
+    "tflite_image": {
+      "file": "image_model.tflite",
+      "bytes": 45608600,
+      "sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+      "load_ms": 215.59316499997294,
+      "mean_ms": 20.34127183999317,
+      "median_ms": 20.387818000017432,
+      "p95_ms": 21.372008599951187,
+      "invocations": 25
+    },
+    "onnx_text_int8": {
+      "file": "mobileclip2_s0_text_int8.onnx",
+      "bytes": 64423473,
+      "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+      "load_ms": 487.9158290000305,
+      "mean_ms": 7.761616876915958,
+      "median_ms": 7.567024999957539,
+      "p95_ms": 9.36481119997552,
+      "invocations": 65,
+      "operators": {
+        "Constant": 295,
+        "Gather": 40,
+        "ArgMax": 1,
+        "Mod": 12,
+        "DequantizeLinear": 1,
+        "Reshape": 134,
+        "Add": 98,
+        "Cast": 99,
+        "LayerNormalization": 25,
+        "Transpose": 96,
+        "DynamicQuantizeLinear": 49,
+        "Mul": 147,
+        "MatMulInteger": 49,
+        "Shape": 26,
+        "Slice": 36,
+        "Concat": 14,
+        "Unsqueeze": 12,
+        "Squeeze": 12,
+        "Sqrt": 36,
+        "Div": 25,
+        "MatMul": 24,
+        "Softmax": 12,
+        "Erf": 12,
+        "Flatten": 1,
+        "ReduceL2": 1
+      },
+      "int8_initializer_elements": 38066688,
+      "uint8_initializer_elements": 25296897
+    },
+    "tflite_text_int8": {
+      "file": "text_model_dynamic_wi8.tflite",
+      "bytes": 65253264,
+      "sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649",
+      "load_ms": 202.14367899995977,
+      "mean_ms": 8.159391107686202,
+      "median_ms": 7.5953570000137915,
+      "p95_ms": 10.815594199993935,
+      "invocations": 65
+    },
+    "onnx_text_reference": {
+      "file": "mobileclip2_s0_text.onnx",
+      "bytes": 253923023,
+      "sha256": "c06713cb1ad667caf4ad7d12d7be680703811d8abcc3adf08e1c40fab2b2ab37",
+      "load_ms": 1715.0479160000032,
+      "mean_ms": 20.140903769227126,
+      "median_ms": 18.632012000011855,
+      "p95_ms": 27.928760999998303,
+      "invocations": 65,
+      "operators": {
+        "Constant": 295,
+        "Gather": 40,
+        "Cast": 50,
+        "Add": 86,
+        "LayerNormalization": 25,
+        "Transpose": 96,
+        "MatMul": 61,
+        "Mod": 12,
+        "Shape": 26,
+        "Reshape": 134,
+        "Slice": 36,
+        "Concat": 14,
+        "Unsqueeze": 12,
+        "Squeeze": 12,
+        "Sqrt": 36,
+        "Div": 25,
+        "Mul": 49,
+        "Softmax": 12,
+        "Gemm": 12,
+        "Erf": 12,
+        "ArgMax": 1,
+        "Flatten": 1,
+        "ReduceL2": 1
+      },
+      "int8_initializer_elements": 0,
+      "uint8_initializer_elements": 0
+    },
+    "tflite_text_reference": {
+      "file": "text_model.tflite",
+      "bytes": 253916668,
+      "sha256": "e7f3ecbcce3759c0b1c6cdfcd33791b2520fba98b2ffd3adb665a111dae167ff",
+      "load_ms": 1492.8777670000954,
+      "mean_ms": 20.007826738466203,
+      "median_ms": 19.452751000017088,
+      "p95_ms": 25.55616660006308,
+      "invocations": 65
+    }
+  },
+  "parity": {
+    "image_onnx_vs_tflite": {
+      "minimum_cosine": 1.0,
+      "mean_cosine": 1.0,
+      "max_absolute_error": 5.140900611877441e-07
+    },
+    "text_int8_onnx_vs_tflite": {
+      "minimum_cosine": 0.9282389283180237,
+      "mean_cosine": 0.9787721633911133,
+      "max_absolute_error": 0.06287685036659241
+    },
+    "text_onnx_int8_vs_fp32": {
+      "minimum_cosine": 0.9278193712234497,
+      "mean_cosine": 0.9786539077758789,
+      "max_absolute_error": 0.07000303268432617
+    },
+    "text_tflite_int8_vs_fp32": {
+      "minimum_cosine": 0.9992367029190063,
+      "mean_cosine": 0.9995769262313843,
+      "max_absolute_error": 0.008772209286689758
+    },
+    "text_fp32_onnx_vs_tflite": {
+      "minimum_cosine": 0.9999999403953552,
+      "mean_cosine": 1.0,
+      "max_absolute_error": 6.556510925292969e-07
+    }
+  },
+  "rankings": {
+    "onnx": [
+      {
+        "image": "dog1.jpg",
+        "top_3": [
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.2652719020843506
+          },
+          {
+            "text": "a photo of a cat",
+            "cosine": 0.1682070642709732
+          },
+          {
+            "text": "a photo of a red car",
+            "cosine": 0.12621769309043884
+          }
+        ]
+      },
+      {
+        "image": "dog2.jpg",
+        "top_3": [
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.2183019071817398
+          },
+          {
+            "text": "a photo of a red car",
+            "cosine": 0.12282669544219971
+          },
+          {
+            "text": "a photo of a cat",
+            "cosine": 0.1084398403763771
+          }
+        ]
+      },
+      {
+        "image": "astronaut.jpg",
+        "top_3": [
+          {
+            "text": "an astronaut in a space suit",
+            "cosine": 0.269809752702713
+          },
+          {
+            "text": "a person",
+            "cosine": 0.15120644867420197
+          },
+          {
+            "text": "a photo of a red car",
+            "cosine": 0.13929972052574158
+          }
+        ]
+      },
+      {
+        "image": "leaning_tower.jpg",
+        "top_3": [
+          {
+            "text": "the leaning tower of Pisa",
+            "cosine": 0.33409494161605835
+          },
+          {
+            "text": "a city at night",
+            "cosine": 0.1462973952293396
+          },
+          {
+            "text": "a technical diagram",
+            "cosine": 0.1415434628725052
+          }
+        ]
+      },
+      {
+        "image": "pottery.jpg",
+        "top_3": [
+          {
+            "text": "handmade pottery",
+            "cosine": 0.20769983530044556
+          },
+          {
+            "text": "a person",
+            "cosine": 0.1496724784374237
+          },
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.106540247797966
+          }
+        ]
+      }
+    ],
+    "onnx_text_to_image": [
+      {
+        "text": "a photo of a dog",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.2652719020843506
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.2183019071817398
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.106540247797966
+          }
+        ]
+      },
+      {
+        "text": "a photo of a cat",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.1682070642709732
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.1084398403763771
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.08994162082672119
+          }
+        ]
+      },
+      {
+        "text": "a photo of a red car",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.13929972052574158
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.12621769309043884
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.12282669544219971
+          }
+        ]
+      },
+      {
+        "text": "a city at night",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.1462973952293396
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.05198737233877182
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.04902835935354233
+          }
+        ]
+      },
+      {
+        "text": "a mountain landscape",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.09797465801239014
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.041017692536115646
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.03688937798142433
+          }
+        ]
+      },
+      {
+        "text": "a sandy beach",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.09197834879159927
+          },
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.057917479425668716
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.05552706867456436
+          }
+        ]
+      },
+      {
+        "text": "a plate of food",
+        "top_3": [
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.07686088979244232
+          },
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.07350209355354309
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.06322935223579407
+          }
+        ]
+      },
+      {
+        "text": "a technical diagram",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.1415434628725052
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.11883813142776489
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.0843510627746582
+          }
+        ]
+      },
+      {
+        "text": "a flower",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.057737648487091064
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.050664160400629044
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.04126085713505745
+          }
+        ]
+      },
+      {
+        "text": "a person",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.15120644867420197
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.1496724784374237
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.11178208887577057
+          }
+        ]
+      },
+      {
+        "text": "an astronaut in a space suit",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.269809752702713
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.1055356115102768
+          },
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.08042459934949875
+          }
+        ]
+      },
+      {
+        "text": "the leaning tower of Pisa",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.33409494161605835
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.06920720636844635
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.033192045986652374
+          }
+        ]
+      },
+      {
+        "text": "handmade pottery",
+        "top_3": [
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.20769983530044556
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.10125495493412018
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.07834386825561523
+          }
+        ]
+      }
+    ],
+    "tflite": [
+      {
+        "image": "dog1.jpg",
+        "top_3": [
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.2637453079223633
+          },
+          {
+            "text": "a photo of a cat",
+            "cosine": 0.16695144772529602
+          },
+          {
+            "text": "a sandy beach",
+            "cosine": 0.11650899052619934
+          }
+        ]
+      },
+      {
+        "image": "dog2.jpg",
+        "top_3": [
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.2201547622680664
+          },
+          {
+            "text": "a photo of a red car",
+            "cosine": 0.11117307841777802
+          },
+          {
+            "text": "a photo of a cat",
+            "cosine": 0.10955946892499924
+          }
+        ]
+      },
+      {
+        "image": "astronaut.jpg",
+        "top_3": [
+          {
+            "text": "an astronaut in a space suit",
+            "cosine": 0.27697646617889404
+          },
+          {
+            "text": "a person",
+            "cosine": 0.16032414138317108
+          },
+          {
+            "text": "a photo of a red car",
+            "cosine": 0.12538045644760132
+          }
+        ]
+      },
+      {
+        "image": "leaning_tower.jpg",
+        "top_3": [
+          {
+            "text": "the leaning tower of Pisa",
+            "cosine": 0.31627511978149414
+          },
+          {
+            "text": "a city at night",
+            "cosine": 0.14921751618385315
+          },
+          {
+            "text": "a technical diagram",
+            "cosine": 0.1489366590976715
+          }
+        ]
+      },
+      {
+        "image": "pottery.jpg",
+        "top_3": [
+          {
+            "text": "handmade pottery",
+            "cosine": 0.21247237920761108
+          },
+          {
+            "text": "a person",
+            "cosine": 0.137356698513031
+          },
+          {
+            "text": "a photo of a dog",
+            "cosine": 0.09349978715181351
+          }
+        ]
+      }
+    ],
+    "tflite_text_to_image": [
+      {
+        "text": "a photo of a dog",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.2637453079223633
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.2201547622680664
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.09349978715181351
+          }
+        ]
+      },
+      {
+        "text": "a photo of a cat",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.16695144772529602
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.10955946892499924
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.077349953353405
+          }
+        ]
+      },
+      {
+        "text": "a photo of a red car",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.12538045644760132
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.1160772442817688
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.11117307841777802
+          }
+        ]
+      },
+      {
+        "text": "a city at night",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.14921751618385315
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.0591190904378891
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.033672913908958435
+          }
+        ]
+      },
+      {
+        "text": "a mountain landscape",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.106186144053936
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.06335583329200745
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.05261223763227463
+          }
+        ]
+      },
+      {
+        "text": "a sandy beach",
+        "top_3": [
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.11650899052619934
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.07370980829000473
+          },
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.06936998665332794
+          }
+        ]
+      },
+      {
+        "text": "a plate of food",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.07756306231021881
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.07151351124048233
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.070328488945961
+          }
+        ]
+      },
+      {
+        "text": "a technical diagram",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.1489366590976715
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.11919701099395752
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.08485190570354462
+          }
+        ]
+      },
+      {
+        "text": "a flower",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.05973333120346069
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.04958076775074005
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.04308623820543289
+          }
+        ]
+      },
+      {
+        "text": "a person",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.16032414138317108
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.137356698513031
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.09921769797801971
+          }
+        ]
+      },
+      {
+        "text": "an astronaut in a space suit",
+        "top_3": [
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.27697646617889404
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.08978131413459778
+          },
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.07688355445861816
+          }
+        ]
+      },
+      {
+        "text": "the leaning tower of Pisa",
+        "top_3": [
+          {
+            "image": "leaning_tower.jpg",
+            "cosine": 0.31627511978149414
+          },
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.07408374547958374
+          },
+          {
+            "image": "astronaut.jpg",
+            "cosine": 0.04821128770709038
+          }
+        ]
+      },
+      {
+        "text": "handmade pottery",
+        "top_3": [
+          {
+            "image": "pottery.jpg",
+            "cosine": 0.21247237920761108
+          },
+          {
+            "image": "dog1.jpg",
+            "cosine": 0.10028679668903351
+          },
+          {
+            "image": "dog2.jpg",
+            "cosine": 0.08086967468261719
+          }
+        ]
+      }
+    ]
+  },
+  "top1_agreement": 1.0,
+  "top3_overlap": 0.9333333333333332,
+  "retrieval_top1_agreement": 0.9230769230769231,
+  "retrieval_top3_overlap": 0.9487179487179487
+}

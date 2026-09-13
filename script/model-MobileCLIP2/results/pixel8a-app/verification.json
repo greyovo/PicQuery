@@ -1,0 +1,85 @@
+{
+  "device": "Pixel 8a",
+  "serial": "43231JEKB22129",
+  "android_sdk": 37,
+  "page_size": 4096,
+  "native_review": "no blocking issues; all four C API symbols verified in four runtime ABIs",
+  "unit_tests": {
+    "onnx": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0
+    },
+    "tflite": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  "apks": {
+    "onnx": {
+      "path": "app\\build\\outputs\\apk\\onnx\\debug\\app-onnx-debug.apk",
+      "bytes": 295739057,
+      "sha256": "56d86d82af0fb87d76330d47494d2dc05093338689b4123e06b12e6b18418d29",
+      "native_bridge": {
+        "lib/arm64-v8a/libpicquery_xnnpack.so": "abe9c3117e39a1f079d3e3971e8d734b0387cc0093d3c0c3a8a4fddf776a87f8",
+        "lib/armeabi-v7a/libpicquery_xnnpack.so": "e23fe6718b7b9bb0ef7c79e8c1e480a12f4ddbfd7a75dac7ac1b25d20033ae8a"
+      },
+      "models": {
+        "assets/mobileclip2_s0_image.onnx": {
+          "bytes": 45557999,
+          "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509"
+        },
+        "assets/mobileclip2_s0_text_int8.onnx": {
+          "bytes": 64423473,
+          "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7"
+        }
+      }
+    },
+    "tflite": {
+      "path": "app\\build\\outputs\\apk\\tflite\\debug\\app-tflite-debug.apk",
+      "bytes": 296623786,
+      "sha256": "8e8f84648c9c288d8b76ba4f0ca94047a03e41fa40fbe54004ea4ef4bf28a562",
+      "native_bridge": {
+        "lib/arm64-v8a/libpicquery_xnnpack.so": "abe9c3117e39a1f079d3e3971e8d734b0387cc0093d3c0c3a8a4fddf776a87f8",
+        "lib/armeabi-v7a/libpicquery_xnnpack.so": "e23fe6718b7b9bb0ef7c79e8c1e480a12f4ddbfd7a75dac7ac1b25d20033ae8a"
+      },
+      "models": {
+        "assets/image_model.tflite": {
+          "bytes": 45608600,
+          "sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7"
+        },
+        "assets/text_model_dynamic_wi8.tflite": {
+          "bytes": 65253264,
+          "sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649"
+        }
+      }
+    }
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 95,
+    "hints": 5
+  },
+  "detekt": {
+    "findings": 27,
+    "auto_correct": false,
+    "ignore_failures": true,
+    "new_path_finding": "TFLiteInterpreterSession.configureDelegate has 4 returns (ReturnCount); reviewable early exits retained."
+  },
+  "functional_tests": {
+    "onnx": 1,
+    "tflite": 1,
+    "samples_per_encoder": 50,
+    "warmups_per_encoder": 10,
+    "scope": "both towers resident and alternating in instrumentation; no Activity; not UI speed ranking"
+  },
+  "final_apk_note": "Final rebuild changed only English settings wording after the model parity tests; final TFLite UI search and persisted demo index verified after reinstall.",
+  "not_verified": [
+    "Release/minified APK",
+    "GPU/NPU",
+    "other physical devices",
+    "whole APK 16 KB compatibility",
+    "sustained end-to-end performance"
+  ]
+}

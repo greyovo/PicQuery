@@ -1,0 +1,90 @@
+{
+  "device_serial": "43231JEKB22129",
+  "model": "Pixel 8a",
+  "soc": "Tensor G3",
+  "android": "17",
+  "fingerprint": "google/akita_beta/akita:17/CP41.260814.003.B1/16166531:user/release-keys",
+  "page_size": "4096",
+  "package": "me.grey.picquery.mobileclip2.onnx",
+  "started_utc": "2026-09-13T06:17:37.2591479Z",
+  "sample_count": 100,
+  "warmup_count": 10,
+  "sustain_seconds_first_round": 60,
+  "cooldown_seconds": 30,
+  "rounds": 2,
+  "note": "Fresh app process per model; fixed forward/reverse order. USB charging and screen state are not changed. PSS snapshots are not peak memory. No album indexing or personal media access.",
+  "runs": [
+    {
+      "model": "v2_s0_onnx_int8",
+      "round": 1,
+      "report": "v2_s0_onnx_int8-r1.json",
+      "started_utc": "2026-09-13T06:17:37.4716451Z",
+      "finished_utc": "2026-09-13T06:18:52.3064991Z"
+    },
+    {
+      "model": "v2_s0_tflite_int8",
+      "round": 1,
+      "report": "v2_s0_tflite_int8-r1.json",
+      "started_utc": "2026-09-13T06:19:22.8009780Z",
+      "finished_utc": "2026-09-13T06:21:23.2438361Z"
+    },
+    {
+      "model": "v1_s0_onnx_int8",
+      "round": 1,
+      "report": "v1_s0_onnx_int8-r1.json",
+      "started_utc": "2026-09-13T06:21:53.8600534Z",
+      "finished_utc": "2026-09-13T06:23:20.5068146Z"
+    },
+    {
+      "model": "v1_s2_onnx_int8",
+      "round": 1,
+      "report": "v1_s2_onnx_int8-r1.json",
+      "started_utc": "2026-09-13T06:23:50.9261555Z",
+      "finished_utc": "2026-09-13T06:25:40.6142133Z"
+    },
+    {
+      "model": "legacy_clip_int8",
+      "round": 1,
+      "report": "legacy_clip_int8-r1.json",
+      "started_utc": "2026-09-13T06:26:11.0924586Z",
+      "finished_utc": "2026-09-13T06:27:33.0378098Z"
+    },
+    {
+      "model": "legacy_clip_int8",
+      "round": 2,
+      "report": "legacy_clip_int8-r2.json",
+      "started_utc": "2026-09-13T06:28:03.7417086Z",
+      "finished_utc": "2026-09-13T06:28:25.5325826Z"
+    },
+    {
+      "model": "v1_s2_onnx_int8",
+      "round": 2,
+      "report": "v1_s2_onnx_int8-r2.json",
+      "started_utc": "2026-09-13T06:28:56.2532094Z",
+      "finished_utc": "2026-09-13T06:29:40.5063512Z"
+    },
+    {
+      "model": "v1_s0_onnx_int8",
+      "round": 2,
+      "report": "v1_s0_onnx_int8-r2.json",
+      "started_utc": "2026-09-13T06:30:11.0603169Z",
+      "finished_utc": "2026-09-13T06:30:36.6084224Z"
+    },
+    {
+      "model": "v2_s0_tflite_int8",
+      "round": 2,
+      "report": "v2_s0_tflite_int8-r2.json",
+      "started_utc": "2026-09-13T06:31:07.2069540Z",
+      "finished_utc": "2026-09-13T06:31:49.0102576Z"
+    },
+    {
+      "model": "v2_s0_onnx_int8",
+      "round": 2,
+      "report": "v2_s0_onnx_int8-r2.json",
+      "started_utc": "2026-09-13T06:32:19.6261702Z",
+      "finished_utc": "2026-09-13T06:32:33.7850514Z"
+    }
+  ],
+  "completed_utc": "2026-09-13T06:32:34.4691574Z",
+  "status": "complete"
+}
