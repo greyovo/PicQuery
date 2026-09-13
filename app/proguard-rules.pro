@@ -34,3 +34,9 @@
 
 # ONNX Runtime
 -keep class ai.onnxruntime.**{*;}
+
+# ML Kit discovers Firebase component registrars by name and calls their no-arg
+# constructors reflectively. R8 full mode must retain those constructors too.
+-keep class * implements com.google.firebase.components.ComponentRegistrar {
+    public <init>();
+}
