@@ -1,0 +1,64 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:\github\PicQuery\PicQuery\build\java-tmp
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/Administrator/.gradle/wrapper/dists/gradle-9.6.0-bin/42k10rwplmzkhuboz9kdazi7s/gradle-9.6.0/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Type-safe project accessors is an incubating feature.
+> Task :app:loadKtlintReporters UP-TO-DATE
+> Task :app:objectboxPrepareBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preOnnxDebugBuild UP-TO-DATE
+> Task :app:generateOnnxDebugBuildConfig UP-TO-DATE
+> Task :app:generateOnnxDebugResources UP-TO-DATE
+> Task :app:packageOnnxDebugResources UP-TO-DATE
+> Task :app:processOnnxDebugNavigationResources UP-TO-DATE
+> Task :app:parseOnnxDebugLocalResources UP-TO-DATE
+> Task :app:generateOnnxDebugRFile UP-TO-DATE
+> Task :app:kspOnnxDebugKotlin UP-TO-DATE
+> Task :app:kaptGenerateStubsOnnxDebugKotlin UP-TO-DATE
+> Task :app:kaptOnnxDebugKotlin UP-TO-DATE
+> Task :app:compileOnnxDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileOnnxDebug UP-TO-DATE
+> Task :app:compileOnnxDebugJavaWithJavac UP-TO-DATE
+> Task :app:checkOnnxDebugAarMetadata UP-TO-DATE
+> Task :app:mapOnnxDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileOnnxDebugNavigationResources UP-TO-DATE
+> Task :app:mergeOnnxDebugResources UP-TO-DATE
+> Task :app:createOnnxDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksOnnxDebug UP-TO-DATE
+> Task :app:processOnnxDebugMainManifest UP-TO-DATE
+> Task :app:processOnnxDebugManifest UP-TO-DATE
+> Task :app:processOnnxDebugManifestForPackage UP-TO-DATE
+> Task :app:processOnnxDebugResources UP-TO-DATE
+> Task :app:bundleOnnxDebugClassesToCompileJar UP-TO-DATE
+> Task :app:preOnnxDebugAndroidTestBuild SKIPPED
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.jetbrains.kotlin.com.intellij.util.containers.Unsafe (file:/C:/Users/Administrator/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-compiler-embeddable/2.2.21/b13aed5cf8412f9ee9d1e4db21bdcfebcc24f606/kotlin-compiler-embeddable-2.2.21.jar)
+WARNING: Please consider reporting this to the maintainers of class org.jetbrains.kotlin.com.intellij.util.containers.Unsafe
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :app:mergeOnnxDebugAndroidTestManifest UP-TO-DATE
+> Task :app:processOnnxDebugAndroidTestManifest UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestBuildConfig UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:packageOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:processOnnxDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:parseOnnxDebugAndroidTestLocalResources UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestRFile UP-TO-DATE
+> Task :app:kspOnnxDebugAndroidTestKotlin
+> Task :app:kaptGenerateStubsOnnxDebugAndroidTestKotlin
+> Task :app:kaptOnnxDebugAndroidTestKotlin SKIPPED
+> Task :app:runKtlintCheckOverAndroidTestSourceSet
+> Task :app:ktlintAndroidTestSourceSetCheck
+> Task :app:compileOnnxDebugAndroidTestKotlin
+
+[Incubating] Problems report is available at: file:///F:/github/PicQuery/PicQuery/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 5s
+38 actionable tasks: 5 executed, 33 up-to-date

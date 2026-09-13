@@ -1,0 +1,5 @@
+--------- beginning of main
+09-13 14:39:53.434 24618 24636 I tflite  : Initialized TensorFlow Lite runtime.
+09-13 14:39:53.436 24618 24636 I tflite  : Created TensorFlow Lite XNNPACK delegate for CPU.
+09-13 14:39:53.436 24618 24636 I tflite  : Replacing 242 out of 242 node(s) with delegate (TfLiteXNNPackDelegate) node, yielding 1 partitions for subgraph 0.
+09-13 14:40:06.251 24618 24636 I tflite  : Replacing 695 out of 705 node(s) with delegate (TfLiteXNNPackDelegate) node, yielding 4 partitions for subgraph 0.

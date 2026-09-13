@@ -1,0 +1,7 @@
+Compiled from "NodeInfo.java"
+public class ai.onnxruntime.NodeInfo {
+  public ai.onnxruntime.NodeInfo(java.lang.String, ai.onnxruntime.ValueInfo);
+  public java.lang.String getName();
+  public ai.onnxruntime.ValueInfo getInfo();
+  public java.lang.String toString();
+}

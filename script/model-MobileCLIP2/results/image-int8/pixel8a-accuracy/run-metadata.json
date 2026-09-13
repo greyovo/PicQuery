@@ -1,0 +1,189 @@
+{
+  "status": "complete",
+  "started_utc": "2026-09-13T08:31:51.340748+00:00",
+  "device_serial": "43231JEKB22129",
+  "package": "me.grey.picquery.mobileclip2.onnx",
+  "test_class": "me.grey.picquery.feature.MobileCLIPVersionsBenchmarkTest#exportAccuracyFeatures",
+  "script_sha256": "fe6fcfa47046eab0797db770dafa1268107cca62f14cd443914ad69aa9a82c73",
+  "note": "Preinstalled APKs and uploaded fixtures required. Features are retrieved through binary stdout and verified by SHA256, byte size and row count. No accuracy score is computed here.",
+  "runs": [
+    {
+      "model_id": "v2_s0_fp32_image_ort",
+      "status": "passed",
+      "started_utc": "2026-09-13T08:31:53.077009+00:00",
+      "instrumentation_log": "v2_s0_fp32_image_ort-instrumentation.log",
+      "instrumentation_elapsed_seconds": 693.6930704000115,
+      "instrumentation_returncode": 0,
+      "report_file": "v2_s0_fp32_image_ort-report.json",
+      "report_sha256": "1192866984ba792b47581fae2f1e4cac4bb61faccd1e7ecbfcc34d7d94d4add3",
+      "outputs": [
+        {
+          "dataset": "cifar100",
+          "tower": "image",
+          "file": "v2_s0_fp32_image_ort-cifar100-image.f32",
+          "sha256": "c6af5bbfb5746ce3a576d35b885e50f25187d1ef2add23168eea238d6e74a76d",
+          "bytes": 4096000,
+          "count": 2000,
+          "shape": [
+            2000,
+            512
+          ]
+        },
+        {
+          "dataset": "cifar100",
+          "tower": "text",
+          "file": "v2_s0_fp32_image_ort-cifar100-text.f32",
+          "sha256": "197715a39301e1b7a736c6f730f1107a10a7d19554a2d5a42fc5728dd7313915",
+          "bytes": 204800,
+          "count": 100,
+          "shape": [
+            100,
+            512
+          ]
+        },
+        {
+          "dataset": "imagenette",
+          "tower": "image",
+          "file": "v2_s0_fp32_image_ort-imagenette-image.f32",
+          "sha256": "ca6136348b0858ed1522a5fc99c606405bb5a9ae1727ce9ef0521065adfb787c",
+          "bytes": 8038400,
+          "count": 3925,
+          "shape": [
+            3925,
+            512
+          ]
+        },
+        {
+          "dataset": "imagenette",
+          "tower": "text",
+          "file": "v2_s0_fp32_image_ort-imagenette-text.f32",
+          "sha256": "10b9432f909299b92bdfe2aa329848cc35c6a5e10b54d2ef2619ecda7f6c1a03",
+          "bytes": 20480,
+          "count": 10,
+          "shape": [
+            10,
+            512
+          ]
+        }
+      ],
+      "finished_utc": "2026-09-13T08:43:28.893022+00:00",
+      "runtime_version": "1.29.0",
+      "cpu_threads": 4,
+      "inter_op_threads": 1,
+      "session_configuration": {
+        "execution_provider": "CPUExecutionProvider",
+        "intra_op_threads": 4,
+        "inter_op_threads": 1,
+        "execution_mode": "ORT_SEQUENTIAL (runtime default)",
+        "graph_optimization": "runtime default",
+        "tower_lifetime": "all image datasets, close; all text datasets, close"
+      },
+      "device": "Pixel 8a",
+      "sdk": 37
+    },
+    {
+      "model_id": "v2_s0_int8_image_ort",
+      "status": "passed",
+      "started_utc": "2026-09-13T08:43:28.897935+00:00",
+      "instrumentation_log": "v2_s0_int8_image_ort-instrumentation.log",
+      "instrumentation_elapsed_seconds": 601.3711250000051,
+      "instrumentation_returncode": 0,
+      "report_file": "v2_s0_int8_image_ort-report.json",
+      "report_sha256": "d9c6533541caab2b0af109e9ad2bb9085c5ed9250a6c369f28a51f2bbb3b302c",
+      "outputs": [
+        {
+          "dataset": "cifar100",
+          "tower": "image",
+          "file": "v2_s0_int8_image_ort-cifar100-image.f32",
+          "sha256": "d30d25cbdf2f6d329a81e63eb4db6af7f8f0951fcec9df861bdbb922db2db7db",
+          "bytes": 4096000,
+          "count": 2000,
+          "shape": [
+            2000,
+            512
+          ]
+        },
+        {
+          "dataset": "cifar100",
+          "tower": "text",
+          "file": "v2_s0_int8_image_ort-cifar100-text.f32",
+          "sha256": "197715a39301e1b7a736c6f730f1107a10a7d19554a2d5a42fc5728dd7313915",
+          "bytes": 204800,
+          "count": 100,
+          "shape": [
+            100,
+            512
+          ]
+        },
+        {
+          "dataset": "imagenette",
+          "tower": "image",
+          "file": "v2_s0_int8_image_ort-imagenette-image.f32",
+          "sha256": "609a66c23fb89c208aca970d8e4dfc9bc58370e004cb221416bc8088c2ce7d77",
+          "bytes": 8038400,
+          "count": 3925,
+          "shape": [
+            3925,
+            512
+          ]
+        },
+        {
+          "dataset": "imagenette",
+          "tower": "text",
+          "file": "v2_s0_int8_image_ort-imagenette-text.f32",
+          "sha256": "10b9432f909299b92bdfe2aa329848cc35c6a5e10b54d2ef2619ecda7f6c1a03",
+          "bytes": 20480,
+          "count": 10,
+          "shape": [
+            10,
+            512
+          ]
+        }
+      ],
+      "finished_utc": "2026-09-13T08:53:32.510104+00:00",
+      "runtime_version": "1.29.0",
+      "cpu_threads": 4,
+      "inter_op_threads": 1,
+      "session_configuration": {
+        "execution_provider": "CPUExecutionProvider",
+        "intra_op_threads": 4,
+        "inter_op_threads": 1,
+        "execution_mode": "ORT_SEQUENTIAL (runtime default)",
+        "graph_optimization": "runtime default",
+        "tower_lifetime": "all image datasets, close; all text datasets, close"
+      },
+      "device": "Pixel 8a",
+      "sdk": 37
+    }
+  ],
+  "manifest_sha256": "91905d07aeaf8504ce4e51471aa60f95e7ba5f801a06a279f20c96eb215a1649",
+  "fixtures": "F:\\github\\PicQuery\\PicQuery\\build\\mobileclip2-image-int8-device-accuracy",
+  "device": {
+    "model": "Pixel 8a",
+    "soc": "Tensor G3",
+    "android": "17",
+    "sdk": "37",
+    "fingerprint": "google/akita_beta/akita:17/CP41.260814.003.B1/16166531:user/release-keys"
+  },
+  "installed_apks": {
+    "me.grey.picquery.mobileclip2.onnx": {
+      "status": "recorded",
+      "files": [
+        {
+          "path": "/data/app/~~DpxaPOHGxHXQoVvQgRljEw==/me.grey.picquery.mobileclip2.onnx-JEhwQulZDQ0OunfxaljNzQ==/base.apk",
+          "sha256": "1a9adf7e0e1d4bb4a13029c61499486a232d25493bb4cbfdf21019810b751d58"
+        }
+      ]
+    },
+    "me.grey.picquery.mobileclip2.onnx.test": {
+      "status": "recorded",
+      "files": [
+        {
+          "path": "/data/app/~~7iSYwi7qM-6VffjqvxR_-Q==/me.grey.picquery.mobileclip2.onnx.test-QTUJyQOx8kseKlxWBM65AQ==/base.apk",
+          "sha256": "a1e260f5257f61a9c135ccea9db0e074a6839df946b488fbff93744ef8aee347"
+        }
+      ]
+    }
+  },
+  "completed_utc": "2026-09-13T08:53:32.511319+00:00"
+}

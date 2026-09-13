@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "executed_source_file": "benchmark-test-executed.kt",
+  "executed_source_sha256": "c232e0884d328f37349213604fbcffbe5326c0e1fb5e39804a069387d23a176a",
+  "formatted_source_file": "app/src/androidTest/java/me/grey/picquery/feature/MobileCLIPVersionsBenchmarkTest.kt",
+  "formatted_source_sha256": "cf22c2fa5fb74a112b4fd344755f613306e7c202dc2efc2fb395dd5c8a9e28ce",
+  "test_apk_sha256": "a1e260f5257f61a9c135ccea9db0e074a6839df946b488fbff93744ef8aee347",
+  "test_apk_repackaged_after_formatting": false,
+  "checks": {
+    "assembleOnnxDebugAndroidTest": "passed; 1m35s; 64 tasks, 16 executed",
+    "ktlintAndroidTestSourceSetCheck": "passed after formatting only the edited test file; baseline unchanged",
+    "compileOnnxDebugAndroidTestKotlin": "passed after formatting; combined static checks 5s, 38 tasks, 5 executed"
+  },
+  "formatting_equivalence": {
+    "tool": "javap -c -p",
+    "classes_compared": 5,
+    "all_instruction_listings_equal": true,
+    "scope": "Main test class, BenchmarkSession, WhenMappings, NativeXnnpackDelegate, and Companion; excludes debug line tables"
+  },
+  "device_execution": "Owned by the root task; this implementation task did not install or operate the device."
+}

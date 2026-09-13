@@ -1,0 +1,15 @@
+Compiled from "TensorInfo.java"
+public class ai.onnxruntime.TensorInfo implements ai.onnxruntime.ValueInfo {
+  public static final int MAX_DIMENSIONS;
+  public final ai.onnxruntime.OnnxJavaType type;
+  public final ai.onnxruntime.TensorInfo$OnnxTensorType onnxType;
+  public long[] getShape();
+  public java.lang.String[] getDimensionNames();
+  public java.lang.String toString();
+  public boolean isScalar();
+  public long getNumElements();
+  public java.lang.Object makeCarrier() throws ai.onnxruntime.OrtException;
+  public static ai.onnxruntime.TensorInfo constructFromJavaArray(java.lang.Object) throws ai.onnxruntime.OrtException;
+  public static ai.onnxruntime.TensorInfo constructFromBuffer(java.nio.Buffer, long[], ai.onnxruntime.OnnxJavaType) throws ai.onnxruntime.OrtException;
+  public static <T extends java.nio.Buffer> ai.onnxruntime.TensorInfo constructFromSparseTensor(ai.onnxruntime.OnnxSparseTensor$SparseTensor<T>) throws ai.onnxruntime.OrtException;
+}

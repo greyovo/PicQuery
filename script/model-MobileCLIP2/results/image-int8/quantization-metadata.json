@@ -1,0 +1,3109 @@
+{
+  "status": "passed",
+  "candidate_quality_status": "accuracy_not_validated",
+  "model_id": "v2_s0_image_int8_candidate",
+  "onnxruntime_version": "1.29.0",
+  "created_at_utc": "2026-09-13T08:19:34.568082+00:00",
+  "script_sha256": "16d2de71b0d3f78f9d785f42aa6efebab3a00c141c6926647aaf6edd36ffa583",
+  "source": {
+    "file": "/mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_s0_image.onnx",
+    "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+    "bytes": 45557999
+  },
+  "source_fp32_ort": {
+    "file": "/mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_s0_image.ort",
+    "sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+    "bytes": 45659936
+  },
+  "shared_text": {
+    "onnx": {
+      "file": "/mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+      "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+      "bytes": 64423473
+    },
+    "ort": {
+      "file": "/mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_s0_text_int8.ort",
+      "sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+      "bytes": 64491480
+    }
+  },
+  "image": {
+    "onnx": {
+      "file": "mobileclip2_s0_image_int8.onnx",
+      "sha256": "83d74ae0f9adc18d9566e798916813cba48e0a4f779fbc860ad4e78b8112bb1d",
+      "bytes": 14110032
+    },
+    "ort": {
+      "file": "mobileclip2_s0_image_int8.ort",
+      "sha256": "d5b21e38a87cfeb802ffda26051cd7e59ba6e5ea9c6f10fd1d36780067afe031",
+      "bytes": 14179240
+    }
+  },
+  "contract": {
+    "input": {
+      "name": "image",
+      "shape": [
+        1,
+        3,
+        256,
+        256
+      ],
+      "type": "tensor(float)"
+    },
+    "output": {
+      "name": "embedding",
+      "shape": [
+        1,
+        512
+      ],
+      "type": "tensor(float)",
+      "l2_normalized": true
+    }
+  },
+  "quantization": {
+    "format": "QDQ",
+    "activation_type": "QInt8",
+    "weight_type": "QInt8",
+    "per_channel": true,
+    "reduce_range": false,
+    "calibration_method": "MinMax",
+    "op_types": [
+      "Conv",
+      "MatMul",
+      "Gemm"
+    ],
+    "extra_options": {
+      "ActivationSymmetric": false,
+      "WeightSymmetric": true
+    },
+    "calibration_threads": 4,
+    "calibration_inter_op_threads": 1,
+    "precision_policy": "mixed: reparameterized/grouped Conv FP32",
+    "excluded_nodes": [
+      {
+        "name": "/visual/trunk/stem/stem.0/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 1,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stem/stem.1/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stem/stem.2/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 1,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.0/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.0/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/downsample/proj/proj.0/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 64,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/downsample/proj/proj.1/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 1,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/downsample/proj/proj.0/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 128,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/downsample/proj/proj.1/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 1,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.6/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.7/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.8/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.9/token_mixer/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.3/downsample/proj/proj.0/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 256,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.3/downsample/proj/proj.1/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 1,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.3/pos_emb/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 512,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 512,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/conv/conv/Conv",
+        "op_type": "Conv",
+        "group": 512,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      },
+      {
+        "name": "/visual/trunk/final_conv/reparam_conv/Conv",
+        "op_type": "Conv",
+        "group": 512,
+        "reason": "Reparameterized/grouped convolution retained after TRAIN-only layer error diagnosis"
+      }
+    ],
+    "calibration_execution_mode": "ORT_SEQUENTIAL",
+    "calibration_graph_optimization": "ORT_DISABLE_ALL",
+    "calibration_block_size": 20,
+    "calibration_ranges_count": 174,
+    "calibration_samples_processed": 400,
+    "calibration_reader_rewind_verified": true,
+    "calibration_cache": {
+      "file": "calibration_ranges.json",
+      "sha256": "1e1263b860563bc89c14575ad9b3b52037f9e11373617107037907a3ba576020",
+      "bytes": 44945
+    }
+  },
+  "coverage": {
+    "source": {
+      "nodes": 490,
+      "operators": {
+        "Add": 54,
+        "BatchNormalization": 2,
+        "Cast": 4,
+        "Concat": 2,
+        "Constant": 118,
+        "Conv": 95,
+        "Div": 33,
+        "Erf": 30,
+        "Flatten": 1,
+        "Gemm": 1,
+        "GlobalAveragePool": 1,
+        "MatMul": 8,
+        "Mul": 89,
+        "ReduceL2": 1,
+        "ReduceMean": 3,
+        "Relu": 3,
+        "Reshape": 8,
+        "Shape": 4,
+        "Sigmoid": 3,
+        "Slice": 4,
+        "Softmax": 2,
+        "Split": 2,
+        "Sqrt": 6,
+        "Squeeze": 6,
+        "Transpose": 10
+      },
+      "initializer_types": {
+        "FLOAT": 228
+      },
+      "initializer_elements": {
+        "FLOAT": 11355072
+      },
+      "heavy_ops": [
+        {
+          "name": "/visual/trunk/stem/stem.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.2/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/pos_emb/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/proj/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/proj/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/head/fc/Gemm",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        }
+      ]
+    },
+    "preprocessed": {
+      "nodes": 330,
+      "operators": {
+        "Add": 52,
+        "BatchNormalization": 2,
+        "Conv": 95,
+        "Div": 31,
+        "Erf": 30,
+        "Flatten": 1,
+        "Gemm": 3,
+        "GlobalAveragePool": 1,
+        "MatMul": 6,
+        "Mul": 69,
+        "ReduceL2": 1,
+        "ReduceMean": 3,
+        "Relu": 3,
+        "Reshape": 8,
+        "Sigmoid": 3,
+        "Softmax": 2,
+        "Split": 2,
+        "Squeeze": 6,
+        "Transpose": 12
+      },
+      "initializer_types": {
+        "FLOAT": 213,
+        "INT64": 11
+      },
+      "initializer_elements": {
+        "FLOAT": 11350597,
+        "INT64": 29
+      },
+      "heavy_ops": [
+        {
+          "name": "/visual/trunk/stem/stem.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.2/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/pos_emb/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/proj/MatMul/MatMulAddFusion",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/proj/MatMul/MatMulAddFusion",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/head/fc/Gemm",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        }
+      ]
+    },
+    "quantized": {
+      "nodes": 658,
+      "operators": {
+        "Add": 52,
+        "BatchNormalization": 2,
+        "Conv": 95,
+        "DequantizeLinear": 214,
+        "Div": 31,
+        "Erf": 30,
+        "Flatten": 1,
+        "Gemm": 3,
+        "GlobalAveragePool": 1,
+        "MatMul": 6,
+        "Mul": 69,
+        "QuantizeLinear": 114,
+        "ReduceL2": 1,
+        "ReduceMean": 3,
+        "Relu": 3,
+        "Reshape": 8,
+        "Sigmoid": 3,
+        "Softmax": 2,
+        "Split": 2,
+        "Squeeze": 6,
+        "Transpose": 12
+      },
+      "initializer_types": {
+        "FLOAT": 327,
+        "INT32": 98,
+        "INT64": 11,
+        "INT8": 216
+      },
+      "initializer_elements": {
+        "FLOAT": 742071,
+        "INT32": 43008,
+        "INT64": 29,
+        "INT8": 10657906
+      },
+      "heavy_ops": [
+        {
+          "name": "/visual/trunk/stem/stem.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stem/stem.2/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.0/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.1/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.2/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.3/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.4/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.5/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.6/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.7/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.8/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/token_mixer/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.2/blocks/blocks.9/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.0/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/downsample/proj/proj.1/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/pos_emb/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/token_mixer/proj/MatMul/MatMulAddFusion",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.0/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/qkv/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/MatMul_1",
+          "op_type": "MatMul",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/token_mixer/proj/MatMul/MatMulAddFusion",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/conv/conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/stages.3/blocks/blocks.1/mlp/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/final_conv/reparam_conv/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 0,
+          "both_inputs_quantized": false
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc1/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/final_conv/se/fc2/Conv",
+          "op_type": "Conv",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        },
+        {
+          "name": "/visual/trunk/head/fc/Gemm",
+          "op_type": "Gemm",
+          "int8_dequantized_inputs": 2,
+          "both_inputs_quantized": true
+        }
+      ]
+    },
+    "quantized_heavy_ops": {
+      "Conv": 46,
+      "MatMul": 6,
+      "Gemm": 3
+    },
+    "ort": {
+      "file_identifier": "ORTM",
+      "format_version": "6",
+      "initializer_types": {
+        "FLOAT": 275,
+        "INT32": 49,
+        "INT64": 7,
+        "INT8": 216
+      },
+      "required_operators": {
+        "ai.onnx": {
+          "1": [
+            "GlobalAveragePool"
+          ],
+          "10": [
+            "QLinearMatMul"
+          ],
+          "11": [
+            "Conv"
+          ],
+          "13": [
+            "DequantizeLinear",
+            "Erf",
+            "Flatten",
+            "QuantizeLinear",
+            "ReduceL2",
+            "ReduceMean",
+            "Sigmoid",
+            "Split",
+            "Squeeze",
+            "Transpose"
+          ],
+          "14": [
+            "Add",
+            "Div",
+            "Mul",
+            "Reshape"
+          ],
+          "15": [
+            "BatchNormalization"
+          ]
+        },
+        "com.microsoft": {
+          "1": [
+            "Gelu",
+            "QGemm",
+            "QLinearConv",
+            "QLinearSoftmax"
+          ]
+        }
+      },
+      "contains_nchwc": false
+    }
+  },
+  "calibration": {
+    "manifest_file": "calibration_manifest.json",
+    "manifest_sha256": "16592d7f1d3b7138b91ff335ce31c4db64439ed321a6dc0697b145c8ea901947",
+    "seed": 20260913,
+    "samples_total": 400,
+    "datasets": [
+      {
+        "dataset": "cifar100",
+        "split": "train",
+        "samples": 200,
+        "per_class": 2
+      },
+      {
+        "dataset": "imagenette",
+        "split": "train",
+        "samples": 200,
+        "per_class": 20
+      }
+    ],
+    "leakage_check": {
+      "status": "passed",
+      "evaluation_manifest_file": "/mnt/f/github/PicQuery/PicQuery/script/model-MobileCLIP2/results/accuracy-results-manifest.json",
+      "evaluation_manifest_sha256": "64aea9c8432f0a6ce95e70050e7e1096e1b594edde51a8e48040120b51358c42",
+      "evaluation_counts": {
+        "cifar100": 2000,
+        "imagenette": 3925
+      },
+      "native_sha256_overlap": 0,
+      "rgb_sha256_overlap": 0,
+      "rgb_hash_format": "PIL RGB uint8 HWC bytes before resizing; all 5925 evaluation images decoded"
+    }
+  },
+  "preparation": {
+    "steps": [
+      "ORT_ENABLE_BASIC CPU graph optimization (including eligible BN fusion)",
+      "Official quant_pre_process symbolic and ONNX shape inference; no further optimization"
+    ],
+    "artifact": {
+      "file": "mobileclip2_s0_image_fp32.preprocessed.onnx",
+      "sha256": "d460e5b6350c1f575c48e980789ea1d6e6c0dfa3319fc9b1ee97e3f7fa4aa0b6",
+      "bytes": 45542216
+    },
+    "parity": {
+      "status": "passed",
+      "samples": [
+        {
+          "input": "synthetic:black",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000001837465582,
+          "ort_norm": 1.0000001837465582
+        },
+        {
+          "input": "synthetic:white",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000000602647667,
+          "ort_norm": 1.0000000602647667
+        },
+        {
+          "input": "synthetic:noise:seed20260913",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998822100321,
+          "ort_norm": 0.9999998822100321
+        },
+        {
+          "input": "manifest:image:0",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999999502941621,
+          "ort_norm": 0.9999999502941621
+        },
+        {
+          "input": "manifest:image:1",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998851154583,
+          "ort_norm": 0.9999998851154583
+        },
+        {
+          "input": "manifest:image:2",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000001262403955,
+          "ort_norm": 1.0000001262403955
+        },
+        {
+          "input": "manifest:image:3",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.000000038570546,
+          "ort_norm": 1.000000038570546
+        },
+        {
+          "input": "manifest:image:4",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000000013347914,
+          "ort_norm": 1.0000000013347914
+        },
+        {
+          "input": "calibration:cifar100:train/00234",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999999452572788,
+          "ort_norm": 0.9999999452572788
+        },
+        {
+          "input": "calibration:cifar100:train/04533",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000001452782756,
+          "ort_norm": 1.0000001452782756
+        },
+        {
+          "input": "calibration:cifar100:train/11164",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000004031401752,
+          "ort_norm": 1.0000004031401752
+        },
+        {
+          "input": "calibration:cifar100:train/17350",
+          "cosine": 0.9999999999999998,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000000487166727,
+          "ort_norm": 1.0000000487166727
+        },
+        {
+          "input": "calibration:cifar100:train/21486",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000000499378332,
+          "ort_norm": 1.0000000499378332
+        },
+        {
+          "input": "calibration:cifar100:train/26501",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999999632176051,
+          "ort_norm": 0.9999999632176051
+        },
+        {
+          "input": "calibration:cifar100:train/33462",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999997685008325,
+          "ort_norm": 0.9999997685008325
+        },
+        {
+          "input": "calibration:cifar100:train/38940",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998083233518,
+          "ort_norm": 0.9999998083233518
+        },
+        {
+          "input": "calibration:cifar100:train/45089",
+          "cosine": 0.9999999999999998,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000001356326969,
+          "ort_norm": 1.0000001356326969
+        },
+        {
+          "input": "calibration:cifar100:train/49961",
+          "cosine": 0.9999999999999998,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000000574924541,
+          "ort_norm": 1.0000000574924541
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n01440764/n01440764_11469.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.0000001801387293,
+          "ort_norm": 1.0000001801387293
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n02102040/n02102040_1076.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998879677335,
+          "ort_norm": 0.9999998879677335
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n02979186/n02979186_15226.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999999408355047,
+          "ort_norm": 0.9999999408355047
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03000684/n03000684_32408.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.00000003382385,
+          "ort_norm": 1.00000003382385
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03028079/n03028079_26688.JPEG",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998583565202,
+          "ort_norm": 0.9999998583565202
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03394916/n03394916_35604.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.000000002175243,
+          "ort_norm": 1.000000002175243
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03417042/n03417042_4349.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.999999973221839,
+          "ort_norm": 0.999999973221839
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03425413/n03425413_28779.JPEG",
+          "cosine": 0.9999999999999999,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999998692747064,
+          "ort_norm": 0.9999998692747064
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03445777/n03445777_8628.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 1.000000028986768,
+          "ort_norm": 1.000000028986768
+        },
+        {
+          "input": "calibration:imagenette:imagenette2-320/train/n03888257/n03888257_9066.JPEG",
+          "cosine": 1.0,
+          "max_absolute_error": 0.0,
+          "onnx_norm": 0.9999997928723917,
+          "ort_norm": 0.9999997928723917
+        }
+      ],
+      "maximum_absolute_error": 0.0
+    }
+  },
+  "format_conversion": {
+    "tool": "onnxruntime.tools.convert_onnx_models_to_ort",
+    "style": "Fixed",
+    "target_platform": "arm",
+    "optimization_level": "all",
+    "NchwcTransformer_disabled": true,
+    "required_operators_config": {
+      "file": "mobileclip2_s0_image_int8.required_operators_and_types.config",
+      "sha256": "10dd05db57960dfb65aadee41cb2a83c4dcee6b91298f3902a85e101bcf75247",
+      "bytes": 858
+    }
+  },
+  "format_parity": {
+    "status": "passed",
+    "target_platform": "arm",
+    "runtime": "1.29.0",
+    "provider": "CPUExecutionProvider",
+    "threads": 4,
+    "sample_count": 28,
+    "minimum_cosine": 0.9999999999999998,
+    "maximum_absolute_error": 0.0,
+    "thresholds": {
+      "minimum_cosine": 0.99999,
+      "maximum_absolute_error": 0.0001
+    },
+    "samples": [
+      {
+        "input": "synthetic:black",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999998447964549,
+        "ort_norm": 0.9999998447964549
+      },
+      {
+        "input": "synthetic:white",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000002784832318,
+        "ort_norm": 1.0000002784832318
+      },
+      {
+        "input": "synthetic:noise:seed20260913",
+        "cosine": 0.9999999999999998,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.000000097671093,
+        "ort_norm": 1.000000097671093
+      },
+      {
+        "input": "manifest:image:0",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000002044136107,
+        "ort_norm": 1.0000002044136107
+      },
+      {
+        "input": "manifest:image:1",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999993605193989,
+        "ort_norm": 0.9999993605193989
+      },
+      {
+        "input": "manifest:image:2",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999997568248128,
+        "ort_norm": 0.9999997568248128
+      },
+      {
+        "input": "manifest:image:3",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000002260008882,
+        "ort_norm": 1.0000002260008882
+      },
+      {
+        "input": "manifest:image:4",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.999999700481859,
+        "ort_norm": 0.999999700481859
+      },
+      {
+        "input": "calibration:cifar100:train/00234",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999998538819549,
+        "ort_norm": 0.9999998538819549
+      },
+      {
+        "input": "calibration:cifar100:train/04533",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999997497217338,
+        "ort_norm": 0.9999997497217338
+      },
+      {
+        "input": "calibration:cifar100:train/11164",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000001261645426,
+        "ort_norm": 1.0000001261645426
+      },
+      {
+        "input": "calibration:cifar100:train/17350",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999997601012572,
+        "ort_norm": 0.9999997601012572
+      },
+      {
+        "input": "calibration:cifar100:train/21486",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999998392874098,
+        "ort_norm": 0.9999998392874098
+      },
+      {
+        "input": "calibration:cifar100:train/26501",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000003402789874,
+        "ort_norm": 1.0000003402789874
+      },
+      {
+        "input": "calibration:cifar100:train/33462",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000001507691723,
+        "ort_norm": 1.0000001507691723
+      },
+      {
+        "input": "calibration:cifar100:train/38940",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999994920993264,
+        "ort_norm": 0.9999994920993264
+      },
+      {
+        "input": "calibration:cifar100:train/45089",
+        "cosine": 0.9999999999999999,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999997566047159,
+        "ort_norm": 0.9999997566047159
+      },
+      {
+        "input": "calibration:cifar100:train/49961",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999998489586835,
+        "ort_norm": 0.9999998489586835
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n01440764/n01440764_11469.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.000000281714753,
+        "ort_norm": 1.000000281714753
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n02102040/n02102040_1076.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000001425327059,
+        "ort_norm": 1.0000001425327059
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n02979186/n02979186_15226.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999995992988981,
+        "ort_norm": 0.9999995992988981
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03000684/n03000684_32408.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999999889068737,
+        "ort_norm": 0.9999999889068737
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03028079/n03028079_26688.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000000371050997,
+        "ort_norm": 1.0000000371050997
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03394916/n03394916_35604.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 1.0000001202651037,
+        "ort_norm": 1.0000001202651037
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03417042/n03417042_4349.JPEG",
+        "cosine": 0.9999999999999999,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.999999746078651,
+        "ort_norm": 0.999999746078651
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03425413/n03425413_28779.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.999999769699783,
+        "ort_norm": 0.999999769699783
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03445777/n03445777_8628.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.9999999408052609,
+        "ort_norm": 0.9999999408052609
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03888257/n03888257_9066.JPEG",
+        "cosine": 1.0,
+        "max_absolute_error": 0.0,
+        "onnx_norm": 0.999999766359891,
+        "ort_norm": 0.999999766359891
+      }
+    ],
+    "input_provenance": {
+      "golden_reference": {
+        "path": "/mnt/f/github/PicQuery/PicQuery/app/src/androidTest/assets/mobileclip2/reference_dog_256.json",
+        "sha256": "635bfdceea6987663dbf2eac5253c5f79eaf9367fce836a06a055f1f84730fee",
+        "use": "Exact token IDs only; parity compares the existing quantized ONNX."
+      },
+      "image_fixtures": [],
+      "manifest": {
+        "path": "/mnt/f/github/PicQuery/PicQuery/build/mobileclip-device-benchmark/manifest.json",
+        "sha256": "872f39c6b9db4b65763fdf052d2eb43c14ed42adeb5c39a32cadac22d05e684e",
+        "image_input_sha256": "0c483902bd986ab531b9e9bdd99c0efd753e1770dd451d23e1569ab4d22b5401",
+        "tokens_sha256": "e2552b8081c584e4abc154929c46b20747ad0b9d2cd6954742cc6af0ca546bbd",
+        "image_count": 5,
+        "prompt_count": 13
+      }
+    }
+  },
+  "quantization_cosines": {
+    "samples": [
+      {
+        "input": "synthetic:black",
+        "cosine": 0.8952279905786054,
+        "max_absolute_error": 0.08293410763144493
+      },
+      {
+        "input": "synthetic:white",
+        "cosine": 0.9172672671658718,
+        "max_absolute_error": 0.08009404595941305
+      },
+      {
+        "input": "synthetic:noise:seed20260913",
+        "cosine": 0.9845091275906963,
+        "max_absolute_error": 0.03766782442107797
+      },
+      {
+        "input": "manifest:image:0",
+        "cosine": 0.9840410861569976,
+        "max_absolute_error": 0.0288822497241199
+      },
+      {
+        "input": "manifest:image:1",
+        "cosine": 0.987828084918447,
+        "max_absolute_error": 0.02672003209590912
+      },
+      {
+        "input": "manifest:image:2",
+        "cosine": 0.9925246671504406,
+        "max_absolute_error": 0.018891749903559685
+      },
+      {
+        "input": "manifest:image:3",
+        "cosine": 0.9928276033393066,
+        "max_absolute_error": 0.02601701021194458
+      },
+      {
+        "input": "manifest:image:4",
+        "cosine": 0.9787587164094359,
+        "max_absolute_error": 0.04127169027924538
+      },
+      {
+        "input": "calibration:cifar100:train/00234",
+        "cosine": 0.976707514960225,
+        "max_absolute_error": 0.03697307966649532
+      },
+      {
+        "input": "calibration:cifar100:train/04533",
+        "cosine": 0.9571909122343696,
+        "max_absolute_error": 0.06629917025566101
+      },
+      {
+        "input": "calibration:cifar100:train/11164",
+        "cosine": 0.9763377834147471,
+        "max_absolute_error": 0.048202067613601685
+      },
+      {
+        "input": "calibration:cifar100:train/17350",
+        "cosine": 0.9062133679803154,
+        "max_absolute_error": 0.07835506834089756
+      },
+      {
+        "input": "calibration:cifar100:train/21486",
+        "cosine": 0.9698727311539792,
+        "max_absolute_error": 0.03924868302419782
+      },
+      {
+        "input": "calibration:cifar100:train/26501",
+        "cosine": 0.9722188602569236,
+        "max_absolute_error": 0.03605678677558899
+      },
+      {
+        "input": "calibration:cifar100:train/33462",
+        "cosine": 0.9425083606596157,
+        "max_absolute_error": 0.09007427096366882
+      },
+      {
+        "input": "calibration:cifar100:train/38940",
+        "cosine": 0.9775534758301899,
+        "max_absolute_error": 0.03499829024076462
+      },
+      {
+        "input": "calibration:cifar100:train/45089",
+        "cosine": 0.9780707147299706,
+        "max_absolute_error": 0.04325451701879501
+      },
+      {
+        "input": "calibration:cifar100:train/49961",
+        "cosine": 0.9805492700665743,
+        "max_absolute_error": 0.04895256459712982
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n01440764/n01440764_11469.JPEG",
+        "cosine": 0.9872136918963242,
+        "max_absolute_error": 0.025613950099796057
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n02102040/n02102040_1076.JPEG",
+        "cosine": 0.9778964550334835,
+        "max_absolute_error": 0.03858231008052826
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n02979186/n02979186_15226.JPEG",
+        "cosine": 0.9779925550695483,
+        "max_absolute_error": 0.03454283997416496
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03000684/n03000684_32408.JPEG",
+        "cosine": 0.9804734025289198,
+        "max_absolute_error": 0.028547465801239014
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03028079/n03028079_26688.JPEG",
+        "cosine": 0.9897196425714472,
+        "max_absolute_error": 0.020422223955392838
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03394916/n03394916_35604.JPEG",
+        "cosine": 0.9651923910569178,
+        "max_absolute_error": 0.053958550095558167
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03417042/n03417042_4349.JPEG",
+        "cosine": 0.984841114333529,
+        "max_absolute_error": 0.02596675604581833
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03425413/n03425413_28779.JPEG",
+        "cosine": 0.9808340427881647,
+        "max_absolute_error": 0.0386682003736496
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03445777/n03445777_8628.JPEG",
+        "cosine": 0.9906743033438592,
+        "max_absolute_error": 0.03166738152503967
+      },
+      {
+        "input": "calibration:imagenette:imagenette2-320/train/n03888257/n03888257_9066.JPEG",
+        "cosine": 0.9852952465048991,
+        "max_absolute_error": 0.027290944010019302
+      }
+    ],
+    "minimum_cosine": 0.8952279905786054,
+    "mean_cosine": 0.9710835849901359,
+    "scope": "Descriptive quantized-image vs source-FP32 embedding differences; not accuracy or acceptance thresholds.",
+    "training_subset": {
+      "indices": [
+        0,
+        22,
+        44,
+        66,
+        88,
+        110,
+        132,
+        154,
+        176,
+        199,
+        200,
+        222,
+        244,
+        266,
+        288,
+        310,
+        332,
+        354,
+        376,
+        399
+      ],
+      "samples": 20,
+      "selection": "10 evenly spaced selected calibration indices per dataset, fixed before mixed-candidate inference",
+      "minimum_cosine": 0.9062133679803154,
+      "mean_cosine": 0.9728677918207003
+    }
+  },
+  "versions": {
+    "numpy": "2.4.4",
+    "Pillow": "12.1.1",
+    "torch": "2.11.0+cpu",
+    "torchvision": "0.26.0+cpu",
+    "open_clip_torch": "3.3.0",
+    "onnxruntime": "1.29.0",
+    "ai-edge-litert": "2.1.4",
+    "onnx": "1.20.1"
+  },
+  "limits": [
+    "Training images only calibrate activation ranges; no fine-tuning or calibration on evaluation data.",
+    "This is a separate candidate. Accuracy, Android parity and speed must be evaluated separately.",
+    "The existing text encoder and all production assets remain unchanged."
+  ]
+}

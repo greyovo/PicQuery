@@ -1,0 +1,48 @@
+[
+  {
+    "id": "v2_s0_onnx_int8",
+    "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+    "format": "onnx",
+    "image": "app/src/main/assets/mobileclip2_s0_image.onnx",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+    "preprocess": {
+      "size": 256,
+      "resize": "center_crop",
+      "interpolation": "bilinear",
+      "mean": [
+        0,
+        0,
+        0
+      ],
+      "std": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  {
+    "id": "v2_s0_ort_int8",
+    "label": "MobileCLIP2-S0 ORT amd64 / FP32 image + INT8 text",
+    "format": "ort",
+    "source_model_id": "v2_s0_onnx_int8",
+    "export_metadata": "build/mobileclip2-ort-amd64/mobileclip2_ort_metadata.json",
+    "image": "build/mobileclip2-ort-amd64/mobileclip2_s0_image.ort",
+    "text": "build/mobileclip2-ort-amd64/mobileclip2_s0_text_int8.ort",
+    "preprocess": {
+      "size": 256,
+      "resize": "center_crop",
+      "interpolation": "bilinear",
+      "mean": [
+        0,
+        0,
+        0
+      ],
+      "std": [
+        1,
+        1,
+        1
+      ]
+    }
+  }
+]

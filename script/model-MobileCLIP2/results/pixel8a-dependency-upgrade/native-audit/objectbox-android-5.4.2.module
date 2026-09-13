@@ -1,0 +1,123 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.objectbox",
+    "module": "objectbox-android",
+    "version": "5.4.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "adminExcludedBasicReleaseVariantAdminExcludedBasicReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-java",
+          "version": {
+            "requires": "5.4.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "objectbox-android-5.4.2.aar",
+          "url": "objectbox-android-5.4.2.aar",
+          "size": 11733,
+          "sha512": "cedf33fb774043b00c9ea562215c16abb8c8c929773f47c518d6bbc3686e6a01861ba3efbe4539694bb3687637bc5adeb04835b517e68bb58f07073a78cdfea9",
+          "sha256": "43d91ce30fbd9c891f95fe1fb60d8e42ed6d82be6af2583a205c6db9f9e6fcc6",
+          "sha1": "7e45ca40eb274ce92a1233e70639e8abef8ba122",
+          "md5": "8d212ba363397e2c67d7633ad40e25a5"
+        }
+      ]
+    },
+    {
+      "name": "adminExcludedBasicReleaseVariantAdminExcludedBasicReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-android-db",
+          "version": {
+            "requires": "5.4.2"
+          }
+        },
+        {
+          "group": "io.objectbox",
+          "module": "objectbox-java",
+          "version": {
+            "requires": "5.4.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "objectbox-android-5.4.2.aar",
+          "url": "objectbox-android-5.4.2.aar",
+          "size": 11733,
+          "sha512": "cedf33fb774043b00c9ea562215c16abb8c8c929773f47c518d6bbc3686e6a01861ba3efbe4539694bb3687637bc5adeb04835b517e68bb58f07073a78cdfea9",
+          "sha256": "43d91ce30fbd9c891f95fe1fb60d8e42ed6d82be6af2583a205c6db9f9e6fcc6",
+          "sha1": "7e45ca40eb274ce92a1233e70639e8abef8ba122",
+          "md5": "8d212ba363397e2c67d7633ad40e25a5"
+        }
+      ]
+    },
+    {
+      "name": "adminExcludedBasicReleaseVariantAdminExcludedBasicReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "objectbox-android-5.4.2-sources.jar",
+          "url": "objectbox-android-5.4.2-sources.jar",
+          "size": 10843,
+          "sha512": "91f7ec036f76779fb3c724963fe2abc74441b7ba699384991d642942a80dcb8517707f7a5f1459b18c5a4c85c0251c3388582b65bedc7923ecc32363a35a8931",
+          "sha256": "ee7838116fa1ea64b18b9d19b65310f447baa8c14d053e982b05d58ee417f933",
+          "sha1": "f1b13826d5f4f4aedc8f04751376028e9c30a98a",
+          "md5": "94b4b5eddcfeabc7a14ffba4036bfb01"
+        }
+      ]
+    },
+    {
+      "name": "adminExcludedBasicReleaseVariantAdminExcludedBasicReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "objectbox-android-5.4.2-javadoc.jar",
+          "url": "objectbox-android-5.4.2-javadoc.jar",
+          "size": 321425,
+          "sha512": "616b9b1b593692835cf81c35ce848ee76a9eda19116bf3a12c4187655a0cf0f9cb27a2dd5b87ea8e7e4e8b250b76ecc028b8f4e50ad824deadf75b42a1c42b8a",
+          "sha256": "d45eddf415789382c4b37e0150d05c90a0f9eefa6b606cfb213f187c6baaa272",
+          "sha1": "e6f9030f3a85b9e83d478023fb0b2a74b2ba2635",
+          "md5": "a8a87c33f28f6c20e4be81fe9760d97f"
+        }
+      ]
+    }
+  ]
+}

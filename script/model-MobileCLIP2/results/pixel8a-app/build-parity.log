@@ -1,0 +1,279 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:/github/PicQuery/PicQuery/build/java-tmp
+Type-safe project accessors is an incubating feature.
+
+> Configure project :app
+w: file:///F:/github/PicQuery/PicQuery/app/build.gradle.kts:88:41: 'fun setSrcDirs(srcDirs: Iterable<*>): Any' is deprecated. Use `directories` mutable set instead.
+
+> Task :app:objectboxPrepareBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preOnnxDebugBuild UP-TO-DATE
+> Task :app:mergeOnnxDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateOnnxDebugBuildConfig UP-TO-DATE
+> Task :app:generateOnnxDebugResources
+> Task :app:packageOnnxDebugResources
+> Task :app:processOnnxDebugNavigationResources
+> Task :app:parseOnnxDebugLocalResources
+> Task :app:generateOnnxDebugRFile UP-TO-DATE
+> Task :app:javaPreCompileOnnxDebug UP-TO-DATE
+> Task :app:generateOnnxDebugAssets UP-TO-DATE
+> Task :app:stageOnnxDebugMobileClipAssets
+> Task :app:mergeOnnxDebugAssets UP-TO-DATE
+> Task :app:compressOnnxDebugAssets UP-TO-DATE
+> Task :app:generateOnnxDebugGlobalSynthetics UP-TO-DATE
+> Task :app:checkOnnxDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarOnnxDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexOnnxDebug UP-TO-DATE
+> Task :app:mergeLibDexOnnxDebug UP-TO-DATE
+> Task :app:checkOnnxDebugAarMetadata UP-TO-DATE
+> Task :app:mapOnnxDebugSourceSetPaths
+> Task :app:compileOnnxDebugNavigationResources UP-TO-DATE
+> Task :app:createOnnxDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksOnnxDebug UP-TO-DATE
+> Task :app:processOnnxDebugMainManifest UP-TO-DATE
+> Task :app:processOnnxDebugManifest UP-TO-DATE
+> Task :app:processOnnxDebugManifestForPackage UP-TO-DATE
+> Task :app:preTfliteDebugBuild UP-TO-DATE
+> Task :app:kspOnnxDebugKotlin
+> Task :app:mergeOnnxDebugResources
+> Task :app:configureCMakeDebug[arm64-v8a]
+> Task :app:buildCMakeDebug[arm64-v8a]
+> Task :app:processOnnxDebugResources
+> Task :app:configureCMakeDebug[armeabi-v7a]
+> Task :app:buildCMakeDebug[armeabi-v7a]
+> Task :app:mergeOnnxDebugJniLibFolders UP-TO-DATE
+> Task :app:validateSigningOnnxDebug UP-TO-DATE
+> Task :app:writeOnnxDebugAppMetadata UP-TO-DATE
+> Task :app:writeOnnxDebugSigningConfigVersions UP-TO-DATE
+> Task :app:mergeTfliteDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateTfliteDebugBuildConfig UP-TO-DATE
+> Task :app:generateTfliteDebugResources
+> Task :app:packageTfliteDebugResources
+> Task :app:processTfliteDebugNavigationResources
+> Task :app:parseTfliteDebugLocalResources
+> Task :app:generateTfliteDebugRFile UP-TO-DATE
+> Task :app:javaPreCompileTfliteDebug UP-TO-DATE
+> Task :app:generateTfliteDebugAssets UP-TO-DATE
+> Task :app:mergeOnnxDebugNativeLibs
+> Task :app:stageTfliteDebugMobileClipAssets
+> Task :app:mergeTfliteDebugAssets UP-TO-DATE
+> Task :app:compressTfliteDebugAssets UP-TO-DATE
+> Task :app:generateTfliteDebugGlobalSynthetics UP-TO-DATE
+> Task :app:checkTfliteDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarTfliteDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexTfliteDebug UP-TO-DATE
+> Task :app:mergeLibDexTfliteDebug UP-TO-DATE
+> Task :app:checkTfliteDebugAarMetadata UP-TO-DATE
+> Task :app:mapTfliteDebugSourceSetPaths
+> Task :app:compileTfliteDebugNavigationResources UP-TO-DATE
+> Task :app:createTfliteDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksTfliteDebug UP-TO-DATE
+> Task :app:processTfliteDebugMainManifest UP-TO-DATE
+> Task :app:processTfliteDebugManifest UP-TO-DATE
+> Task :app:processTfliteDebugManifestForPackage UP-TO-DATE
+> Task :app:mergeTfliteDebugJniLibFolders UP-TO-DATE
+> Task :app:validateSigningTfliteDebug UP-TO-DATE
+> Task :app:writeTfliteDebugAppMetadata UP-TO-DATE
+> Task :app:writeTfliteDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preOnnxDebugAndroidTestBuild SKIPPED
+> Task :app:processOnnxDebugAndroidTestManifest UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestBuildConfig UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:packageOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:processOnnxDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:parseOnnxDebugAndroidTestLocalResources UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestRFile UP-TO-DATE
+> Task :app:javaPreCompileOnnxDebugAndroidTest UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeOnnxDebugAndroidTestAssets UP-TO-DATE
+> Task :app:compressOnnxDebugAndroidTestAssets UP-TO-DATE
+> Task :app:generateOnnxDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:checkOnnxDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :app:desugarOnnxDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :app:mergeTfliteDebugResources
+> Task :app:mergeExtDexOnnxDebugAndroidTest UP-TO-DATE
+> Task :app:mergeLibDexOnnxDebugAndroidTest UP-TO-DATE
+> Task :app:checkOnnxDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :app:mapOnnxDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :app:compileOnnxDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:mergeOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:processOnnxDebugAndroidTestResources UP-TO-DATE
+> Task :app:mergeOnnxDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :app:mergeOnnxDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripOnnxDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningOnnxDebugAndroidTest UP-TO-DATE
+> Task :app:writeOnnxDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :app:preTfliteDebugAndroidTestBuild SKIPPED
+> Task :app:processTfliteDebugAndroidTestManifest UP-TO-DATE
+> Task :app:generateTfliteDebugAndroidTestBuildConfig UP-TO-DATE
+> Task :app:generateTfliteDebugAndroidTestResources UP-TO-DATE
+> Task :app:packageTfliteDebugAndroidTestResources UP-TO-DATE
+> Task :app:processTfliteDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:parseTfliteDebugAndroidTestLocalResources UP-TO-DATE
+> Task :app:generateTfliteDebugAndroidTestRFile UP-TO-DATE
+> Task :app:javaPreCompileTfliteDebugAndroidTest UP-TO-DATE
+> Task :app:generateTfliteDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeTfliteDebugAndroidTestAssets UP-TO-DATE
+> Task :app:compressTfliteDebugAndroidTestAssets UP-TO-DATE
+> Task :app:generateTfliteDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:checkTfliteDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :app:desugarTfliteDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexTfliteDebugAndroidTest UP-TO-DATE
+> Task :app:mergeLibDexTfliteDebugAndroidTest UP-TO-DATE
+> Task :app:checkTfliteDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :app:mapTfliteDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :app:compileTfliteDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:mergeTfliteDebugAndroidTestResources UP-TO-DATE
+> Task :app:processTfliteDebugAndroidTestResources UP-TO-DATE
+> Task :app:mergeTfliteDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :app:validateSigningTfliteDebugAndroidTest UP-TO-DATE
+> Task :app:writeTfliteDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :app:preOnnxDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileOnnxDebugUnitTest UP-TO-DATE
+> Task :app:preTfliteDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileTfliteDebugUnitTest UP-TO-DATE
+> Task :app:loadKtlintReporters UP-TO-DATE
+> Task :app:kspTfliteDebugKotlin
+> Task :app:stripOnnxDebugDebugSymbols
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:processTfliteDebugResources
+> Task :app:mergeTfliteDebugNativeLibs
+> Task :app:mergeTfliteDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripTfliteDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:runKtlintCheckOverKotlinScripts
+> Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :app:ktlintCheck UP-TO-DATE
+> Task :app:stripTfliteDebugDebugSymbols
+> Task :app:kaptGenerateStubsOnnxDebugKotlin
+> Task :app:kaptGenerateStubsTfliteDebugKotlin
+
+> Task :app:kaptOnnxDebugKotlin
+[ObjectBox] ID model file unchanged: default.json
+[ObjectBox] ObjectBox Generator
+[ObjectBox] Copyright 2017-2025 ObjectBox Ltd, objectbox.io. Licensed under GNU Affero General Public License, Version 3.
+[ObjectBox] This program comes with ABSOLUTELY NO WARRANTY
+[ObjectBox] Processing schema version 1...
+[ObjectBox] Written me.grey.picquery.data.model.ObjectBoxEmbeddingCursor.java
+[ObjectBox] Written me.grey.picquery.data.model.ObjectBoxEmbedding_.java
+[ObjectBox] Written me.grey.picquery.data.model.MyObjectBox.java
+[ObjectBox] Processed 1 entities in 167ms
+
+> Task :app:kaptTfliteDebugKotlin
+[ObjectBox] ID model file unchanged: default.json
+[ObjectBox] ObjectBox Generator
+[ObjectBox] Copyright 2017-2025 ObjectBox Ltd, objectbox.io. Licensed under GNU Affero General Public License, Version 3.
+[ObjectBox] This program comes with ABSOLUTELY NO WARRANTY
+[ObjectBox] Processing schema version 1...
+[ObjectBox] Written me.grey.picquery.data.model.ObjectBoxEmbeddingCursor.java
+[ObjectBox] Written me.grey.picquery.data.model.ObjectBoxEmbedding_.java
+[ObjectBox] Written me.grey.picquery.data.model.MyObjectBox.java
+[ObjectBox] Processed 1 entities in 101ms
+
+> Task :app:compileOnnxDebugKotlin
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt:108:9 'static fun startActivity(p0: @NonNull() Context, p1: @NonNull() Intent, p2: @Nullable() Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:47:61 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:51:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:54:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:53:61 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:57:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:60:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt:108:9 'static fun startActivity(p0: @NonNull() Context, p1: @NonNull() Intent, p2: @Nullable() Bundle?): Unit' is deprecated. Deprecated in Java.
+
+> Task :app:compileOnnxDebugJavaWithJavac UP-TO-DATE
+> Task :app:processOnnxDebugJavaRes UP-TO-DATE
+> Task :app:mergeOnnxDebugJavaResource UP-TO-DATE
+> Task :app:bundleOnnxDebugClassesToCompileJar
+
+> Task :app:compileTfliteDebugKotlin
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt:108:9 'static fun startActivity(p0: @NonNull() Context, p1: @NonNull() Intent, p2: @Nullable() Bundle?): Unit' is deprecated. Deprecated in Java.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:47:61 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:51:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt:54:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:53:61 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:57:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/feature/tf/TextEncoderTF.kt:60:9 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'FloatBuffer?'.
+w: file:///F:/github/PicQuery/PicQuery/app/src/main/java/me/grey/picquery/ui/setting/SettingScreen.kt:108:9 'static fun startActivity(p0: @NonNull() Context, p1: @NonNull() Intent, p2: @Nullable() Bundle?): Unit' is deprecated. Deprecated in Java.
+
+> Task :app:compileTfliteDebugJavaWithJavac UP-TO-DATE
+> Task :app:processTfliteDebugJavaRes UP-TO-DATE
+> Task :app:mergeTfliteDebugJavaResource UP-TO-DATE
+> Task :app:transformOnnxDebugClassesWithAsm
+> Task :app:bundleTfliteDebugClassesToCompileJar
+> Task :app:kspOnnxDebugAndroidTestKotlin
+> Task :app:transformTfliteDebugClassesWithAsm
+> Task :app:kspOnnxDebugUnitTestKotlin
+> Task :app:dexBuilderOnnxDebug
+> Task :app:mergeProjectDexOnnxDebug
+> Task :app:dexBuilderTfliteDebug
+> Task :app:mergeProjectDexTfliteDebug
+> Task :app:kaptGenerateStubsOnnxDebugAndroidTestKotlin
+> Task :app:kaptOnnxDebugAndroidTestKotlin SKIPPED
+> Task :app:bundleOnnxDebugClassesToRuntimeJar
+> Task :app:bundleTfliteDebugClassesToRuntimeJar
+> Task :app:kaptGenerateStubsOnnxDebugUnitTestKotlin
+> Task :app:generateTfliteDebugAndroidTestLintModel
+> Task :app:kaptOnnxDebugUnitTestKotlin SKIPPED
+> Task :app:kspTfliteDebugAndroidTestKotlin
+> Task :app:generateTfliteDebugLintReportModel
+> Task :app:kspTfliteDebugUnitTestKotlin
+> Task :app:generateTfliteDebugUnitTestLintModel
+> Task :app:kaptGenerateStubsTfliteDebugAndroidTestKotlin
+> Task :app:kaptGenerateStubsTfliteDebugUnitTestKotlin
+> Task :app:packageOnnxDebug
+> Task :app:createOnnxDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleOnnxDebug
+> Task :app:kaptTfliteDebugAndroidTestKotlin SKIPPED
+> Task :app:kaptTfliteDebugUnitTestKotlin SKIPPED
+> Task :app:compileOnnxDebugUnitTestKotlin
+> Task :app:compileOnnxDebugAndroidTestKotlin
+> Task :app:compileOnnxDebugAndroidTestJavaWithJavac UP-TO-DATE
+> Task :app:processOnnxDebugAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeOnnxDebugAndroidTestJavaResource UP-TO-DATE
+> Task :app:dexBuilderOnnxDebugAndroidTest
+> Task :app:compileOnnxDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processOnnxDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:mergeProjectDexOnnxDebugAndroidTest
+> Task :app:compileTfliteDebugUnitTestKotlin
+
+> Task :app:testOnnxDebugUnitTest
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:/github/PicQuery/PicQuery/build/java-tmp
+
+> Task :app:compileTfliteDebugAndroidTestKotlin
+> Task :app:compileTfliteDebugAndroidTestJavaWithJavac UP-TO-DATE
+> Task :app:dexBuilderTfliteDebugAndroidTest
+> Task :app:processTfliteDebugAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeTfliteDebugAndroidTestJavaResource UP-TO-DATE
+> Task :app:compileTfliteDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processTfliteDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:mergeProjectDexTfliteDebugAndroidTest
+
+> Task :app:testTfliteDebugUnitTest
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=F:/github/PicQuery/PicQuery/build/java-tmp
+
+> Task :app:packageTfliteDebug
+> Task :app:createTfliteDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleTfliteDebug
+> Task :app:packageTfliteDebugAndroidTest
+> Task :app:createTfliteDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleTfliteDebugAndroidTest
+> Task :app:packageOnnxDebugAndroidTest
+> Task :app:createOnnxDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleOnnxDebugAndroidTest
+> Task :app:lintAnalyzeTfliteDebugUnitTest
+> Task :app:lintAnalyzeTfliteDebugAndroidTest
+> Task :app:lintAnalyzeTfliteDebug
+
+> Task :app:lintReportTfliteDebug
+Wrote HTML report to file:///F:/github/PicQuery/PicQuery/app/build/reports/lint-results-tfliteDebug.html
+
+> Task :app:lintTfliteDebug
+
+[Incubating] Problems report is available at: file:///F:/github/PicQuery/PicQuery/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 37s
+185 actionable tasks: 73 executed, 112 up-to-date

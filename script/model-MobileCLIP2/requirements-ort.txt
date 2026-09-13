@@ -1,0 +1,6 @@
+# Python >= 3.11. ORT must match the Android runtime in gradle/libs.versions.toml.
+onnxruntime==1.29.0
+# The official converter imports onnx_model_utils, which requires onnx.
+onnx==1.20.1
+numpy==2.4.4
+flatbuffers==25.12.19

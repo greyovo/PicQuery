@@ -1,0 +1,21 @@
+Compiled from "OrtSession.java"
+public class ai.onnxruntime.OrtSession implements java.lang.AutoCloseable {
+  public long getNumInputs();
+  public long getNumOutputs();
+  public java.util.Set<java.lang.String> getInputNames();
+  public java.util.Set<java.lang.String> getOutputNames();
+  public java.util.Map<java.lang.String, ai.onnxruntime.NodeInfo> getInputInfo() throws ai.onnxruntime.OrtException;
+  public java.util.Map<java.lang.String, ai.onnxruntime.NodeInfo> getOutputInfo() throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, ai.onnxruntime.OrtSession$RunOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, java.util.Set<java.lang.String>) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, java.util.Set<java.lang.String>, ai.onnxruntime.OrtSession$RunOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxValue>) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, java.util.Set<java.lang.String>, java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxValue>) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OrtSession$Result run(java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxTensorLike>, java.util.Set<java.lang.String>, java.util.Map<java.lang.String, ? extends ai.onnxruntime.OnnxValue>, ai.onnxruntime.OrtSession$RunOptions) throws ai.onnxruntime.OrtException;
+  public ai.onnxruntime.OnnxModelMetadata getMetadata() throws ai.onnxruntime.OrtException;
+  public long getProfilingStartTimeInNs() throws ai.onnxruntime.OrtException;
+  public java.lang.String endProfiling() throws ai.onnxruntime.OrtException;
+  public java.lang.String toString();
+  public void close() throws ai.onnxruntime.OrtException;
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "v2_s0_fp32_image_ort",
+    "label": "MobileCLIP2-S0 ORT / FP32 image + dynamic INT8 text",
+    "format": "ort",
+    "image": "app/src/main/assets/mobileclip2_s0_image.ort",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.ort",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_int8_image_ort",
+    "label": "MobileCLIP2-S0 ORT / mixed INT8 image (sensitive Conv FP32) + dynamic INT8 text",
+    "format": "ort",
+    "image": "build/mobileclip2-image-int8/mobileclip2_s0_image_int8.ort",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.ort",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "legacy_clip_int8",
+    "label": "Historical App CLIP ORT / INT8 image + INT8 text / stretch224",
+    "format": "ort",
+    "image": "app/src/main/assets/clip-image-int8.ort",
+    "text": "app/src/main/assets/clip-text-int8.ort",
+    "preprocess": {"size": 224, "resize": "stretch", "interpolation": "bilinear", "mean": [0.48145466,0.4578275,0.40821073], "std": [0.26862954,0.26130258,0.27577711]}
+  }
+]

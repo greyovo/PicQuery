@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "preparer_sha256": "604b108272c57c6ae5e91ff3744ff6dbdec9dcace91309a5938b645c2d412eb8",
+  "manifest_sha256": "91905d07aeaf8504ce4e51471aa60f95e7ba5f801a06a279f20c96eb215a1649",
+  "images": 5925,
+  "prompts": 110,
+  "image_input_bytes": 4659609600,
+  "image_encoding": "Exact host-preprocessed little-endian FP32, streamed one input at a time",
+  "artemis_observation": "Pixel 8a hierarchy inspected before test authoring; App showed dog query and dog1.jpg result. Accuracy test uses no UI interactions."
+}

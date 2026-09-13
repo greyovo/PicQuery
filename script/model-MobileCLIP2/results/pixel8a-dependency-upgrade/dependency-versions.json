@@ -1,0 +1,1276 @@
+{
+  "checked_at": "2026-09-13",
+  "dependencies": [
+    {
+      "coordinate": "androidx.compose:compose-bom",
+      "aliases": [
+        "compose-bom"
+      ],
+      "version_key": "compose-bom",
+      "current": "2026.04.01",
+      "latest_stable": "2026.09.00",
+      "metadata_latest": "2026.09.00",
+      "last_updated": "20260909171005",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/compose/compose-bom/maven-metadata.xml",
+      "recent_versions": [
+        "2026.03.01",
+        "2026.04.01",
+        "2026.05.00",
+        "2026.05.01",
+        "2026.06.00",
+        "2026.06.01",
+        "2026.08.00",
+        "2026.09.00"
+      ],
+      "selected": "2026.09.00"
+    },
+    {
+      "coordinate": "androidx.compose.material3:material3",
+      "aliases": [
+        "compose-material3"
+      ],
+      "version_key": "compose-material3",
+      "current": "1.4.0",
+      "latest_stable": "1.4.0",
+      "metadata_latest": "1.5.0-alpha28",
+      "last_updated": "20260909171005",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/compose/material3/material3/maven-metadata.xml",
+      "recent_versions": [
+        "1.5.0-alpha21",
+        "1.5.0-alpha22",
+        "1.5.0-alpha23",
+        "1.5.0-alpha24",
+        "1.5.0-alpha25",
+        "1.5.0-alpha26",
+        "1.5.0-alpha27",
+        "1.5.0-alpha28"
+      ],
+      "selected": "1.4.0"
+    },
+    {
+      "coordinate": "androidx.compose.material:material-icons-extended",
+      "aliases": [
+        "compose-material-icons-extended"
+      ],
+      "version_key": "compose-material-icons",
+      "current": "1.7.8",
+      "latest_stable": "1.7.8",
+      "metadata_latest": "1.7.8",
+      "last_updated": "20250212180149",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/compose/material/material-icons-extended/maven-metadata.xml",
+      "recent_versions": [
+        "1.7.1",
+        "1.7.2",
+        "1.7.3",
+        "1.7.4",
+        "1.7.5",
+        "1.7.6",
+        "1.7.7",
+        "1.7.8"
+      ],
+      "selected": "1.7.8"
+    },
+    {
+      "coordinate": "com.google.accompanist:accompanist-systemuicontroller",
+      "aliases": [
+        "accompanist-systemuicontroller"
+      ],
+      "version_key": "accompanist",
+      "current": "0.36.0",
+      "latest_stable": "0.36.0",
+      "metadata_latest": "0.36.0",
+      "last_updated": "20240905024319",
+      "source": "https://repo.maven.apache.org/maven2/com/google/accompanist/accompanist-systemuicontroller/maven-metadata.xml",
+      "recent_versions": [
+        "0.33.0-alpha",
+        "0.33.1-alpha",
+        "0.33.2-alpha",
+        "0.34.0",
+        "0.35.0-alpha",
+        "0.35.1-alpha",
+        "0.35.2-beta",
+        "0.36.0"
+      ],
+      "selected": "0.36.0"
+    },
+    {
+      "coordinate": "com.google.accompanist:accompanist-permissions",
+      "aliases": [
+        "accompanist-permissions"
+      ],
+      "version_key": "accompanist",
+      "current": "0.36.0",
+      "latest_stable": "0.37.3",
+      "metadata_latest": "0.37.3",
+      "last_updated": "20250428070021",
+      "source": "https://repo.maven.apache.org/maven2/com/google/accompanist/accompanist-permissions/maven-metadata.xml",
+      "recent_versions": [
+        "0.35.0-alpha",
+        "0.35.1-alpha",
+        "0.35.2-beta",
+        "0.36.0",
+        "0.37.0",
+        "0.37.1",
+        "0.37.2",
+        "0.37.3"
+      ],
+      "selected": "0.37.3"
+    },
+    {
+      "coordinate": "androidx.core:core-ktx",
+      "aliases": [
+        "androidx-core-ktx"
+      ],
+      "version_key": "androidx-core",
+      "current": "1.17.0",
+      "latest_stable": "1.19.0",
+      "metadata_latest": "1.19.0",
+      "last_updated": "20260603170053",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/core/core-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "1.17.0",
+        "1.18.0-alpha01",
+        "1.18.0-rc01",
+        "1.18.0",
+        "1.19.0-alpha01",
+        "1.19.0-alpha02",
+        "1.19.0-rc01",
+        "1.19.0"
+      ],
+      "selected": "1.19.0"
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-runtime-ktx",
+      "aliases": [
+        "androidx-lifecycle-runtime"
+      ],
+      "version_key": "androidx-lifecycle",
+      "current": "2.10.0",
+      "latest_stable": "2.11.0",
+      "metadata_latest": "2.12.0-alpha03",
+      "last_updated": "20260909170000",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-runtime-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "2.11.0-alpha03",
+        "2.11.0-beta01",
+        "2.11.0-beta02",
+        "2.11.0-rc01",
+        "2.11.0",
+        "2.12.0-alpha01",
+        "2.12.0-alpha02",
+        "2.12.0-alpha03"
+      ],
+      "selected": "2.11.0"
+    },
+    {
+      "coordinate": "androidx.activity:activity-compose",
+      "aliases": [
+        "androidx-activity-compose"
+      ],
+      "version_key": "androidx-activity-compose",
+      "current": "1.12.3",
+      "latest_stable": "1.13.0",
+      "metadata_latest": "1.14.0-alpha02",
+      "last_updated": "20260909170143",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/activity/activity-compose/maven-metadata.xml",
+      "recent_versions": [
+        "1.12.2",
+        "1.12.3",
+        "1.12.4",
+        "1.13.0-alpha01",
+        "1.13.0-rc01",
+        "1.13.0",
+        "1.14.0-alpha01",
+        "1.14.0-alpha02"
+      ],
+      "selected": "1.13.0"
+    },
+    {
+      "coordinate": "androidx.legacy:legacy-support-v4",
+      "aliases": [
+        "androidx-legacy"
+      ],
+      "version_key": "androidx-legacy",
+      "current": "1.0.0",
+      "latest_stable": "1.0.0",
+      "metadata_latest": "1.0.0",
+      "last_updated": "20180507111123",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/legacy/legacy-support-v4/maven-metadata.xml",
+      "recent_versions": [
+        "1.0.0-alpha1",
+        "1.0.0-alpha3",
+        "1.0.0-beta01",
+        "1.0.0-rc01",
+        "1.0.0-rc02",
+        "1.0.0"
+      ],
+      "selected": "1.0.0"
+    },
+    {
+      "coordinate": "androidx.test:monitor",
+      "aliases": [
+        "androidx-test-monitor"
+      ],
+      "version_key": "androidx-test-monitor",
+      "current": "1.8.0",
+      "latest_stable": "1.8.0",
+      "metadata_latest": "1.9.0-alpha01",
+      "last_updated": "20260114225104",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/test/monitor/maven-metadata.xml",
+      "recent_versions": [
+        "1.7.2",
+        "1.8.0-alpha01",
+        "1.8.0-alpha02",
+        "1.8.0-alpha03",
+        "1.8.0-beta01",
+        "1.8.0-rc01",
+        "1.8.0",
+        "1.9.0-alpha01"
+      ],
+      "selected": "1.8.0"
+    },
+    {
+      "coordinate": "androidx.test.ext:junit-ktx",
+      "aliases": [
+        "androidx-test-ext"
+      ],
+      "version_key": "androidx-test-ext",
+      "current": "1.1.3",
+      "latest_stable": "1.3.0",
+      "metadata_latest": "1.3.0",
+      "last_updated": "20250730230830",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/test/ext/junit-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "1.2.0",
+        "1.2.1",
+        "1.3.0-alpha01",
+        "1.3.0-alpha02",
+        "1.3.0-alpha03",
+        "1.3.0-beta01",
+        "1.3.0-rc01",
+        "1.3.0"
+      ],
+      "selected": "1.3.0"
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-livedata-ktx",
+      "aliases": [
+        "androidx-lifecycle-livedata"
+      ],
+      "version_key": "androidx-lifecycle",
+      "current": "2.10.0",
+      "latest_stable": "2.11.0",
+      "metadata_latest": "2.12.0-alpha03",
+      "last_updated": "20260909170000",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-livedata-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "2.11.0-alpha03",
+        "2.11.0-beta01",
+        "2.11.0-beta02",
+        "2.11.0-rc01",
+        "2.11.0",
+        "2.12.0-alpha01",
+        "2.12.0-alpha02",
+        "2.12.0-alpha03"
+      ],
+      "selected": "2.11.0"
+    },
+    {
+      "coordinate": "androidx.lifecycle:lifecycle-viewmodel-ktx",
+      "aliases": [
+        "androidx-lifecycle-viewmodel"
+      ],
+      "version_key": "androidx-lifecycle",
+      "current": "2.10.0",
+      "latest_stable": "2.11.0",
+      "metadata_latest": "2.12.0-alpha03",
+      "last_updated": "20260909170000",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "2.11.0-alpha03",
+        "2.11.0-beta01",
+        "2.11.0-beta02",
+        "2.11.0-rc01",
+        "2.11.0",
+        "2.12.0-alpha01",
+        "2.12.0-alpha02",
+        "2.12.0-alpha03"
+      ],
+      "selected": "2.11.0"
+    },
+    {
+      "coordinate": "androidx.datastore:datastore-preferences",
+      "aliases": [
+        "androidx-datastore"
+      ],
+      "version_key": "androidx-datastore",
+      "current": "1.2.0",
+      "latest_stable": "1.2.1",
+      "metadata_latest": "1.3.0-alpha11",
+      "last_updated": "20260909170203",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-preferences/maven-metadata.xml",
+      "recent_versions": [
+        "1.3.0-alpha04",
+        "1.3.0-alpha05",
+        "1.3.0-alpha06",
+        "1.3.0-alpha07",
+        "1.3.0-alpha08",
+        "1.3.0-alpha09",
+        "1.3.0-alpha10",
+        "1.3.0-alpha11"
+      ],
+      "selected": "1.2.1"
+    },
+    {
+      "coordinate": "androidx.work:work-runtime-ktx",
+      "aliases": [
+        "androidx-work-runtime"
+      ],
+      "version_key": "androidx-work",
+      "current": "2.11.1",
+      "latest_stable": "2.11.2",
+      "metadata_latest": "2.12.0-rc01",
+      "last_updated": "20260812170557",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/work/work-runtime-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "2.11.0-beta01",
+        "2.11.0-rc01",
+        "2.11.0",
+        "2.11.1",
+        "2.11.2",
+        "2.12.0-alpha01",
+        "2.12.0-beta01",
+        "2.12.0-rc01"
+      ],
+      "selected": "2.11.2"
+    },
+    {
+      "coordinate": "androidx.navigation:navigation-compose",
+      "aliases": [
+        "androidx-navigation-compose"
+      ],
+      "version_key": "navigation",
+      "current": "2.9.7",
+      "latest_stable": "2.10.1",
+      "metadata_latest": "2.10.1",
+      "last_updated": "20260909170654",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/navigation/navigation-compose/maven-metadata.xml",
+      "recent_versions": [
+        "2.10.0-alpha03",
+        "2.10.0-alpha04",
+        "2.10.0-alpha05",
+        "2.10.0-alpha06",
+        "2.10.0-beta01",
+        "2.10.0-rc01",
+        "2.10.0",
+        "2.10.1"
+      ],
+      "selected": "2.10.1"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+      "aliases": [
+        "coroutines-core"
+      ],
+      "version_key": "coroutines",
+      "current": "1.10.2",
+      "latest_stable": "1.11.0",
+      "metadata_latest": "1.11.0",
+      "last_updated": "20260508122950",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/maven-metadata.xml",
+      "recent_versions": [
+        "1.9.0-RC.2",
+        "1.9.0",
+        "1.10.0",
+        "1.10.1",
+        "1.10.2",
+        "1.11.0-rc01",
+        "1.11.0-rc02",
+        "1.11.0"
+      ],
+      "selected": "1.11.0"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-android",
+      "aliases": [
+        "coroutines-android"
+      ],
+      "version_key": "coroutines",
+      "current": "1.10.2",
+      "latest_stable": "1.11.0",
+      "metadata_latest": "1.11.0",
+      "last_updated": "20260508122948",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-android/maven-metadata.xml",
+      "recent_versions": [
+        "1.9.0-RC.2",
+        "1.9.0",
+        "1.10.0",
+        "1.10.1",
+        "1.10.2",
+        "1.11.0-rc01",
+        "1.11.0-rc02",
+        "1.11.0"
+      ],
+      "selected": "1.11.0"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-json",
+      "aliases": [
+        "kotlinx-serialization"
+      ],
+      "version_key": "kotlinx-serialization",
+      "current": "1.10.0",
+      "latest_stable": "1.11.0",
+      "metadata_latest": "1.12.0-RC",
+      "last_updated": "20260904153434",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-serialization-json/maven-metadata.xml",
+      "recent_versions": [
+        "1.8.0-RC",
+        "1.8.0",
+        "1.8.1",
+        "1.9.0",
+        "1.10.0-RC",
+        "1.10.0",
+        "1.11.0",
+        "1.12.0-RC"
+      ],
+      "selected": "1.11.0"
+    },
+    {
+      "coordinate": "io.insert-koin:koin-core",
+      "aliases": [
+        "koin-core"
+      ],
+      "version_key": "koin",
+      "current": "4.1.1",
+      "latest_stable": "4.2.2",
+      "metadata_latest": "4.2.2",
+      "last_updated": "20260615080541",
+      "source": "https://repo.maven.apache.org/maven2/io/insert-koin/koin-core/maven-metadata.xml",
+      "recent_versions": [
+        "4.2.0-beta3",
+        "4.2.0-beta4",
+        "4.2.0-RC1",
+        "4.2.0-RC2",
+        "4.2.0",
+        "4.2.1-RC1",
+        "4.2.1",
+        "4.2.2"
+      ],
+      "selected": "4.2.2"
+    },
+    {
+      "coordinate": "io.insert-koin:koin-android",
+      "aliases": [
+        "koin-android"
+      ],
+      "version_key": "koin",
+      "current": "4.1.1",
+      "latest_stable": "4.2.2",
+      "metadata_latest": "4.2.2",
+      "last_updated": "20260615080338",
+      "source": "https://repo.maven.apache.org/maven2/io/insert-koin/koin-android/maven-metadata.xml",
+      "recent_versions": [
+        "4.2.0-beta3",
+        "4.2.0-beta4",
+        "4.2.0-RC1",
+        "4.2.0-RC2",
+        "4.2.0",
+        "4.2.1-RC1",
+        "4.2.1",
+        "4.2.2"
+      ],
+      "selected": "4.2.2"
+    },
+    {
+      "coordinate": "io.insert-koin:koin-compose",
+      "aliases": [
+        "koin-compose"
+      ],
+      "version_key": "koin-compose",
+      "current": "4.1.1",
+      "latest_stable": "4.2.2",
+      "metadata_latest": "4.2.2",
+      "last_updated": "20260615080424",
+      "source": "https://repo.maven.apache.org/maven2/io/insert-koin/koin-compose/maven-metadata.xml",
+      "recent_versions": [
+        "4.2.0-beta3",
+        "4.2.0-beta4",
+        "4.2.0-RC1",
+        "4.2.0-RC2",
+        "4.2.0",
+        "4.2.1-RC1",
+        "4.2.1",
+        "4.2.2"
+      ],
+      "selected": "4.2.2"
+    },
+    {
+      "coordinate": "io.insert-koin:koin-androidx-compose",
+      "aliases": [
+        "koin-androidx-compose"
+      ],
+      "version_key": "koin-androidx-compose",
+      "current": "4.1.1",
+      "latest_stable": "4.2.2",
+      "metadata_latest": "4.2.2",
+      "last_updated": "20260615080337",
+      "source": "https://repo.maven.apache.org/maven2/io/insert-koin/koin-androidx-compose/maven-metadata.xml",
+      "recent_versions": [
+        "4.2.0-beta3",
+        "4.2.0-beta4",
+        "4.2.0-RC1",
+        "4.2.0-RC2",
+        "4.2.0",
+        "4.2.1-RC1",
+        "4.2.1",
+        "4.2.2"
+      ],
+      "selected": "4.2.2"
+    },
+    {
+      "coordinate": "io.insert-koin:koin-androidx-compose-navigation",
+      "aliases": [
+        "koin-androidx-compose-navigation"
+      ],
+      "version_key": "koin-androidx-compose",
+      "current": "4.1.1",
+      "latest_stable": "4.2.2",
+      "metadata_latest": "4.2.2",
+      "last_updated": "20260615080338",
+      "source": "https://repo.maven.apache.org/maven2/io/insert-koin/koin-androidx-compose-navigation/maven-metadata.xml",
+      "recent_versions": [
+        "4.2.0-beta3",
+        "4.2.0-beta4",
+        "4.2.0-RC1",
+        "4.2.0-RC2",
+        "4.2.0",
+        "4.2.1-RC1",
+        "4.2.1",
+        "4.2.2"
+      ],
+      "selected": "4.2.2"
+    },
+    {
+      "coordinate": "androidx.datastore:datastore",
+      "aliases": [
+        "androidx-dataStore"
+      ],
+      "version_key": "androidxDataStore",
+      "current": "1.2.0",
+      "latest_stable": "1.2.1",
+      "metadata_latest": "1.3.0-alpha11",
+      "last_updated": "20260909170203",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/datastore/datastore/maven-metadata.xml",
+      "recent_versions": [
+        "1.3.0-alpha04",
+        "1.3.0-alpha05",
+        "1.3.0-alpha06",
+        "1.3.0-alpha07",
+        "1.3.0-alpha08",
+        "1.3.0-alpha09",
+        "1.3.0-alpha10",
+        "1.3.0-alpha11"
+      ],
+      "selected": "1.2.1"
+    },
+    {
+      "coordinate": "androidx.datastore:datastore-core",
+      "aliases": [
+        "androidx-dataStore-core"
+      ],
+      "version_key": "androidxDataStore",
+      "current": "1.2.0",
+      "latest_stable": "1.2.1",
+      "metadata_latest": "1.3.0-alpha11",
+      "last_updated": "20260909170203",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-core/maven-metadata.xml",
+      "recent_versions": [
+        "1.3.0-alpha04",
+        "1.3.0-alpha05",
+        "1.3.0-alpha06",
+        "1.3.0-alpha07",
+        "1.3.0-alpha08",
+        "1.3.0-alpha09",
+        "1.3.0-alpha10",
+        "1.3.0-alpha11"
+      ],
+      "selected": "1.2.1"
+    },
+    {
+      "coordinate": "com.google.ai.edge.litert:litert",
+      "aliases": [
+        "litert"
+      ],
+      "version_key": "litert",
+      "current": "1.4.1",
+      "latest_stable": "2.2.0",
+      "metadata_latest": "2.2.0",
+      "last_updated": "20260813170357",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert/litert/maven-metadata.xml",
+      "recent_versions": [
+        "2.1.0rc1",
+        "2.1.0",
+        "2.1.1",
+        "2.1.3",
+        "2.1.4",
+        "2.1.5",
+        "2.1.6",
+        "2.2.0"
+      ],
+      "selected": "1.4.2"
+    },
+    {
+      "coordinate": "com.google.ai.edge.litert:litert-gpu",
+      "aliases": [
+        "litert-gpu"
+      ],
+      "version_key": "litert-gpu",
+      "current": "1.4.1",
+      "latest_stable": "1.4.2",
+      "metadata_latest": "1.4.2",
+      "last_updated": "20260316181934",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert/litert-gpu/maven-metadata.xml",
+      "recent_versions": [
+        "1.1.0",
+        "1.1.1",
+        "1.1.2",
+        "1.2.0",
+        "1.3.0",
+        "1.4.0",
+        "1.4.1",
+        "1.4.2"
+      ],
+      "selected": "1.4.2"
+    },
+    {
+      "coordinate": "com.google.ai.edge.litert:litert-gpu-api",
+      "aliases": [
+        "litert-gpu-api"
+      ],
+      "version_key": "litert-gpu-api",
+      "current": "1.4.1",
+      "latest_stable": "1.4.2",
+      "metadata_latest": "1.4.2",
+      "last_updated": "20260316181934",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert/litert-gpu-api/maven-metadata.xml",
+      "recent_versions": [
+        "1.1.0",
+        "1.1.1",
+        "1.1.2",
+        "1.2.0",
+        "1.3.0",
+        "1.4.0",
+        "1.4.1",
+        "1.4.2"
+      ],
+      "selected": "1.4.2"
+    },
+    {
+      "coordinate": "com.google.ai.edge.litert:litert-support-api",
+      "aliases": [
+        "litert-support-api"
+      ],
+      "version_key": "litert-support",
+      "current": "1.4.1",
+      "latest_stable": "1.4.2",
+      "metadata_latest": "1.4.2",
+      "last_updated": "20260316181934",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/ai/edge/litert/litert-support-api/maven-metadata.xml",
+      "recent_versions": [
+        "1.1.0",
+        "1.1.1",
+        "1.1.2",
+        "1.2.0",
+        "1.3.0",
+        "1.4.0",
+        "1.4.1",
+        "1.4.2"
+      ],
+      "selected": "1.4.2"
+    },
+    {
+      "coordinate": "io.objectbox:objectbox-android",
+      "aliases": [
+        "objectbox-android"
+      ],
+      "version_key": "objectboxAndroid",
+      "current": "5.1.0",
+      "latest_stable": "5.4.2",
+      "metadata_latest": "6.0.0-beta",
+      "last_updated": "20260714082518",
+      "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-android/maven-metadata.xml",
+      "recent_versions": [
+        "5.2.1-preview1",
+        "5.3.0",
+        "5.3.1-preview1",
+        "5.4.0",
+        "5.4.1",
+        "5.4.2",
+        "5.4.2-preview1",
+        "6.0.0-beta"
+      ],
+      "selected": "5.4.2"
+    },
+    {
+      "coordinate": "io.objectbox:objectbox-android-objectbrowser",
+      "aliases": [
+        "objectbox-android-objectbrowser"
+      ],
+      "version_key": "objectboxAndroidObjectbrowser",
+      "current": "5.1.0",
+      "latest_stable": "5.4.2",
+      "metadata_latest": "6.0.0-beta",
+      "last_updated": "20260714082523",
+      "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-android-objectbrowser/maven-metadata.xml",
+      "recent_versions": [
+        "5.2.1-preview1",
+        "5.3.0",
+        "5.3.1-preview1",
+        "5.4.0",
+        "5.4.1",
+        "5.4.2",
+        "5.4.2-preview1",
+        "6.0.0-beta"
+      ],
+      "selected": "5.4.2"
+    },
+    {
+      "coordinate": "io.objectbox:objectbox-kotlin",
+      "aliases": [
+        "objectbox-kotlin"
+      ],
+      "version_key": "objectboxAndroid",
+      "current": "5.1.0",
+      "latest_stable": "5.4.2",
+      "metadata_latest": "6.0.0-beta",
+      "last_updated": "20260714082523",
+      "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-kotlin/maven-metadata.xml",
+      "recent_versions": [
+        "5.2.0",
+        "5.2.1-preview1",
+        "5.3.0",
+        "5.4.0",
+        "5.4.1",
+        "5.4.2",
+        "5.4.2-preview1",
+        "6.0.0-beta"
+      ],
+      "selected": "5.4.2"
+    },
+    {
+      "coordinate": "androidx.room:room-runtime",
+      "aliases": [
+        "room-runtime"
+      ],
+      "version_key": "room",
+      "current": "2.8.4",
+      "latest_stable": "2.8.5",
+      "metadata_latest": "2.8.5",
+      "last_updated": "20260909171146",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/maven-metadata.xml",
+      "recent_versions": [
+        "2.8.0-rc01",
+        "2.8.0-rc02",
+        "2.8.0",
+        "2.8.1",
+        "2.8.2",
+        "2.8.3",
+        "2.8.4",
+        "2.8.5"
+      ],
+      "selected": "2.8.5"
+    },
+    {
+      "coordinate": "androidx.room:room-compiler",
+      "aliases": [
+        "room-compiler"
+      ],
+      "version_key": "room",
+      "current": "2.8.4",
+      "latest_stable": "2.8.5",
+      "metadata_latest": "2.8.5",
+      "last_updated": "20260909171146",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/room/room-compiler/maven-metadata.xml",
+      "recent_versions": [
+        "2.8.0-rc01",
+        "2.8.0-rc02",
+        "2.8.0",
+        "2.8.1",
+        "2.8.2",
+        "2.8.3",
+        "2.8.4",
+        "2.8.5"
+      ],
+      "selected": "2.8.5"
+    },
+    {
+      "coordinate": "androidx.room:room-ktx",
+      "aliases": [
+        "room-ktx"
+      ],
+      "version_key": "room",
+      "current": "2.8.4",
+      "latest_stable": "2.8.5",
+      "metadata_latest": "2.8.5",
+      "last_updated": "20260909171146",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/room/room-ktx/maven-metadata.xml",
+      "recent_versions": [
+        "2.8.0-rc01",
+        "2.8.0-rc02",
+        "2.8.0",
+        "2.8.1",
+        "2.8.2",
+        "2.8.3",
+        "2.8.4",
+        "2.8.5"
+      ],
+      "selected": "2.8.5"
+    },
+    {
+      "coordinate": "com.google.android.gms:oss-licenses-plugin",
+      "aliases": [
+        "google-oss-licenses-plugin"
+      ],
+      "version_key": "googleOssLicensesPlugin",
+      "current": "0.10.10",
+      "latest_stable": "0.13.0",
+      "metadata_latest": "0.13.0",
+      "last_updated": "20260709131009",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/android/gms/oss-licenses-plugin/maven-metadata.xml",
+      "recent_versions": [
+        "0.10.6",
+        "0.10.7",
+        "0.10.8",
+        "0.10.9",
+        "0.10.10",
+        "0.11.0",
+        "0.12.0",
+        "0.13.0"
+      ],
+      "selected": "0.13.0"
+    },
+    {
+      "coordinate": "com.jakewharton.timber:timber",
+      "aliases": [
+        "timber"
+      ],
+      "version_key": "timber",
+      "current": "5.0.1",
+      "latest_stable": "5.0.1",
+      "metadata_latest": "5.0.1",
+      "last_updated": "20210813135440",
+      "source": "https://repo.maven.apache.org/maven2/com/jakewharton/timber/timber/maven-metadata.xml",
+      "recent_versions": [
+        "4.5.0",
+        "4.5.1",
+        "4.6.0",
+        "4.6.1",
+        "4.7.0",
+        "4.7.1",
+        "5.0.0",
+        "5.0.1"
+      ],
+      "selected": "5.0.1"
+    },
+    {
+      "coordinate": "com.github.bumptech.glide:glide",
+      "aliases": [
+        "glide"
+      ],
+      "version_key": "glide",
+      "current": "4.14.0",
+      "latest_stable": "5.0.9",
+      "metadata_latest": "5.0.9",
+      "last_updated": "20260711031330",
+      "source": "https://repo.maven.apache.org/maven2/com/github/bumptech/glide/glide/maven-metadata.xml",
+      "recent_versions": [
+        "5.0.0-rc01",
+        "5.0.0-rc05",
+        "5.0.0",
+        "5.0.3",
+        "5.0.4",
+        "5.0.5",
+        "5.0.7",
+        "5.0.9"
+      ],
+      "selected": "5.0.9"
+    },
+    {
+      "coordinate": "com.github.bumptech.glide:compiler",
+      "aliases": [
+        "glide-compiler"
+      ],
+      "version_key": "glide",
+      "current": "4.14.0",
+      "latest_stable": "5.0.9",
+      "metadata_latest": "5.0.9",
+      "last_updated": "20260711031317",
+      "source": "https://repo.maven.apache.org/maven2/com/github/bumptech/glide/compiler/maven-metadata.xml",
+      "recent_versions": [
+        "4.15.0",
+        "4.15.1",
+        "4.16.0",
+        "5.0.0-rc01",
+        "5.0.4",
+        "5.0.5",
+        "5.0.7",
+        "5.0.9"
+      ],
+      "selected": "5.0.9"
+    },
+    {
+      "coordinate": "com.github.bumptech.glide:compose",
+      "aliases": [
+        "glide-compose"
+      ],
+      "version_key": "glide-compose",
+      "current": "1.0.0-beta08",
+      "latest_stable": null,
+      "metadata_latest": "1.0.0-beta10",
+      "last_updated": "20260711031319",
+      "source": "https://repo.maven.apache.org/maven2/com/github/bumptech/glide/compose/maven-metadata.xml",
+      "recent_versions": [
+        "1.0.0-beta01",
+        "1.0.0-beta02",
+        "1.0.0-beta03",
+        "1.0.0-beta06",
+        "1.0.0-beta07",
+        "1.0.0-beta08",
+        "1.0.0-beta09",
+        "1.0.0-beta10"
+      ],
+      "selected": "1.0.0-beta10"
+    },
+    {
+      "coordinate": "io.coil-kt:coil",
+      "aliases": [
+        "coil"
+      ],
+      "version_key": "coil",
+      "current": "2.7.0",
+      "latest_stable": "2.7.0",
+      "metadata_latest": "2.7.0",
+      "last_updated": "20240717172545",
+      "source": "https://repo.maven.apache.org/maven2/io/coil-kt/coil/maven-metadata.xml",
+      "recent_versions": [
+        "2.2.0",
+        "2.2.1",
+        "2.2.2",
+        "2.3.0",
+        "2.4.0",
+        "2.5.0",
+        "2.6.0",
+        "2.7.0"
+      ],
+      "selected": "2.7.0"
+    },
+    {
+      "coordinate": "io.coil-kt:coil-compose",
+      "aliases": [
+        "coil-compose"
+      ],
+      "version_key": "coil",
+      "current": "2.7.0",
+      "latest_stable": "2.7.0",
+      "metadata_latest": "2.7.0",
+      "last_updated": "20240717172552",
+      "source": "https://repo.maven.apache.org/maven2/io/coil-kt/coil-compose/maven-metadata.xml",
+      "recent_versions": [
+        "2.2.0",
+        "2.2.1",
+        "2.2.2",
+        "2.3.0",
+        "2.4.0",
+        "2.5.0",
+        "2.6.0",
+        "2.7.0"
+      ],
+      "selected": "2.7.0"
+    },
+    {
+      "coordinate": "androidx.work:work-runtime",
+      "aliases": [
+        "work-runtime"
+      ],
+      "version_key": "workRuntime",
+      "current": "2.11.1",
+      "latest_stable": "2.11.2",
+      "metadata_latest": "2.12.0-rc01",
+      "last_updated": "20260812170557",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/work/work-runtime/maven-metadata.xml",
+      "recent_versions": [
+        "2.11.0-beta01",
+        "2.11.0-rc01",
+        "2.11.0",
+        "2.11.1",
+        "2.11.2",
+        "2.12.0-alpha01",
+        "2.12.0-beta01",
+        "2.12.0-rc01"
+      ],
+      "selected": "2.11.2"
+    },
+    {
+      "coordinate": "net.engawapg.lib:zoomable",
+      "aliases": [
+        "zoomable"
+      ],
+      "version_key": "zoomable",
+      "current": "2.10.0",
+      "latest_stable": "2.13.0",
+      "metadata_latest": "2.13.0",
+      "last_updated": "20260704014316",
+      "source": "https://repo.maven.apache.org/maven2/net/engawapg/lib/zoomable/maven-metadata.xml",
+      "recent_versions": [
+        "2.9.0",
+        "2.9.1-test01",
+        "2.10.0",
+        "2.11.0",
+        "2.11.0-test01",
+        "2.11.1",
+        "2.12.0",
+        "2.13.0"
+      ],
+      "selected": "2.13.0"
+    },
+    {
+      "coordinate": "com.guolindev.permissionx:permissionx",
+      "aliases": [
+        "permissionx"
+      ],
+      "version_key": "permissionx",
+      "current": "1.8.1",
+      "latest_stable": "1.8.1",
+      "metadata_latest": "1.8.1",
+      "last_updated": "20240827130817",
+      "source": "https://repo.maven.apache.org/maven2/com/guolindev/permissionx/permissionx/maven-metadata.xml",
+      "recent_versions": [
+        "1.6.1",
+        "1.6.2",
+        "1.6.3",
+        "1.6.4",
+        "1.7.0",
+        "1.7.1",
+        "1.8.0",
+        "1.8.1"
+      ],
+      "selected": "1.8.1"
+    },
+    {
+      "coordinate": "com.microsoft.onnxruntime:onnxruntime-android",
+      "aliases": [
+        "onnx-runtime"
+      ],
+      "version_key": "onnx",
+      "current": "1.23.2",
+      "latest_stable": "1.29.0",
+      "metadata_latest": "1.29.0",
+      "last_updated": "20260812072317",
+      "source": "https://repo.maven.apache.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/maven-metadata.xml",
+      "recent_versions": [
+        "1.24.3",
+        "1.25.0",
+        "1.25.1",
+        "1.26.0-rc.1",
+        "1.26.0",
+        "1.27.0",
+        "1.28.0",
+        "1.29.0"
+      ],
+      "selected": "1.29.0"
+    },
+    {
+      "coordinate": "com.google.mlkit:translate",
+      "aliases": [
+        "mlkit-translate"
+      ],
+      "version_key": "mlkit-translate",
+      "current": "17.0.3",
+      "latest_stable": "17.0.3",
+      "metadata_latest": "17.0.3",
+      "last_updated": "20240807012204",
+      "source": "https://dl.google.com/dl/android/maven2/com/google/mlkit/translate/maven-metadata.xml",
+      "recent_versions": [
+        "16.0.0",
+        "16.1.0",
+        "16.1.1",
+        "16.1.2",
+        "17.0.0",
+        "17.0.1",
+        "17.0.2",
+        "17.0.3"
+      ],
+      "selected": "17.0.3"
+    },
+    {
+      "coordinate": "junit:junit",
+      "aliases": [
+        "junit"
+      ],
+      "version_key": "junit",
+      "current": "4.13.2",
+      "latest_stable": "4.13.2",
+      "metadata_latest": "4.13.2",
+      "last_updated": "20210213164433",
+      "source": "https://repo.maven.apache.org/maven2/junit/junit/maven-metadata.xml",
+      "recent_versions": [
+        "4.13-beta-1",
+        "4.13-beta-2",
+        "4.13-beta-3",
+        "4.13-rc-1",
+        "4.13-rc-2",
+        "4.13",
+        "4.13.1",
+        "4.13.2"
+      ],
+      "selected": "4.13.2"
+    },
+    {
+      "coordinate": "androidx.test.espresso:espresso-core",
+      "aliases": [
+        "espresso-core"
+      ],
+      "version_key": "espresso",
+      "current": "3.4.0",
+      "latest_stable": "3.7.0",
+      "metadata_latest": "3.7.0",
+      "last_updated": "20250730230830",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/test/espresso/espresso-core/maven-metadata.xml",
+      "recent_versions": [
+        "3.6.1",
+        "3.7.0-alpha01",
+        "3.7.0-alpha02",
+        "3.7.0-alpha03",
+        "3.7.0-alpha04",
+        "3.7.0-beta01",
+        "3.7.0-rc01",
+        "3.7.0"
+      ],
+      "selected": "3.7.0"
+    },
+    {
+      "coordinate": "androidx.core:core-splashscreen",
+      "aliases": [
+        "androidx-splashscreen"
+      ],
+      "version_key": "androidx-splashscreen",
+      "current": "1.2.0",
+      "latest_stable": "1.2.0",
+      "metadata_latest": "1.2.0",
+      "last_updated": "20251105180234",
+      "source": "https://dl.google.com/dl/android/maven2/androidx/core/core-splashscreen/maven-metadata.xml",
+      "recent_versions": [
+        "1.1.0-alpha02",
+        "1.1.0-rc01",
+        "1.2.0-alpha01",
+        "1.2.0-alpha02",
+        "1.2.0-beta01",
+        "1.2.0-beta02",
+        "1.2.0-rc01",
+        "1.2.0"
+      ],
+      "selected": "1.2.0"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-gradle-plugin",
+      "version_key": "kotlin",
+      "current": "2.3.21",
+      "latest_stable": "2.4.20",
+      "metadata_latest": "2.4.20",
+      "last_updated": "20260907091159",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/maven-metadata.xml",
+      "recent_versions": [
+        "2.4.10-RC2",
+        "2.4.10",
+        "2.4.20-Beta1",
+        "2.4.20-Beta2",
+        "2.4.20-RC",
+        "2.4.20-RC2",
+        "2.4.20-RC3",
+        "2.4.20"
+      ],
+      "selected": "2.4.20"
+    },
+    {
+      "coordinate": "com.android.tools.build:gradle",
+      "version_key": "android-gradle-plugin",
+      "current": "9.2.0",
+      "latest_stable": "9.4.0",
+      "metadata_latest": "9.5.0-alpha05",
+      "last_updated": "20260910182340",
+      "source": "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/maven-metadata.xml",
+      "recent_versions": [
+        "9.4.0-rc01",
+        "9.4.0-rc02",
+        "9.4.0",
+        "9.5.0-alpha01",
+        "9.5.0-alpha02",
+        "9.5.0-alpha03",
+        "9.5.0-alpha04",
+        "9.5.0-alpha05"
+      ],
+      "selected": "9.4.0"
+    },
+    {
+      "coordinate": "com.google.devtools.ksp:symbol-processing-gradle-plugin",
+      "version_key": "ksp",
+      "current": "2.3.6",
+      "latest_stable": "2.3.12",
+      "metadata_latest": "2.3.12",
+      "last_updated": "20260909175426",
+      "source": "https://repo.maven.apache.org/maven2/com/google/devtools/ksp/symbol-processing-gradle-plugin/maven-metadata.xml",
+      "recent_versions": [
+        "2.3.5",
+        "2.3.6",
+        "2.3.7",
+        "2.3.8",
+        "2.3.9",
+        "2.3.10",
+        "2.3.11",
+        "2.3.12"
+      ],
+      "selected": "2.3.12"
+    },
+    {
+      "coordinate": "io.objectbox:objectbox-gradle-plugin",
+      "version_key": "objectboxGradlePlugin",
+      "current": "5.1.0",
+      "latest_stable": "5.4.2",
+      "metadata_latest": "6.0.0-beta",
+      "last_updated": "20260714085547",
+      "source": "https://repo.maven.apache.org/maven2/io/objectbox/objectbox-gradle-plugin/maven-metadata.xml",
+      "recent_versions": [
+        "5.2.0",
+        "5.3.0-rc.2",
+        "5.3.0",
+        "5.4.0",
+        "5.4.1",
+        "5.4.2",
+        "5.4.2-preview1",
+        "6.0.0-beta"
+      ],
+      "selected": "5.4.2"
+    },
+    {
+      "coordinate": "io.gitlab.arturbosch.detekt:detekt-cli",
+      "version_key": "detekt",
+      "current": "1.23.3",
+      "latest_stable": "1.23.8",
+      "metadata_latest": "1.23.8",
+      "last_updated": "20250221121825",
+      "source": "https://repo.maven.apache.org/maven2/io/gitlab/arturbosch/detekt/detekt-cli/maven-metadata.xml",
+      "recent_versions": [
+        "1.23.1",
+        "1.23.2",
+        "1.23.3",
+        "1.23.4",
+        "1.23.5",
+        "1.23.6",
+        "1.23.7",
+        "1.23.8"
+      ],
+      "selected": "1.23.8"
+    }
+  ]
+}

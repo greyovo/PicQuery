@@ -1,0 +1,63 @@
+
+Elf file type is DYN (Shared object file)
+Entry point 0x0
+There are 9 program headers, starting at offset 64
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  PHDR           0x000040 0x0000000000000040 0x0000000000000040 0x0001f8 0x0001f8 R   0x8
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x1defdf0 0x1defdf0 R E 0x4000
+  LOAD           0x1defdf0 0x0000000001df3df0 0x0000000001df3df0 0x0ac508 0x0ad210 RW  0x4000
+  LOAD           0x1e9c2f8 0x0000000001ea42f8 0x0000000001ea42f8 0x005418 0x018700 RW  0x4000
+  DYNAMIC        0x1e978a8 0x0000000001e9b8a8 0x0000000001e9b8a8 0x000200 0x000200 RW  0x8
+  GNU_RELRO      0x1defdf0 0x0000000001df3df0 0x0000000001df3df0 0x0ac508 0x0ad210 R   0x1
+  GNU_EH_FRAME   0x55f624 0x000000000055f624 0x000000000055f624 0x0693dc 0x0693dc R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x0
+  NOTE           0x000238 0x0000000000000238 0x0000000000000238 0x0000bc 0x0000bc R   0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .note.android.ident .note.gnu.build-id .dynsym .gnu.version .gnu.version_d .gnu.version_r .gnu.hash .dynstr .rela.dyn .rela.plt .rodata .gcc_except_table .eh_frame_hdr .eh_frame .text malloc_hook __lcxx_override .plt 
+   02     .data.rel.ro .fini_array .init_array .dynamic .got .got.plt .relro_padding 
+   03     .data .bss 
+   04     .dynamic 
+   05     .data.rel.ro .fini_array .init_array .dynamic .got .got.plt .relro_padding 
+   06     .eh_frame_hdr 
+   07     
+   08     .note.android.ident .note.gnu.build-id 
+   None   .comment .shstrtab 
+Dynamic section at offset 0x1e978a8 contains 32 entries:
+  Tag                Type           Name/Value
+  0x000000000000001d (RUNPATH)      Library runpath: [$ORIGIN]
+  0x0000000000000001 (NEEDED)       Shared library: [libdl.so]
+  0x0000000000000001 (NEEDED)       Shared library: [liblog.so]
+  0x0000000000000001 (NEEDED)       Shared library: [libandroid.so]
+  0x0000000000000001 (NEEDED)       Shared library: [libm.so]
+  0x0000000000000001 (NEEDED)       Shared library: [libc.so]
+  0x000000000000000e (SONAME)       Library soname: [libonnxruntime.so]
+  0x000000000000001e (FLAGS)        BIND_NOW 
+  0x000000006ffffffb (FLAGS_1)      NOW 
+  0x0000000000000007 (RELA)         0x2e40
+  0x0000000000000008 (RELASZ)       1835208 (bytes)
+  0x0000000000000009 (RELAENT)      24 (bytes)
+  0x000000006ffffff9 (RELACOUNT)    76434
+  0x0000000000000017 (JMPREL)       0x1c2f08
+  0x0000000000000002 (PLTRELSZ)     6264 (bytes)
+  0x0000000000000003 (PLTGOT)       0x1e9fab8
+  0x0000000000000014 (PLTREL)       RELA
+  0x0000000000000006 (SYMTAB)       0x2f8
+  0x000000000000000b (SYMENT)       24 (bytes)
+  0x0000000000000005 (STRTAB)       0x2128
+  0x000000000000000a (STRSZ)        3346 (bytes)
+  0x000000006ffffef5 (GNU_HASH)     0x20b8
+  0x0000000000000019 (INIT_ARRAY)   0x1e9b730
+  0x000000000000001b (INIT_ARRAYSZ) 376 (bytes)
+  0x000000000000001a (FINI_ARRAY)   0x1e9b720
+  0x000000000000001c (FINI_ARRAYSZ) 16 (bytes)
+  0x000000006ffffff0 (VERSYM)       0x1de0
+  0x000000006ffffffc (VERDEF)       0x2020
+  0x000000006ffffffd (VERDEFNUM)    2
+  0x000000006ffffffe (VERNEED)      0x2058
+  0x000000006fffffff (VERNEEDNUM)   3
+  0x0000000000000000 (NULL)         0x0

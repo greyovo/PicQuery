@@ -1,86 +1,113 @@
 # PicQuery
 
-[中文](README_zh.md)| English
+English | [中文](README_zh.md)
 
-![cover_en](assets/cover_en.jpg)
+![PicQuery](assets/cover_en.jpg)
 
-🔍 Search for your local images with natural language, running completely offline. For example, "a laptop on the desk", "sunset by the sea", "kitty in the grass", and so on.  
-Search images by picking a photo from your gallery
-- Totally free, NO in-app purchases
-- Support both English and Chinese
-- Indexing and searching of images works completely offline without worrying about privacy
-- Show results in less than 1 second when searching for 8,000+ photos
-- Wait for indexing on the first time you launch, and search immediately afterward
+Search local photos with English or Chinese descriptions, or use a photo as the query. PicQuery builds and searches a photo index on your device. It is free, with no in-app purchases.
 
-## Installation
+This branch integrates Apple's **MobileCLIP2-S0 / dfndr2b** through two Android flavors: **ONNX Runtime** and **TFLite / LiteRT**. They can be installed together and keep separate indexes for comparing the same photos and queries.
 
-<a href='https://play.google.com/store/apps/details?id=me.grey.picquery&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="width:130px" src='./assets/google-play-badge-en.png'/></a>
+[Google Play](https://play.google.com/store/apps/details?id=me.grey.picquery) · [Releases](https://github.com/greyovo/PicQuery/releases) · [Model guide](script/model-MobileCLIP2/README.md) · [Measurement reports](script/model-MobileCLIP2/results/README.md)
 
-- Google Play - Search for “PicQuery”
-- Download APK from [Release](https://github.com/greyovo/PicQuery/releases)
-- If you have trouble accessing the above resources, please see [here](README_zh.md##其他方式)
+Published releases may use earlier models. Build this branch for the configuration below.
 
-> 🍎 For iOS users, please refer to _[Queryable](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353)_ ([Code](https://github.com/mazzzystar/Queryable)), the inspiration behind this application, developed by [@mazzzystar](https://github.com/mazzzystar/Queryable).
+## Build and install
 
-## Implementation
+| Requirement | Version |
+|---|---|
+| JDK | 17 |
+| Android SDK platform | 37 (`platforms;android-37.0`) |
+| SDK tools | Current Android Studio or command-line tools 22+ |
+| Android NDK | 29.0.14206865 |
+| CMake | 3.22.1 |
+| Android device | Android 10 / API 29 or newer |
 
-> Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their assistance during the development. The discussion can be viewed [here](https://github.com/mazzzystar/Queryable/issues/12).
+Set your SDK location in Android Studio or `local.properties`. Use the included Gradle wrapper. The [version catalog](gradle/libs.versions.toml) pins the dependencies; the current inference runtimes are ONNX Runtime **1.29.0** and LiteRT **1.4.2**. Both flavors require NDK/CMake for the native delegate bridge.
 
-_PicQuery_ is powered by OpenAI's [CLIP model](https://github.com/openai/CLIP). and Apple's [mobile clip](https://github.com/apple/ml-mobileclip)
+### Prepare model assets
 
+Model binaries are Git-ignored. Before building a fresh checkout, [export the models](script/model-MobileCLIP2/README.md#reproduce-the-models) or obtain matching artifacts and place them in `app/src/main/assets/`. Retain the shared `bpe_vocab_gz` and bundled `mlkit/` assets.
 
-First, the images to be searched are encoded into vectors using an image encoder and stored in a database. The text provided by the user during the search is also encoded into a vector. The encoded text vector is then compared with the indexed image vectors to calculate the similarity. The top K images with the highest similarity scores are selected as the query results.
+| Flavor | Image asset | Text asset | Model pair size |
+|---|---|---|---:|
+| `onnx` | `mobileclip2_s0_image.onnx` | `mobileclip2_s0_text_int8.onnx` | 104.89 MiB |
+| `tflite` | `image_model.tflite` | `text_model_dynamic_wi8.tflite` | 105.73 MiB |
 
-## Build & Run Clip
+Both flavors use **FP32 images and dynamic INT8 text weights**, with normalized FP32 embeddings. `text_model.tflite` is an offline FP32 reference and is excluded from the APK. Each flavor packages only its own model pair and shared assets; these sizes describe model files, not APK size or runtime memory.
 
-To build this project, you need to obtain a quantized CLIP model.
+```bash
+./gradlew :app:assembleOnnxDebug :app:assembleTfliteDebug
+adb -s DEVICE_SERIAL install -r app/build/outputs/apk/onnx/debug/app-onnx-debug.apk
+adb -s DEVICE_SERIAL install -r app/build/outputs/apk/tflite/debug/app-tflite-debug.apk
+```
 
-Run the scripts in this [jupyter notebook](https://colab.research.google.com/drive/1bW1aMg0er1T4aOcU5pCNYVgmVzBJ4-x4#scrollTo=hPscj2wlZlHb) step by step. When you run into the _"You are done"_ section, you should get the following model files in `./result ` directory:
+On Windows, replace `./gradlew` with `.\gradlew.bat`. Replace `DEVICE_SERIAL` with the intended device's serial from `adb devices -l`.
 
-- `clip-image-int8.ort`
-- `clip-text-int8.ort`
-> If you don't want to run the scripts, you may directly download them from [Google Drive](https://drive.google.com/drive/folders/1VHgEvYyKsiVte8-lywD8qS8SfgcvMc3z?usp=drive_link).
+| Launcher | Application ID |
+|---|---|
+| PicQuery MC2 ONNX | `me.grey.picquery.mobileclip2.onnx` |
+| PicQuery MC2 TFLite | `me.grey.picquery.mobileclip2.tflite` |
 
-## Build & Run mobile-clip
+Default APKs include ARM64 and ARMv7. For an x86_64 emulator, append `-Pmobileclip2Abis=x86_64` to the build command.
 
-To build this project, you need to obtain a quantized CLIP model.
+## Index and search
 
+1. Open a flavor and grant photo access. Start with a small album, such as `Pictures/PicQuery-Demo`, created before opening the app.
+2. Tap **Index → Add album**, select the intended album and check the photo count. Tap **Index**, wait for completion, then **Finish**.
+3. Search for `dog`, `astronaut`, another description, or an image. To compare backends, index the same album in the other flavor.
+4. To restrict an existing index, open **Range**, turn off **All albums**, select an album and tap **Finish**. The range resets when the app process restarts. Manage or delete indexes in **Settings → Album Index Manager**.
 
-- `vision_model.ort`
-- `text_model.ort`
+Only selected albums are encoded; startup enumerates accessible media metadata without automatically indexing every album. Restart if a newly added album is missing from the list.
 
-> download them from [Google Drive](https://drive.google.com/drive/folders/1HgGDfsHHIlDK_Fx0Spnujxt51SgguNCq?usp=drive_link).
+ONNX uses **4 image / 4 text CPU threads**. TFLite uses native XNNPACK with **4 image / 2 text threads**. English queries still pass through translation; candidates that normalize to the same CLIP BPE text are encoded once.
 
-Put them into `app\src\main\assets` and you're ready to go.
+## Measured results
 
-## Build & Run TF / TFLite
+The separate image-quantization experiment compares **FP32 image ORT** with **mixed INT8 image ORT**, both using the same dynamic INT8 text model. It does **not** compare the ONNX and TFLite flavors. On Pixel 8a / Tensor G3 / Android 17, ONNX Runtime 1.29.0, CPU 4 threads:
 
-To run a TensorFlow Lite model through LiteRT, put these files into `app\src\main\assets`:
+| Measurement | FP32 image | Mixed INT8 image |
+|---|---:|---:|
+| CIFAR-100 Top1, 2,000 test images | 74.60% | 73.90% |
+| Imagenette Top1, 3,925 validation images | 98.04% | 97.96% |
+| Image encoding P50, separate short benchmark | 67.58 ms | 53.46 ms |
+| Image ORT file | 43.54 MiB | 13.52 MiB |
+| Image + text ORT files | 105.05 MiB | 75.03 MiB |
 
-- `image_model.tflite`
-- `text_model.tflite`
+[Full phone accuracy and confidence intervals](script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/README.md) · [Quantization, size and timing protocol](script/model-MobileCLIP2/results/image-int8/README.md)
 
-The image model should accept the same MobileCLIP-style preprocessed input used by `PreprocessorMobileCLIPv2`, and the text model should accept CLIP BPE token ids as `INT32` or `INT64`.
-You can export the default MobileCLIP2-S0 assets with `python script/model-MobileCLIP2/export_mobileclip2_tflite.py`.
+Accuracy used fixed English class prompts and phone-generated embeddings. Timing used preloaded inputs, two rounds of 100 calls after 10 warm-ups per tower, excluding photo decoding, resizing, tokenization and database search. It is not end-to-end search latency or sustained indexing performance.
 
-## Choose module
-val AppModules = listOf(viewModelModules, dataModules, modulesCLIP, domainModules) pick the module you want，Clip pair to modulesCLIP module， mobile-clip pair to modulesMobileCLIP module， TF/TFLite pair to modulesTF module
+The mixed candidate keeps sensitive convolutions in FP32. **ORT export and image quantization do not change the App's selected models**; the current flavors retain FP32 image inference. Adopting a different image encoder requires rebuilding its photo index.
 
-## FAQ
-### Issue 1
-java.lang.RuntimeException: java.lang.reflect.InvocationTarget Exception
-> Don't forget to add model files to `app\src\main\assets` directory
+## Checks and limitations
 
-### Issue 2
-java.io.FileNotFoundException: clip-image-int8.ort
-> Make sure the model files are in the correct directory. If you are using mobile-clip or TF/TFLite, make sure you are using the correct model files and change the module to modulesMobileCLIP or modulesTF.
+```bash
+./gradlew :app:testOnnxDebugUnitTest :app:testTfliteDebugUnitTest \
+  :app:ktlintCheck :app:lintOnnxDebug :app:lintTfliteDebug
+```
 
-## Acknowledgment
+See the [model guide](script/model-MobileCLIP2/README.md#run-on-android) for device tests using explicit `adb -s` installation and execution. The [ktlint baseline](app/config/ktlint/baseline.xml) records existing findings; do not regenerate it automatically to hide failures.
 
-- [mazzzystar/Queryable](https://github.com/mazzzystar/Queryable)
-- [Young-Flash](https://github.com/Young-Flash)
-- [IacobIonut01/Gallery](https://github.com/IacobIonut01/Gallery)
+Submission evidence: [Android build and device validation](script/model-MobileCLIP2/results/submission/android-validation.json) · [Code and offline regression checks](script/model-MobileCLIP2/results/submission/code-validation.json). These checks do not constitute a new performance measurement.
+
+- Recorded device validation uses Debug APKs on Pixel 8a with 4 KB memory pages. Release/R8, GPU/NPU, other phones and whole-APK 16 KB page compatibility remain unverified; a compatibility notice appeared on the tested device.
+- Class-label benchmarks and a small demo album do not establish quality for personal galleries, free-form descriptions, Chinese translation or OCR.
+- Host and phone results use different CPU kernels. Historical runs also use different runtime versions and protocols; compare them only within their documented scope. The [report index](script/model-MobileCLIP2/results/README.md) separates these experiments.
+
+## Historical models
+
+Earlier CLIP and MobileCLIP modules remain as development references. The original App's MobileCLIP `vision_model.ort` / `text_model.ort` pair was unavailable, so v1 S0/S2 evaluation uses official checkpoint re-exports rather than the unidentified original binaries. See [historical model resources](script/model-MobileCLIP2/README.md#historical-models) for downloads and evaluation boundaries.
+
+## Contributing and acknowledgments
+
+Issues and pull requests are welcome. Include reproduction steps, the flavor, runtime/model versions and relevant checks; model or preprocessing changes should include numerical and retrieval validation.
+
+PicQuery builds on OpenAI [CLIP](https://github.com/openai/CLIP) and Apple [MobileCLIP](https://github.com/apple-aiml-research/ml-mobileclip). Thanks to [@mazzzystar](https://github.com/mazzzystar) and [@Young-Flash](https://github.com/Young-Flash) for their help; see the [original discussion](https://github.com/mazzzystar/Queryable/issues/12).
+
+- [mazzzystar/Queryable](https://github.com/mazzzystar/Queryable), the inspiration for this project, with an [iOS app](https://apps.apple.com/us/app/queryable-find-photo-by-text/id1661598353).
+- [IacobIonut01/Gallery](https://github.com/IacobIonut01/Gallery).
 
 ## License
 
-This project is open-source under an MIT license. All rights reserved.
+This project is open-source under the [MIT license](LICENSE). All rights reserved. Model assets retain their original terms; see the [Apple model license](https://github.com/apple-aiml-research/ml-mobileclip/blob/main/LICENSE_MODELS).

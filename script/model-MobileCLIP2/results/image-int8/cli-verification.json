@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "checks": [
+    "Reject production assets",
+    "Reject nested production assets",
+    "Reject source under output",
+    "Reject nonpositive threads",
+    "Reject converter override",
+    "Accept mixed candidate separate build destination",
+    "Changed Python syntax parsed",
+    "Final quantizer source matches exported artifact provenance"
+  ],
+  "scope": "CLI rejection and source consistency checks; no model execution."
+}

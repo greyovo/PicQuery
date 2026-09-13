@@ -1,0 +1,48 @@
+Compiled from "OrtSession.java"
+public class ai.onnxruntime.OrtSession$SessionOptions implements java.lang.AutoCloseable {
+  public ai.onnxruntime.OrtSession$SessionOptions();
+  public void close();
+  public void setExecutionMode(ai.onnxruntime.OrtSession$SessionOptions$ExecutionMode) throws ai.onnxruntime.OrtException;
+  public void setOptimizationLevel(ai.onnxruntime.OrtSession$SessionOptions$OptLevel) throws ai.onnxruntime.OrtException;
+  public void setInterOpNumThreads(int) throws ai.onnxruntime.OrtException;
+  public void setIntraOpNumThreads(int) throws ai.onnxruntime.OrtException;
+  public void setOptimizedModelFilePath(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void setLoggerId(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void enableProfiling(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void disableProfiling() throws ai.onnxruntime.OrtException;
+  public void setMemoryPatternOptimization(boolean) throws ai.onnxruntime.OrtException;
+  public void setCPUArenaAllocator(boolean) throws ai.onnxruntime.OrtException;
+  public void setSessionLogLevel(ai.onnxruntime.OrtLoggingLevel) throws ai.onnxruntime.OrtException;
+  public void setSessionLogVerbosityLevel(int) throws ai.onnxruntime.OrtException;
+  public void registerCustomOpLibrary(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void registerCustomOpsUsingFunction(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void setSymbolicDimensionValue(java.lang.String, long) throws ai.onnxruntime.OrtException;
+  public void setDeterministicCompute(boolean) throws ai.onnxruntime.OrtException;
+  public void disablePerSessionThreads() throws ai.onnxruntime.OrtException;
+  public void addConfigEntry(java.lang.String, java.lang.String) throws ai.onnxruntime.OrtException;
+  public java.util.Map<java.lang.String, java.lang.String> getConfigEntries();
+  public void addExternalInitializers(java.util.Map<java.lang.String, ai.onnxruntime.OnnxTensorLike>) throws ai.onnxruntime.OrtException;
+  public void addInitializer(java.lang.String, ai.onnxruntime.OnnxTensorLike) throws ai.onnxruntime.OrtException;
+  public void addCUDA() throws ai.onnxruntime.OrtException;
+  public void addCUDA(int) throws ai.onnxruntime.OrtException;
+  public void addCUDA(ai.onnxruntime.providers.OrtCUDAProviderOptions) throws ai.onnxruntime.OrtException;
+  public void addROCM() throws ai.onnxruntime.OrtException;
+  public void addROCM(int) throws ai.onnxruntime.OrtException;
+  public void addCPU(boolean) throws ai.onnxruntime.OrtException;
+  public void addDnnl(boolean) throws ai.onnxruntime.OrtException;
+  public void addOpenVINO(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void addTensorrt(int) throws ai.onnxruntime.OrtException;
+  public void addTensorrt(ai.onnxruntime.providers.OrtTensorRTProviderOptions) throws ai.onnxruntime.OrtException;
+  public void addNnapi() throws ai.onnxruntime.OrtException;
+  public void addNnapi(java.util.EnumSet<ai.onnxruntime.providers.NNAPIFlags>) throws ai.onnxruntime.OrtException;
+  public void addTvm(java.lang.String) throws ai.onnxruntime.OrtException;
+  public void addDirectML(int) throws ai.onnxruntime.OrtException;
+  public void addACL(boolean) throws ai.onnxruntime.OrtException;
+  public void addCoreML() throws ai.onnxruntime.OrtException;
+  public void addCoreML(java.util.EnumSet<ai.onnxruntime.providers.CoreMLFlags>) throws ai.onnxruntime.OrtException;
+  public void addExecutionProvider(java.util.List<ai.onnxruntime.OrtEpDevice>, java.util.Map<java.lang.String, java.lang.String>) throws ai.onnxruntime.OrtException;
+  public void addXnnpack(java.util.Map<java.lang.String, java.lang.String>) throws ai.onnxruntime.OrtException;
+  public void addQnn(java.util.Map<java.lang.String, java.lang.String>) throws ai.onnxruntime.OrtException;
+  public void addCoreML(java.util.Map<java.lang.String, java.lang.String>) throws ai.onnxruntime.OrtException;
+  public void addWebGPU(java.util.Map<java.lang.String, java.lang.String>) throws ai.onnxruntime.OrtException;
+}

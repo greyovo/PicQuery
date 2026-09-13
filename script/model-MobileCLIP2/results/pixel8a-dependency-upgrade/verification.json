@@ -1,0 +1,473 @@
+{
+  "date": "2026-09-13",
+  "device": "Pixel 8a / 43231JEKB22129 / Android 17 / 4096-byte pages",
+  "unit_tests": {
+    "onnx": {
+      "tests": 23,
+      "errors": 0,
+      "failures": 0
+    },
+    "tflite": {
+      "tests": 23,
+      "errors": 0,
+      "failures": 0
+    }
+  },
+  "parity": {
+    "onnx": {
+      "status": "passed",
+      "runtime_version": "1.29.0",
+      "cosines": {
+        "image_vs_official": 0.9999999999930824,
+        "text_vs_official": 0.9861419721763685,
+        "text_vs_matching_quantized_host": 0.9981252312701274,
+        "dog_image_vs_dog_text": 0.26693425438454993,
+        "dog_vs_black_image": 0.08720486765270155,
+        "dog_vs_car_text": 0.7687590889234265
+      },
+      "difference_vs_pre_upgrade": {
+        "image": {
+          "max_abs_diff": 0.0,
+          "cosine": 1.0
+        },
+        "text": {
+          "max_abs_diff": 0.007880068151280284,
+          "cosine": 0.9984730089728554
+        }
+      },
+      "native_thread_pools": {
+        "image": false,
+        "text": false
+      }
+    },
+    "tflite": {
+      "status": "passed",
+      "runtime_version": "2.22.0-dev0+selfbuilt",
+      "cosines": {
+        "image_vs_official": 0.9999999999921574,
+        "text_vs_official": 0.9996581106658124,
+        "text_vs_matching_quantized_host": 0.999631740265315,
+        "dog_image_vs_dog_text": 0.2650386276085439,
+        "dog_vs_black_image": 0.08720487024668729,
+        "dog_vs_car_text": 0.7647841190386632
+      },
+      "difference_vs_pre_upgrade": {
+        "image": {
+          "max_abs_diff": 3.8743019104003906e-07,
+          "cosine": 0.999999999998338
+        },
+        "text": {
+          "max_abs_diff": 0.0,
+          "cosine": 1.0
+        }
+      },
+      "native_thread_pools": {
+        "image": true,
+        "text": true
+      }
+    }
+  },
+  "apks": {
+    "onnx": {
+      "sha256": "1a9adf7e0e1d4bb4a13029c61499486a232d25493bb4cbfdf21019810b751d58",
+      "bytes": 307868650,
+      "models": {
+        "assets/mobileclip2_s0_image.onnx": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+        "assets/mobileclip2_s0_text_int8.onnx": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7"
+      },
+      "native": [
+        {
+          "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libobjectbox-jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libonnxruntime.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+          "load_alignments": [
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libpicquery_xnnpack.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtensorflowlite_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtranslate_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libobjectbox-jni.so",
+          "load_alignments": [
+            4096,
+            4096,
+            4096
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libonnxruntime.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+          "load_alignments": [
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtranslate_jni.so",
+          "load_alignments": [
+            4096,
+            4096,
+            4096
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        }
+      ]
+    },
+    "tflite": {
+      "sha256": "c17efff90477b3ebeba0f595f777a062172fbe8c0e1c4e75f5a8fa8489cbd78f",
+      "bytes": 308749027,
+      "models": {
+        "assets/image_model.tflite": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+        "assets/text_model_dynamic_wi8.tflite": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649"
+      },
+      "native": [
+        {
+          "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libobjectbox-jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libonnxruntime.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libonnxruntime4j_jni.so",
+          "load_alignments": [
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libpicquery_xnnpack.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtensorflowlite_gpu_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtensorflowlite_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/arm64-v8a/libtranslate_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libobjectbox-jni.so",
+          "load_alignments": [
+            4096,
+            4096,
+            4096
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libonnxruntime.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libonnxruntime4j_jni.so",
+          "load_alignments": [
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libpicquery_xnnpack.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtensorflowlite_gpu_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtensorflowlite_jni.so",
+          "load_alignments": [
+            16384,
+            16384,
+            16384
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        },
+        {
+          "path": "lib/armeabi-v7a/libtranslate_jni.so",
+          "load_alignments": [
+            4096,
+            4096,
+            4096
+          ],
+          "stored": true,
+          "zip_data_aligned_16kb": true
+        }
+      ]
+    }
+  },
+  "lint_sarif_entries": {
+    "onnx": {
+      "warning": 55
+    },
+    "tflite": {
+      "warning": 55
+    }
+  },
+  "ktlint": {
+    "status": "passed with explicit baseline",
+    "baseline_findings": 236
+  },
+  "detekt": {
+    "findings": 26,
+    "ignore_failures": true
+  },
+  "limitations": [
+    "Debug / ARM64 physical device only",
+    "No full labeled accuracy evaluation or controlled performance comparison in this dependency upgrade",
+    "Release/R8, GPU/NPU and 16 KB page device not tested"
+  ]
+}
