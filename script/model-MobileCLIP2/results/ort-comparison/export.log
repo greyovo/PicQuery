@@ -1,8 +1,0 @@
-Converting models with optimization style 'Fixed' and level 'all'
-Converting optimized ONNX model /mnt/f/github/PicQuery/PicQuery/app/src/main/assets/.mobileclip2-ort-rzgl7xse/sources/mobileclip2_s0_image.onnx to ORT format model /mnt/f/github/PicQuery/PicQuery/app/src/main/assets/.mobileclip2-ort-rzgl7xse/converted/mobileclip2_s0_image.ort
-Converting optimized ONNX model /mnt/f/github/PicQuery/PicQuery/app/src/main/assets/.mobileclip2-ort-rzgl7xse/sources/mobileclip2_s0_text_int8.onnx to ORT format model /mnt/f/github/PicQuery/PicQuery/app/src/main/assets/.mobileclip2-ort-rzgl7xse/converted/mobileclip2_s0_text_int8.ort
-Converted 2/2 models successfully.
-Generating config file from ORT format models with optimization style 'Fixed' and level 'all'
-image: 8 inputs passed, cosine >= 1.0000000000, max_abs <= 0
-text: 16 inputs passed, cosine >= 1.0000000000, max_abs <= 0
-Passed; wrote /mnt/f/github/PicQuery/PicQuery/app/src/main/assets/mobileclip2_ort_metadata.json

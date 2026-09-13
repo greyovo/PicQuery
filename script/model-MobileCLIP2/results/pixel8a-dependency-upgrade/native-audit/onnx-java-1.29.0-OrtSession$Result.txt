@@ -1,9 +1,0 @@
-Compiled from "OrtSession.java"
-public class ai.onnxruntime.OrtSession$Result implements java.lang.AutoCloseable, java.lang.Iterable<java.util.Map$Entry<java.lang.String, ai.onnxruntime.OnnxValue>> {
-  public void close();
-  public java.util.Iterator<java.util.Map$Entry<java.lang.String, ai.onnxruntime.OnnxValue>> iterator();
-  public ai.onnxruntime.OnnxValue get(int);
-  public boolean isResultOwner(int);
-  public int size();
-  public java.util.Optional<ai.onnxruntime.OnnxValue> get(java.lang.String);
-}

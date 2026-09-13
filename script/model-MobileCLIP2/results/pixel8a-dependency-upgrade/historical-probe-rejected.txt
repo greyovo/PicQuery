@@ -1,1 +1,0 @@
-This historical probe requires LiteRT 1.4.1. Use MobileCLIP2InstrumentedTest for the current runtime.

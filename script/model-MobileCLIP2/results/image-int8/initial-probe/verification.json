@@ -1,7 +1,0 @@
-{
-  "device_status": "passed",
-  "candidate_sha256": "7ad6e4c48b22f759b426dfdbde6d78757a9c164f7102bdebaeedb2134e38383e",
-  "quantized_vs_fp32_device_cosine": 0.13603223439529372,
-  "host_vs_device_quantized_cosine": 1.0,
-  "note": "One first image only; 3 timed samples are not a stable speed benchmark."
-}
