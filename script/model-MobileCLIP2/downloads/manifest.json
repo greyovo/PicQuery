@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "publication_status": "uploaded",
+  "upload_status_source": "maintainer_confirmation",
+  "folder_url": "https://drive.google.com/drive/folders/1eWHZ08c7TmVJU9ReQAe7z8o-EE9R297g?usp=sharing",
+  "remote_download_verified": false,
+  "verified_at_utc": "2026-09-13T11:33:16.988089+00:00",
+  "verification_scope": "Local model identity and full ZIP decompression checks; no remote download, inference, accuracy or timing rerun.",
+  "packages": [
+    {
+      "file": "picquery-mobileclip2-app-20260913.zip",
+      "bytes": 197328969,
+      "mib": 188.1876,
+      "sha256": "559b3ac69b85c67860f88a5e17411aee17ea7414ad41b999e66d1be80aab2e44",
+      "model_count": 4,
+      "entry_count": 7,
+      "download_url": null,
+      "entries": [
+        {
+          "file": "mobileclip2_s0_image.onnx",
+          "kind": "model",
+          "bytes": 45557999,
+          "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+          "source_path": "app/src/main/assets/mobileclip2_s0_image.onnx",
+          "destination_path": "app/src/main/assets/mobileclip2_s0_image.onnx",
+          "precision": "FP32 image",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip2_s0_text_int8.onnx",
+          "kind": "model",
+          "bytes": 64423473,
+          "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+          "source_path": "app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+          "destination_path": "app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+          "precision": "Dynamic INT8 text weights; FP32 embeddings",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "image_model.tflite",
+          "kind": "model",
+          "bytes": 45608600,
+          "sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+          "source_path": "app/src/main/assets/image_model.tflite",
+          "destination_path": "app/src/main/assets/image_model.tflite",
+          "precision": "FP32 image",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "text_model_dynamic_wi8.tflite",
+          "kind": "model",
+          "bytes": 65253264,
+          "sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649",
+          "source_path": "app/src/main/assets/text_model_dynamic_wi8.tflite",
+          "destination_path": "app/src/main/assets/text_model_dynamic_wi8.tflite",
+          "precision": "Dynamic INT8 text weights; FP32 embeddings",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README.md",
+          "kind": "documentation",
+          "bytes": 1512,
+          "sha256": "111c99216bb6554f9a488b4a1ad2c2a8d49e1830a967aa6e2deb94456c6abf90",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README_zh.md",
+          "kind": "documentation",
+          "bytes": 1433,
+          "sha256": "92cd6913e6c4cbfc3a16487f85f658ec1a075c741f5d7267f93e712bbce12611",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "kind": "checksums",
+          "bytes": 524,
+          "sha256": "ec9d1116bd64d99015eb7c420f0c59f4ac8e9145580e9307509ac71df086b708",
+          "zip_decompressed_sha256_matches": true
+        }
+      ]
+    },
+    {
+      "file": "picquery-mobileclip2-ort-benchmark-20260913.zip",
+      "bytes": 120664269,
+      "mib": 115.0744,
+      "sha256": "4435d27ee8e107b41c34df593d0550be7a2d3fdff5d4a7b149371585b481b354",
+      "model_count": 4,
+      "entry_count": 7,
+      "download_url": null,
+      "entries": [
+        {
+          "file": "mobileclip2_s0_image.ort",
+          "kind": "model",
+          "bytes": 45659936,
+          "sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+          "source_path": "app/src/main/assets/mobileclip2_s0_image.ort",
+          "destination_path": "app/src/main/assets/mobileclip2_s0_image.ort",
+          "precision": "FP32 image; ORT 1.29.0 Fixed ARM",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip2_s0_text_int8.ort",
+          "kind": "model",
+          "bytes": 64491480,
+          "sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+          "source_path": "app/src/main/assets/mobileclip2_s0_text_int8.ort",
+          "destination_path": "app/src/main/assets/mobileclip2_s0_text_int8.ort",
+          "precision": "Dynamic INT8 text weights; ORT 1.29.0 Fixed ARM",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip2_s0_image_int8.onnx",
+          "kind": "model",
+          "bytes": 14110032,
+          "sha256": "83d74ae0f9adc18d9566e798916813cba48e0a4f779fbc860ad4e78b8112bb1d",
+          "source_path": "build/mobileclip2-image-int8/mobileclip2_s0_image_int8.onnx",
+          "destination_path": "build/mobileclip2-image-int8/mobileclip2_s0_image_int8.onnx",
+          "precision": "Mixed INT8 image; sensitive Conv FP32",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip2_s0_image_int8.ort",
+          "kind": "model",
+          "bytes": 14179240,
+          "sha256": "d5b21e38a87cfeb802ffda26051cd7e59ba6e5ea9c6f10fd1d36780067afe031",
+          "source_path": "build/mobileclip2-image-int8/mobileclip2_s0_image_int8.ort",
+          "destination_path": "build/mobileclip2-image-int8/mobileclip2_s0_image_int8.ort",
+          "precision": "Mixed INT8 image; sensitive Conv FP32; ORT 1.29.0 Fixed ARM",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README.md",
+          "kind": "documentation",
+          "bytes": 2319,
+          "sha256": "1f173dfd933514b43331f0ed4f499665c41bf37b846ccdbb48e39927d9b0b739",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README_zh.md",
+          "kind": "documentation",
+          "bytes": 2083,
+          "sha256": "f0293e767c2c5dae124bc4a3c94545024e91bb3f607025f89d3e5baa19bb468b",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "kind": "checksums",
+          "bytes": 534,
+          "sha256": "46b8b0221587c1352d6fa07a58f02c7093e6f6d0ea6bea3091c975a61d86a2ea",
+          "zip_decompressed_sha256_matches": true
+        }
+      ]
+    },
+    {
+      "file": "picquery-legacy-clip-20260913.zip",
+      "bytes": 105587900,
+      "mib": 100.6965,
+      "sha256": "4c52b4bc0b81e35673aa410377f27182750550edc8c29b8136fd0e28ccd0f8a5",
+      "model_count": 2,
+      "entry_count": 5,
+      "download_url": null,
+      "entries": [
+        {
+          "file": "clip-image-int8.ort",
+          "kind": "model",
+          "bytes": 95876592,
+          "sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+          "source_path": "app/src/main/assets/clip-image-int8.ort",
+          "destination_path": "app/src/main/assets/clip-image-int8.ort",
+          "precision": "Historical CLIP INT8 image weights",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "clip-text-int8.ort",
+          "kind": "model",
+          "bytes": 64545680,
+          "sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+          "source_path": "app/src/main/assets/clip-text-int8.ort",
+          "destination_path": "app/src/main/assets/clip-text-int8.ort",
+          "precision": "Historical CLIP INT8 text weights",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README.md",
+          "kind": "documentation",
+          "bytes": 1456,
+          "sha256": "914b0d3a2e6d68be56dad344826931c690040fc26d8efc31b07729676d4aacb4",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README_zh.md",
+          "kind": "documentation",
+          "bytes": 1255,
+          "sha256": "bc9ce8d5c61c13d780c58a23449cb1337bfb3088f4b91cf306f2cdb5d93fb65c",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "kind": "checksums",
+          "bytes": 326,
+          "sha256": "0fcc0a60a4083dbe66c9be035eae059ec66570d32ca0fc55f871dc287b378f3c",
+          "zip_decompressed_sha256_matches": true
+        }
+      ]
+    },
+    {
+      "file": "picquery-mobileclip-v1-benchmark-20260913.zip",
+      "bytes": 270556188,
+      "mib": 258.0225,
+      "sha256": "a7e5b708b119fc57f223c1bf45bff6ff8459107b95bdaa9d854917356b56ab0c",
+      "model_count": 4,
+      "entry_count": 7,
+      "download_url": null,
+      "entries": [
+        {
+          "file": "mobileclip_s0_image_fp32.onnx",
+          "kind": "model",
+          "bytes": 45561335,
+          "sha256": "902b795d7914aaa686401d671414499d406cd0bdf25c82623c9fc6f5799627c0",
+          "source_path": "build/mobileclip-accuracy-models/s0/mobileclip_s0_image_fp32.onnx",
+          "destination_path": "build/mobileclip-accuracy-models/s0/mobileclip_s0_image_fp32.onnx",
+          "precision": "FP32 image",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip_s0_text_int8.onnx",
+          "kind": "model",
+          "bytes": 55505673,
+          "sha256": "1df5c27c6770fff13efc1b68548cb4d86ac3cb8feba8ca836c383e63d07e3eed",
+          "source_path": "build/mobileclip-accuracy-models/s0/mobileclip_s0_text_int8.onnx",
+          "destination_path": "build/mobileclip-accuracy-models/s0/mobileclip_s0_text_int8.onnx",
+          "precision": "Dynamic INT8 text weights",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip_s2_image_fp32.onnx",
+          "kind": "model",
+          "bytes": 143054615,
+          "sha256": "de61a9ad86c8ae357f0a7c7f3c29773b4d83b6bf93842411cc191c080a8e6ad8",
+          "source_path": "build/mobileclip-accuracy-models/s2/mobileclip_s2_image_fp32.onnx",
+          "destination_path": "build/mobileclip-accuracy-models/s2/mobileclip_s2_image_fp32.onnx",
+          "precision": "FP32 image",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "mobileclip_s2_text_int8.onnx",
+          "kind": "model",
+          "bytes": 64318622,
+          "sha256": "151abc70744ad095b7e4a88cd53c8d3df1cf5ec37cfd5cfea1cc96e54180e4d4",
+          "source_path": "build/mobileclip-accuracy-models/s2/mobileclip_s2_text_int8.onnx",
+          "destination_path": "build/mobileclip-accuracy-models/s2/mobileclip_s2_text_int8.onnx",
+          "precision": "Dynamic INT8 text weights",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README.md",
+          "kind": "documentation",
+          "bytes": 1527,
+          "sha256": "b4fed0e19d5ef67a23220cecad70c95c07652be422207d74cd448be7540ec130",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "README_zh.md",
+          "kind": "documentation",
+          "bytes": 1436,
+          "sha256": "3b3c6b2bffc649228e73ea715a82f54547d9f856020da3e2af7af84052021f58",
+          "zip_decompressed_sha256_matches": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "kind": "checksums",
+          "bytes": 537,
+          "sha256": "241a31c86c5ab36797854c1244c645cc824efd1621cc7c1219de0dd32d8bec58",
+          "zip_decompressed_sha256_matches": true
+        }
+      ]
+    }
+  ]
+}

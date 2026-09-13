@@ -1,0 +1,44 @@
+[
+  {
+    "id": "v1_s0_onnx_int8",
+    "label": "MobileCLIP-S0 v1 ONNX / FP32 image + INT8 text",
+    "format": "onnx",
+    "image": "build/mobileclip-accuracy-models/s0/mobileclip_s0_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s0/mobileclip_s0_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v1_s2_onnx_int8",
+    "label": "MobileCLIP-S2 v1 ONNX / FP32 image + INT8 text",
+    "format": "onnx",
+    "image": "build/mobileclip-accuracy-models/s2/mobileclip_s2_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s2/mobileclip_s2_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_onnx_int8",
+    "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+    "format": "onnx",
+    "image": "app/src/main/assets/mobileclip2_s0_image.onnx",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_ort_int8",
+    "label": "MobileCLIP2-S0 ORT / FP32 image + INT8 text",
+    "format": "ort",
+    "source_model_id": "v2_s0_onnx_int8",
+    "export_metadata": "app/src/main/assets/mobileclip2_ort_metadata.json",
+    "image": "app/src/main/assets/mobileclip2_s0_image.ort",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.ort",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "legacy_clip_int8",
+    "label": "Historical app CLIP ORT / INT8 image + INT8 text / stretch224",
+    "format": "ort",
+    "image": "app/src/main/assets/clip-image-int8.ort",
+    "text": "app/src/main/assets/clip-text-int8.ort",
+    "preprocess": {"size": 224, "resize": "stretch", "interpolation": "bilinear", "mean": [0.48145466,0.4578275,0.40821073], "std": [0.26862954,0.26130258,0.27577711]}
+  }
+]

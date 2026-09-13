@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<baseline version="1.0">
+    <file name="src/androidTest/java/me/grey/picquery/TopkTest.kt">
+        <error line="1" column="1" source="standard:no-empty-file" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/common/Either.kt">
+        <error line="27" column="64" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/common/ImageUtil.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="29" column="1" source="standard:no-trailing-spaces" />
+        <error line="31" column="67" source="standard:function-expression-body" />
+        <error line="36" column="1" source="standard:no-trailing-spaces" />
+        <error line="37" column="69" source="standard:function-expression-body" />
+        <error line="94" column="48" source="standard:no-trailing-spaces" />
+        <error line="96" column="18" source="standard:no-trailing-spaces" />
+        <error line="98" column="1" source="standard:no-trailing-spaces" />
+        <error line="107" column="1" source="standard:no-trailing-spaces" />
+        <error line="116" column="1" source="standard:no-trailing-spaces" />
+        <error line="133" column="1" source="standard:no-trailing-spaces" />
+        <error line="138" column="31" source="standard:no-multi-spaces" />
+        <error line="140" column="1" source="standard:no-trailing-spaces" />
+        <error line="150" column="1" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/AppDatabase.kt">
+        <error line="31" column="21" source="standard:property-naming" />
+        <error line="33" column="56" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/ObjectBoxDatabase.kt">
+        <error line="18" column="47" source="standard:function-expression-body" />
+        <error line="24" column="21" source="standard:property-naming" />
+        <error line="26" column="46" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/dao/AlbumDao.kt">
+        <error line="13" column="27" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/dao/EmbeddingDao.kt">
+        <error line="9" column="27" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/dao/ImageSimilarityDao.kt">
+        <error line="22" column="61" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/dao/ObjectBoxEmbeddingDao.kt">
+        <error line="12" column="44" source="standard:function-expression-body" />
+        <error line="17" column="83" source="standard:function-expression-body" />
+        <error line="24" column="107" source="standard:function-expression-body" />
+        <error line="32" column="115" source="standard:function-expression-body" />
+        <error line="40" column="66" source="standard:function-expression-body" />
+        <error line="47" column="67" source="standard:function-expression-body" />
+        <error line="53" column="73" source="standard:function-expression-body" />
+        <error line="61" column="31" source="standard:function-expression-body" />
+        <error line="66" column="66" source="standard:function-expression-body" />
+        <error line="74" column="74" source="standard:function-expression-body" />
+        <error line="82" column="99" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/data_source/AlbumRepository.kt">
+        <error line="49" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="50" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="80" column="44" source="standard:function-expression-body" />
+        <error line="84" column="53" source="standard:function-expression-body" />
+        <error line="88" column="42" source="standard:function-expression-body" />
+        <error line="92" column="51" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/data_source/EmbeddingRepository.kt">
+        <error line="17" column="35" source="standard:function-expression-body" />
+        <error line="36" column="31" source="standard:function-expression-body" />
+        <error line="40" column="61" source="standard:function-expression-body" />
+        <error line="44" column="54" source="standard:function-expression-body" />
+        <error line="48" column="65" source="standard:function-expression-body" />
+        <error line="65" column="32" source="standard:function-expression-body" />
+        <error line="87" column="42" source="standard:function-expression-body" />
+        <error line="91" column="37" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/data_source/ObjectBoxEmbeddingRepository.kt">
+        <error line="21" column="44" source="standard:function-expression-body" />
+        <error line="25" column="75" source="standard:function-expression-body" />
+        <error line="46" column="31" source="standard:function-expression-body" />
+        <error line="50" column="70" source="standard:function-expression-body" />
+        <error line="54" column="63" source="standard:function-expression-body" />
+        <error line="58" column="74" source="standard:function-expression-body" />
+        <error line="75" column="41" source="standard:function-expression-body" />
+        <error line="98" column="51" source="standard:function-expression-body" />
+        <error line="102" column="37" source="standard:function-expression-body" />
+        <error line="106" column="86" source="standard:function-expression-body" />
+        <error line="115" column="50" source="standard:function-expression-body" />
+        <error line="129" column="50" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/data_source/PhotoRepository.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="156" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="160" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="173" column="45" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/data_source/PreferenceRepository.kt">
+        <error line="29" column="41" source="standard:function-expression-body" />
+        <error line="36" column="39" source="standard:function-expression-body" />
+        <error line="56" column="45" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/Album.kt">
+        <error line="15" column="37" source="standard:function-expression-body" />
+        <error line="30" column="34" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/Converters.kt">
+        <error line="1" column="1" source="standard:kdoc" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/Embedding.kt">
+        <error line="18" column="25" source="standard:value-parameter-comment" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/ObjectBoxEmbedding.kt">
+        <error line="25" column="26" source="standard:value-parameter-comment" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/Photo.kt">
+        <error line="17" column="37" source="standard:function-expression-body" />
+        <error line="21" column="50" source="standard:function-expression-body" />
+        <error line="36" column="37" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/data/model/PhotoResult.kt">
+        <error line="22" column="37" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/domain/EmbeddingService.kt">
+        <error line="59" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="63" column="41" source="standard:function-expression-body" />
+        <error line="74" column="54" source="standard:function-expression-body" />
+        <error line="84" column="58" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/domain/ImageSearcher.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="73" column="41" source="standard:function-expression-body" />
+        <error line="83" column="16" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/domain/SimilarityConfigurationService.kt">
+        <error line="70" column="1" source="standard:indent" />
+        <error line="107" column="1" source="standard:indent" />
+        <error line="108" column="1" source="standard:indent" />
+        <error line="109" column="1" source="standard:indent" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/domain/SimilarityManager.kt">
+        <error line="177" column="17" source="standard:backing-property-naming" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/BPETokenizer.kt">
+        <error line="44" column="69" source="standard:function-expression-body" />
+        <error line="52" column="54" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/ImageEncoderONNX.kt">
+        <error line="24" column="5" source="standard:class-signature" />
+        <error line="26" column="17" source="standard:property-naming" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/TextEncoderONNX.kt">
+        <error line="15" column="17" source="standard:property-naming" />
+        <error line="46" column="1" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/clip/ImageEncoderCLIP.kt">
+        <error line="16" column="5" source="standard:class-signature" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/clip/PreprocessorCLIP.kt">
+        <error line="9" column="9" source="standard:property-naming" />
+        <error line="10" column="9" source="standard:property-naming" />
+        <error line="16" column="76" source="standard:function-expression-body" />
+        <error line="20" column="65" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/mobileclip/ImageEncoderMobileCLIP.kt">
+        <error line="12" column="5" source="standard:class-signature" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/mobileclip/PreprocessorMobileCLIP.kt">
+        <error line="9" column="9" source="standard:property-naming" />
+        <error line="10" column="9" source="standard:property-naming" />
+        <error line="11" column="9" source="standard:property-naming" />
+        <error line="13" column="76" source="standard:function-expression-body" />
+        <error line="17" column="65" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/feature/tf/ImageEncoderTF.kt">
+        <error line="61" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="62" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="63" column="1" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/albums/EncodingState.kt">
+        <error line="7" column="24" source="standard:value-parameter-comment" />
+        <error line="10" column="15" source="standard:enum-wrapping" />
+        <error line="10" column="24" source="standard:enum-wrapping" />
+        <error line="10" column="34" source="standard:enum-wrapping" />
+        <error line="10" column="42" source="standard:enum-wrapping" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/common/Logo.kt">
+        <error line="51" column="27" source="standard:no-multi-spaces" />
+        <error line="58" column="1" source="standard:no-trailing-spaces" />
+        <error line="63" column="1" source="standard:no-trailing-spaces" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/home/AddAlbumBottomSheet.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="137" column="1" source="standard:indent" />
+        <error line="138" column="1" source="standard:indent" />
+        <error line="139" column="1" source="standard:indent" />
+        <error line="140" column="1" source="standard:indent" />
+        <error line="141" column="1" source="standard:indent" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/home/HomeScreen.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+        <error line="323" column="1" source="standard:no-trailing-spaces" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/home/HomeViewModel.kt">
+        <error line="46" column="1" source="standard:no-trailing-spaces" />
+        <error line="54" column="1" source="standard:no-trailing-spaces" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/indexmgr/IndexMgrScreen.kt">
+        <error line="47" column="11" source="standard:property-naming" />
+        <error line="48" column="11" source="standard:property-naming" />
+        <error line="49" column="11" source="standard:property-naming" />
+        <error line="209" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="213" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="224" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="227" column="1" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/ConfidenceTag.kt">
+        <error line="26" column="74" source="standard:blank-line-between-when-conditions" />
+        <error line="28" column="77" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/SearchFilterBottomSheet.kt">
+        <error line="3" column="1" source="standard:import-ordering" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/SearchInput.kt">
+        <error line="136" column="64" source="standard:function-signature" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/SearchResultList.kt">
+        <error line="46" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="47" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="48" column="1" source="standard:blank-line-between-when-conditions" />
+        <error line="49" column="1" source="standard:blank-line-between-when-conditions" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/SearchScreen.kt">
+        <error line="26" column="1" source="standard:no-empty-first-line-in-method-block" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/search/SearchViewModel.kt">
+        <error line="28" column="12" source="standard:no-multi-spaces" />
+        <error line="29" column="16" source="standard:no-multi-spaces" />
+        <error line="30" column="13" source="standard:trailing-comma-on-declaration-site" />
+        <error line="30" column="15" source="standard:no-multi-spaces" />
+        <error line="67" column="18" source="standard:op-spacing" />
+        <error line="85" column="1" source="standard:no-empty-first-line-in-method-block" />
+        <error line="89" column="57" source="standard:op-spacing" />
+        <error line="92" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="111" column="1" source="standard:no-empty-first-line-in-method-block" />
+        <error line="115" column="57" source="standard:op-spacing" />
+        <error line="118" column="1" source="standard:no-blank-line-before-rbrace" />
+    </file>
+    <file name="src/main/java/me/grey/picquery/ui/simlilar/SimilarPhotosViewModel.kt">
+        <error line="30" column="21" source="standard:enum-wrapping" />
+        <error line="30" column="41" source="standard:enum-wrapping" />
+        <error line="30" column="60" source="standard:enum-wrapping" />
+    </file>
+</baseline>

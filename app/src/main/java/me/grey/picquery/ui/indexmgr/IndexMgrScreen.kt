@@ -28,12 +28,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -188,7 +188,7 @@ private fun AlbumItemHeadline(label: String) {
 
 @Composable
 private fun AlbumItemSupportingContent(albumStatusEnum: Int, album: Album, isLoading: Boolean, isDone: Boolean) {
-    val dateFmt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val dateFmt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocalConfiguration.current.locales[0])
     val dateStr = dateFmt.format(Date(album.timestamp * 1000))
 
     val descriptionText = buildAnnotatedString {

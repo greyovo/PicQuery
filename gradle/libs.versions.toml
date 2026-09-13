@@ -1,76 +1,79 @@
 [versions]
 # Android and Kotlin
-android-gradle-plugin = "9.2.0"
-kotlin = "2.3.21"
-ksp = "2.3.6"
-kotlin-serialization = "2.3.21"
+android-gradle-plugin = "9.4.0"
+kotlin = "2.4.20"
+ksp = "2.3.12"
+kotlin-serialization = "2.4.20"
 
 # Compose
-compose-bom = "2026.04.01"
+compose-bom = "2026.09.00"
 compose = "1.6.0"
 compose-material3 = "1.4.0"
 compose-material-icons = "1.7.8"
 
 # Accompanist
+# System UI Controller was discontinued after 0.36.0.
 accompanist = "0.36.0"
+accompanist-permissions = "0.37.3"
 
 # SplashScreen
 androidx-splashscreen = "1.2.0"
 
 # Kotlin Coroutines
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 
 # Dependency Injection
-koin = "4.1.1"
-koin-compose = "4.1.1"
-koin-androidx-compose = "4.1.1"
+koin = "4.2.2"
+koin-compose = "4.2.2"
+koin-androidx-compose = "4.2.2"
 
 # Room Database
-litert = "1.4.1"
-litert-gpu = "1.4.1"
-litert-gpu-api = "1.4.1"
-litert-support = "1.4.1"
-objectboxAndroidObjectbrowser = "5.1.0"
-objectboxAndroid = "5.1.0"
-room = "2.8.4"
+# Native XNNPACK ABI is pinned; see app/src/main/cpp/third_party/litert/README.md.
+litert = "1.4.2"
+litert-gpu = "1.4.2"
+litert-gpu-api = "1.4.2"
+litert-support = "1.4.2"
+objectboxAndroidObjectbrowser = "5.4.2"
+objectboxAndroid = "5.4.2"
+room = "2.8.5"
 
 # Navigation
-navigation = "2.9.7"
+navigation = "2.10.1"
 
 # AndroidX
-androidx-core = "1.17.0"
-androidx-lifecycle = "2.10.0"
-androidx-activity-compose = "1.12.3"
+androidx-core = "1.19.0"
+androidx-lifecycle = "2.11.0"
+androidx-activity-compose = "1.13.0"
 androidx-legacy = "1.0.0"
 androidx-test-monitor = "1.8.0"
-androidx-test-ext = "1.1.3"
-androidx-datastore = "1.2.0"
-androidx-work = "2.11.1"
-androidxDataStore = "1.2.0"
-objectboxGradlePlugin = "5.1.0"
+androidx-test-ext = "1.3.0"
+androidx-datastore = "1.2.1"
+androidx-work = "2.11.2"
+androidxDataStore = "1.2.1"
+objectboxGradlePlugin = "5.4.2"
 
 # Logging
 timber = "5.0.1"
 
 # Image Loading
-glide = "4.14.0"
-glide-compose = "1.0.0-beta08"
+glide = "5.0.9"
+glide-compose = "1.0.0-beta10"
 coil = "2.7.0"
 
 # Other Libraries
-workRuntime = "2.11.1"
-zoomable = "2.10.0"
+workRuntime = "2.11.2"
+zoomable = "2.13.0"
 permissionx = "1.8.1"
-kotlinx-serialization = "1.10.0"
+kotlinx-serialization = "1.11.0"
 
 # AI & ML
-onnx = "1.23.2"
+onnx = "1.29.0"
 mlkit-translate = "17.0.3"
 
 # Testing
 junit = "4.13.2"
-espresso = "3.4.0"
-googleOssLicensesPlugin = "0.10.10"
+espresso = "3.7.0"
+googleOssLicensesPlugin = "0.13.0"
 
 
 [libraries]
@@ -87,7 +90,7 @@ compose-material-icons-extended = { group = "androidx.compose.material", name = 
 
 # Accompanist
 accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist-permissions" }
 
 # AndroidX
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }

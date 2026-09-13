@@ -1,0 +1,65 @@
+[
+  {
+    "id": "v1_s0_onnx_int8",
+    "label": "MobileCLIP-S0 v1 ONNX / FP32 image + INT8 text",
+    "image": "build/mobileclip-accuracy-models/s0/mobileclip_s0_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s0/mobileclip_s0_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v1_s0_fp32_control",
+    "label": "MobileCLIP-S0 v1 ONNX / offline FP32 text control",
+    "image": "build/mobileclip-accuracy-models/s0/mobileclip_s0_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s0/mobileclip_s0_text_fp32.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v1_s2_onnx_int8",
+    "label": "MobileCLIP-S2 v1 ONNX / FP32 image + INT8 text",
+    "image": "build/mobileclip-accuracy-models/s2/mobileclip_s2_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s2/mobileclip_s2_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v1_s2_fp32_control",
+    "label": "MobileCLIP-S2 v1 ONNX / offline FP32 text control",
+    "image": "build/mobileclip-accuracy-models/s2/mobileclip_s2_image_fp32.onnx",
+    "text": "build/mobileclip-accuracy-models/s2/mobileclip_s2_text_fp32.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_onnx_int8",
+    "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+    "image": "app/src/main/assets/mobileclip2_s0_image.onnx",
+    "text": "app/src/main/assets/mobileclip2_s0_text_int8.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_tflite_int8",
+    "label": "MobileCLIP2-S0 TFLite / FP32 image + dynamic INT8 text",
+    "image": "app/src/main/assets/image_model.tflite",
+    "text": "app/src/main/assets/text_model_dynamic_wi8.tflite",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_fp32_control",
+    "label": "MobileCLIP2-S0 ONNX / offline FP32 text control",
+    "image": "app/src/main/assets/mobileclip2_s0_image.onnx",
+    "text": "build/mobileclip2-reference/mobileclip2_s0_text.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "v2_s0_tflite_fp32_control",
+    "label": "MobileCLIP2-S0 TFLite image / offline ONNX FP32 text control",
+    "image": "app/src/main/assets/image_model.tflite",
+    "text": "build/mobileclip2-reference/mobileclip2_s0_text.onnx",
+    "preprocess": {"size": 256, "resize": "center_crop", "interpolation": "bilinear", "mean": [0,0,0], "std": [1,1,1]}
+  },
+  {
+    "id": "legacy_clip_int8",
+    "label": "Historical app CLIP ORT / INT8 image + INT8 text / stretch224",
+    "image": "app/src/main/assets/clip-image-int8.ort",
+    "text": "app/src/main/assets/clip-text-int8.ort",
+    "preprocess": {"size": 224, "resize": "stretch", "interpolation": "bilinear", "mean": [0.48145466,0.4578275,0.40821073], "std": [0.26862954,0.26130258,0.27577711]}
+  }
+]

@@ -17,7 +17,7 @@ import me.grey.picquery.domain.SearchConfigurationService
 import me.grey.picquery.domain.SearchOrchestrator
 import me.grey.picquery.domain.SimilarityConfigurationService
 import me.grey.picquery.domain.SimilarityManager
-import me.grey.picquery.feature.tf.modulesTF
+import me.grey.picquery.feature.mobileclip2.modulesMobileCLIP2
 import me.grey.picquery.ui.display.DisplayViewModel
 import me.grey.picquery.ui.home.HomeViewModel
 import me.grey.picquery.ui.photoDetail.PhotoDetailViewModel
@@ -145,12 +145,12 @@ val workManagerModule = module {
     single { WorkManager.getInstance(get()) }
 }
 
-// need inject encoder here. Use modulesTF instead of modulesCLIP to run TFLite assets.
+// The build flavor selects a matched MobileCLIP2-S0 image/text pair.
 val AppModules = listOf(
     dispatchersKoinModule,
     viewModelModules,
     dataModules,
-    modulesTF,
+    modulesMobileCLIP2,
     domainModules,
     workManagerModule
 )

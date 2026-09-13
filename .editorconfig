@@ -10,14 +10,19 @@ max_line_length = 120
 tab_width = 4
 
 [*.{kt,kts}]
+ktlint_code_style = android_studio
+ktlint_function_naming_ignore_when_annotated_with = Composable
 # Disable specific ktlint rules
-ktlint_disabled_rules = no-wildcard-imports,filename,package-name,max-line-length,comment-spacing
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_filename = disabled
+ktlint_standard_package-name = disabled
+ktlint_standard_max-line-length = disabled
+ktlint_standard_comment-spacing = disabled
 # Enable experimental ktlint rules
-ktlint_experimental = true
+ktlint_experimental = enabled
 # Android style rules
-ktlint_standard_filename = false
-ktlint_standard_class-naming = true
-ktlint_standard_import-ordering = true
+ktlint_standard_class-naming = enabled
+ktlint_standard_import-ordering = enabled
 
 [*.{yml,yaml}]
 indent_size = 2

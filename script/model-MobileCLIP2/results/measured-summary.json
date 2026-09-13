@@ -1,0 +1,1539 @@
+{
+  "schema_version": 1,
+  "measurement_date": "2026-09-13",
+  "provenance": {
+    "en": "Aggregate measurements retained from the original local runs. Raw logs and per-input reports are not distributed in Git. Reproduction commands generate new local evidence under build/.",
+    "zh": "从原始本地测量提取的聚合结果。Git 不分发原始日志和逐输入报告；复现命令在 build/ 下生成新的本地证据。"
+  },
+  "protocol": {
+    "seed": 20260913,
+    "prompt_template": "a photo of a {class}",
+    "datasets": {
+      "cifar100": {
+        "split": "test",
+        "samples": 2000,
+        "classes": 100,
+        "samples_per_class": 20
+      },
+      "imagenette": {
+        "split": "validation",
+        "samples": 3925,
+        "classes": 10
+      }
+    },
+    "accuracy_units": "fractions; comparison deltas and confidence intervals use percentage points",
+    "timing_scope": "Preloaded input copy, inference and output copy; excludes preprocessing, tokenization and app/database/search overhead.",
+    "phone": {
+      "model": "Pixel 8a",
+      "soc": "Tensor G3",
+      "android": 17,
+      "sdk": 37,
+      "abi": "arm64-v8a",
+      "page_size_bytes": 4096
+    },
+    "paired_bootstrap_resamples": 2000
+  },
+  "current_accuracy": {
+    "host": {
+      "protocol": "classification-class-retrieval-v1",
+      "seed": 20260913,
+      "threads": 4,
+      "versions": {
+        "numpy": "2.4.4",
+        "Pillow": "12.1.1",
+        "torch": "2.11.0+cpu",
+        "torchvision": "0.26.0+cpu",
+        "open_clip_torch": "3.3.0",
+        "onnxruntime": "1.29.0",
+        "ai-edge-litert": "2.1.4"
+      },
+      "prompt_template": "a photo of a {class}",
+      "models": {
+        "v2_s0_fp32_image_ort": {
+          "id": "v2_s0_fp32_image_ort",
+          "label": "MobileCLIP2-S0 ORT / FP32 image + dynamic INT8 text",
+          "format": "ort",
+          "image_sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+          "total_bytes": 110151416
+        },
+        "v2_s0_int8_image_ort": {
+          "id": "v2_s0_int8_image_ort",
+          "label": "MobileCLIP2-S0 ORT / mixed INT8 image (sensitive Conv FP32) + dynamic INT8 text",
+          "format": "ort",
+          "image_sha256": "d5b21e38a87cfeb802ffda26051cd7e59ba6e5ea9c6f10fd1d36780067afe031",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+          "total_bytes": 78670720
+        },
+        "legacy_clip_int8": {
+          "id": "legacy_clip_int8",
+          "label": "Historical App CLIP ORT / INT8 image + INT8 text / stretch224",
+          "format": "ort",
+          "image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+          "text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+          "total_bytes": 160422272
+        }
+      },
+      "datasets": {
+        "cifar100": {
+          "metrics": {
+            "v2_s0_fp32_image_ort": {
+              "n": 2000,
+              "top1_correct": 1506,
+              "top1": 0.753,
+              "top5": 0.939,
+              "macro_top1": 0.7529999999999998,
+              "class_query_p_at_10": 0.8469999999999999,
+              "class_query_map": 0.7573065483499114
+            },
+            "v2_s0_int8_image_ort": {
+              "n": 2000,
+              "top1_correct": 1472,
+              "top1": 0.736,
+              "top5": 0.932,
+              "macro_top1": 0.736,
+              "class_query_p_at_10": 0.8370000000000001,
+              "class_query_map": 0.7418427330374665
+            },
+            "legacy_clip_int8": {
+              "n": 2000,
+              "top1_correct": 1075,
+              "top1": 0.5375,
+              "top5": 0.809,
+              "macro_top1": 0.5375,
+              "class_query_p_at_10": 0.606,
+              "class_query_map": 0.47569352548302013
+            }
+          },
+          "comparisons": [
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "v2_s0_int8_image_ort",
+              "b_minus_a_top1_pp": -1.7000000000000002,
+              "paired_bootstrap_95ci_pp": [
+                -2.7,
+                -0.7000000000000001
+              ],
+              "a_only_correct": 71,
+              "b_only_correct": 37,
+              "both_correct": 1435,
+              "both_wrong": 457
+            },
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "legacy_clip_int8",
+              "b_minus_a_top1_pp": -21.55,
+              "paired_bootstrap_95ci_pp": [
+                -23.849999999999998,
+                -19.3
+              ],
+              "a_only_correct": 533,
+              "b_only_correct": 102,
+              "both_correct": 973,
+              "both_wrong": 392
+            },
+            {
+              "a": "v2_s0_int8_image_ort",
+              "b": "legacy_clip_int8",
+              "b_minus_a_top1_pp": -19.85,
+              "paired_bootstrap_95ci_pp": [
+                -22.1,
+                -17.7
+              ],
+              "a_only_correct": 504,
+              "b_only_correct": 107,
+              "both_correct": 968,
+              "both_wrong": 421
+            }
+          ]
+        },
+        "imagenette": {
+          "metrics": {
+            "v2_s0_fp32_image_ort": {
+              "n": 3925,
+              "top1_correct": 3851,
+              "top1": 0.9811464968152867,
+              "top5": 0.9989808917197452,
+              "macro_top1": 0.9808046264026571,
+              "class_query_p_at_10": 1.0,
+              "class_query_map": 0.9929950028917618
+            },
+            "v2_s0_int8_image_ort": {
+              "n": 3925,
+              "top1_correct": 3849,
+              "top1": 0.9806369426751592,
+              "top5": 0.9989808917197452,
+              "macro_top1": 0.9803371878594132,
+              "class_query_p_at_10": 1.0,
+              "class_query_map": 0.9924057207025383
+            },
+            "legacy_clip_int8": {
+              "n": 3925,
+              "top1_correct": 3282,
+              "top1": 0.8361783439490446,
+              "top5": 0.9941401273885351,
+              "macro_top1": 0.8340305398675557,
+              "class_query_p_at_10": 0.8099999999999999,
+              "class_query_map": 0.7416049550603627
+            }
+          },
+          "comparisons": [
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "v2_s0_int8_image_ort",
+              "b_minus_a_top1_pp": -0.05095541401273885,
+              "paired_bootstrap_95ci_pp": [
+                -0.28089171974522287,
+                0.2038216560509554
+              ],
+              "a_only_correct": 13,
+              "b_only_correct": 11,
+              "both_correct": 3838,
+              "both_wrong": 63
+            },
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "legacy_clip_int8",
+              "b_minus_a_top1_pp": -14.496815286624203,
+              "paired_bootstrap_95ci_pp": [
+                -15.719745222929937,
+                -13.324840764331212
+              ],
+              "a_only_correct": 602,
+              "b_only_correct": 33,
+              "both_correct": 3249,
+              "both_wrong": 41
+            },
+            {
+              "a": "v2_s0_int8_image_ort",
+              "b": "legacy_clip_int8",
+              "b_minus_a_top1_pp": -14.445859872611466,
+              "paired_bootstrap_95ci_pp": [
+                -15.668789808917197,
+                -13.222929936305732
+              ],
+              "a_only_correct": 606,
+              "b_only_correct": 39,
+              "both_correct": 3243,
+              "both_wrong": 37
+            }
+          ]
+        }
+      }
+    },
+    "device": {
+      "protocol": "classification-class-retrieval-v1",
+      "seed": 20260913,
+      "cpu_threads": 4,
+      "onnxruntime_version": "1.29.0",
+      "models": {
+        "v2_s0_fp32_image_ort": {
+          "id": "v2_s0_fp32_image_ort",
+          "image_sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b"
+        },
+        "v2_s0_int8_image_ort": {
+          "id": "v2_s0_int8_image_ort",
+          "image_sha256": "d5b21e38a87cfeb802ffda26051cd7e59ba6e5ea9c6f10fd1d36780067afe031",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b"
+        }
+      },
+      "datasets": {
+        "cifar100": {
+          "metrics": {
+            "v2_s0_fp32_image_ort": {
+              "n": 2000,
+              "top1_correct": 1492,
+              "top1": 0.746,
+              "top5": 0.9395,
+              "macro_top1": 0.746,
+              "class_query_p_at_10": 0.851,
+              "class_query_map": 0.7581472734339754
+            },
+            "v2_s0_int8_image_ort": {
+              "n": 2000,
+              "top1_correct": 1478,
+              "top1": 0.739,
+              "top5": 0.931,
+              "macro_top1": 0.7389999999999998,
+              "class_query_p_at_10": 0.8479999999999999,
+              "class_query_map": 0.7437439366675315
+            }
+          },
+          "comparisons": [
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "v2_s0_int8_image_ort",
+              "b_minus_a_top1_pp": -0.7000000000000001,
+              "paired_bootstrap_95ci_pp": [
+                -1.7999999999999998,
+                0.3
+              ],
+              "a_only_correct": 65,
+              "b_only_correct": 51,
+              "both_correct": 1427,
+              "both_wrong": 457
+            }
+          ],
+          "fp32_int8_prediction_flip_count": 192,
+          "host_device_comparisons": {
+            "v2_s0_fp32_image_ort": {
+              "device_minus_host_pp": {
+                "top1": -0.7000000000000006,
+                "top5": 0.050000000000005596,
+                "class_query_p_at_10": 0.40000000000001146,
+                "class_query_map": 0.08407250840639646
+              },
+              "paired_top1": {
+                "a": "host",
+                "b": "device",
+                "b_minus_a_top1_pp": -0.7000000000000001,
+                "paired_bootstrap_95ci_pp": [
+                  -1.25,
+                  -0.15
+                ],
+                "a_only_correct": 23,
+                "b_only_correct": 9,
+                "both_correct": 1483,
+                "both_wrong": 485
+              },
+              "prediction_flip_count": 51,
+              "prediction_flip_rate": 0.0255
+            },
+            "v2_s0_int8_image_ort": {
+              "device_minus_host_pp": {
+                "top1": 0.30000000000000027,
+                "top5": -0.10000000000000009,
+                "class_query_p_at_10": 1.0999999999999788,
+                "class_query_map": 0.19012036300649626
+              },
+              "paired_top1": {
+                "a": "host",
+                "b": "device",
+                "b_minus_a_top1_pp": 0.3,
+                "paired_bootstrap_95ci_pp": [
+                  -0.5,
+                  1.0999999999999999
+                ],
+                "a_only_correct": 31,
+                "b_only_correct": 37,
+                "both_correct": 1441,
+                "both_wrong": 491
+              },
+              "prediction_flip_count": 119,
+              "prediction_flip_rate": 0.0595
+            }
+          }
+        },
+        "imagenette": {
+          "metrics": {
+            "v2_s0_fp32_image_ort": {
+              "n": 3925,
+              "top1_correct": 3848,
+              "top1": 0.9803821656050955,
+              "top5": 0.9987261146496815,
+              "macro_top1": 0.9800518138283231,
+              "class_query_p_at_10": 1.0,
+              "class_query_map": 0.9930040313550167
+            },
+            "v2_s0_int8_image_ort": {
+              "n": 3925,
+              "top1_correct": 3845,
+              "top1": 0.9796178343949045,
+              "top5": 0.9984713375796178,
+              "macro_top1": 0.9793383790052733,
+              "class_query_p_at_10": 1.0,
+              "class_query_map": 0.992506063308452
+            }
+          },
+          "comparisons": [
+            {
+              "a": "v2_s0_fp32_image_ort",
+              "b": "v2_s0_int8_image_ort",
+              "b_minus_a_top1_pp": -0.07643312101910828,
+              "paired_bootstrap_95ci_pp": [
+                -0.3057324840764331,
+                0.15286624203821655
+              ],
+              "a_only_correct": 12,
+              "b_only_correct": 9,
+              "both_correct": 3836,
+              "both_wrong": 68
+            }
+          ],
+          "fp32_int8_prediction_flip_count": 26,
+          "host_device_comparisons": {
+            "v2_s0_fp32_image_ort": {
+              "device_minus_host_pp": {
+                "top1": -0.07643312101911492,
+                "top5": -0.02547770700637164,
+                "class_query_p_at_10": 0.0,
+                "class_query_map": 0.000902846325490092
+              },
+              "paired_top1": {
+                "a": "host",
+                "b": "device",
+                "b_minus_a_top1_pp": -0.07643312101910828,
+                "paired_bootstrap_95ci_pp": [
+                  -0.2038216560509554,
+                  0.025477707006369425
+                ],
+                "a_only_correct": 4,
+                "b_only_correct": 1,
+                "both_correct": 3847,
+                "both_wrong": 73
+              },
+              "prediction_flip_count": 8,
+              "prediction_flip_rate": 0.002038216560509554
+            },
+            "v2_s0_int8_image_ort": {
+              "device_minus_host_pp": {
+                "top1": -0.10191082802547546,
+                "top5": -0.05095541401274328,
+                "class_query_p_at_10": 0.0,
+                "class_query_map": 0.010034260591373911
+              },
+              "paired_top1": {
+                "a": "host",
+                "b": "device",
+                "b_minus_a_top1_pp": -0.1019108280254777,
+                "paired_bootstrap_95ci_pp": [
+                  -0.33121019108280253,
+                  0.12738853503184713
+                ],
+                "a_only_correct": 12,
+                "b_only_correct": 8,
+                "both_correct": 3837,
+                "both_wrong": 68
+              },
+              "prediction_flip_count": 24,
+              "prediction_flip_rate": 0.006114649681528662
+            }
+          }
+        }
+      }
+    }
+  },
+  "current_speed": {
+    "runtime": "ONNX Runtime 1.29.0 CPU",
+    "cpu_threads": 4,
+    "rounds": 2,
+    "warmup_per_tower_per_round": 10,
+    "samples_per_tower_per_round": 100,
+    "percentile_method": "nearest rank over 200 pooled warm samples",
+    "models": {
+      "v2_s0_fp32_image_ort": {
+        "actual_image_sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+        "actual_text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+        "image_file_bytes": 45659936,
+        "text_file_bytes": 64491480,
+        "image": {
+          "count": 200,
+          "p50_ms": 67.576538,
+          "p95_ms": 72.04305,
+          "mean_ms": 68.342490695,
+          "median_load_ms": 163.7809655,
+          "median_first_invoke_ms": 155.922709
+        },
+        "text": {
+          "count": 200,
+          "p50_ms": 20.88322,
+          "p95_ms": 23.396077,
+          "mean_ms": 21.095458585,
+          "median_load_ms": 177.4423225,
+          "median_first_invoke_ms": 94.3908485
+        }
+      },
+      "v2_s0_int8_image_ort": {
+        "actual_image_sha256": "d5b21e38a87cfeb802ffda26051cd7e59ba6e5ea9c6f10fd1d36780067afe031",
+        "actual_text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+        "image_file_bytes": 14179240,
+        "text_file_bytes": 64491480,
+        "image": {
+          "count": 200,
+          "p50_ms": 53.464112,
+          "p95_ms": 57.055176,
+          "mean_ms": 54.010723665,
+          "median_load_ms": 135.13781749999998,
+          "median_first_invoke_ms": 110.654134
+        },
+        "text": {
+          "count": 200,
+          "p50_ms": 20.662719,
+          "p95_ms": 23.362386,
+          "mean_ms": 20.770800205,
+          "median_load_ms": 187.9307655,
+          "median_first_invoke_ms": 81.599365
+        }
+      },
+      "legacy_clip_int8": {
+        "actual_image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+        "actual_text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+        "image_file_bytes": 95876592,
+        "text_file_bytes": 64545680,
+        "image": {
+          "count": 200,
+          "p50_ms": 26.74882,
+          "p95_ms": 29.437541,
+          "mean_ms": 27.013936365,
+          "median_load_ms": 409.79612199999997,
+          "median_first_invoke_ms": 104.651306
+        },
+        "text": {
+          "count": 200,
+          "p50_ms": 21.87736,
+          "p95_ms": 24.5177,
+          "mean_ms": 22.02414904,
+          "median_load_ms": 208.879232,
+          "median_first_invoke_ms": 100.18469250000001
+        }
+      }
+    }
+  },
+  "ort_comparison": {
+    "phone": {
+      "runtime": "ONNX Runtime 1.29.0 CPU",
+      "cpu_threads": 4,
+      "rounds": 2,
+      "warmup_per_tower_per_round": 10,
+      "samples_per_tower_per_round": 100,
+      "percentile_method": "nearest rank",
+      "models": {
+        "v1_s0_onnx_int8": {
+          "label": "MobileCLIP-S0 v1 ONNX / FP32 image + INT8 text",
+          "runtime_versions": [
+            "1.29.0"
+          ],
+          "image_sha256": "902b795d7914aaa686401d671414499d406cd0bdf25c82623c9fc6f5799627c0",
+          "text_sha256": "1df5c27c6770fff13efc1b68548cb4d86ac3cb8feba8ca836c383e63d07e3eed",
+          "temperature_c_range": [
+            33.3,
+            35.2
+          ],
+          "thermal_statuses": [
+            0
+          ],
+          "max_observed_single_tower_process_pss_mib": 216.1005859375,
+          "format": "onnx",
+          "source_model_id": "v1_s0_onnx_int8",
+          "image_bytes": 45561335,
+          "text_bytes": 55505673,
+          "image": {
+            "count": 200,
+            "mean_ms": 71.94122988,
+            "min_ms": 67.10791,
+            "max_ms": 83.187256,
+            "p50_ms": 71.259766,
+            "p95_ms": 78.22111,
+            "p99_ms": 80.877767,
+            "round_p50_ms": [
+              68.745605,
+              74.630941
+            ],
+            "load_ms": [
+              190.350464,
+              204.768392
+            ],
+            "first_invoke_ms": [
+              144.269735,
+              160.567545
+            ]
+          },
+          "text": {
+            "count": 200,
+            "mean_ms": 15.87574182,
+            "min_ms": 13.010254,
+            "max_ms": 21.290242,
+            "p50_ms": 15.940674,
+            "p95_ms": 17.979574,
+            "p99_ms": 20.217489,
+            "round_p50_ms": [
+              14.439413,
+              17.030965
+            ],
+            "load_ms": [
+              125.386393,
+              126.109904
+            ],
+            "first_invoke_ms": [
+              63.527547,
+              56.915772
+            ]
+          }
+        },
+        "v1_s2_onnx_int8": {
+          "label": "MobileCLIP-S2 v1 ONNX / FP32 image + INT8 text",
+          "runtime_versions": [
+            "1.29.0"
+          ],
+          "image_sha256": "de61a9ad86c8ae357f0a7c7f3c29773b4d83b6bf93842411cc191c080a8e6ad8",
+          "text_sha256": "151abc70744ad095b7e4a88cd53c8d3df1cf5ec37cfd5cfea1cc96e54180e4d4",
+          "temperature_c_range": [
+            33.3,
+            35
+          ],
+          "thermal_statuses": [
+            0
+          ],
+          "max_observed_single_tower_process_pss_mib": 307.283203125,
+          "format": "onnx",
+          "source_model_id": "v1_s2_onnx_int8",
+          "image_bytes": 143054615,
+          "text_bytes": 64318622,
+          "image": {
+            "count": 200,
+            "mean_ms": 221.20909437999998,
+            "min_ms": 190.383627,
+            "max_ms": 351.526571,
+            "p50_ms": 210.914226,
+            "p95_ms": 266.128581,
+            "p99_ms": 347.877523,
+            "round_p50_ms": [
+              206.466838,
+              218.899862
+            ],
+            "load_ms": [
+              333.821045,
+              351.908325
+            ],
+            "first_invoke_ms": [
+              322.747314,
+              318.989584
+            ]
+          },
+          "text": {
+            "count": 200,
+            "mean_ms": 28.691542575,
+            "min_ms": 20.53186,
+            "max_ms": 39.287313,
+            "p50_ms": 27.809896,
+            "p95_ms": 36.507691,
+            "p99_ms": 38.462809,
+            "round_p50_ms": [
+              21.620443,
+              35.122274
+            ],
+            "load_ms": [
+              221.888347,
+              372.517822
+            ],
+            "first_invoke_ms": [
+              104.307007,
+              144.265747
+            ]
+          }
+        },
+        "v2_s0_onnx_int8": {
+          "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+          "runtime_versions": [
+            "1.29.0"
+          ],
+          "image_sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+          "text_sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+          "temperature_c_range": [
+            33.1,
+            35.5
+          ],
+          "thermal_statuses": [
+            0
+          ],
+          "max_observed_single_tower_process_pss_mib": 231.6103515625,
+          "format": "onnx",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_bytes": 45557999,
+          "text_bytes": 64423473,
+          "image": {
+            "count": 200,
+            "mean_ms": 70.46816957,
+            "min_ms": 65.310466,
+            "max_ms": 91.446127,
+            "p50_ms": 69.690714,
+            "p95_ms": 76.441894,
+            "p99_ms": 78.2736,
+            "round_p50_ms": [
+              67.573975,
+              72.701416
+            ],
+            "load_ms": [
+              211.297323,
+              220.761353
+            ],
+            "first_invoke_ms": [
+              178.644776,
+              164.989258
+            ]
+          },
+          "text": {
+            "count": 200,
+            "mean_ms": 21.651429235000002,
+            "min_ms": 19.048747,
+            "max_ms": 29.699667,
+            "p50_ms": 21.540812,
+            "p95_ms": 24.053507,
+            "p99_ms": 27.189291,
+            "round_p50_ms": [
+              20.66976,
+              22.25651
+            ],
+            "load_ms": [
+              291.15153,
+              305.140748
+            ],
+            "first_invoke_ms": [
+              83.189494,
+              129.815837
+            ]
+          }
+        },
+        "v2_s0_ort_int8": {
+          "label": "MobileCLIP2-S0 ORT / FP32 image + INT8 text",
+          "runtime_versions": [
+            "1.29.0"
+          ],
+          "image_sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+          "temperature_c_range": [
+            33.3,
+            35.5
+          ],
+          "thermal_statuses": [
+            0
+          ],
+          "max_observed_single_tower_process_pss_mib": 227.8720703125,
+          "format": "ort",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_bytes": 45659936,
+          "text_bytes": 64491480,
+          "image": {
+            "count": 200,
+            "mean_ms": 70.523514625,
+            "min_ms": 66.113729,
+            "max_ms": 80.312053,
+            "p50_ms": 69.997559,
+            "p95_ms": 76.955932,
+            "p99_ms": 80.040242,
+            "round_p50_ms": [
+              67.346273,
+              72.674397
+            ],
+            "load_ms": [
+              146.318685,
+              168.465902
+            ],
+            "first_invoke_ms": [
+              117.059652,
+              130.622965
+            ]
+          },
+          "text": {
+            "count": 200,
+            "mean_ms": 22.097548015,
+            "min_ms": 19.049235,
+            "max_ms": 29.702312,
+            "p50_ms": 21.767334,
+            "p95_ms": 24.782633,
+            "p99_ms": 27.107544,
+            "round_p50_ms": [
+              20.927002,
+              22.890625
+            ],
+            "load_ms": [
+              171.521566,
+              191.672608
+            ],
+            "first_invoke_ms": [
+              109.621786,
+              104.735108
+            ]
+          }
+        },
+        "legacy_clip_int8": {
+          "label": "Historical app CLIP ORT / INT8 image + INT8 text / stretch224",
+          "runtime_versions": [
+            "1.29.0"
+          ],
+          "image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+          "text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+          "temperature_c_range": [
+            33.3,
+            34.3
+          ],
+          "thermal_statuses": [
+            0
+          ],
+          "max_observed_single_tower_process_pss_mib": 260.3720703125,
+          "format": "ort",
+          "source_model_id": "legacy_clip_int8",
+          "image_bytes": 95876592,
+          "text_bytes": 64545680,
+          "image": {
+            "count": 200,
+            "mean_ms": 28.39869708,
+            "min_ms": 25.369141,
+            "max_ms": 35.243327,
+            "p50_ms": 28.186809,
+            "p95_ms": 31.204508,
+            "p99_ms": 32.798136,
+            "round_p50_ms": [
+              28.345947,
+              27.983602
+            ],
+            "load_ms": [
+              384.212972,
+              408.714722
+            ],
+            "first_invoke_ms": [
+              95.589437,
+              103.330852
+            ]
+          },
+          "text": {
+            "count": 200,
+            "mean_ms": 24.290213220000002,
+            "min_ms": 21.516642,
+            "max_ms": 32.340861,
+            "p50_ms": 24.132446,
+            "p95_ms": 26.657959,
+            "p99_ms": 29.411377,
+            "round_p50_ms": [
+              24.355306,
+              23.907023
+            ],
+            "load_ms": [
+              205.691325,
+              205.168294
+            ],
+            "first_invoke_ms": [
+              98.20048,
+              95.419556
+            ]
+          }
+        }
+      }
+    },
+    "host_arm_artifacts": {
+      "cpu": "13th Gen Intel(R) Core(TM) i9-13900K",
+      "versions": {
+        "numpy": "2.4.4",
+        "Pillow": "12.1.1",
+        "torch": "2.11.0+cpu",
+        "torchvision": "0.26.0+cpu",
+        "open_clip_torch": "3.3.0",
+        "onnxruntime": "1.29.0",
+        "ai-edge-litert": "2.1.4"
+      },
+      "threads": 4,
+      "rounds": 3,
+      "warmup_per_tower_per_round": 10,
+      "samples_per_tower_per_round": 100,
+      "batch_size": 1,
+      "seed": 20260913,
+      "scope": "Host CPU inference only; includes runtime input/output copies, excludes image decode/resize, tokenization, database, similarity search and Android overhead.",
+      "load_note": "Fresh sessions each round; OS file cache is not flushed. Session-load and first-call values are not cold app startup.",
+      "models": {
+        "v1_s0_onnx_int8": {
+          "id": "v1_s0_onnx_int8",
+          "label": "MobileCLIP-S0 v1 ONNX / FP32 image + INT8 text",
+          "format": "onnx",
+          "source_model_id": "v1_s0_onnx_int8",
+          "image_sha256": "902b795d7914aaa686401d671414499d406cd0bdf25c82623c9fc6f5799627c0",
+          "text_sha256": "1df5c27c6770fff13efc1b68548cb4d86ac3cb8feba8ca836c383e63d07e3eed",
+          "image_bytes": 45561335,
+          "text_bytes": 55505673,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 11.771867499999999,
+            "mean_ms": 12.004875929999999,
+            "p95_ms": 13.760068650000001,
+            "round_medians_ms": [
+              11.992919,
+              11.7324415,
+              11.5819625
+            ],
+            "median_session_load_ms": 175.129822,
+            "median_first_invoke_ms": 12.008562
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 3.5591455,
+            "mean_ms": 3.6632511866666664,
+            "p95_ms": 4.401489850000002,
+            "round_medians_ms": [
+              3.6731225,
+              3.47681,
+              3.4990034999999997
+            ],
+            "median_session_load_ms": 191.307418,
+            "median_first_invoke_ms": 3.819534
+          }
+        },
+        "v1_s2_onnx_int8": {
+          "id": "v1_s2_onnx_int8",
+          "label": "MobileCLIP-S2 v1 ONNX / FP32 image + INT8 text",
+          "format": "onnx",
+          "source_model_id": "v1_s2_onnx_int8",
+          "image_sha256": "de61a9ad86c8ae357f0a7c7f3c29773b4d83b6bf93842411cc191c080a8e6ad8",
+          "text_sha256": "151abc70744ad095b7e4a88cd53c8d3df1cf5ec37cfd5cfea1cc96e54180e4d4",
+          "image_bytes": 143054615,
+          "text_bytes": 64318622,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 35.330861999999996,
+            "mean_ms": 35.67233705,
+            "p95_ms": 39.7654341,
+            "round_medians_ms": [
+              34.2159915,
+              35.575926499999994,
+              35.9024135
+            ],
+            "median_session_load_ms": 586.294666,
+            "median_first_invoke_ms": 34.873724
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 7.079309500000001,
+            "mean_ms": 7.38273343,
+            "p95_ms": 9.040449899999999,
+            "round_medians_ms": [
+              7.258929500000001,
+              7.122920000000001,
+              6.9421505
+            ],
+            "median_session_load_ms": 248.791337,
+            "median_first_invoke_ms": 7.345687
+          }
+        },
+        "v2_s0_onnx_int8": {
+          "id": "v2_s0_onnx_int8",
+          "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+          "format": "onnx",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+          "text_sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+          "image_bytes": 45557999,
+          "text_bytes": 64423473,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 12.3780335,
+            "mean_ms": 12.790381786666666,
+            "p95_ms": 15.153882150000001,
+            "round_medians_ms": [
+              12.1480945,
+              12.3872175,
+              12.5160685
+            ],
+            "median_session_load_ms": 178.622326,
+            "median_first_invoke_ms": 12.628897
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 6.869203,
+            "mean_ms": 7.182668296666668,
+            "p95_ms": 8.98835435,
+            "round_medians_ms": [
+              6.8579995,
+              6.9998830000000005,
+              6.8666385
+            ],
+            "median_session_load_ms": 278.936013,
+            "median_first_invoke_ms": 7.360331
+          }
+        },
+        "v2_s0_ort_int8": {
+          "id": "v2_s0_ort_int8",
+          "label": "MobileCLIP2-S0 ORT / FP32 image + INT8 text",
+          "format": "ort",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_sha256": "c3050f9819b074cb05a2362393ba6c5dfc30f305ebfcd3e64508bc40710a1055",
+          "text_sha256": "aa3ef129f2fb48e7af48bb2bcfc7928b4eac18d23cf9eaf31dcae92f618a783b",
+          "image_bytes": 45659936,
+          "text_bytes": 64491480,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 18.342955,
+            "mean_ms": 18.65699685666667,
+            "p95_ms": 20.88528725,
+            "round_medians_ms": [
+              18.258534500000003,
+              18.356757,
+              18.3866415
+            ],
+            "median_session_load_ms": 164.702689,
+            "median_first_invoke_ms": 20.306027
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 6.672491,
+            "mean_ms": 6.814496186666666,
+            "p95_ms": 7.8500261,
+            "round_medians_ms": [
+              6.6208365,
+              6.5974565,
+              6.751065
+            ],
+            "median_session_load_ms": 270.840891,
+            "median_first_invoke_ms": 7.509057
+          }
+        },
+        "legacy_clip_int8": {
+          "id": "legacy_clip_int8",
+          "label": "Historical app CLIP ORT / INT8 image + INT8 text / stretch224",
+          "format": "ort",
+          "source_model_id": "legacy_clip_int8",
+          "image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+          "text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+          "image_bytes": 95876592,
+          "text_bytes": 64545680,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 10.183340000000001,
+            "mean_ms": 10.379072493333332,
+            "p95_ms": 11.7931581,
+            "round_medians_ms": [
+              10.197118,
+              10.183691,
+              10.178435499999999
+            ],
+            "median_session_load_ms": 380.417713,
+            "median_first_invoke_ms": 10.47611
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 7.956213,
+            "mean_ms": 8.17998573,
+            "p95_ms": 9.395898050000001,
+            "round_medians_ms": [
+              7.833151,
+              7.9161865,
+              8.086299499999999
+            ],
+            "median_session_load_ms": 244.220111,
+            "median_first_invoke_ms": 8.778271
+          }
+        }
+      }
+    },
+    "host_amd64_artifacts": {
+      "cpu": "13th Gen Intel(R) Core(TM) i9-13900K",
+      "versions": {
+        "numpy": "2.4.4",
+        "Pillow": "12.1.1",
+        "torch": "2.11.0+cpu",
+        "torchvision": "0.26.0+cpu",
+        "open_clip_torch": "3.3.0",
+        "onnxruntime": "1.29.0",
+        "ai-edge-litert": "2.1.4"
+      },
+      "threads": 4,
+      "rounds": 3,
+      "warmup_per_tower_per_round": 10,
+      "samples_per_tower_per_round": 100,
+      "batch_size": 1,
+      "seed": 20260913,
+      "scope": "Host CPU inference only; includes runtime input/output copies, excludes image decode/resize, tokenization, database, similarity search and Android overhead.",
+      "load_note": "Fresh sessions each round; OS file cache is not flushed. Session-load and first-call values are not cold app startup.",
+      "models": {
+        "v2_s0_onnx_int8": {
+          "id": "v2_s0_onnx_int8",
+          "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+          "format": "onnx",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+          "text_sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+          "image_bytes": 45557999,
+          "text_bytes": 64423473,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 12.260797499999999,
+            "mean_ms": 12.449138920000001,
+            "p95_ms": 13.915099150000001,
+            "round_medians_ms": [
+              12.293562999999999,
+              11.9155155,
+              12.3990915
+            ],
+            "median_session_load_ms": 179.294572,
+            "median_first_invoke_ms": 13.760309
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 6.914176,
+            "mean_ms": 7.080779863333333,
+            "p95_ms": 8.343281500000002,
+            "round_medians_ms": [
+              7.0742864999999995,
+              6.6541105,
+              6.965196000000001
+            ],
+            "median_session_load_ms": 242.860973,
+            "median_first_invoke_ms": 7.845662
+          }
+        },
+        "v2_s0_ort_int8": {
+          "id": "v2_s0_ort_int8",
+          "label": "MobileCLIP2-S0 ORT amd64 / FP32 image + INT8 text",
+          "format": "ort",
+          "source_model_id": "v2_s0_onnx_int8",
+          "image_sha256": "8d7a44ca15f9709df9f89d41eda846d8f7a4a2ee31d92dbf85b303f02e0c2fdf",
+          "text_sha256": "1d36a0267e757288b1c748545d49dbfb22e6b99bfbe3192494db5f904ebc298a",
+          "image_bytes": 45707256,
+          "text_bytes": 64491480,
+          "image_summary": {
+            "count": 300,
+            "median_ms": 12.0932445,
+            "mean_ms": 12.210859193333333,
+            "p95_ms": 14.07681975,
+            "round_medians_ms": [
+              11.1632395,
+              12.122490500000001,
+              12.748705999999999
+            ],
+            "median_session_load_ms": 164.668598,
+            "median_first_invoke_ms": 13.961568
+          },
+          "text_summary": {
+            "count": 300,
+            "median_ms": 6.882235,
+            "mean_ms": 7.045639273333333,
+            "p95_ms": 8.293354700000002,
+            "round_medians_ms": [
+              6.7008875,
+              6.934972999999999,
+              6.9045214999999995
+            ],
+            "median_session_load_ms": 270.460299,
+            "median_first_invoke_ms": 7.273044
+          }
+        }
+      }
+    }
+  },
+  "historical_accuracy": {
+    "protocol": "classification-class-retrieval-v1",
+    "seed": 20260913,
+    "threads": 4,
+    "versions": {
+      "numpy": "2.4.4",
+      "Pillow": "12.1.1",
+      "torch": "2.11.0+cpu",
+      "torchvision": "0.26.0+cpu",
+      "open_clip_torch": "3.3.0",
+      "onnxruntime": "1.25.0",
+      "ai-edge-litert": "2.1.4"
+    },
+    "prompt_template": "a photo of a {class}",
+    "models": {
+      "v1_s0_onnx_int8": {
+        "id": "v1_s0_onnx_int8",
+        "label": "MobileCLIP-S0 v1 ONNX / FP32 image + INT8 text",
+        "image_sha256": "902b795d7914aaa686401d671414499d406cd0bdf25c82623c9fc6f5799627c0",
+        "text_sha256": "1df5c27c6770fff13efc1b68548cb4d86ac3cb8feba8ca836c383e63d07e3eed",
+        "total_bytes": 101067008
+      },
+      "v1_s2_onnx_int8": {
+        "id": "v1_s2_onnx_int8",
+        "label": "MobileCLIP-S2 v1 ONNX / FP32 image + INT8 text",
+        "image_sha256": "de61a9ad86c8ae357f0a7c7f3c29773b4d83b6bf93842411cc191c080a8e6ad8",
+        "text_sha256": "151abc70744ad095b7e4a88cd53c8d3df1cf5ec37cfd5cfea1cc96e54180e4d4",
+        "total_bytes": 207373237
+      },
+      "v2_s0_onnx_int8": {
+        "id": "v2_s0_onnx_int8",
+        "label": "MobileCLIP2-S0 ONNX / FP32 image + INT8 text",
+        "image_sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+        "text_sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+        "total_bytes": 109981472
+      },
+      "v2_s0_tflite_int8": {
+        "id": "v2_s0_tflite_int8",
+        "label": "MobileCLIP2-S0 TFLite / FP32 image + dynamic INT8 text",
+        "image_sha256": "b68f7483a74b160f3c6ac66df7f89bfc6a4a3d65b2535a19c5d5fccc7e3165f7",
+        "text_sha256": "1200154cca3595f82afd8a4b89c835427b83fde8be828f20f441c7f53bfc6649",
+        "total_bytes": 110861864
+      },
+      "legacy_clip_int8": {
+        "id": "legacy_clip_int8",
+        "label": "Historical app CLIP ORT / INT8 image + INT8 text / stretch224",
+        "image_sha256": "977f817cd83a37dbad50ac2629476f3792fe334c76f95ad8873434bb9faa6090",
+        "text_sha256": "fb5277500358c43f6309e588da7e30b4aaf0e976ba559ad8b3af481985457ee5",
+        "total_bytes": 160422272
+      }
+    },
+    "datasets": {
+      "cifar100": {
+        "metrics": {
+          "v1_s0_onnx_int8": {
+            "n": 2000,
+            "top1_correct": 1419,
+            "top1": 0.7095,
+            "top5": 0.918,
+            "macro_top1": 0.7094999999999999,
+            "class_query_p_at_10": 0.7600000000000001,
+            "class_query_map": 0.6786923444033417
+          },
+          "v1_s2_onnx_int8": {
+            "n": 2000,
+            "top1_correct": 1609,
+            "top1": 0.8045,
+            "top5": 0.959,
+            "macro_top1": 0.8045,
+            "class_query_p_at_10": 0.8600000000000001,
+            "class_query_map": 0.7799771127337444
+          },
+          "v2_s0_onnx_int8": {
+            "n": 2000,
+            "top1_correct": 1501,
+            "top1": 0.7505,
+            "top5": 0.942,
+            "macro_top1": 0.7505,
+            "class_query_p_at_10": 0.846,
+            "class_query_map": 0.7567101944415456
+          },
+          "v2_s0_tflite_int8": {
+            "n": 2000,
+            "top1_correct": 1549,
+            "top1": 0.7745,
+            "top5": 0.9515,
+            "macro_top1": 0.7745000000000001,
+            "class_query_p_at_10": 0.862,
+            "class_query_map": 0.7730252979148333
+          },
+          "legacy_clip_int8": {
+            "n": 2000,
+            "top1_correct": 1075,
+            "top1": 0.5375,
+            "top5": 0.809,
+            "macro_top1": 0.5375,
+            "class_query_p_at_10": 0.606,
+            "class_query_map": 0.47569352548302013
+          }
+        },
+        "comparisons": [
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v1_s2_onnx_int8",
+            "b_minus_a_top1_pp": 9.5,
+            "paired_bootstrap_95ci_pp": [
+              7.8,
+              11.25
+            ],
+            "a_only_correct": 66,
+            "b_only_correct": 256,
+            "both_correct": 1353,
+            "both_wrong": 325
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v2_s0_onnx_int8",
+            "b_minus_a_top1_pp": 4.1000000000000005,
+            "paired_bootstrap_95ci_pp": [
+              2.25,
+              5.951249999999993
+            ],
+            "a_only_correct": 130,
+            "b_only_correct": 212,
+            "both_correct": 1289,
+            "both_wrong": 369
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": 6.5,
+            "paired_bootstrap_95ci_pp": [
+              4.7,
+              8.25
+            ],
+            "a_only_correct": 99,
+            "b_only_correct": 229,
+            "both_correct": 1320,
+            "both_wrong": 352
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -17.2,
+            "paired_bootstrap_95ci_pp": [
+              -19.400000000000002,
+              -14.899999999999999
+            ],
+            "a_only_correct": 462,
+            "b_only_correct": 118,
+            "both_correct": 957,
+            "both_wrong": 463
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "v2_s0_onnx_int8",
+            "b_minus_a_top1_pp": -5.4,
+            "paired_bootstrap_95ci_pp": [
+              -7.1499999999999995,
+              -3.5999999999999996
+            ],
+            "a_only_correct": 202,
+            "b_only_correct": 94,
+            "both_correct": 1407,
+            "both_wrong": 297
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": -3.0,
+            "paired_bootstrap_95ci_pp": [
+              -4.55125,
+              -1.4000000000000001
+            ],
+            "a_only_correct": 172,
+            "b_only_correct": 112,
+            "both_correct": 1437,
+            "both_wrong": 279
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -26.700000000000003,
+            "paired_bootstrap_95ci_pp": [
+              -28.999999999999996,
+              -24.55
+            ],
+            "a_only_correct": 607,
+            "b_only_correct": 73,
+            "both_correct": 1002,
+            "both_wrong": 318
+          },
+          {
+            "a": "v2_s0_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": 2.4,
+            "paired_bootstrap_95ci_pp": [
+              1.4500000000000002,
+              3.4000000000000004
+            ],
+            "a_only_correct": 27,
+            "b_only_correct": 75,
+            "both_correct": 1474,
+            "both_wrong": 424
+          },
+          {
+            "a": "v2_s0_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -21.3,
+            "paired_bootstrap_95ci_pp": [
+              -23.599999999999998,
+              -19.05
+            ],
+            "a_only_correct": 530,
+            "b_only_correct": 104,
+            "both_correct": 971,
+            "both_wrong": 395
+          },
+          {
+            "a": "v2_s0_tflite_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -23.7,
+            "paired_bootstrap_95ci_pp": [
+              -26.05,
+              -21.45
+            ],
+            "a_only_correct": 561,
+            "b_only_correct": 87,
+            "both_correct": 988,
+            "both_wrong": 364
+          }
+        ]
+      },
+      "imagenette": {
+        "metrics": {
+          "v1_s0_onnx_int8": {
+            "n": 3925,
+            "top1_correct": 3853,
+            "top1": 0.981656050955414,
+            "top5": 1.0,
+            "macro_top1": 0.9814708700072714,
+            "class_query_p_at_10": 0.96,
+            "class_query_map": 0.9312715655582234
+          },
+          "v1_s2_onnx_int8": {
+            "n": 3925,
+            "top1_correct": 3898,
+            "top1": 0.9931210191082802,
+            "top5": 0.9997452229299363,
+            "macro_top1": 0.9929849715549846,
+            "class_query_p_at_10": 1.0,
+            "class_query_map": 0.9956639595159537
+          },
+          "v2_s0_onnx_int8": {
+            "n": 3925,
+            "top1_correct": 3848,
+            "top1": 0.9803821656050955,
+            "top5": 0.9989808917197452,
+            "macro_top1": 0.980075482351757,
+            "class_query_p_at_10": 1.0,
+            "class_query_map": 0.9929330038389785
+          },
+          "v2_s0_tflite_int8": {
+            "n": 3925,
+            "top1_correct": 3902,
+            "top1": 0.9941401273885351,
+            "top5": 1.0,
+            "macro_top1": 0.994012364795134,
+            "class_query_p_at_10": 1.0,
+            "class_query_map": 0.9937548273926966
+          },
+          "legacy_clip_int8": {
+            "n": 3925,
+            "top1_correct": 3282,
+            "top1": 0.8361783439490446,
+            "top5": 0.9941401273885351,
+            "macro_top1": 0.8340305398675557,
+            "class_query_p_at_10": 0.8099999999999999,
+            "class_query_map": 0.7416049550603627
+          }
+        },
+        "comparisons": [
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v1_s2_onnx_int8",
+            "b_minus_a_top1_pp": 1.1464968152866242,
+            "paired_bootstrap_95ci_pp": [
+              0.7388535031847133,
+              1.605095541401274
+            ],
+            "a_only_correct": 15,
+            "b_only_correct": 60,
+            "both_correct": 3838,
+            "both_wrong": 12
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v2_s0_onnx_int8",
+            "b_minus_a_top1_pp": -0.12738853503184713,
+            "paired_bootstrap_95ci_pp": [
+              -0.6369426751592357,
+              0.4076433121019108
+            ],
+            "a_only_correct": 59,
+            "b_only_correct": 54,
+            "both_correct": 3794,
+            "both_wrong": 18
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": 1.2484076433121019,
+            "paired_bootstrap_95ci_pp": [
+              0.8662420382165605,
+              1.6815286624203822
+            ],
+            "a_only_correct": 12,
+            "b_only_correct": 61,
+            "both_correct": 3841,
+            "both_wrong": 11
+          },
+          {
+            "a": "v1_s0_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -14.547770700636942,
+            "paired_bootstrap_95ci_pp": [
+              -15.669426751592356,
+              -13.426751592356686
+            ],
+            "a_only_correct": 582,
+            "b_only_correct": 11,
+            "both_correct": 3271,
+            "both_wrong": 61
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "v2_s0_onnx_int8",
+            "b_minus_a_top1_pp": -1.2738853503184715,
+            "paired_bootstrap_95ci_pp": [
+              -1.6815286624203822,
+              -0.9171974522292993
+            ],
+            "a_only_correct": 56,
+            "b_only_correct": 6,
+            "both_correct": 3842,
+            "both_wrong": 21
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": 0.1019108280254777,
+            "paired_bootstrap_95ci_pp": [
+              -0.2038216560509554,
+              0.3821656050955414
+            ],
+            "a_only_correct": 15,
+            "b_only_correct": 19,
+            "both_correct": 3883,
+            "both_wrong": 8
+          },
+          {
+            "a": "v1_s2_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -15.694267515923565,
+            "paired_bootstrap_95ci_pp": [
+              -16.89171974522293,
+              -14.522292993630574
+            ],
+            "a_only_correct": 621,
+            "b_only_correct": 5,
+            "both_correct": 3277,
+            "both_wrong": 22
+          },
+          {
+            "a": "v2_s0_onnx_int8",
+            "b": "v2_s0_tflite_int8",
+            "b_minus_a_top1_pp": 1.3757961783439492,
+            "paired_bootstrap_95ci_pp": [
+              0.9936305732484076,
+              1.7579617834394905
+            ],
+            "a_only_correct": 2,
+            "b_only_correct": 56,
+            "both_correct": 3846,
+            "both_wrong": 21
+          },
+          {
+            "a": "v2_s0_onnx_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -14.420382165605094,
+            "paired_bootstrap_95ci_pp": [
+              -15.668789808917197,
+              -13.222929936305732
+            ],
+            "a_only_correct": 602,
+            "b_only_correct": 36,
+            "both_correct": 3246,
+            "both_wrong": 41
+          },
+          {
+            "a": "v2_s0_tflite_int8",
+            "b": "legacy_clip_int8",
+            "b_minus_a_top1_pp": -15.796178343949045,
+            "paired_bootstrap_95ci_pp": [
+              -17.019108280254777,
+              -14.64968152866242
+            ],
+            "a_only_correct": 627,
+            "b_only_correct": 7,
+            "both_correct": 3275,
+            "both_wrong": 16
+          }
+        ]
+      }
+    }
+  },
+  "mixed_quantization": {
+    "calibration_images": 400,
+    "cifar100_training_images": 200,
+    "imagenette_training_images": 200,
+    "quantized_ops": {
+      "Conv": 46,
+      "MatMul": 6,
+      "Gemm": 3
+    },
+    "fp32_convolution_count": 49,
+    "evaluation_images_used_for_calibration": false
+  }
+}

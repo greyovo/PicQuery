@@ -22,6 +22,23 @@ local.properties
 
 # Python
 venv
+__pycache__/
+*.py[cod]
+
+# Keep only curated bilingual summaries; generate raw benchmark evidence under build/.
+/script/model-MobileCLIP2/results/**
+!/script/model-MobileCLIP2/results/README.md
+!/script/model-MobileCLIP2/results/README_zh.md
+!/script/model-MobileCLIP2/results/measured-summary.json
+!/script/model-MobileCLIP2/results/image-int8/
+!/script/model-MobileCLIP2/results/image-int8/README.md
+!/script/model-MobileCLIP2/results/image-int8/README_zh.md
+!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/
+!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/README.md
+!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/README_zh.md
+!/script/model-MobileCLIP2/results/ort-comparison/
+!/script/model-MobileCLIP2/results/ort-comparison/README.md
+!/script/model-MobileCLIP2/results/ort-comparison/README_zh.md
 
 # Signature config
 key.properties
@@ -33,3 +50,4 @@ website/docs/.vitepress/dist/
 website/docs/.vitepress/dist-ssr/
 node_modules/
 /.vscode/
+.omx/
