@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.util.Locale
@@ -48,7 +49,7 @@ fun SimilarityConfigBottomSheet(
 
             Text(
                 text = stringResource(R.string.search_image_similarity_threshold) +
-                    ": ${"%.2f".format(Locale.getDefault(), searchThreshold)}",
+                    ": ${"%.2f".format(LocalConfiguration.current.locales[0], searchThreshold)}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(

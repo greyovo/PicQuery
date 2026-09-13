@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">图搜</string>
+    <string name="mobileclip2_comparison_description">图像 FP32，文本权重动态 INT8 · CPU：图像 %1$d 线程，文本 %2$d 线程。在两个版本中索引同一相册，再使用相同描述比较搜索结果；索引独立保存。英文搜索可减少翻译差异。</string>
     <string name="logo_part1_pic">图</string>
     <string name="logo_part2_query">搜</string>
     <string name="permission_tips">我们需要相册的读取权限，来搜索您的相册</string>
@@ -51,6 +52,7 @@
     <string name="step_3_title">3. 开始搜索！</string>
     <string name="step_3_detail">等待索引完成后，即可搜索需要的图片</string>
     <string name="i_got_it">我知道了 👌</string>
+    <string name="search_error_toast">搜索时发生错误</string>
     <string name="privacy_statement_dialog">❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。</string>
     <string name="privacy_statement_agree">好的</string>
     <string name="privacy_statement_decline">不上报</string>

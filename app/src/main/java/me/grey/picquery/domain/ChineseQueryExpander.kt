@@ -1,5 +1,7 @@
 package me.grey.picquery.domain
 
+import me.grey.picquery.feature.normalizeBpeText
+
 internal object ChineseQueryExpander {
     private val aliases = linkedMapOf(
         "米粉" to listOf("rice noodles", "rice noodle soup", "vermicelli", "rice vermicelli"),
@@ -57,10 +59,10 @@ internal object ChineseQueryExpander {
     }
 
     fun mergeCandidates(originalText: String, translatedText: String): List<String> {
-        val candidates = linkedSetOf<String>()
+        val candidates = mutableListOf<String>()
         candidates.addAll(expand(originalText))
         translatedText.trim().takeIf { it.isNotEmpty() }?.let { candidates.add(it) }
         originalText.trim().takeIf { it.isNotEmpty() }?.let { candidates.add(it) }
-        return candidates.toList()
+        return candidates.distinctBy(::normalizeBpeText)
     }
 }

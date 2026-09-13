@@ -1,0 +1,11 @@
+gradle.projectsEvaluated {
+    def appProject = gradle.rootProject.project(':app')
+    appProject.tasks.named('detekt').configure {
+        autoCorrect = false
+        setSource(appProject.fileTree('../build/mobileclip2-commit-head/app/src/main/java') { include '**/*.kt' })
+        reports.xml.outputLocation.set(appProject.file('../build/mobileclip2-commit-head-detekt.xml'))
+        reports.txt.outputLocation.set(appProject.file('../build/mobileclip2-commit-head-detekt.txt'))
+        reports.html.outputLocation.set(appProject.file('../build/mobileclip2-commit-head-detekt.html'))
+        reports.sarif.outputLocation.set(appProject.file('../build/mobileclip2-commit-head-detekt.sarif'))
+    }
+}

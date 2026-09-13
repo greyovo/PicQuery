@@ -1,0 +1,92 @@
+{
+  "model": "MobileCLIP2-S0",
+  "pretrained": "dfndr2b",
+  "checkpoint_sha256": "ab91a1a0c4330d6b1913e24d5035dfdea15423316aaec649610c6b1c6ddd0e95",
+  "checkpoint_repository": "timm/MobileCLIP2-S0-OpenCLIP/",
+  "official_source": "https://github.com/apple-aiml-research/ml-mobileclip",
+  "normalized_outputs": true,
+  "embedding_dimension": 512,
+  "preprocessing": {
+    "resize_mode": "shortest",
+    "interpolation": "bilinear",
+    "center_crop": 256,
+    "color": "RGB",
+    "pixel_range": [
+      0,
+      1
+    ],
+    "mean": [
+      0,
+      0,
+      0
+    ],
+    "std": [
+      1,
+      1,
+      1
+    ],
+    "open_clip_transform": "Compose(\n    Resize(size=256, interpolation=bilinear, max_size=None, antialias=True)\n    CenterCrop(size=(256, 256))\n    MaybeConvertMode()\n    MaybeToTensor()\n    Normalize(mean=(0, 0, 0), std=(1, 1, 1))\n)"
+  },
+  "versions": {
+    "torch": "2.11.0+cpu",
+    "open_clip_torch": "3.3.0",
+    "timm": "1.0.27.dev0",
+    "onnx": "1.20.1",
+    "onnxruntime": "1.25.0"
+  },
+  "onnx_opset": 17,
+  "verification_threads": 4,
+  "image": {
+    "file": "mobileclip2_s0_image.onnx",
+    "input_name": "image",
+    "input_dtype": "float32",
+    "input_shape": [
+      1,
+      3,
+      256,
+      256
+    ],
+    "output_name": "embedding",
+    "output_dtype": "float32",
+    "output_shape": [
+      1,
+      512
+    ],
+    "quantization": "none",
+    "bytes": 45557999,
+    "sha256": "d78bf2af1248d4b9f89ddd7fdd90c761bfa0e6ba4f272677e6c8a1894e1aa509",
+    "pytorch_parity": {
+      "samples": 3,
+      "max_absolute_error": 4.023313522338867e-07,
+      "minimum_cosine": 0.9999998807907104
+    }
+  },
+  "text": {
+    "file": "mobileclip2_s0_text_int8.onnx",
+    "input_name": "text",
+    "input_dtype": "int32",
+    "input_shape": [
+      1,
+      77
+    ],
+    "output_name": "embedding",
+    "output_dtype": "float32",
+    "output_shape": [
+      1,
+      512
+    ],
+    "quantization": "dynamic_wi8_afp32",
+    "bytes": 64423473,
+    "sha256": "06bb86af9295001185436e28cfd12148be937f085b6e185fd70ea302a88783a7",
+    "pytorch_parity": {
+      "samples": 4,
+      "max_absolute_error": 0.07290108501911163,
+      "minimum_cosine": 0.9727557301521301
+    },
+    "quantization_details": {
+      "linear": "per-channel signed INT8 weights; dynamic activation quantization",
+      "embedding": "standard ORT Gather quantization (per-tensor 8-bit weights)",
+      "activation_interface": "float32 between operators; int32 token input"
+    }
+  }
+}

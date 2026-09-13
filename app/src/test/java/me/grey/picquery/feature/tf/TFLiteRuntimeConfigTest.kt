@@ -12,6 +12,7 @@ class TFLiteRuntimeConfigTest {
         val config = TFLiteRuntimeConfig.Default
 
         assertFalse(config.useGpuDelegate)
+        assertFalse(config.useNativeXnnpack)
         assertEquals(4, config.numThreads)
     }
 
@@ -27,6 +28,13 @@ class TFLiteRuntimeConfigTest {
     fun `rejects non-positive thread counts`() {
         assertThrows(IllegalArgumentException::class.java) {
             TFLiteRuntimeConfig(numThreads = 0)
+        }
+    }
+
+    @Test
+    fun `rejects simultaneous GPU and native CPU delegates`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            TFLiteRuntimeConfig(useGpuDelegate = true, useNativeXnnpack = true)
         }
     }
 }

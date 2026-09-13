@@ -8,9 +8,26 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
 }
 
+abstract class StageMobileClipAssets : Sync() {
+    @get:OutputDirectory
+    abstract val assetDirectory: DirectoryProperty
+
+    init {
+        into(assetDirectory)
+    }
+}
+
 android {
     namespace = "me.grey.picquery"
-    compileSdk = 36
+    compileSdk = 37
+    ndkVersion = "29.0.14206865"
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 
     defaultConfig {
         applicationId = "me.grey.picquery"
@@ -18,15 +35,22 @@ android {
         targetSdk = 35
         versionCode = 8
         versionName = "1.2.0"
+        buildConfigField("String", "LITERT_VERSION", "\"${libs.versions.litert.asProvider().get()}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                arguments += "-DANDROID_STL=c++_static"
+            }
+        }
         vectorDrawables {
             useSupportLibrary = true
         }
 
         ndk {
             //noinspection ChromeOsAbiSupport
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+            abiFilters += providers.gradleProperty("mobileclip2Abis").orNull
+                ?.split(",") ?: listOf("armeabi-v7a", "arm64-v8a")
         }
     }
 
@@ -41,6 +65,31 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    flavorDimensions += "inference"
+    productFlavors {
+        create("onnx") {
+            dimension = "inference"
+            applicationIdSuffix = ".mobileclip2.onnx"
+            versionNameSuffix = "-mc2-onnx"
+            buildConfigField("String", "MOBILECLIP2_BACKEND", "\"onnx\"")
+            manifestPlaceholders["appLabel"] = "PicQuery MC2 ONNX"
+        }
+        create("tflite") {
+            dimension = "inference"
+            applicationIdSuffix = ".mobileclip2.tflite"
+            versionNameSuffix = "-mc2-tflite"
+            buildConfigField("String", "MOBILECLIP2_BACKEND", "\"tflite\"")
+            manifestPlaceholders["appLabel"] = "PicQuery MC2 TFLite"
+        }
+    }
+
+    // Match the existing app: FP32 image tower + dynamic INT8 text weights.
+    sourceSets.getByName("main").assets.directories.clear()
+
+    androidResources {
+        noCompress += listOf("onnx", "tflite")
     }
 
     compileOptions {
@@ -60,13 +109,45 @@ android {
     }
 }
 
+// The XNNPACK options ABI is pinned to the existing runtime, including its defaults return type.
+check(libs.versions.litert.asProvider().get() == "1.4.2") {
+    "Revalidate the native XNNPACK headers and device parity before changing LiteRT."
+}
+
+androidComponents {
+    onVariants { variant ->
+        val backend = variant.productFlavors.single { it.first == "inference" }.second
+        val modelFiles = when (backend) {
+            "onnx" -> listOf("mobileclip2_s0_image.onnx", "mobileclip2_s0_text_int8.onnx")
+            else -> listOf("image_model.tflite", "text_model_dynamic_wi8.tflite")
+        }
+        val modelAssets = tasks.register<StageMobileClipAssets>(
+            "stage${variant.name.replaceFirstChar { it.uppercase() }}MobileClipAssets"
+        ) {
+            assetDirectory.set(layout.buildDirectory.dir("generated/mobileclip2Assets/${variant.name}"))
+            from("src/main/assets") {
+                include("bpe_vocab_gz", "mlkit/**")
+                include(modelFiles)
+            }
+            doFirst {
+                modelFiles.forEach { modelFile ->
+                    check(file("src/main/assets/$modelFile").isFile) {
+                        "Missing $modelFile. See script/model-MobileCLIP2/README.md for export instructions."
+                    }
+                }
+            }
+        }
+        variant.sources.assets?.addGeneratedSourceDirectory(modelAssets, StageMobileClipAssets::assetDirectory)
+    }
+}
+
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
-val kotlinVersion = "2.3.21"
+val kotlinVersion = libs.versions.kotlin.asProvider().get()
 
 configurations.matching { it.name == "composeMappingProducerClasspath" }.configureEach {
     resolutionStrategy.force("org.jetbrains.kotlin:compose-group-mapping:$kotlinVersion")
@@ -163,14 +244,13 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.androidx.test.monitor)
-    androidTestImplementation(libs.androidx.test.ext)
 }
 
 detekt {
-    toolVersion = "1.23.3"
+    toolVersion = "1.23.8"
     config.setFrom(files("${project.rootDir}/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
-    autoCorrect = true
+    autoCorrect = false
     parallel = true
     ignoreFailures = true // Set to true to make detekt non-blocking
 }

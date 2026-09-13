@@ -22,6 +22,12 @@ local.properties
 
 # Python
 venv
+__pycache__/
+*.py[cod]
+
+# Reproducible benchmark tensors and local diagnostic working copies
+/script/model-MobileCLIP2/results/**/*.f32
+/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/diagnose-fp32-platform.py
 
 # Signature config
 key.properties
@@ -33,3 +39,4 @@ website/docs/.vitepress/dist/
 website/docs/.vitepress/dist-ssr/
 node_modules/
 /.vscode/
+.omx/

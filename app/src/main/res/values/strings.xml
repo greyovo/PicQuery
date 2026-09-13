@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PicQuery</string>
+    <string name="mobileclip2_comparison_description">FP32 image, dynamic INT8 text weights · CPU threads: image %1$d, text %2$d. Index the same album in both versions, then compare results using the same query. Each version keeps its own index. English queries reduce translation differences.</string>
     <string name="logo_part1_pic">Pic</string>
     <string name="logo_part2_query">Query</string>
     <string name="permission_tips">We need access to your albums for searching.</string>

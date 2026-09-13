@@ -1,0 +1,12 @@
+# Portable scripts and checksum-pinned upstream headers use LF on every platform.
+/gradlew text eol=lf
+/script/model-MobileCLIP2/*.py text eol=lf
+/script/model-MobileCLIP2/tests/*.py text eol=lf
+/app/src/main/cpp/third_party/litert/** text eol=lf
+
+# Archived measurement receipts include byte-level SHA256 references.
+# Preserve their original bytes; do not normalize historical evidence.
+/script/model-MobileCLIP2/results/** -text -whitespace
+/app/src/main/assets/mobileclip2*.json -text
+/app/src/main/assets/mobileclip2*.config -text
+/app/src/androidTest/assets/mobileclip2/*.json -text

@@ -45,11 +45,9 @@ private fun getPairs(word: List<String>): Set<Pair<String, String>> {
     return word.zipWithNext().map { it.first to it.second }.toSet()
 }
 
-private fun whitespaceClean(text: String): String {
-    var cleanedText = text.replace(Regex("\\s+"), " ")
-    cleanedText = cleanedText.trim()
-    return cleanedText
-}
+private val bpeWhitespace = Regex("\\s+")
+
+internal fun normalizeBpeText(text: String): String = text.replace(bpeWhitespace, " ").trim().lowercase()
 
 internal fun utf8ByteValues(token: String): IntArray {
     return token.toByteArray(Charsets.UTF_8)
@@ -141,7 +139,7 @@ class BPETokenizer(context: Context, bpePath: String = "bpe_vocab_gz") : Tokeniz
     }
 
     private fun encode(text: String): List<Int> {
-        val cleanedText = whitespaceClean(text).lowercase()
+        val cleanedText = normalizeBpeText(text)
         val matcher = PATTERN.matcher(cleanedText)
         val matches = mutableListOf<String>()
         while (matcher.find()) {

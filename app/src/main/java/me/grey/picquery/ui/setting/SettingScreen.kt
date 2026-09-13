@@ -33,9 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import me.grey.picquery.BuildConfig
 import me.grey.picquery.R
 import me.grey.picquery.common.Constants.PRIVACY_URL
 import me.grey.picquery.common.Constants.SOURCE_REPO_URL
+import me.grey.picquery.feature.mobileclip2.MobileCLIP2Session
+import me.grey.picquery.feature.mobileclip2.MobileCLIP2Tower
 import me.grey.picquery.ui.common.BackButton
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,6 +58,20 @@ fun SettingScreen(onNavigateBack: () -> Unit, navigateToIndexMgr: () -> Unit) {
                 LogoRow(modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp))
             }
             item { InformationRow() }
+            item {
+                ListItem(
+                    headlineContent = { Text("MobileCLIP2-S0 · ${BuildConfig.MOBILECLIP2_BACKEND.uppercase()}") },
+                    supportingContent = {
+                        Text(
+                            stringResource(
+                                R.string.mobileclip2_comparison_description,
+                                MobileCLIP2Session.numThreads(MobileCLIP2Tower.IMAGE),
+                                MobileCLIP2Session.numThreads(MobileCLIP2Tower.TEXT)
+                            )
+                        )
+                    }
+                )
+            }
             item { Box(modifier = Modifier.height(15.dp)) }
             item { UploadLogSettingItem() }
             item { AlbumIndexManagerUIItem(navigateToIndexMgr) }
