@@ -1,0 +1,101 @@
+import 'package:flutter/material.dart';
+import 'package:picquery_app/src/utils/adaptive_display.dart';
+import 'package:picquery_app/src/utils/color_scheme.dart';
+import 'package:picquery_app/src/utils/localization.dart';
+
+const String kSearchInputHeroTag = 'search_query_input';
+const double kSearchInputMaxWidth = 768;
+
+/// The search input card used on both the search tab and the search results
+/// page. Wrapped in a [Hero] with [kSearchInputHeroTag] in both places.
+class SearchInputCard extends StatelessWidget {
+  const SearchInputCard({
+    super.key,
+    required this.queryController,
+    required this.onSearch,
+    required this.onImageUpload,
+  });
+
+  final TextEditingController queryController;
+  final VoidCallback onSearch;
+  final VoidCallback onImageUpload;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: TextField(
+        autofocus: false,
+        controller: queryController,
+        maxLength: 77,
+        maxLines: 1,
+        decoration: InputDecoration(
+          hintText: context.l10n.searchPhotosHint,
+          counter: const SizedBox.shrink(),
+          hintStyle: TextStyle(
+            color: context.colors.onSurfaceVariant.withValues(alpha: 0.6),
+          ),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: onImageUpload,
+                icon: const Icon(Icons.image_outlined),
+                tooltip: context.l10n.searchByImage,
+              ),
+              const SizedBox(height: 24, child: VerticalDivider()),
+              if (context.isLargeScreen)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: FilledButton.icon(
+                    onPressed: onSearch,
+                    icon: const Icon(Icons.search_rounded, size: 24),
+                    label: Text(context.l10n.search),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(124, 48),
+                      shape: const StadiumBorder(),
+                    ),
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Tooltip(
+                    message: context.l10n.search,
+                    child: FilledButton(
+                      onPressed: onSearch,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.square(48),
+                        padding: EdgeInsets.zero,
+                        shape: const CircleBorder(),
+                      ),
+                      child: const Icon(Icons.search_rounded, size: 22),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          filled: true,
+          fillColor: context.colors.surface.withValues(alpha: 0.72),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide(color: context.colors.outlineVariant),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide(color: context.colors.outlineVariant),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide(color: context.colors.primary, width: 1.5),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
+        ),
+        onSubmitted: (_) => onSearch(),
+      ),
+    );
+  }
+}

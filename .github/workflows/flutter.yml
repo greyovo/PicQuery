@@ -1,0 +1,337 @@
+name: Build Flutter apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version used for a manual build (for example: 1.2.3)"
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: "Version used for the build"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  ARTIFACT_RETENTION_DAYS: 14
+  MODEL_REPOSITORY_REF: master
+
+jobs:
+  prepare-models:
+    name: Export MobileCLIP models
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out model exporter
+        uses: actions/checkout@v4
+        with:
+          repository: greyovo/ml-mobileclip
+          ref: ${{ env.MODEL_REPOSITORY_REF }}
+          path: ml-mobileclip
+
+      - name: astral-sh/setup-uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: ml-mobileclip/uv.lock
+
+      - name: Cache MobileCLIP checkpoint
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: mobileclip2-s0-${{ runner.os }}-v1
+
+      - name: Install model exporter dependencies
+        working-directory: ml-mobileclip
+        run: uv sync
+
+      - name: Export MobileCLIP2-S0 models
+        working-directory: ml-mobileclip
+        run: uv run python export_fp16_onnx.py s0
+
+      - name: Prepare models for PicQuery
+        shell: bash
+        run: |
+          mkdir exported-models
+          cp ml-mobileclip/mobileclip2_s0_text_fp16.onnx exported-models/mobileclip2_s0_text.onnx
+          cp ml-mobileclip/mobileclip2_s0_visual_fp16.onnx exported-models/mobileclip2_s0_visual.onnx
+
+      - name: Upload generated models
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobileclip2-s0-models
+          path: exported-models/*.onnx
+          if-no-files-found: error
+          retention-days: 1
+
+  build-android:
+    name: Android
+    needs: prepare-models
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: mobileclip2-s0-models
+          path: generated-models
+
+      - name: Import generated models
+        shell: bash
+        run: cp generated-models/*.onnx assets/models/
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          raw_version="${{ inputs.version }}"
+          if [[ -z "$raw_version" ]]; then
+            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
+          fi
+          version="${raw_version#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
+            exit 1
+          fi
+          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: >-
+          flutter build apk --release
+          --target-platform=android-arm64
+          --build-name="${{ steps.version.outputs.build_name }}"
+          --build-number="${{ github.run_number }}"
+
+      - name: Prepare artifact
+        shell: bash
+        run: mv build/app/outputs/flutter-apk/app-release.apk "PicQuery-${{ steps.version.outputs.version }}-android-arm64.apk"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: picquery-android
+          path: PicQuery-*-android-arm64.apk
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+  build-macos:
+    name: macOS
+    needs: prepare-models
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: mobileclip2-s0-models
+          path: generated-models
+
+      - name: Import generated models
+        shell: bash
+        run: cp generated-models/*.onnx assets/models/
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          raw_version="${{ inputs.version }}"
+          if [[ -z "$raw_version" ]]; then
+            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
+          fi
+          version="${raw_version#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
+            exit 1
+          fi
+          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build macOS app
+        run: >-
+          flutter build macos --release
+          --build-name="${{ steps.version.outputs.build_name }}"
+          --build-number="${{ github.run_number }}"
+
+      - name: Package app
+        shell: bash
+        run: |
+          app_path="$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
+          if [[ -z "$app_path" ]]; then
+            echo "No macOS .app bundle was produced" >&2
+            exit 1
+          fi
+          ditto -c -k --sequesterRsrc --keepParent "$app_path" "PicQuery-${{ steps.version.outputs.version }}-macos.zip"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: picquery-macos
+          path: PicQuery-*-macos.zip
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+  build-windows:
+    name: Windows
+    needs: prepare-models
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: mobileclip2-s0-models
+          path: generated-models
+
+      - name: Import generated models
+        shell: bash
+        run: cp generated-models/*.onnx assets/models/
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          raw_version="${{ inputs.version }}"
+          if [[ -z "$raw_version" ]]; then
+            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
+          fi
+          version="${raw_version#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
+            exit 1
+          fi
+          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows app
+        run: >-
+          flutter build windows --release
+          --build-name="${{ steps.version.outputs.build_name }}"
+          --build-number="${{ github.run_number }}"
+
+      - name: Package app
+        shell: pwsh
+        run: Compress-Archive -Path "build/windows/x64/runner/Release/*" -DestinationPath "PicQuery-${{ steps.version.outputs.version }}-windows-x64.zip"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: picquery-windows
+          path: PicQuery-*-windows-x64.zip
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+  build-linux:
+    name: Linux
+    needs: prepare-models
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: mobileclip2-s0-models
+          path: generated-models
+
+      - name: Import generated models
+        shell: bash
+        run: cp generated-models/*.onnx assets/models/
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          raw_version="${{ inputs.version }}"
+          if [[ -z "$raw_version" ]]; then
+            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
+          fi
+          version="${raw_version#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
+            exit 1
+          fi
+          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Linux app
+        run: >-
+          flutter build linux --release
+          --build-name="${{ steps.version.outputs.build_name }}"
+          --build-number="${{ github.run_number }}"
+
+      - name: Package app
+        shell: bash
+        run: tar -C build/linux/x64/release -czf "PicQuery-${{ steps.version.outputs.version }}-linux-x64.tar.gz" bundle
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: picquery-linux
+          path: PicQuery-*-linux-x64.tar.gz
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}

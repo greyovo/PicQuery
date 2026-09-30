@@ -1,0 +1,109 @@
+name: Publish a new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag (for example: v1.1.0)"
+        required: true
+        type: string
+      release_notes:
+        description: "Release notes in Markdown (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  authorize:
+    name: Authorize release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Allow only the repository owner
+        env:
+          ACTOR: ${{ github.actor }}
+        run: |
+          if [[ "$ACTOR" != "greyovo" ]]; then
+            echo "Only greyovo can publish a release." >&2
+            exit 1
+          fi
+
+  validate:
+    name: Validate release
+    needs: authorize
+    runs-on: ubuntu-latest
+    outputs:
+      previous_tag: ${{ steps.release.outputs.previous_tag }}
+    steps:
+      - name: Validate tag and find previous release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag must look like v1.2.3 or v1.2.3-beta.1: $TAG" >&2
+            exit 1
+          fi
+
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists: $TAG" >&2
+            exit 1
+          fi
+
+          previous_tag="$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq .tag_name)"
+          if [[ -z "$previous_tag" ]]; then
+            echo "No previous stable release was found." >&2
+            exit 1
+          fi
+          echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build release assets
+    needs: validate
+    uses: ./.github/workflows/flutter.yml
+    with:
+      version: ${{ inputs.tag }}
+
+  publish:
+    name: Publish GitHub Release
+    needs: [validate, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          pattern: picquery-*
+          path: dist
+          merge-multiple: true
+
+      - name: Prepare release notes
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          PREVIOUS_TAG: ${{ needs.validate.outputs.previous_tag }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          if [[ -n "$RELEASE_NOTES" ]]; then
+            printf '%s\n\n' "$RELEASE_NOTES" > release-notes.md
+          else
+            : > release-notes.md
+          fi
+          printf '[查看提交对比](https://github.com/%s/compare/%s...%s)\n' \
+            "$GITHUB_REPOSITORY" "$PREVIOUS_TAG" "$TAG" >> release-notes.md
+
+      - name: Create and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        shell: bash
+        run: |
+          gh release create "$TAG" \
+            dist/* \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --notes-file release-notes.md

@@ -1,53 +1,67 @@
-# General
-*.iml
-.gradle
-.idea
-/local.properties
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-output-metadata.json
-local.properties
-*.apk
-/app/release/
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# Models
-*.ptl
-*.pt
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+settings.local.json
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+**/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Environment
+.env*
+
 *.onnx
-*.ort
-*.tflite
+!assets/models/mt_zho-eng.fp32.quantized.onnx
+*.pt
+android/build/reports/problems/problems-report.html
 
-# Python
-venv
-__pycache__/
-*.py[cod]
+*.dll
 
-# Keep only curated bilingual summaries; generate raw benchmark evidence under build/.
-/script/model-MobileCLIP2/results/**
-!/script/model-MobileCLIP2/results/README.md
-!/script/model-MobileCLIP2/results/README_zh.md
-!/script/model-MobileCLIP2/results/measured-summary.json
-!/script/model-MobileCLIP2/results/image-int8/
-!/script/model-MobileCLIP2/results/image-int8/README.md
-!/script/model-MobileCLIP2/results/image-int8/README_zh.md
-!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/
-!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/README.md
-!/script/model-MobileCLIP2/results/image-int8/pixel8a-accuracy/README_zh.md
-!/script/model-MobileCLIP2/results/ort-comparison/
-!/script/model-MobileCLIP2/results/ort-comparison/README.md
-!/script/model-MobileCLIP2/results/ort-comparison/README_zh.md
+# FVM Version Cache
+.fvm/
 
-# Signature config
-key.properties
-*.jks
-
-# NPM
+# Preserved documentation website
+node_modules/
 website/docs/.vitepress/cache/
 website/docs/.vitepress/dist/
 website/docs/.vitepress/dist-ssr/
-node_modules/
-/.vscode/
-.omx/

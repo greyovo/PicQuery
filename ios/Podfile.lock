@@ -1,0 +1,116 @@
+PODS:
+  - DKImagePickerController/Core (4.3.9):
+    - DKImagePickerController/ImageDataManager
+    - DKImagePickerController/Resource
+  - DKImagePickerController/ImageDataManager (4.3.9)
+  - DKImagePickerController/PhotoGallery (4.3.9):
+    - DKImagePickerController/Core
+    - DKPhotoGallery
+  - DKImagePickerController/Resource (4.3.9)
+  - DKPhotoGallery (0.0.19):
+    - DKPhotoGallery/Core (= 0.0.19)
+    - DKPhotoGallery/Model (= 0.0.19)
+    - DKPhotoGallery/Preview (= 0.0.19)
+    - DKPhotoGallery/Resource (= 0.0.19)
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Core (0.0.19):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Preview
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Model (0.0.19):
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Preview (0.0.19):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Resource
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Resource (0.0.19):
+    - SDWebImage
+    - SwiftyGif
+  - file_picker (0.0.1):
+    - DKImagePickerController/PhotoGallery
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_onnxruntime (0.0.1):
+    - Flutter
+    - onnxruntime-objc (= 1.28.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - onnxruntime-c (1.28.0)
+  - onnxruntime-objc (1.28.0):
+    - onnxruntime-objc/Core (= 1.28.0)
+  - onnxruntime-objc/Core (1.28.0):
+    - onnxruntime-c (= 1.28.0)
+  - open_filex (0.0.2):
+    - Flutter
+  - photo_manager (3.12.0):
+    - Flutter
+    - FlutterMacOS
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - share_plus (0.0.1):
+    - Flutter
+  - SwiftyGif (5.4.5)
+  - url_launcher_ios (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - file_picker (from `.symlinks/plugins/file_picker/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_onnxruntime (from `.symlinks/plugins/flutter_onnxruntime/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - open_filex (from `.symlinks/plugins/open_filex/ios`)
+  - photo_manager (from `.symlinks/plugins/photo_manager/darwin`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - DKImagePickerController
+    - DKPhotoGallery
+    - onnxruntime-c
+    - onnxruntime-objc
+    - SDWebImage
+    - SwiftyGif
+
+EXTERNAL SOURCES:
+  file_picker:
+    :path: ".symlinks/plugins/file_picker/ios"
+  Flutter:
+    :path: Flutter
+  flutter_onnxruntime:
+    :path: ".symlinks/plugins/flutter_onnxruntime/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  open_filex:
+    :path: ".symlinks/plugins/open_filex/ios"
+  photo_manager:
+    :path: ".symlinks/plugins/photo_manager/darwin"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+
+SPEC CHECKSUMS:
+  DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
+  DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
+  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+  flutter_onnxruntime: eaedbf39046a06e427f7fa761b70d5549860009d
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  onnxruntime-c: 1cf87aaca94f53ab33bb9729104ec0a5b88291e9
+  onnxruntime-objc: f98b9629e1f78020afc354e33a5afd947654c76d
+  open_filex: 432f3cd11432da3e39f47fcc0df2b1603854eff1
+  photo_manager: c303e4476f6c220274119f0212a7753e45edd4a2
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
+  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+
+PODFILE CHECKSUM: d0a6bd4c0b0dcd6bff3494d85eba1751316b8608
+
+COCOAPODS: 1.16.2
