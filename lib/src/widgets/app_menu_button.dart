@@ -36,7 +36,7 @@ class AppMenuButton<T> extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return MenuAnchor(
-      alignmentOffset: alignmentOffset,
+      animated: true,
       style: MenuStyle(
         padding: const WidgetStatePropertyAll(EdgeInsets.all(6)),
         shape: WidgetStatePropertyAll(

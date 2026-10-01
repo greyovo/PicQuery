@@ -47,7 +47,6 @@ class SettingsPage extends WatchingWidget {
                 value: appLocale,
                 values: AppLocale.values,
                 labelFor: (value) => _localeLabel(context, value),
-                iconFor: _localeIcon,
                 onChanged: localeManager.setLocale,
               ),
             ],
@@ -98,13 +97,6 @@ class SettingsPage extends WatchingWidget {
     );
   }
 
-  IconData _localeIcon(AppLocale locale) => switch (locale) {
-    AppLocale.system => Icons.settings_suggest_outlined,
-    AppLocale.simplifiedChinese => Icons.translate_rounded,
-    AppLocale.traditionalChinese => Icons.translate_rounded,
-    AppLocale.english => Icons.abc_rounded,
-  };
-
   String _localeLabel(BuildContext context, AppLocale locale) =>
       switch (locale) {
         AppLocale.system => context.l10n.systemLanguage,
@@ -153,7 +145,7 @@ class SettingsPage extends WatchingWidget {
     required T value,
     required List<T> values,
     required String Function(T value) labelFor,
-    required IconData Function(T value) iconFor,
+    IconData Function(T value)? iconFor,
     required ValueChanged<T> onChanged,
   }) {
     return ListTile(
@@ -166,7 +158,9 @@ class SettingsPage extends WatchingWidget {
             .map(
               (option) => AppMenuItem<T>(
                 value: option,
-                leadingIcon: Icon(iconFor(option), size: 18),
+                leadingIcon: iconFor == null
+                    ? null
+                    : Icon(iconFor(option), size: 18),
                 child: Text(labelFor(option)),
               ),
             )
