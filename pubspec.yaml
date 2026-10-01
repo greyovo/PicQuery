@@ -70,4 +70,5 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/picquery-icon.png
     - assets/models/

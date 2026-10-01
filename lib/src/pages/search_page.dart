@@ -235,15 +235,46 @@ class _HeroSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          isDesktop
-              ? context.l10n.searchPhotosTitle
-              : context.l10n.searchPhotosTitleMobile,
-          style:
-              (isDesktop
-                      ? Theme.of(context).textTheme.headlineLarge
-                      : Theme.of(context).textTheme.headlineMedium)
-                  ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -1),
+        Row(
+          children: [
+            Transform.translate(
+              offset: const Offset(-6, 0),
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  context.colors.surface,
+                  BlendMode.multiply,
+                ),
+                child: Image.asset(
+                  'assets/picquery-icon.png',
+                  width: isDesktop ? 52 : 50,
+                  height: isDesktop ? 52 : 50,
+                ),
+              ),
+            ),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Pic',
+                    style: TextStyle(color: context.colors.onSurface),
+                  ),
+                  WidgetSpan(child: SizedBox(width: 1)),
+                  TextSpan(
+                    text: 'Query',
+                    style: TextStyle(color: context.colors.primary),
+                  ),
+                ],
+              ),
+              style:
+                  (isDesktop
+                          ? Theme.of(context).textTheme.headlineLarge
+                          : Theme.of(context).textTheme.headlineMedium)
+                      ?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -1,
+                      ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
