@@ -49,6 +49,7 @@ class PicQueryApp extends WatchingWidget {
 
   @override
   Widget build(BuildContext context) {
+    const seedColor = Color(0xFF0478D7);
     final themeMode = watchValue((ThemeManager m) => m.themeMode);
     final locale = watchValue((LocaleManager m) => m.locale);
     return MaterialApp(
@@ -58,13 +59,13 @@ class PicQueryApp extends WatchingWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       themeMode: themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3F51B5)),
+        colorScheme: ColorScheme.fromSeed(seedColor: seedColor),
         useMaterial3: true,
         fontFamily: 'Microsoft YaHei',
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF3F51B5),
+          seedColor: seedColor,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
