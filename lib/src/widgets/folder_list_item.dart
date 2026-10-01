@@ -7,6 +7,8 @@ import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
+const albumGridCoverAspectRatio = 1.15;
+
 /// Shared album row used by album management and search-scope selection.
 class FolderListItem extends StatelessWidget {
   const FolderListItem({
@@ -23,6 +25,7 @@ class FolderListItem extends StatelessWidget {
     this.onDelete,
     this.onResumeIndexing,
     this.statusLabel,
+    this.isUpdateAvailable = false,
     this.isGridCard = false,
   });
 
@@ -38,6 +41,7 @@ class FolderListItem extends StatelessWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onResumeIndexing;
   final String? statusLabel;
+  final bool isUpdateAvailable;
   final bool isGridCard;
 
   String get _displayName {
@@ -163,191 +167,172 @@ class FolderListItem extends StatelessWidget {
     ColorScheme colorScheme,
     bool isIndexing,
   ) {
-    final percentage = ((progress ?? 0) * 100).round();
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: isIndexing
-              ? colorScheme.primary.withValues(alpha: .28)
-              : colorScheme.outlineVariant.withValues(alpha: .55),
-        ),
-      ),
-      child: Stack(
-        children: [
-          InkWell(
-            onTap: onTap,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      _AlbumHero(path: folder.coverPath),
-                      if (isIndexing)
-                        Positioned(
-                          left: 10,
-                          bottom: 10,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                            child: Text(
-                              context.l10n.indexingPercent(percentage),
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: colorScheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 8, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(height: 3),
-                      if (isIndexing) ...[
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _indexingSummary(context),
-                                style: TextStyle(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '$percentage%',
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 7),
-                        LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 7,
-                          borderRadius: BorderRadius.circular(99),
-                        ),
-                        const SizedBox(height: 6),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton.filledTonal(
-                            onPressed: onCancelIndexing,
-                            tooltip: context.l10n.stop,
-                            icon: const Icon(Icons.stop_rounded, size: 18),
-                            style: IconButton.styleFrom(
-                              minimumSize: const Size.square(36),
-                              maximumSize: const Size.square(36),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ] else
-                        Row(
-                          children: [
-                            Icon(
-                              folder.isIndexComplete
-                                  ? Icons.check_circle_rounded
-                                  : Icons.pending_outlined,
-                              size: 18,
-                              color: folder.isIndexComplete
-                                  ? colorScheme.tertiary
-                                  : colorScheme.primary,
-                            ),
-                            const SizedBox(width: 7),
-                            Expanded(
-                              child: Text(
-                                statusLabel ??
-                                    context.l10n.photoCount(folder.imageCount),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            if (onResumeIndexing != null)
-                              IconButton.filledTonal(
-                                onPressed: onResumeIndexing,
-                                tooltip: folder.isIndexComplete
-                                    ? context.l10n.update
-                                    : context.l10n.continueAction,
-                                icon: const Icon(
-                                  Icons.refresh_rounded,
-                                  size: 18,
-                                ),
-                                style: IconButton.styleFrom(
-                                  minimumSize: const Size.square(32),
-                                  maximumSize: const Size.square(32),
-                                  padding: EdgeInsets.zero,
-                                ),
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    final coverBorderColor = isIndexing
+        ? colorScheme.primary.withValues(alpha: .45)
+        : colorScheme.outlineVariant.withValues(alpha: .7);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: .16),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-          Positioned(
-            top: 6,
-            right: 6,
-            child: AppMenuButton<_AlbumAction>(
-              onSelected: (action) {
-                if (action == _AlbumAction.delete) onDelete?.call();
-              },
-              builder: (context, controller, child) => IconButton.filledTonal(
-                onPressed: () =>
-                    controller.isOpen ? controller.close() : controller.open(),
-                tooltip: context.l10n.albumActions,
-                icon: const Icon(Icons.more_vert, size: 18),
-                style: IconButton.styleFrom(
-                  minimumSize: const Size.square(34),
-                  maximumSize: const Size.square(34),
-                  padding: EdgeInsets.zero,
+          foregroundDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: coverBorderColor),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: GestureDetector(
+              onTap: onTap,
+              child: AspectRatio(
+                aspectRatio: albumGridCoverAspectRatio,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _AlbumHero(path: folder.coverPath),
+                    if (isIndexing) ...[
+                      ColoredBox(color: Colors.black.withValues(alpha: .3)),
+                      Center(
+                        child: SizedBox.square(
+                          dimension: 52,
+                          child: CircularProgressIndicator(
+                            value: progress,
+                            strokeWidth: 4,
+                            color: Colors.white,
+                            backgroundColor: Colors.white.withValues(alpha: .3),
+                          ),
+                        ),
+                      ),
+                    ] else if (onResumeIndexing != null)
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: IconButton.filledTonal(
+                          onPressed: onResumeIndexing,
+                          tooltip: isUpdateAvailable
+                              ? context.l10n.update
+                              : context.l10n.continueAction,
+                          icon: Icon(
+                            isUpdateAvailable
+                                ? Icons.arrow_upward_rounded
+                                : Icons.play_arrow_rounded,
+                            size: 18,
+                          ),
+                          style: IconButton.styleFrom(
+                            minimumSize: const Size.square(32),
+                            maximumSize: const Size.square(32),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              items: [
-                if (onDelete != null)
-                  AppMenuItem(
-                    value: _AlbumAction.delete,
-                    leadingIcon: const Icon(Icons.delete_outline),
-                    child: Text(context.l10n.removeAlbumIndex),
-                  ),
-              ],
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4, top: 1),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.normal),
+                        ),
+                        const SizedBox(height: 2),
+                        if (isIndexing)
+                          Text(
+                            _gridIndexingSummary(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: colorScheme.onSurfaceVariant),
+                          )
+                        else
+                          Row(
+                            children: [
+                              if (!folder.isIndexComplete ||
+                                  isUpdateAvailable) ...[
+                                Icon(
+                                  folder.isIndexComplete
+                                      ? Icons.arrow_upward_rounded
+                                      : Icons.pause_rounded,
+                                  size: 14,
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(width: 5),
+                              ],
+                              Expanded(
+                                child: Text(
+                                  statusLabel ??
+                                      context.l10n.photoCount(
+                                        folder.imageCount,
+                                      ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              AppMenuButton<_AlbumAction>(
+                onSelected: (action) {
+                  if (action == _AlbumAction.delete) onDelete?.call();
+                },
+                builder: (context, controller, child) => IconButton(
+                  onPressed: () => controller.isOpen
+                      ? controller.close()
+                      : controller.open(),
+                  tooltip: context.l10n.albumActions,
+                  icon: const Icon(Icons.more_vert, size: 16),
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(28),
+                    maximumSize: const Size.square(28),
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+                items: [
+                  if (onDelete != null)
+                    AppMenuItem(
+                      value: _AlbumAction.delete,
+                      leadingIcon: const Icon(Icons.delete_outline),
+                      child: Text(context.l10n.removeAlbumIndex),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -359,6 +344,16 @@ class FolderListItem extends StatelessWidget {
         ? speed.round().toString()
         : speed.toStringAsFixed(1);
     return context.l10n.indexingProgress(current, total, speedText);
+  }
+
+  String _gridIndexingSummary() {
+    final current = indexedCount ?? 0;
+    final total = totalCount ?? 0;
+    final speed = imagesPerSecond ?? 0;
+    final speedText = speed >= 10
+        ? speed.round().toString()
+        : speed.toStringAsFixed(1);
+    return '$current/$total ($speedText P/s)';
   }
 }
 
@@ -441,14 +436,7 @@ class _AlbumHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     if (path == null) {
-      return ColoredBox(
-        color: colors.surfaceContainerHighest,
-        child: Icon(
-          Icons.photo_library_outlined,
-          size: 52,
-          color: colors.onSurfaceVariant,
-        ),
-      );
+      return ColoredBox(color: colors.surfaceContainerHighest);
     }
     return Image.file(
       File(path!),

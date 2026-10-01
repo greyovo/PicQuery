@@ -107,13 +107,15 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     );
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: indexing.isIndexing
-            ? null
-            : () => indexing.pickAndIndexFolder(context),
-        icon: const Icon(Icons.add_photo_alternate_outlined),
-        label: Text(context.l10n.addAlbum),
-      ),
+      floatingActionButton: isLoading || folders.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: indexing.isIndexing
+                  ? null
+                  : () => indexing.pickAndIndexFolder(context),
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: Text(context.l10n.addAlbum),
+            ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -197,15 +199,15 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                         (constraints.crossAxisExtent -
                             spacing * (columns - 1)) /
                         columns;
-                    final cardDetailsHeight = indexing.isIndexing
-                        ? 116.0
-                        : 68.0;
+                    const cardDetailsHeight = 52.0;
+                    final cardCoverHeight =
+                        cardWidth / albumGridCoverAspectRatio;
                     return SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: columns,
                         mainAxisSpacing: spacing,
                         crossAxisSpacing: spacing,
-                        mainAxisExtent: cardWidth + cardDetailsHeight,
+                        mainAxisExtent: cardCoverHeight + cardDetailsHeight,
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final folder = folders[index];
@@ -246,6 +248,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                                   folder.imageCount,
                                 )
                               : context.l10n.photoCount(folder.imageCount),
+                          isUpdateAvailable: updateAvailable,
                           onResumeIndexing:
                               !indexing.isIndexing &&
                                   (incomplete || updateAvailable)
