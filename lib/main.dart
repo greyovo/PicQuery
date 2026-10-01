@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:picquery_app/src/engine/api.dart';
@@ -12,11 +14,14 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/utils/app_logger.dart';
+import 'package:picquery_app/src/widgets/desktop_window_frame.dart';
+import 'package:window_manager/window_manager.dart';
 
 final _log = Logger('main');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _configureDesktopWindow();
   configureLogging();
   await SettingsStore.init();
   configureDependencies();
@@ -38,6 +43,21 @@ Future<void> main() async {
   runApp(PicQueryApp());
 }
 
+Future<void> _configureDesktopWindow() async {
+  if (!Platform.isMacOS && !Platform.isWindows && !Platform.isLinux) return;
+
+  await windowManager.ensureInitialized();
+  const windowOptions = WindowOptions(
+    titleBarStyle: TitleBarStyle.hidden,
+    windowButtonVisibility: true,
+    backgroundColor: Colors.transparent,
+  );
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+}
+
 Future<void> _initDatabase() async {
   final appDir = await getApplicationDocumentsDirectory();
   final dbPath = '${appDir.path}/picquery_v2.db';
@@ -52,6 +72,7 @@ class PicQueryApp extends WatchingWidget {
     const seedColor = Color(0xFF0478D7);
     final themeMode = watchValue((ThemeManager m) => m.themeMode);
     final locale = watchValue((LocaleManager m) => m.locale);
+    final smartDialogBuilder = FlutterSmartDialog.init();
     return MaterialApp(
       title: 'PicQuery',
       locale: locale,
@@ -73,7 +94,8 @@ class PicQueryApp extends WatchingWidget {
       ),
       home: AppShell(),
       navigatorObservers: [FlutterSmartDialog.observer],
-      builder: FlutterSmartDialog.init(),
+      builder: (context, child) =>
+          DesktopWindowFrame(child: smartDialogBuilder(context, child)),
     );
   }
 }

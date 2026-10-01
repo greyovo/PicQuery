@@ -117,7 +117,7 @@ class _AppShellState extends State<AppShell> {
       },
     );
 
-    final bool isLarge = context.isLargeScreen;
+    final bool isLarge = isDesktop || context.isLargeScreen;
 
     final navigationRailDestinations = [
       NavigationRailDestination(
