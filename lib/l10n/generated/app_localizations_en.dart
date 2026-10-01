@@ -217,11 +217,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String resultCount(int count) {
-    return '$count results';
-  }
-
-  @override
   String get searchResultCount => 'Number of search results';
 
   @override

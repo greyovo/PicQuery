@@ -43,6 +43,11 @@ class SearchInputCard extends StatelessWidget {
                 onPressed: onImageUpload,
                 icon: const Icon(Icons.image_outlined),
                 tooltip: context.l10n.searchByImage,
+                style: IconButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
               const SizedBox(height: 24, child: VerticalDivider()),
               Padding(

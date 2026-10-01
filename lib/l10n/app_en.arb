@@ -70,8 +70,6 @@
   "allFolders": "All folders",
   "selectedAlbumsCount": "{count} albums selected",
   "@selectedAlbumsCount": {"placeholders": {"count": {"type": "int"}}},
-  "resultCount": "{count} results",
-  "@resultCount": {"placeholders": {"count": {"type": "int"}}},
   "searchResultCount": "Number of search results",
   "clearFilters": "Clear filters",
   "searchFailed": "Search failed: {error}",

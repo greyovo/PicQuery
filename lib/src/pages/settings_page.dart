@@ -26,76 +26,84 @@ class SettingsPage extends WatchingWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.settings)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-        children: [
-          _buildSection(
-            context,
-            title: context.l10n.general,
-            children: [
-              _buildSelectionRow<ThemeMode>(
-                icon: Icons.palette_outlined,
-                title: context.l10n.appearance,
-                value: themeMode,
-                values: ThemeMode.values,
-                labelFor: (value) => _themeModeLabel(context, value),
-                iconFor: _themeModeIcon,
-                onChanged: themeManager.setThemeMode,
-              ),
-              _buildSelectionRow<AppLocale>(
-                icon: Icons.language_rounded,
-                title: context.l10n.language,
-                value: appLocale,
-                values: AppLocale.values,
-                labelFor: (value) => _localeLabel(context, value),
-                onChanged: localeManager.setLocale,
-              ),
-            ],
+      body: ListTileTheme(
+        data: ListTileThemeData(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 4,
           ),
-          const SizedBox(height: 12),
-          _buildSection(
-            context,
-            title: context.l10n.search,
-            children: [
-              _buildSelectionRow<int>(
-                icon: Icons.format_list_numbered_rounded,
-                title: context.l10n.searchResultCount,
-                value: resultLimit,
-                values: SearchManager.resultLimitOptions,
-                labelFor: context.l10n.resultCount,
-                onChanged: searchManager.setResultLimit,
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.autorenew),
-                title: Text(context.l10n.autoUpdateOnStartup),
-                value: autoUpdateIndexOnStartup,
-                onChanged: indexingManager.setAutoUpdateIndexOnStartup,
-              ),
-              _ReloadModelTile(),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildSection(
-            context,
-            title: context.l10n.dataManagement,
-            children: [
-              _buildActionRow(
-                context,
-                icon: Icons.delete_forever_outlined,
-                label: context.l10n.clearAllIndexes,
-                onTap: () => _deleteAllIndexes(context),
-                textColor: context.colors.error,
-                iconColor: context.colors.error,
-              ),
-              _buildActionRow(
-                context,
-                icon: Icons.history_toggle_off_outlined,
-                label: context.l10n.clearRecentSearches,
-                onTap: () => _clearRecentSearches(context),
-              ),
-            ],
-          ),
-        ],
+        ),
+        child: ListView(
+          children: [
+            _buildSection(
+              context,
+              title: context.l10n.general,
+              children: [
+                _buildSelectionRow<ThemeMode>(
+                  icon: Icons.palette_outlined,
+                  title: context.l10n.appearance,
+                  value: themeMode,
+                  values: ThemeMode.values,
+                  labelFor: (value) => _themeModeLabel(context, value),
+                  iconFor: _themeModeIcon,
+                  onChanged: themeManager.setThemeMode,
+                ),
+                _buildSelectionRow<AppLocale>(
+                  icon: Icons.language_rounded,
+                  title: context.l10n.language,
+                  value: appLocale,
+                  values: AppLocale.values,
+                  labelFor: (value) => _localeLabel(context, value),
+                  onChanged: localeManager.setLocale,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildSection(
+              context,
+              title: context.l10n.search,
+              children: [
+                _buildSelectionRow<int>(
+                  icon: Icons.format_list_numbered_rounded,
+                  title: context.l10n.searchResultCount,
+                  value: resultLimit,
+                  values: SearchManager.resultLimitOptions,
+                  labelFor: (value) => '$value',
+                  onChanged: searchManager.setResultLimit,
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.autorenew),
+                  title: Text(context.l10n.autoUpdateOnStartup),
+                  value: autoUpdateIndexOnStartup,
+                  onChanged: indexingManager.setAutoUpdateIndexOnStartup,
+                ),
+                _ReloadModelTile(),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildSection(
+              context,
+              title: context.l10n.dataManagement,
+              children: [
+                _buildActionRow(
+                  context,
+                  icon: Icons.delete_forever_outlined,
+                  label: context.l10n.clearAllIndexes,
+                  onTap: () => _deleteAllIndexes(context),
+                  textColor: context.colors.error,
+                  iconColor: context.colors.error,
+                ),
+                _buildActionRow(
+                  context,
+                  icon: Icons.history_toggle_off_outlined,
+                  label: context.l10n.clearRecentSearches,
+                  onTap: () => _clearRecentSearches(context),
+                ),
+              ],
+            ),
+            SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }

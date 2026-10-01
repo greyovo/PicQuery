@@ -208,11 +208,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String resultCount(int count) {
-    return '$count 个结果';
-  }
-
-  @override
   String get searchResultCount => '搜索结果数量';
 
   @override
@@ -636,11 +631,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String selectedAlbumsCount(int count) {
     return '已選擇 $count 個相簿';
-  }
-
-  @override
-  String resultCount(int count) {
-    return '$count 個結果';
   }
 
   @override

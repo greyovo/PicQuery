@@ -15,7 +15,7 @@
   "cancelIndexingTitle": "取消索引", "cancelIndexingMessage": "確定要取消目前的索引操作嗎？已索引的圖片將被保留。", "keepIndexing": "繼續索引",
   "indexDcimTitle": "索引 DCIM 相簿？", "indexDcimMessage": "首次使用建議索引手機 DCIM 相簿，以便按圖片內容搜尋。", "notNow": "暫不", "startIndexing": "開始索引",
   "searchPhotosTitle": "搜尋你的圖片庫", "searchPhotosTitleMobile": "搜尋你的照片", "searchPhotosDescription": "用簡單的文字或圖片尋找回憶。所有搜尋均在裝置上私密完成。", "searchPhotosDescriptionMobile": "私密、離線的圖片搜尋",
-  "searchPhotosHint": "搜尋照片", "searchByImage": "以圖搜圖", "recentSearches": "最近搜尋", "allFolders": "全部資料夾", "selectedAlbumsCount": "已選擇 {count} 個相簿", "resultCount": "{count} 個結果", "searchResultCount": "搜尋結果數量", "clearFilters": "清除篩選",
+  "searchPhotosHint": "搜尋照片", "searchByImage": "以圖搜圖", "recentSearches": "最近搜尋", "allFolders": "全部資料夾", "selectedAlbumsCount": "已選擇 {count} 個相簿", "searchResultCount": "搜尋結果數量", "clearFilters": "清除篩選",
   "searchFailed": "搜尋失敗：{error}", "imageSearchFailed": "圖片搜尋失敗：{error}", "indexingResultsWarning": "正在索引中，搜尋結果可能不完整。", "noMatchesFound": "沒有找到符合結果", "selectImageToSearch": "選擇用於搜尋的圖片",
   "searchScope": "搜尋範圍", "all": "全部", "custom": "自訂", "selectScope": "選擇範圍", "selectAll": "全選", "filterFolders": "篩選資料夾…", "noFoldersFound": "沒有找到資料夾",
   "selectFolderToIndex": "選擇要索引的資料夾", "permissionDenied": "權限被拒絕", "photoPermissionMessage": "選擇相簿進行索引需要照片庫存取權限。", "noAlbumsFound": "未找到相簿", "noAlbumsMessage": "裝置上沒有找到照片相簿。", "noImagesFound": "未找到圖片", "noImagesMessage": "所選相簿中沒有圖片。", "selectAlbum": "選擇相簿",

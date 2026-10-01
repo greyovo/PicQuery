@@ -447,12 +447,6 @@ abstract class AppLocalizations {
   /// **'{count} albums selected'**
   String selectedAlbumsCount(int count);
 
-  /// No description provided for @resultCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} results'**
-  String resultCount(int count);
-
   /// No description provided for @searchResultCount.
   ///
   /// In en, this message translates to:
