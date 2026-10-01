@@ -330,6 +330,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unknown => '未知';
 
   @override
+  String get general => '通用';
+
+  @override
   String get appearance => '外观';
 
   @override
@@ -748,6 +751,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get unknown => '未知';
+
+  @override
+  String get general => '通用';
 
   @override
   String get appearance => '外觀';

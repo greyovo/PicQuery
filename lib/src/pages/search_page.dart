@@ -11,7 +11,9 @@ import 'package:picquery_app/src/utils/image_search_picker.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/view/folder_selector_view.dart';
+import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';
+import 'package:picquery_app/src/widgets/search_filter_button.dart';
 import 'package:watch_it/watch_it.dart';
 
 final _log = Logger('search_page');
@@ -285,9 +287,8 @@ class _HeroSection extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.recentSearches,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -346,63 +347,41 @@ class _SearchFilters extends StatelessWidget {
         hasFolderFilter ||
         resultLimit != SearchManager.defaultResultLimit ||
         timeRange != SearchTimeRange.anyTime;
-    final buttonStyle = OutlinedButton.styleFrom(
-      foregroundColor: context.colors.onSurface,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      visualDensity: VisualDensity.compact,
-      textStyle: Theme.of(context).textTheme.labelMedium,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      side: BorderSide(color: context.colors.outlineVariant),
-    );
-
     final controls = <Widget>[
-      OutlinedButton.icon(
+      SearchFilterButton<void>.action(
         onPressed: onSelectScope,
         icon: const Icon(Icons.folder_outlined, size: 18),
         label: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 220),
           child: Text(scopeLabel, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
-        style: buttonStyle,
       ),
-      PopupMenuButton<SearchTimeRange>(
+      SearchFilterButton<SearchTimeRange>.menu(
         initialValue: timeRange,
         onSelected: onTimeRangeChanged,
-        itemBuilder: (context) => [
+        icon: const Icon(Icons.calendar_today_outlined, size: 17),
+        label: Text(_timeRangeLabel(context, timeRange)),
+        items: [
           for (final option in SearchTimeRange.values)
-            PopupMenuItem(
+            AppMenuItem(
               value: option,
               child: Text(_timeRangeLabel(context, option)),
             ),
         ],
-        child: IgnorePointer(
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.calendar_today_outlined, size: 17),
-            label: Text(_timeRangeLabel(context, timeRange)),
-            style: buttonStyle,
-          ),
-        ),
       ),
-      PopupMenuButton<int>(
+      SearchFilterButton<int>.menu(
         initialValue: resultLimit,
         onSelected: onResultLimitChanged,
-        itemBuilder: (context) => [
+        icon: const Icon(Icons.expand_more_rounded, size: 18),
+        label: Text(context.l10n.resultCount(resultLimit)),
+        iconAlignment: IconAlignment.end,
+        items: [
           for (final option in SearchManager.resultLimitOptions)
-            PopupMenuItem(
+            AppMenuItem(
               value: option,
               child: Text(context.l10n.resultCount(option)),
             ),
         ],
-        child: IgnorePointer(
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.expand_more_rounded, size: 18),
-            label: Text(context.l10n.resultCount(resultLimit)),
-            iconAlignment: IconAlignment.end,
-            style: buttonStyle,
-          ),
-        ),
       ),
     ];
     final clearButton = TextButton.icon(

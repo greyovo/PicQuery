@@ -341,6 +341,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknown => 'Unknown';
 
   @override
+  String get general => 'General';
+
+  @override
   String get appearance => 'Appearance';
 
   @override

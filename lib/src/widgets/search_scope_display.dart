@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:picquery_app/src/utils/menu_utils.dart';
 import 'package:picquery_app/src/utils/localization.dart';
+import 'package:picquery_app/src/widgets/app_menu_button.dart';
 
 class SearchScopeDisplay extends StatelessWidget {
   const SearchScopeDisplay({
@@ -23,27 +23,20 @@ class SearchScopeDisplay extends StatelessWidget {
       subtitle: isCustom && scopeSubtitle != null && scopeSubtitle!.isNotEmpty
           ? Text(scopeSubtitle!, maxLines: 2, overflow: TextOverflow.ellipsis)
           : null,
-      trailing: Builder(
-        builder: (context) => TextButton.icon(
-          onPressed: () async {
-            final selected = await showMenuAt<String>(
-              context: context,
-              items: [
-                PopupMenuItem(value: 'all', child: Text(context.l10n.all)),
-                PopupMenuItem(
-                  value: 'custom',
-                  child: Text(context.l10n.custom),
-                ),
-              ],
-            );
-            if (selected != null) {
-              onScopeSelected(selected);
-            }
-          },
+      trailing: AppMenuButton<String>(
+        selectedValue: isCustom ? 'custom' : 'all',
+        onSelected: onScopeSelected,
+        items: [
+          AppMenuItem(value: 'all', child: Text(context.l10n.all)),
+          AppMenuItem(value: 'custom', child: Text(context.l10n.custom)),
+        ],
+        builder: (context, controller, child) => TextButton.icon(
+          onPressed: () =>
+              controller.isOpen ? controller.close() : controller.open(),
           iconAlignment: IconAlignment.end,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
           ),
           label: Text(isCustom ? context.l10n.custom : context.l10n.all),
         ),

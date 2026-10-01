@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:path/path.dart' as path;
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
@@ -132,18 +133,23 @@ class FolderListItem extends StatelessWidget {
                   tooltip: context.l10n.continueIndexing,
                 ),
               if (onDelete != null)
-                PopupMenuButton<_AlbumAction>(
-                  tooltip: context.l10n.albumActions,
-                  icon: const Icon(Icons.more_vert),
+                AppMenuButton<_AlbumAction>(
                   onSelected: (action) {
                     if (action == _AlbumAction.delete) onDelete!();
                   },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
+                  items: [
+                    AppMenuItem(
                       value: _AlbumAction.delete,
                       child: Text(context.l10n.removeAlbumIndex),
                     ),
                   ],
+                  builder: (context, controller, child) => IconButton(
+                    tooltip: context.l10n.albumActions,
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () => controller.isOpen
+                        ? controller.close()
+                        : controller.open(),
+                  ),
                 ),
             ],
           ],
@@ -315,7 +321,10 @@ class FolderListItem extends StatelessWidget {
           Positioned(
             top: 6,
             right: 6,
-            child: MenuAnchor(
+            child: AppMenuButton<_AlbumAction>(
+              onSelected: (action) {
+                if (action == _AlbumAction.delete) onDelete?.call();
+              },
               builder: (context, controller, child) => IconButton.filledTonal(
                 onPressed: () =>
                     controller.isOpen ? controller.close() : controller.open(),
@@ -327,10 +336,10 @@ class FolderListItem extends StatelessWidget {
                   padding: EdgeInsets.zero,
                 ),
               ),
-              menuChildren: [
+              items: [
                 if (onDelete != null)
-                  MenuItemButton(
-                    onPressed: onDelete,
+                  AppMenuItem(
+                    value: _AlbumAction.delete,
                     leadingIcon: const Icon(Icons.delete_outline),
                     child: Text(context.l10n.removeAlbumIndex),
                   ),

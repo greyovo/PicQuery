@@ -9,6 +9,7 @@ import 'package:picquery_app/src/utils/models_config.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
+import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:watch_it/watch_it.dart';
 
 class SettingsPage extends WatchingWidget {
@@ -29,57 +30,31 @@ class SettingsPage extends WatchingWidget {
         children: [
           _buildSection(
             context,
-            icon: Icons.palette_outlined,
-            title: context.l10n.appearance,
+            title: context.l10n.general,
             children: [
-              _buildThemeModeRow(
-                context,
-                icon: Icons.light_mode_outlined,
-                label: context.l10n.light,
-                value: ThemeMode.light,
-                current: themeMode,
+              _buildSelectionRow<ThemeMode>(
+                icon: Icons.palette_outlined,
+                title: context.l10n.appearance,
+                value: themeMode,
+                values: ThemeMode.values,
+                labelFor: (value) => _themeModeLabel(context, value),
+                iconFor: _themeModeIcon,
+                onChanged: themeManager.setThemeMode,
               ),
-              _buildThemeModeRow(
-                context,
-                icon: Icons.dark_mode_outlined,
-                label: context.l10n.dark,
-                value: ThemeMode.dark,
-                current: themeMode,
-              ),
-              _buildThemeModeRow(
-                context,
-                icon: Icons.brightness_auto_outlined,
-                label: context.l10n.followSystem,
-                value: ThemeMode.system,
-                current: themeMode,
+              _buildSelectionRow<AppLocale>(
+                icon: Icons.language_rounded,
+                title: context.l10n.language,
+                value: appLocale,
+                values: AppLocale.values,
+                labelFor: (value) => _localeLabel(context, value),
+                iconFor: _localeIcon,
+                onChanged: localeManager.setLocale,
               ),
             ],
           ),
           const SizedBox(height: 16),
           _buildSection(
             context,
-            icon: Icons.language_rounded,
-            title: context.l10n.language,
-            children: AppLocale.values
-                .map(
-                  (value) => ListTile(
-                    leading: Icon(_localeIcon(value)),
-                    title: Text(_localeLabel(context, value)),
-                    trailing: value == appLocale
-                        ? Icon(
-                            Icons.check_rounded,
-                            color: context.colors.primary,
-                          )
-                        : null,
-                    onTap: () => localeManager.setLocale(value),
-                  ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 16),
-          _buildSection(
-            context,
-            icon: Icons.update_outlined,
             title: context.l10n.indexUpdates,
             children: [
               SwitchListTile(
@@ -94,14 +69,12 @@ class SettingsPage extends WatchingWidget {
           const SizedBox(height: 16),
           _buildSection(
             context,
-            icon: Icons.memory,
             title: context.l10n.model,
             children: [_ReloadModelTile()],
           ),
           const SizedBox(height: 16),
           _buildSection(
             context,
-            icon: Icons.storage_outlined,
             title: context.l10n.dataManagement,
             children: [
               _buildActionRow(
@@ -140,54 +113,75 @@ class SettingsPage extends WatchingWidget {
         AppLocale.english => context.l10n.english,
       };
 
+  IconData _themeModeIcon(ThemeMode mode) => switch (mode) {
+    ThemeMode.light => Icons.light_mode_outlined,
+    ThemeMode.dark => Icons.dark_mode_outlined,
+    ThemeMode.system => Icons.brightness_auto_outlined,
+  };
+
+  String _themeModeLabel(BuildContext context, ThemeMode mode) =>
+      switch (mode) {
+        ThemeMode.light => context.l10n.light,
+        ThemeMode.dark => context.l10n.dark,
+        ThemeMode.system => context.l10n.followSystem,
+      };
+
   Widget _buildSection(
     BuildContext context, {
-    required IconData icon,
     required String title,
     required List<Widget> children,
   }) {
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.hardEdge,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Row(
-              children: [
-                Icon(icon, size: 20, color: context.colors.primary),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: context.colors.primary,
-                  ),
-                ),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(color: context.colors.primary),
           ),
-          ...children,
-        ],
-      ),
+        ),
+        ...children,
+      ],
     );
   }
 
-  Widget _buildThemeModeRow(
-    BuildContext context, {
+  Widget _buildSelectionRow<T>({
     required IconData icon,
-    required String label,
-    required ThemeMode value,
-    required ThemeMode current,
+    required String title,
+    required T value,
+    required List<T> values,
+    required String Function(T value) labelFor,
+    required IconData Function(T value) iconFor,
+    required ValueChanged<T> onChanged,
   }) {
-    final isSelected = current == value;
     return ListTile(
-      leading: Icon(icon, size: 20),
-      title: Text(label),
-      trailing: isSelected
-          ? Icon(Icons.check, size: 20, color: context.colors.primary)
-          : null,
-      onTap: () => themeManager.setThemeMode(value),
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: AppMenuButton<T>(
+        selectedValue: value,
+        onSelected: onChanged,
+        items: values
+            .map(
+              (option) => AppMenuItem<T>(
+                value: option,
+                leadingIcon: Icon(iconFor(option), size: 18),
+                child: Text(labelFor(option)),
+              ),
+            )
+            .toList(),
+        builder: (context, controller, child) => TextButton.icon(
+          onPressed: () =>
+              controller.isOpen ? controller.close() : controller.open(),
+          iconAlignment: IconAlignment.end,
+          icon: const Icon(Icons.arrow_drop_down),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+          ),
+          label: Text(labelFor(value)),
+        ),
+      ),
     );
   }
 
