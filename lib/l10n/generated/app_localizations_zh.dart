@@ -203,9 +203,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get allFolders => '全部文件夹';
 
   @override
+  String selectedAlbumsCount(int count) {
+    return '已选择 $count 个相册';
+  }
+
+  @override
   String resultCount(int count) {
     return '$count 个结果';
   }
+
+  @override
+  String get searchResultCount => '搜索结果数量';
 
   @override
   String get clearFilters => '清除筛选';
@@ -626,9 +634,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get allFolders => '全部資料夾';
 
   @override
+  String selectedAlbumsCount(int count) {
+    return '已選擇 $count 個相簿';
+  }
+
+  @override
   String resultCount(int count) {
     return '$count 個結果';
   }
+
+  @override
+  String get searchResultCount => '搜尋結果數量';
 
   @override
   String get clearFilters => '清除篩選';

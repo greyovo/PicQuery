@@ -212,9 +212,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allFolders => 'All folders';
 
   @override
+  String selectedAlbumsCount(int count) {
+    return '$count albums selected';
+  }
+
+  @override
   String resultCount(int count) {
     return '$count results';
   }
+
+  @override
+  String get searchResultCount => 'Number of search results';
 
   @override
   String get clearFilters => 'Clear filters';

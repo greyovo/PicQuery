@@ -441,11 +441,23 @@ abstract class AppLocalizations {
   /// **'All folders'**
   String get allFolders;
 
+  /// No description provided for @selectedAlbumsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} albums selected'**
+  String selectedAlbumsCount(int count);
+
   /// No description provided for @resultCount.
   ///
   /// In en, this message translates to:
   /// **'{count} results'**
   String resultCount(int count);
+
+  /// No description provided for @searchResultCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of search results'**
+  String get searchResultCount;
 
   /// No description provided for @clearFilters.
   ///

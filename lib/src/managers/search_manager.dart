@@ -13,7 +13,7 @@ class SearchManager {
   static const List<int> resultLimitOptions = [25, 50, 100];
 
   final selectedFolderIds = ValueNotifier<Set<int>>({});
-  final resultLimit = ValueNotifier<int>(defaultResultLimit);
+  final resultLimit = ValueNotifier<int>(_storedResultLimit());
   final timeRange = ValueNotifier<SearchTimeRange>(SearchTimeRange.anyTime);
   final isCustomScope = ValueNotifier<bool>(false);
   final recentSearches = ValueNotifier<List<String>>(
@@ -43,8 +43,20 @@ class SearchManager {
 
   void clearFilters() {
     clearScope();
-    resultLimit.value = defaultResultLimit;
     timeRange.value = SearchTimeRange.anyTime;
+  }
+
+  void setResultLimit(int limit) {
+    if (!resultLimitOptions.contains(limit)) return;
+    resultLimit.value = limit;
+    SettingsStore.setSearchResultLimit(limit);
+  }
+
+  static int _storedResultLimit() {
+    final value = SettingsStore.getSearchResultLimit(
+      defaultValue: defaultResultLimit,
+    );
+    return resultLimitOptions.contains(value) ? value : defaultResultLimit;
   }
 
   /// Records a search query: moves it to the front (deduped) and caps the

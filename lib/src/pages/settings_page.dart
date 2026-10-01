@@ -19,6 +19,7 @@ class SettingsPage extends WatchingWidget {
   Widget build(BuildContext context) {
     final themeMode = watchValue((ThemeManager m) => m.themeMode);
     final appLocale = watchValue((LocaleManager m) => m.selection);
+    final resultLimit = watchValue((SearchManager m) => m.resultLimit);
     final autoUpdateIndexOnStartup = watchValue(
       (IndexingManager m) => m.autoUpdateIndexOnStartup,
     );
@@ -26,7 +27,7 @@ class SettingsPage extends WatchingWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.settings)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
         children: [
           _buildSection(
             context,
@@ -51,27 +52,29 @@ class SettingsPage extends WatchingWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildSection(
             context,
-            title: context.l10n.indexUpdates,
+            title: context.l10n.search,
             children: [
+              _buildSelectionRow<int>(
+                icon: Icons.format_list_numbered_rounded,
+                title: context.l10n.searchResultCount,
+                value: resultLimit,
+                values: SearchManager.resultLimitOptions,
+                labelFor: context.l10n.resultCount,
+                onChanged: searchManager.setResultLimit,
+              ),
               SwitchListTile(
                 secondary: const Icon(Icons.autorenew),
                 title: Text(context.l10n.autoUpdateOnStartup),
-                subtitle: Text(context.l10n.autoUpdateOnStartupDescription),
                 value: autoUpdateIndexOnStartup,
                 onChanged: indexingManager.setAutoUpdateIndexOnStartup,
               ),
+              _ReloadModelTile(),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSection(
-            context,
-            title: context.l10n.model,
-            children: [_ReloadModelTile()],
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildSection(
             context,
             title: context.l10n.dataManagement,

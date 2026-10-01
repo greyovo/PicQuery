@@ -128,17 +128,19 @@ class _SearchPageState extends State<SearchPage> {
     _searchByText();
   }
 
-  String _scopeLabel(
-    BuildContext context,
+  String _scopeLabel(BuildContext context, Set<int> selectedIds) {
+    if (selectedIds.isEmpty) return context.l10n.allFolders;
+    return context.l10n.selectedAlbumsCount(selectedIds.length);
+  }
+
+  List<String> _selectedFolderNames(
     List<Folder> folders,
     Set<int> selectedIds,
   ) {
-    if (selectedIds.isEmpty) return context.l10n.allFolders;
-    final names = folders
+    return folders
         .where((folder) => selectedIds.contains(folder.id))
         .map((folder) => folder.folderPath.split('/').last)
         .toList();
-    return names.isEmpty ? context.l10n.allFolders : names.join(', ');
   }
 
   @override
@@ -147,13 +149,11 @@ class _SearchPageState extends State<SearchPage> {
     final selectedIds = watchValue(
       (SearchManager manager) => manager.selectedFolderIds,
     );
-    final resultLimit = watchValue(
-      (SearchManager manager) => manager.resultLimit,
-    );
     final timeRange = watchValue((SearchManager manager) => manager.timeRange);
     final recentSearches = watchValue(
       (SearchManager manager) => manager.recentSearches,
     );
+    final selectedFolderNames = _selectedFolderNames(folders, selectedIds);
 
     return Scaffold(
       body: LayoutBuilder(
@@ -178,12 +178,10 @@ class _SearchPageState extends State<SearchPage> {
                     isDesktop: isDesktopLayout,
                     onSearch: _searchByText,
                     onImageSearch: _searchByImage,
-                    scopeLabel: _scopeLabel(context, folders, selectedIds),
+                    scopeLabel: _scopeLabel(context, selectedIds),
+                    selectedFolderNames: selectedFolderNames,
                     hasFolderFilter: selectedIds.isNotEmpty,
                     onSelectScope: _showFolderSelector,
-                    resultLimit: resultLimit,
-                    onResultLimitChanged: (value) =>
-                        searchManager.resultLimit.value = value,
                     timeRange: timeRange,
                     onTimeRangeChanged: (value) =>
                         searchManager.timeRange.value = value,
@@ -208,10 +206,9 @@ class _HeroSection extends StatelessWidget {
     required this.onSearch,
     required this.onImageSearch,
     required this.scopeLabel,
+    required this.selectedFolderNames,
     required this.hasFolderFilter,
     required this.onSelectScope,
-    required this.resultLimit,
-    required this.onResultLimitChanged,
     required this.timeRange,
     required this.onTimeRangeChanged,
     required this.onClearFilters,
@@ -224,10 +221,9 @@ class _HeroSection extends StatelessWidget {
   final VoidCallback onSearch;
   final VoidCallback onImageSearch;
   final String scopeLabel;
+  final List<String> selectedFolderNames;
   final bool hasFolderFilter;
   final VoidCallback onSelectScope;
-  final int resultLimit;
-  final ValueChanged<int> onResultLimitChanged;
   final SearchTimeRange timeRange;
   final ValueChanged<SearchTimeRange> onTimeRangeChanged;
   final VoidCallback onClearFilters;
@@ -273,12 +269,24 @@ class _HeroSection extends StatelessWidget {
           scopeLabel: scopeLabel,
           hasFolderFilter: hasFolderFilter,
           onSelectScope: onSelectScope,
-          resultLimit: resultLimit,
-          onResultLimitChanged: onResultLimitChanged,
           timeRange: timeRange,
           onTimeRangeChanged: onTimeRangeChanged,
           onClear: onClearFilters,
         ),
+        if (selectedFolderNames.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4, right: 4),
+            child: Text(
+              [
+                ...selectedFolderNames.take(5),
+                if (selectedFolderNames.length > 5) '…',
+              ].join(', '),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: context.colors.primary),
+            ),
+          ),
         if (recentSearches.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 28),
@@ -325,8 +333,6 @@ class _SearchFilters extends StatelessWidget {
     required this.scopeLabel,
     required this.hasFolderFilter,
     required this.onSelectScope,
-    required this.resultLimit,
-    required this.onResultLimitChanged,
     required this.timeRange,
     required this.onTimeRangeChanged,
     required this.onClear,
@@ -335,18 +341,13 @@ class _SearchFilters extends StatelessWidget {
   final String scopeLabel;
   final bool hasFolderFilter;
   final VoidCallback onSelectScope;
-  final int resultLimit;
-  final ValueChanged<int> onResultLimitChanged;
   final SearchTimeRange timeRange;
   final ValueChanged<SearchTimeRange> onTimeRangeChanged;
   final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
-    final hasFilters =
-        hasFolderFilter ||
-        resultLimit != SearchManager.defaultResultLimit ||
-        timeRange != SearchTimeRange.anyTime;
+    final hasFilters = hasFolderFilter || timeRange != SearchTimeRange.anyTime;
     final controls = <Widget>[
       SearchFilterButton<void>.action(
         onPressed: onSelectScope,
@@ -369,57 +370,19 @@ class _SearchFilters extends StatelessWidget {
             ),
         ],
       ),
-      SearchFilterButton<int>.menu(
-        initialValue: resultLimit,
-        onSelected: onResultLimitChanged,
-        icon: const Icon(Icons.expand_more_rounded, size: 18),
-        label: Text(context.l10n.resultCount(resultLimit)),
-        iconAlignment: IconAlignment.end,
-        items: [
-          for (final option in SearchManager.resultLimitOptions)
-            AppMenuItem(
-              value: option,
-              child: Text(context.l10n.resultCount(option)),
-            ),
-        ],
-      ),
     ];
-    final clearButton = TextButton.icon(
+    final clearButton = IconButton(
       onPressed: onClear,
+      tooltip: context.l10n.clearFilters,
       icon: const Icon(Icons.close_rounded, size: 18),
-      label: Text(context.l10n.clearFilters),
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        visualDensity: VisualDensity.compact,
-        textStyle: Theme.of(context).textTheme.labelMedium,
-      ),
+      visualDensity: VisualDensity.compact,
     );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final useSingleRow = constraints.maxWidth >= 620;
-        if (useSingleRow) {
-          return Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: controls,
-                ),
-              ),
-              if (hasFilters) clearButton,
-            ],
-          );
-        }
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [...controls, if (hasFilters) clearButton],
-        );
-      },
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [...controls, if (hasFilters) clearButton],
     );
   }
 

@@ -7,6 +7,7 @@ class SettingsStore {
   static const String _appLocaleKey = 'app_locale';
   static const String _autoUpdateIndexOnStartupKey =
       'auto_update_index_on_startup';
+  static const String _searchResultLimitKey = 'search_result_limit';
   static const String _recentSearchesKey = 'recent_searches';
   static const String _recentViewedPhotosKey = 'recent_viewed_photos';
   static const String _androidDcimPromptShownKey = 'android_dcim_prompt_shown';
@@ -42,6 +43,15 @@ class SettingsStore {
 
   static Future<void> setAutoUpdateIndexOnStartup(bool enabled) async {
     await _box.put(_autoUpdateIndexOnStartupKey, enabled);
+  }
+
+  static int getSearchResultLimit({required int defaultValue}) {
+    final value = _box.get(_searchResultLimitKey, defaultValue: defaultValue);
+    return value is int ? value : defaultValue;
+  }
+
+  static Future<void> setSearchResultLimit(int limit) async {
+    await _box.put(_searchResultLimitKey, limit);
   }
 
   static List<String> getRecentSearches() {
