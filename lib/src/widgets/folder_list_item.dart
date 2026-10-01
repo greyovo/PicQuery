@@ -53,108 +53,100 @@ class FolderListItem extends StatelessWidget {
       return _buildGridCard(context, colorScheme, isIndexing);
     }
 
-    return Material(
-      color: colorScheme.surface.withValues(alpha: 0),
-      child: InkWell(
-        onTap:
-            onTap ?? (onSelected != null ? () => onSelected!(!selected) : null),
-        borderRadius: isGridCard ? BorderRadius.circular(12) : null,
-        hoverColor: colorScheme.primary.withValues(alpha: .08),
-        highlightColor: colorScheme.primary.withValues(alpha: .12),
-        splashColor: colorScheme.primary.withValues(alpha: .16),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 84),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isGridCard ? colorScheme.surfaceContainerLow : null,
-            borderRadius: isGridCard ? BorderRadius.circular(12) : null,
-            border: isGridCard
-                ? Border.all(
+    return InkWell(
+      onTap:
+          onTap ?? (onSelected != null ? () => onSelected!(!selected) : null),
+      borderRadius: isGridCard ? BorderRadius.circular(12) : null,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 84),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isGridCard ? colorScheme.surfaceContainerLow : null,
+          borderRadius: isGridCard ? BorderRadius.circular(12) : null,
+          border: isGridCard
+              ? Border.all(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.42),
+                )
+              : Border(
+                  bottom: BorderSide(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.42),
-                  )
-                : Border(
-                    bottom: BorderSide(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.42),
+                  ),
+                ),
+        ),
+        child: Row(
+          children: [
+            _AlbumCover(path: folder.coverPath),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    isIndexing
+                        ? _indexingSummary(context)
+                        : statusLabel ??
+                              context.l10n.photoCount(folder.imageCount),
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (isIndexing)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _ProgressCircle(progress: progress!),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: onCancelIndexing,
+                    tooltip: context.l10n.cancelIndexing,
+                    icon: const Icon(Icons.close),
+                    style: IconButton.styleFrom(
+                      shape: const CircleBorder(),
+                      side: BorderSide(color: colorScheme.outlineVariant),
                     ),
                   ),
-          ),
-          child: Row(
-            children: [
-              _AlbumCover(path: folder.coverPath),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      isIndexing
-                          ? _indexingSummary(context)
-                          : statusLabel ??
-                                context.l10n.photoCount(folder.imageCount),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                ],
+              )
+            else if (onSelected != null)
+              Checkbox(
+                value: selected,
+                onChanged: (value) => onSelected!(value ?? false),
+              )
+            else ...[
+              if (onResumeIndexing != null)
+                IconButton.outlined(
+                  onPressed: onResumeIndexing,
+                  icon: const Icon(Icons.play_arrow),
+                  tooltip: context.l10n.continueIndexing,
+                ),
+              if (onDelete != null)
+                PopupMenuButton<_AlbumAction>(
+                  tooltip: context.l10n.albumActions,
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (action) {
+                    if (action == _AlbumAction.delete) onDelete!();
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: _AlbumAction.delete,
+                      child: Text(context.l10n.removeAlbumIndex),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (isIndexing)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _ProgressCircle(progress: progress!),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: onCancelIndexing,
-                      tooltip: context.l10n.cancelIndexing,
-                      icon: const Icon(Icons.close),
-                      style: IconButton.styleFrom(
-                        shape: const CircleBorder(),
-                        side: BorderSide(color: colorScheme.outlineVariant),
-                      ),
-                    ),
-                  ],
-                )
-              else if (onSelected != null)
-                Checkbox(
-                  value: selected,
-                  onChanged: (value) => onSelected!(value ?? false),
-                )
-              else ...[
-                if (onResumeIndexing != null)
-                  IconButton.outlined(
-                    onPressed: onResumeIndexing,
-                    icon: const Icon(Icons.play_arrow),
-                    tooltip: context.l10n.continueIndexing,
-                  ),
-                if (onDelete != null)
-                  PopupMenuButton<_AlbumAction>(
-                    tooltip: context.l10n.albumActions,
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (action) {
-                      if (action == _AlbumAction.delete) onDelete!();
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: _AlbumAction.delete,
-                        child: Text(context.l10n.removeAlbumIndex),
-                      ),
-                    ],
-                  ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -179,169 +171,173 @@ class FolderListItem extends StatelessWidget {
               : colorScheme.outlineVariant.withValues(alpha: .55),
         ),
       ),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _AlbumHero(path: folder.coverPath),
-                  Positioned(
-                    top: 6,
-                    right: 6,
-                    child: MenuAnchor(
-                      builder: (context, controller, child) =>
-                          IconButton.filledTonal(
-                            onPressed: () => controller.isOpen
-                                ? controller.close()
-                                : controller.open(),
-                            tooltip: context.l10n.albumActions,
-                            icon: const Icon(Icons.more_vert, size: 18),
-                            style: IconButton.styleFrom(
-                              minimumSize: const Size.square(34),
-                              maximumSize: const Size.square(34),
-                              padding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          InkWell(
+            onTap: onTap,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _AlbumHero(path: folder.coverPath),
+                      if (isIndexing)
+                        Positioned(
+                          left: 10,
+                          bottom: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                            child: Text(
+                              context.l10n.indexingPercent(percentage),
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(
+                                    color: colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                           ),
-                      menuChildren: [
-                        if (onDelete != null)
-                          MenuItemButton(
-                            onPressed: onDelete,
-                            leadingIcon: const Icon(Icons.delete_outline),
-                            child: Text(context.l10n.removeAlbumIndex),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (isIndexing)
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
                         ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 8, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _displayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 3),
+                      if (isIndexing) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _indexingSummary(context),
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '$percentage%',
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 7),
+                        LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 7,
                           borderRadius: BorderRadius.circular(99),
                         ),
-                        child: Text(
-                          context.l10n.indexingPercent(percentage),
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 8, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  if (isIndexing) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _indexingSummary(context),
-                            style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '$percentage%',
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w800,
-                              ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 7),
-                    LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 7,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                    const SizedBox(height: 6),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton.filledTonal(
-                        onPressed: onCancelIndexing,
-                        tooltip: context.l10n.stop,
-                        icon: const Icon(Icons.stop_rounded, size: 18),
-                        style: IconButton.styleFrom(
-                          minimumSize: const Size.square(36),
-                          maximumSize: const Size.square(36),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                  ] else
-                    Row(
-                      children: [
-                        Icon(
-                          folder.isIndexComplete
-                              ? Icons.check_circle_rounded
-                              : Icons.pending_outlined,
-                          size: 18,
-                          color: folder.isIndexComplete
-                              ? colorScheme.tertiary
-                              : colorScheme.primary,
-                        ),
-                        const SizedBox(width: 7),
-                        Expanded(
-                          child: Text(
-                            statusLabel ??
-                                context.l10n.photoCount(folder.imageCount),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        if (onResumeIndexing != null)
-                          IconButton.filledTonal(
-                            onPressed: onResumeIndexing,
-                            tooltip: folder.isIndexComplete
-                                ? context.l10n.update
-                                : context.l10n.continueAction,
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton.filledTonal(
+                            onPressed: onCancelIndexing,
+                            tooltip: context.l10n.stop,
+                            icon: const Icon(Icons.stop_rounded, size: 18),
                             style: IconButton.styleFrom(
-                              minimumSize: const Size.square(32),
-                              maximumSize: const Size.square(32),
+                              minimumSize: const Size.square(36),
+                              maximumSize: const Size.square(36),
                               padding: EdgeInsets.zero,
                             ),
                           ),
-                      ],
-                    ),
-                ],
-              ),
+                        ),
+                      ] else
+                        Row(
+                          children: [
+                            Icon(
+                              folder.isIndexComplete
+                                  ? Icons.check_circle_rounded
+                                  : Icons.pending_outlined,
+                              size: 18,
+                              color: folder.isIndexComplete
+                                  ? colorScheme.tertiary
+                                  : colorScheme.primary,
+                            ),
+                            const SizedBox(width: 7),
+                            Expanded(
+                              child: Text(
+                                statusLabel ??
+                                    context.l10n.photoCount(folder.imageCount),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            if (onResumeIndexing != null)
+                              IconButton.filledTonal(
+                                onPressed: onResumeIndexing,
+                                tooltip: folder.isIndexComplete
+                                    ? context.l10n.update
+                                    : context.l10n.continueAction,
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  size: 18,
+                                ),
+                                style: IconButton.styleFrom(
+                                  minimumSize: const Size.square(32),
+                                  maximumSize: const Size.square(32),
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 6,
+            right: 6,
+            child: MenuAnchor(
+              builder: (context, controller, child) => IconButton.filledTonal(
+                onPressed: () =>
+                    controller.isOpen ? controller.close() : controller.open(),
+                tooltip: context.l10n.albumActions,
+                icon: const Icon(Icons.more_vert, size: 18),
+                style: IconButton.styleFrom(
+                  minimumSize: const Size.square(34),
+                  maximumSize: const Size.square(34),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+              menuChildren: [
+                if (onDelete != null)
+                  MenuItemButton(
+                    onPressed: onDelete,
+                    leadingIcon: const Icon(Icons.delete_outline),
+                    child: Text(context.l10n.removeAlbumIndex),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -380,9 +376,8 @@ class _ProgressCircle extends StatelessWidget {
           ),
           Text(
             '${(progress * 100).round()}%',
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(fontWeight: FontWeight.w700),
           ),
         ],
       ),
