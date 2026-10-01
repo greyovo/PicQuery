@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
 
-const double _borderRadius = 10;
+const double kSearchFilterButtonBorderRadius = 10;
 
 /// A consistently styled filter control that can either perform an action or
 /// open a popup menu.
@@ -47,7 +47,7 @@ class SearchFilterButton<T> extends StatelessWidget {
         visualDensity: VisualDensity.compact,
         textStyle: Theme.of(context).textTheme.labelMedium,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_borderRadius),
+          borderRadius: BorderRadius.circular(kSearchFilterButtonBorderRadius),
         ),
         side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
       ),
@@ -60,7 +60,7 @@ class SearchFilterButton<T> extends StatelessWidget {
       onSelected: onSelected!,
       items: items!,
       builder: (context, controller, child) => InkWell(
-        borderRadius: BorderRadius.circular(_borderRadius),
+        borderRadius: BorderRadius.circular(kSearchFilterButtonBorderRadius),
         onTap: () => controller.isOpen ? controller.close() : controller.open(),
         child: IgnorePointer(child: button),
       ),

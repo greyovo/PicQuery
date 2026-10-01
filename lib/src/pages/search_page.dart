@@ -305,7 +305,6 @@ class _HeroSection extends StatelessWidget {
                   children: [
                     for (final query in recentSearches)
                       ActionChip(
-                        avatar: const Icon(Icons.history_rounded, size: 20),
                         label: Text(
                           query,
                           maxLines: 1,
@@ -314,9 +313,15 @@ class _HeroSection extends StatelessWidget {
                         onPressed: () => onRecentSearchSelected(query),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 8,
+                          vertical: 10,
                         ),
-                        shape: const StadiumBorder(),
+                        visualDensity: VisualDensity.compact,
+                        labelStyle: Theme.of(context).textTheme.labelMedium,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            kSearchFilterButtonBorderRadius,
+                          ),
+                        ),
                       ),
                   ],
                 ),

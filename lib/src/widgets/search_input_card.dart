@@ -5,6 +5,7 @@ import 'package:picquery_app/src/utils/localization.dart';
 
 const String kSearchInputHeroTag = 'search_query_input';
 const double kSearchInputMaxWidth = 768;
+const BorderRadius _largeBorderRadius = BorderRadius.all(Radius.circular(16));
 
 /// The search input card used on both the search tab and the search results
 /// page. Wrapped in a [Hero] with [kSearchInputHeroTag] in both places.
@@ -44,49 +45,49 @@ class SearchInputCard extends StatelessWidget {
                 tooltip: context.l10n.searchByImage,
               ),
               const SizedBox(height: 24, child: VerticalDivider()),
-              if (context.isLargeScreen)
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: FilledButton.icon(
-                    onPressed: onSearch,
-                    icon: const Icon(Icons.search_rounded, size: 24),
-                    label: Text(context.l10n.search),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(124, 48),
-                      shape: const StadiumBorder(),
-                    ),
-                  ),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: Tooltip(
-                    message: context.l10n.search,
-                    child: FilledButton(
-                      onPressed: onSearch,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.square(48),
-                        padding: EdgeInsets.zero,
-                        shape: const CircleBorder(),
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: context.isLargeScreen
+                    ? FilledButton.icon(
+                        onPressed: onSearch,
+                        icon: const Icon(Icons.search_rounded, size: 24),
+                        label: Text(context.l10n.search),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(124, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      )
+                    : Tooltip(
+                        message: context.l10n.search,
+                        child: FilledButton(
+                          onPressed: onSearch,
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.square(48),
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Icon(Icons.search_rounded, size: 24),
+                        ),
                       ),
-                      child: const Icon(Icons.search_rounded, size: 22),
-                    ),
-                  ),
-                ),
+              ),
             ],
           ),
           filled: true,
           fillColor: context.colors.surface.withValues(alpha: 0.72),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: _largeBorderRadius,
             borderSide: BorderSide(color: context.colors.outlineVariant),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: _largeBorderRadius,
             borderSide: BorderSide(color: context.colors.outlineVariant),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: _largeBorderRadius,
             borderSide: BorderSide(color: context.colors.primary, width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(
