@@ -311,10 +311,6 @@ class _HeroSection extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         onPressed: () => onRecentSearchSelected(query),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
                         visualDensity: VisualDensity.compact,
                         labelStyle: Theme.of(context).textTheme.labelMedium,
                         shape: RoundedRectangleBorder(
@@ -371,6 +367,7 @@ class _SearchFilters extends StatelessWidget {
           for (final option in SearchTimeRange.values)
             AppMenuItem(
               value: option,
+              label: _timeRangeLabel(context, option),
               child: Text(_timeRangeLabel(context, option)),
             ),
         ],
