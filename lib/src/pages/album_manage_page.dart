@@ -69,7 +69,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
 
   Widget _buildUpdateButton(IndexingManager indexing) {
     if (indexing.albumUpdateStatus == AlbumUpdateStatus.checking) {
-      return IconButton.filledTonal(
+      return IconButton(
         onPressed: null,
         icon: const SizedBox.square(
           dimension: 16,
@@ -80,7 +80,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     }
     final hasUpdate =
         indexing.albumUpdateStatus == AlbumUpdateStatus.updateAvailable;
-    return IconButton.filledTonal(
+    return IconButton(
       onPressed: indexing.isIndexing
           ? null
           : hasUpdate
@@ -129,7 +129,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                         children: [
                           Text(
                             context.l10n.albums,
-                            style: Theme.of(context).textTheme.displaySmall
+                            style: Theme.of(context).textTheme.headlineLarge
                                 ?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -1,

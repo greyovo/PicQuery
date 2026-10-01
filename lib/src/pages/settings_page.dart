@@ -182,7 +182,10 @@ class SettingsPage extends WatchingWidget {
           iconAlignment: IconAlignment.end,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           label: Text(labelFor(value)),
         ),
