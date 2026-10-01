@@ -367,7 +367,6 @@ class _SearchFilters extends StatelessWidget {
           for (final option in SearchTimeRange.values)
             AppMenuItem(
               value: option,
-              label: _timeRangeLabel(context, option),
               child: Text(_timeRangeLabel(context, option)),
             ),
         ],

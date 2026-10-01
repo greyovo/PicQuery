@@ -2,7 +2,6 @@
 // Includes property checks from the
 // migration spec (77 fixed length, SOT/EOT placement, truncation rules).
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
