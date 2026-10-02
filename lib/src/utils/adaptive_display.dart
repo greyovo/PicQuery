@@ -57,6 +57,8 @@ double getAdaptiveMaxCrossAxisExtent(double screenWidth) {
 extension MediaQueryExt on BuildContext {
   /// Whether the device is a desktop (large screen).
   bool get isLargeScreen => MediaQuery.of(this).size.width >= 600;
+
+  bool get useNavigationRail => isLargeScreen;
 }
 
 bool get isMobile => Platform.isAndroid || Platform.isIOS;

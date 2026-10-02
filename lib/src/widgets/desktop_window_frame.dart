@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:picquery_app/src/utils/adaptive_display.dart';
+import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:window_manager/window_manager.dart';
 
 /// Provides a transparent, draggable desktop title area while keeping window
@@ -10,18 +12,19 @@ class DesktopWindowFrame extends StatelessWidget {
 
   final Widget child;
 
-  static bool get isSupported =>
-      Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+  static bool get isSupported => Platform.isMacOS || Platform.isWindows || Platform.isLinux;
 
   @override
   Widget build(BuildContext context) {
     if (!isSupported) return child;
 
     final brightness = Theme.of(context).brightness;
-    final titleBarHeight = Platform.isMacOS ? 38.0 : kWindowCaptionHeight;
+    final titleBarHeight = Platform.isMacOS ? 30.0 : kWindowCaptionHeight;
 
     return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: context.isLargeScreen
+          ? context.colors.surfaceContainer
+          : context.colors.surface,
       child: Column(
         children: [
           SizedBox(
