@@ -28,16 +28,15 @@ class SearchPage extends WatchingStatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final _queryController = TextEditingController();
 
-  Route<void> _searchResultsRoute(SearchResultsPage page) =>
-      PageRouteBuilder<void>(
-        pageBuilder: (_, _, _) => page,
-        transitionDuration: const Duration(milliseconds: 280),
-        reverseTransitionDuration: const Duration(milliseconds: 220),
-        transitionsBuilder: (_, animation, _, child) => FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-          child: child,
-        ),
-      );
+  Route<void> _searchResultsRoute(SearchResultsPage page) => PageRouteBuilder<void>(
+    pageBuilder: (_, _, _) => page,
+    transitionDuration: const Duration(milliseconds: 280),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
+    transitionsBuilder: (_, animation, _, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: child,
+    ),
+  );
 
   @override
   void dispose() {
@@ -63,21 +62,14 @@ class _SearchPageState extends State<SearchPage> {
         query: searchQuery,
         limit: searchManager.resultLimit.value,
         folderIds: searchManager.selectedFolderIds.value.toList(),
-        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
-          DateTime.now(),
-        ),
+        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(DateTime.now()),
       );
       searchManager.addRecentSearch(query);
       if (mounted) {
         Navigator.push<void>(
           context,
           _searchResultsRoute(
-            SearchResultsPage(
-              results: results,
-              query: query,
-              realQuery: searchQuery,
-              searchMode: SearchMode.text,
-            ),
+            SearchResultsPage(results: results, query: query, realQuery: searchQuery, searchMode: SearchMode.text),
           ),
         );
       }
@@ -93,16 +85,12 @@ class _SearchPageState extends State<SearchPage> {
         context,
         searchManager.selectedFolderIds.value.toList(),
         limit: searchManager.resultLimit.value,
-        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
-          DateTime.now(),
-        ),
+        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(DateTime.now()),
       );
       if (results != null && mounted) {
         Navigator.push<void>(
           context,
-          _searchResultsRoute(
-            SearchResultsPage(results: results, searchMode: SearchMode.image),
-          ),
+          _searchResultsRoute(SearchResultsPage(results: results, searchMode: SearchMode.image)),
         );
       }
     } catch (error) {
@@ -114,9 +102,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _showFolderSelector() async {
     await showContentInDialogOrPage<Set<int>>(
       context: context,
-      builder: (context) => FolderSelectorView(
-        initialSelection: searchManager.selectedFolderIds.value,
-      ),
+      builder: (context) => FolderSelectorView(initialSelection: searchManager.selectedFolderIds.value),
     );
   }
 
@@ -133,10 +119,7 @@ class _SearchPageState extends State<SearchPage> {
     return context.l10n.selectedAlbumsCount(selectedIds.length);
   }
 
-  List<String> _selectedFolderNames(
-    List<Folder> folders,
-    Set<int> selectedIds,
-  ) {
+  List<String> _selectedFolderNames(List<Folder> folders, Set<int> selectedIds) {
     return folders
         .where((folder) => selectedIds.contains(folder.id))
         .map((folder) => folder.folderPath.split('/').last)
@@ -146,13 +129,9 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final folders = watchValue((FolderManager manager) => manager.folders);
-    final selectedIds = watchValue(
-      (SearchManager manager) => manager.selectedFolderIds,
-    );
+    final selectedIds = watchValue((SearchManager manager) => manager.selectedFolderIds);
     final timeRange = watchValue((SearchManager manager) => manager.timeRange);
-    final recentSearches = watchValue(
-      (SearchManager manager) => manager.recentSearches,
-    );
+    final recentSearches = watchValue((SearchManager manager) => manager.recentSearches);
     final selectedFolderNames = _selectedFolderNames(folders, selectedIds);
 
     return Scaffold(
@@ -160,19 +139,12 @@ class _SearchPageState extends State<SearchPage> {
         builder: (context, constraints) {
           final isDesktopLayout = constraints.maxWidth >= 760;
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isDesktopLayout ? 40 : 20,
-              vertical: 24,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: isDesktopLayout ? 40 : 20, vertical: 24),
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - 48,
-              ),
+              constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: kSearchInputMaxWidth,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: kSearchInputMaxWidth),
                   child: _HeroSection(
                     controller: _queryController,
                     isDesktop: isDesktopLayout,
@@ -183,8 +155,7 @@ class _SearchPageState extends State<SearchPage> {
                     hasFolderFilter: selectedIds.isNotEmpty,
                     onSelectScope: _showFolderSelector,
                     timeRange: timeRange,
-                    onTimeRangeChanged: (value) =>
-                        searchManager.timeRange.value = value,
+                    onTimeRangeChanged: (value) => searchManager.timeRange.value = value,
                     onClearFilters: searchManager.clearFilters,
                     recentSearches: recentSearches.take(10).toList(),
                     onRecentSearchSelected: _onRecentSearchSelected,
@@ -232,68 +203,49 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fontSize = Theme.of(context).textTheme.headlineMedium?.fontSize ?? 36;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Transform.translate(
-              offset: const Offset(-6, 0),
-              child: ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                  context.colors.surface,
-                  BlendMode.multiply,
-                ),
-                child: Image.asset(
-                  'assets/picquery-icon.png',
-                  width: isDesktop ? 52 : 50,
-                  height: isDesktop ? 52 : 50,
+        Text.rich(
+          TextSpan(
+            children: [
+              WidgetSpan(
+                child: Transform.translate(
+                  offset: Offset(-2, 4),
+                  child: Image.asset(
+                    'assets/picquery-icon.png',
+                    height: fontSize * 1.5,
+                    fit: BoxFit.cover,
+                    color: context.colors.surface,
+                    colorBlendMode: BlendMode.multiply,
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
+                  ),
                 ),
               ),
-            ),
-            Text.rich(
               TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Pic',
-                    style: TextStyle(color: context.colors.onSurface),
-                  ),
-                  WidgetSpan(child: SizedBox(width: 1)),
-                  TextSpan(
-                    text: 'Query',
-                    style: TextStyle(color: context.colors.primary),
-                  ),
-                ],
+                text: 'Pic',
+                style: TextStyle(color: context.colors.onSurface),
               ),
-              style:
-                  (isDesktop
-                          ? Theme.of(context).textTheme.headlineLarge
-                          : Theme.of(context).textTheme.headlineMedium)
-                      ?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -1,
-                      ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          isDesktop
-              ? context.l10n.searchPhotosDescription
-              : context.l10n.searchPhotosDescriptionMobile,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: context.colors.onSurfaceVariant,
-            fontWeight: FontWeight.w400,
+              TextSpan(
+                text: 'Query',
+                style: TextStyle(color: context.colors.primary),
+              ),
+            ],
           ),
+          style: Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.2),
         ),
-        SizedBox(height: isDesktop ? 34 : 24),
+        // Text(
+        //   isDesktop ? context.l10n.searchPhotosDescription : context.l10n.searchPhotosDescriptionMobile,
+        //   style: Theme.of(context).textTheme.titleMedium
+        //       ?.copyWith(color: context.colors.onSurfaceVariant, fontWeight: FontWeight.w400),
+        // ),
+        SizedBox(height: 12),
         Hero(
           tag: kSearchInputHeroTag,
-          child: SearchInputCard(
-            queryController: controller,
-            onSearch: onSearch,
-            onImageUpload: onImageSearch,
-          ),
+          child: SearchInputCard(queryController: controller, onSearch: onSearch, onImageUpload: onImageSearch),
         ),
         const SizedBox(height: 20),
         _SearchFilters(
@@ -308,14 +260,10 @@ class _HeroSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 6, left: 4, right: 4),
             child: Text(
-              [
-                ...selectedFolderNames.take(5),
-                if (selectedFolderNames.length > 5) '…',
-              ].join(', '),
+              [...selectedFolderNames.take(5), if (selectedFolderNames.length > 5) '…'].join(', '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: context.colors.primary),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colors.primary),
             ),
           ),
         if (recentSearches.isNotEmpty)
@@ -326,8 +274,7 @@ class _HeroSection extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.recentSearches,
-                  style: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -336,18 +283,12 @@ class _HeroSection extends StatelessWidget {
                   children: [
                     for (final query in recentSearches)
                       ActionChip(
-                        label: Text(
-                          query,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        label: Text(query, maxLines: 1, overflow: TextOverflow.ellipsis),
                         onPressed: () => onRecentSearchSelected(query),
                         visualDensity: VisualDensity.compact,
                         labelStyle: Theme.of(context).textTheme.labelMedium,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            kSearchFilterButtonBorderRadius,
-                          ),
+                          borderRadius: BorderRadius.circular(kSearchFilterButtonBorderRadius),
                         ),
                       ),
                   ],
@@ -396,10 +337,7 @@ class _SearchFilters extends StatelessWidget {
         label: Text(_timeRangeLabel(context, timeRange)),
         items: [
           for (final option in SearchTimeRange.values)
-            AppMenuItem(
-              value: option,
-              child: Text(_timeRangeLabel(context, option)),
-            ),
+            AppMenuItem(value: option, child: Text(_timeRangeLabel(context, option))),
         ],
       ),
     ];
@@ -418,11 +356,10 @@ class _SearchFilters extends StatelessWidget {
     );
   }
 
-  String _timeRangeLabel(BuildContext context, SearchTimeRange value) =>
-      switch (value) {
-        SearchTimeRange.anyTime => context.l10n.timeAny,
-        SearchTimeRange.pastWeek => context.l10n.timeWeek,
-        SearchTimeRange.pastMonth => context.l10n.timeMonth,
-        SearchTimeRange.pastYear => context.l10n.timeYear,
-      };
+  String _timeRangeLabel(BuildContext context, SearchTimeRange value) => switch (value) {
+    SearchTimeRange.anyTime => context.l10n.timeAny,
+    SearchTimeRange.pastWeek => context.l10n.timeWeek,
+    SearchTimeRange.pastMonth => context.l10n.timeMonth,
+    SearchTimeRange.pastYear => context.l10n.timeYear,
+  };
 }
