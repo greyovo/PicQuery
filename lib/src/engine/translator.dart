@@ -56,7 +56,10 @@ class Translator {
       throw Exception('Failed to load SentencePiece tokenizers.');
     }
 
-    await OrtEngine.instance.loadTranslationModel(modelPath: modelPath, force: force);
+    await OrtEngine.instance.loadTranslationModel(
+      modelPath: modelPath,
+      force: force,
+    );
 
     _sourceTokenizer = source;
     _targetTokenizer = target;

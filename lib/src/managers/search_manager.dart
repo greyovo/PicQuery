@@ -12,7 +12,7 @@ class SearchManager {
   static const int defaultResultLimit = 50;
   static const List<int> resultLimitOptions = [25, 50, 100];
 
-  final selectedFolderIds = ValueNotifier<Set<int>>({});
+  final selectedAlbumIds = ValueNotifier<Set<int>>({});
   final resultLimit = ValueNotifier<int>(_storedResultLimit());
   final timeRange = ValueNotifier<SearchTimeRange>(SearchTimeRange.anyTime);
   final isCustomScope = ValueNotifier<bool>(false);
@@ -31,13 +31,13 @@ class SearchManager {
         .toList(),
   );
 
-  void setSelectedFolderIds(Set<int> ids) {
-    selectedFolderIds.value = ids;
+  void setSelectedAlbumIds(Set<int> ids) {
+    selectedAlbumIds.value = ids;
     isCustomScope.value = ids.isNotEmpty;
   }
 
   void clearScope() {
-    selectedFolderIds.value = {};
+    selectedAlbumIds.value = {};
     isCustomScope.value = false;
   }
 

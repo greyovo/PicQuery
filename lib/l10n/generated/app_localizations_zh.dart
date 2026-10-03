@@ -97,11 +97,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get desktopOnlyOpenAlbum => '仅支持在桌面端打开相册位置';
 
   @override
-  String get folderUnavailable => '文件夹不存在或无法访问';
+  String get albumUnavailable => '相册不存在或无法访问';
 
   @override
-  String openFolderFailed(Object error) {
-    return '无法打开文件夹：$error';
+  String openAlbumFailed(Object error) {
+    return '无法打开相册：$error';
   }
 
   @override
@@ -200,7 +200,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recentSearches => '最近搜索';
 
   @override
-  String get allFolders => '全部文件夹';
+  String get allAlbums => '全部相册';
 
   @override
   String selectedAlbumsCount(int count) {
@@ -248,22 +248,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectAll => '全选';
 
   @override
-  String get filterFolders => '筛选文件夹…';
+  String get filterAlbums => '筛选相册…';
 
   @override
-  String get noFoldersFound => '没有找到文件夹';
+  String get noAlbumsFound => '没有找到相册';
 
   @override
-  String get selectFolderToIndex => '选择要索引的文件夹';
+  String get selectAlbumToIndex => '选择要索引的相册';
 
   @override
   String get permissionDenied => '权限被拒绝';
 
   @override
   String get photoPermissionMessage => '选择相册进行索引需要照片库访问权限。';
-
-  @override
-  String get noAlbumsFound => '未找到相册';
 
   @override
   String get noAlbumsMessage => '设备上没有找到照片相册。';
@@ -523,11 +520,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get desktopOnlyOpenAlbum => '僅支援在桌面端開啟相簿位置';
 
   @override
-  String get folderUnavailable => '資料夾不存在或無法存取';
+  String get albumUnavailable => '相簿不存在或無法存取';
 
   @override
-  String openFolderFailed(Object error) {
-    return '無法開啟資料夾：$error';
+  String openAlbumFailed(Object error) {
+    return '無法開啟相簿：$error';
   }
 
   @override
@@ -626,7 +623,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get recentSearches => '最近搜尋';
 
   @override
-  String get allFolders => '全部資料夾';
+  String get allAlbums => '全部相簿';
 
   @override
   String selectedAlbumsCount(int count) {
@@ -674,22 +671,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get selectAll => '全選';
 
   @override
-  String get filterFolders => '篩選資料夾…';
+  String get filterAlbums => '篩選相簿…';
 
   @override
-  String get noFoldersFound => '沒有找到資料夾';
+  String get noAlbumsFound => '沒有找到相簿';
 
   @override
-  String get selectFolderToIndex => '選擇要索引的資料夾';
+  String get selectAlbumToIndex => '選擇要索引的相簿';
 
   @override
   String get permissionDenied => '權限被拒絕';
 
   @override
   String get photoPermissionMessage => '選擇相簿進行索引需要照片庫存取權限。';
-
-  @override
-  String get noAlbumsFound => '未找到相簿';
 
   @override
   String get noAlbumsMessage => '裝置上沒有找到照片相簿。';

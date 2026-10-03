@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
 /// Opens the image picker and runs an image-similarity search against the
-/// given folder scope. Returns null if the user cancelled the picker; throws
+/// given album scope. Returns null if the user cancelled the picker; throws
 /// if the search fails.
 Future<List<SearchResult>?> pickImageAndSearch(
   BuildContext context,
-  List<int> folderIds, {
+  List<int> albumIds, {
   int limit = 50,
   int? modifiedAfter,
 }) async {
@@ -26,7 +26,7 @@ Future<List<SearchResult>?> pickImageAndSearch(
   return searchByImageWithFilters(
     imagePath: filePath,
     limit: limit,
-    folderIds: folderIds,
+    albumIds: albumIds,
     modifiedAfter: modifiedAfter,
   );
 }

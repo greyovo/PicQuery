@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -22,7 +23,7 @@ Future<PathSelectionResult?> pickIndexPathToIndex(BuildContext context) async {
   if (isMobile) {
     return _pickAlbumOnMobile(context);
   } else {
-    return _pickFolderOnDesktop(context);
+    return _pickAlbumOnDesktop(context);
   }
 }
 
@@ -139,9 +140,9 @@ Future<PathSelectionResult?> _albumToSelection(
   );
 }
 
-Future<PathSelectionResult?> _pickFolderOnDesktop(BuildContext context) async {
+Future<PathSelectionResult?> _pickAlbumOnDesktop(BuildContext context) async {
   final result = await FilePicker.platform.getDirectoryPath(
-    dialogTitle: context.l10n.selectFolderToIndex,
+    dialogTitle: context.l10n.selectAlbumToIndex,
   );
 
   if (result == null) {

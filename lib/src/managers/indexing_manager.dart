@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/engine/api.dart' as api;
 import 'package:picquery_app/src/engine/models.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/utils/path_selector.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
 import 'package:picquery_app/src/stores/settings_store.dart';
@@ -23,16 +23,16 @@ class IndexingManager extends ChangeNotifier {
 
   bool isIndexing = false;
   DateTime? startTime;
-  String folderName = '';
+  String albumName = '';
   int current = 0;
   int total = 0;
   int alreadyIndexed = 0;
 
   AlbumUpdateStatus albumUpdateStatus = .idle;
   int pendingUpdateCount = 0;
-  Set<String> updateAvailableFolderPaths = const {};
+  Set<String> updateAvailableAlbumPaths = const {};
   String? currentPath;
-  String? currentFolder;
+  String? currentAlbum;
 
   final _navigateToManageTabController = StreamController<void>.broadcast();
   Stream<void> get onNavigateToManageTab =>
@@ -41,15 +41,15 @@ class IndexingManager extends ChangeNotifier {
   StreamSubscription<IndexProgress>? _subscription;
   Timer? _upToDateResetTimer;
 
-  void start(String folderName, {int alreadyIndexed = 0}) {
+  void start(String albumName, {int alreadyIndexed = 0}) {
     isIndexing = true;
     startTime = DateTime.now();
-    this.folderName = folderName;
+    this.albumName = albumName;
     this.alreadyIndexed = alreadyIndexed;
     current = 0;
     total = 0;
     currentPath = null;
-    currentFolder = null;
+    currentAlbum = null;
     notifyListeners();
   }
 
@@ -85,21 +85,21 @@ class IndexingManager extends ChangeNotifier {
     notifyListeners();
     // The engine finishes its current image and writes its checkpoint after
     // the stream subscription has been cancelled.
-    Future.delayed(const Duration(milliseconds: 300), folderManager.reload);
+    Future.delayed(const Duration(milliseconds: 300), albumManager.reload);
   }
 
   void reset() {
     isIndexing = false;
     startTime = null;
-    folderName = '';
+    albumName = '';
     current = 0;
     total = 0;
     alreadyIndexed = 0;
     albumUpdateStatus = .idle;
     pendingUpdateCount = 0;
-    updateAvailableFolderPaths = const {};
+    updateAvailableAlbumPaths = const {};
     currentPath = null;
-    currentFolder = null;
+    currentAlbum = null;
     notifyListeners();
   }
 
@@ -122,21 +122,21 @@ class IndexingManager extends ChangeNotifier {
         isUpdate: isUpdate,
       );
     } else {
-      stream = api.indexFolder(folderPath: path, isUpdate: isUpdate);
+      stream = api.indexAlbum(albumPath: path, isUpdate: isUpdate);
     }
 
     _subscription?.cancel();
-    var hasReloadedFolders = false;
+    var hasReloadedAlbums = false;
     _subscription = stream.listen(
       (progress) {
         currentPath = progress.currentPath;
-        currentFolder = progress.currentFolder;
+        currentAlbum = progress.currentAlbum;
         updateProgress(progress.current, progress.total);
-        // A new folder record is created before the first progress event. Reload
+        // A new album record is created before the first progress event. Reload
         // once so its card can show the in-place indexing state immediately.
-        if (!hasReloadedFolders) {
-          hasReloadedFolders = true;
-          unawaited(folderManager.reload());
+        if (!hasReloadedAlbums) {
+          hasReloadedAlbums = true;
+          unawaited(albumManager.reload());
         }
       },
       onDone: () {
@@ -150,7 +150,7 @@ class IndexingManager extends ChangeNotifier {
     );
   }
 
-  /// Checks indexed folders for file changes.
+  /// Checks indexed albums for file changes.
   ///
   /// Set [showToast] to false for background checks, such as the one run when
   /// the app starts. Set [updateAutomatically] to apply detected changes as
@@ -168,32 +168,31 @@ class IndexingManager extends ChangeNotifier {
     try {
       final results = await api.checkForUpdates();
       var totalNew = results.fold<int>(0, (sum, r) => sum + r.newCount);
-      final updatePaths = results.map((r) => r.folderPath).toSet();
-      // Mobile albums are MediaStore collections, not file-system folders, so
+      final updatePaths = results.map((r) => r.albumPath).toSet();
+      // Mobile albums are MediaStore collections, not file-system albums, so
       // the engine's directory scan cannot inspect them. Compare their current
       // asset count here; pressing continue performs the full path-level sync.
       if (isMobile) {
-        await folderManager.reload();
-        for (final folder in folderManager.folders.value) {
-          final selection = await loadMobileAlbum(folder.folderPath);
+        await albumManager.reload();
+        for (final album in albumManager.albums.value) {
+          final selection = await loadMobileAlbum(album.albumPath);
           if (selection != null &&
-              selection.imagePaths!.length != folder.imageCount) {
-            updatePaths.add(folder.folderPath);
-            totalNew += (selection.imagePaths!.length - folder.imageCount)
-                .abs();
+              selection.imagePaths!.length != album.imageCount) {
+            updatePaths.add(album.albumPath);
+            totalNew += (selection.imagePaths!.length - album.imageCount).abs();
           }
         }
       }
-      updateAvailableFolderPaths = updatePaths;
+      updateAvailableAlbumPaths = updatePaths;
 
       if (updatePaths.isNotEmpty) {
         albumUpdateStatus = .updateAvailable;
         pendingUpdateCount = totalNew;
         if (updateAutomatically) {
-          startUpdateIndexing(onDone: () => folderManager.reload());
+          startUpdateIndexing(onDone: () => albumManager.reload());
         }
       } else {
-        updateAvailableFolderPaths = const {};
+        updateAvailableAlbumPaths = const {};
         setIndexingStatusUpToDate();
         if (showToast) {
           if (context != null && context.mounted) {
@@ -203,7 +202,7 @@ class IndexingManager extends ChangeNotifier {
       }
     } catch (e) {
       albumUpdateStatus = .idle;
-      updateAvailableFolderPaths = const {};
+      updateAvailableAlbumPaths = const {};
       if (showToast) {
         if (context != null && context.mounted) {
           Toast.showMessage(context.l10n.checkUpdatesFailed(e));
@@ -225,7 +224,7 @@ class IndexingManager extends ChangeNotifier {
   }) {
     start('增量更新');
     albumUpdateStatus = .idle;
-    updateAvailableFolderPaths = const {};
+    updateAvailableAlbumPaths = const {};
 
     final stream = api.indexPendingUpdates();
 
@@ -233,7 +232,7 @@ class IndexingManager extends ChangeNotifier {
     _subscription = stream.listen(
       (progress) {
         currentPath = progress.currentPath;
-        currentFolder = progress.currentFolder;
+        currentAlbum = progress.currentAlbum;
         updateProgress(progress.current, progress.total);
       },
       onDone: () {
@@ -258,16 +257,16 @@ class IndexingManager extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> pickAndIndexFolder(BuildContext context) async {
+  Future<void> pickAndIndexAlbum(BuildContext context) async {
     final result = await pickIndexPathToIndex(context);
 
     if (result == null || !context.mounted) return;
 
-    final folders = folderManager.folders.value;
-    final existingFolder = folders
-        .where((f) => f.folderPath == result.path)
+    final albums = albumManager.albums.value;
+    final existingAlbum = albums
+        .where((f) => f.albumPath == result.path)
         .firstOrNull;
-    final alreadyIndexed = existingFolder != null;
+    final alreadyIndexed = existingAlbum != null;
 
     if (alreadyIndexed) {
       final confirmed = await showDialog<bool>(
@@ -296,21 +295,21 @@ class IndexingManager extends ChangeNotifier {
     startIndexing(
       result.path,
       result.displayName,
-      alreadyIndexed: alreadyIndexed ? existingFolder.imageCount : 0,
+      alreadyIndexed: alreadyIndexed ? existingAlbum.imageCount : 0,
       imagePaths: result.imagePaths,
       isUpdate: alreadyIndexed,
-      onDone: () => folderManager.reload(),
+      onDone: () => albumManager.reload(),
       onError: (error) {
         Toast.showMessage(context.l10n.indexingError(error));
-        folderManager.reload();
+        albumManager.reload();
       },
     );
   }
 
-  Future<void> continueIndexing(Folder folder, {BuildContext? context}) async {
+  Future<void> continueIndexing(Album album, {BuildContext? context}) async {
     PathSelectionResult? selection;
     if (isMobile) {
-      selection = await loadMobileAlbum(folder.folderPath);
+      selection = await loadMobileAlbum(album.albumPath);
       if (selection == null) {
         if (context != null && context.mounted) {
           Toast.showMessage(context.l10n.albumUnavailableReAdd);
@@ -319,13 +318,13 @@ class IndexingManager extends ChangeNotifier {
       }
     }
     startIndexing(
-      folder.folderPath,
-      selection?.displayName ?? folder.folderPath,
-      alreadyIndexed: folder.imageCount,
+      album.albumPath,
+      selection?.displayName ?? album.albumPath,
+      alreadyIndexed: album.imageCount,
       imagePaths: selection?.imagePaths,
       isUpdate: true,
-      onDone: () => folderManager.reload(),
-      onError: (_) => folderManager.reload(),
+      onDone: () => albumManager.reload(),
+      onError: (_) => albumManager.reload(),
     );
   }
 
@@ -341,8 +340,8 @@ class IndexingManager extends ChangeNotifier {
       selection.path,
       selection.displayName,
       imagePaths: selection.imagePaths,
-      onDone: () => folderManager.reload(),
-      onError: (_) => folderManager.reload(),
+      onDone: () => albumManager.reload(),
+      onError: (_) => albumManager.reload(),
     );
   }
 
@@ -367,14 +366,14 @@ class IndexingManager extends ChangeNotifier {
 
     if (confirmed == true) {
       cancel();
-      folderManager.reload();
+      albumManager.reload();
     }
   }
 
   void setIndexingStatusUpToDate() {
     _upToDateResetTimer?.cancel();
     albumUpdateStatus = .upToDate;
-    updateAvailableFolderPaths = const {};
+    updateAvailableAlbumPaths = const {};
     notifyListeners();
     _upToDateResetTimer = Timer(const Duration(seconds: 5), () {
       if (albumUpdateStatus != .upToDate) {

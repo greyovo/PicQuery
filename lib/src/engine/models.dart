@@ -5,14 +5,14 @@ class IndexProgress {
   final int total;
   final int errors;
   final String? currentPath;
-  final String? currentFolder;
+  final String? currentAlbum;
 
   const IndexProgress({
     required this.current,
     required this.total,
     required this.errors,
     this.currentPath,
-    this.currentFolder,
+    this.currentAlbum,
   });
 
   @override
@@ -21,7 +21,7 @@ class IndexProgress {
       total.hashCode ^
       errors.hashCode ^
       currentPath.hashCode ^
-      currentFolder.hashCode;
+      currentAlbum.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -32,7 +32,7 @@ class IndexProgress {
           total == other.total &&
           errors == other.errors &&
           currentPath == other.currentPath &&
-          currentFolder == other.currentFolder;
+          currentAlbum == other.currentAlbum;
 }
 
 class IndexStatus {
@@ -53,18 +53,18 @@ class IndexStatus {
           lastIndexedPath == other.lastIndexedPath;
 }
 
-class Folder {
+class Album {
   final int id;
-  final String folderPath;
+  final String albumPath;
   final int indexedAt;
   final int imageCount;
   final int totalImageCount;
   final bool isIndexComplete;
   final String? coverPath;
 
-  const Folder({
+  const Album({
     required this.id,
-    required this.folderPath,
+    required this.albumPath,
     required this.indexedAt,
     required this.imageCount,
     required this.totalImageCount,
@@ -75,7 +75,7 @@ class Folder {
   @override
   int get hashCode =>
       id.hashCode ^
-      folderPath.hashCode ^
+      albumPath.hashCode ^
       indexedAt.hashCode ^
       imageCount.hashCode ^
       totalImageCount.hashCode ^
@@ -85,10 +85,10 @@ class Folder {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Folder &&
+      other is Album &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          folderPath == other.folderPath &&
+          albumPath == other.albumPath &&
           indexedAt == other.indexedAt &&
           imageCount == other.imageCount &&
           totalImageCount == other.totalImageCount &&
@@ -96,33 +96,33 @@ class Folder {
           coverPath == other.coverPath;
 }
 
-class FolderUpdateInfo {
-  final int folderId;
-  final String folderPath;
+class AlbumUpdateInfo {
+  final int albumId;
+  final String albumPath;
   final int newCount;
   final int deletedCount;
 
-  const FolderUpdateInfo({
-    required this.folderId,
-    required this.folderPath,
+  const AlbumUpdateInfo({
+    required this.albumId,
+    required this.albumPath,
     required this.newCount,
     required this.deletedCount,
   });
 
   @override
   int get hashCode =>
-      folderId.hashCode ^
-      folderPath.hashCode ^
+      albumId.hashCode ^
+      albumPath.hashCode ^
       newCount.hashCode ^
       deletedCount.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FolderUpdateInfo &&
+      other is AlbumUpdateInfo &&
           runtimeType == other.runtimeType &&
-          folderId == other.folderId &&
-          folderPath == other.folderPath &&
+          albumId == other.albumId &&
+          albumPath == other.albumPath &&
           newCount == other.newCount &&
           deletedCount == other.deletedCount;
 }

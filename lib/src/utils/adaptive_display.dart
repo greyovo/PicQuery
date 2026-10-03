@@ -63,4 +63,5 @@ extension MediaQueryExt on BuildContext {
 
 bool get isMobile => Platform.isAndroid || Platform.isIOS;
 
-bool get isDesktop => Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+bool get isDesktop =>
+    Platform.isWindows || Platform.isLinux || Platform.isMacOS;

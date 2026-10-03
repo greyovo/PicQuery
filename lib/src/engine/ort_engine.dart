@@ -83,7 +83,9 @@ class OrtEngine {
     try {
       final available = (await OnnxRuntime().getAvailableProviders()).toSet();
       _activeProviders = _preferredProviders(available);
-      _log.info('Available execution providers: $available; using: $_activeProviders.');
+      _log.info(
+        'Available execution providers: $available; using: $_activeProviders.',
+      );
       return OrtSessionOptions(
         providers: _activeProviders,
         intraOpNumThreads: Platform.isMacOS

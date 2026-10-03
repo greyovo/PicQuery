@@ -249,17 +249,17 @@ abstract class AppLocalizations {
   /// **'Opening an album location is only supported on desktop'**
   String get desktopOnlyOpenAlbum;
 
-  /// No description provided for @folderUnavailable.
+  /// No description provided for @albumUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'The folder does not exist or cannot be accessed'**
-  String get folderUnavailable;
+  /// **'The album does not exist or cannot be accessed'**
+  String get albumUnavailable;
 
-  /// No description provided for @openFolderFailed.
+  /// No description provided for @openAlbumFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not open folder: {error}'**
-  String openFolderFailed(Object error);
+  /// **'Could not open album: {error}'**
+  String openAlbumFailed(Object error);
 
   /// No description provided for @removeAlbumIndex.
   ///
@@ -435,11 +435,11 @@ abstract class AppLocalizations {
   /// **'Recent searches'**
   String get recentSearches;
 
-  /// No description provided for @allFolders.
+  /// No description provided for @allAlbums.
   ///
   /// In en, this message translates to:
-  /// **'All folders'**
-  String get allFolders;
+  /// **'All albums'**
+  String get allAlbums;
 
   /// No description provided for @selectedAlbumsCount.
   ///
@@ -519,23 +519,23 @@ abstract class AppLocalizations {
   /// **'Select all'**
   String get selectAll;
 
-  /// No description provided for @filterFolders.
+  /// No description provided for @filterAlbums.
   ///
   /// In en, this message translates to:
-  /// **'Filter folders…'**
-  String get filterFolders;
+  /// **'Filter albums…'**
+  String get filterAlbums;
 
-  /// No description provided for @noFoldersFound.
+  /// No description provided for @noAlbumsFound.
   ///
   /// In en, this message translates to:
-  /// **'No folders found'**
-  String get noFoldersFound;
+  /// **'No albums found'**
+  String get noAlbumsFound;
 
-  /// No description provided for @selectFolderToIndex.
+  /// No description provided for @selectAlbumToIndex.
   ///
   /// In en, this message translates to:
-  /// **'Select folder to index'**
-  String get selectFolderToIndex;
+  /// **'Select album to index'**
+  String get selectAlbumToIndex;
 
   /// No description provided for @permissionDenied.
   ///
@@ -548,12 +548,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photo library access is required to select albums for indexing.'**
   String get photoPermissionMessage;
-
-  /// No description provided for @noAlbumsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No albums found'**
-  String get noAlbumsFound;
 
   /// No description provided for @noAlbumsMessage.
   ///

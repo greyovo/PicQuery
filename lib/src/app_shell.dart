@@ -7,7 +7,7 @@ import 'package:picquery_app/src/pages/album_manage_page.dart';
 import 'package:picquery_app/src/pages/settings_page.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/stores/settings_store.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
@@ -29,7 +29,12 @@ class _AppShellState extends State<AppShell> {
     // Keep the update state current for the manage tab without interrupting
     // startup with success or error toasts.
     final indexing = indexingManager;
-    unawaited(indexing.checkForUpdates(showToast: false, updateAutomatically: indexing.autoUpdateIndexOnStartup.value));
+    unawaited(
+      indexing.checkForUpdates(
+        showToast: false,
+        updateAutomatically: indexing.autoUpdateIndexOnStartup.value,
+      ),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(_recommendAndroidDcim());
     });
@@ -40,16 +45,22 @@ class _AppShellState extends State<AppShell> {
       return;
     }
     await SettingsStore.setAndroidDcimPromptShown();
-    await folderManager.reload();
-    if (!mounted || folderManager.folders.value.isNotEmpty) return;
+    await albumManager.reload();
+    if (!mounted || albumManager.albums.value.isNotEmpty) return;
     final shouldIndex = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.indexDcimTitle),
         content: Text(context.l10n.indexDcimMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(context.l10n.notNow)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(context.l10n.startIndexing)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.notNow),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.startIndexing),
+          ),
         ],
       ),
     );
@@ -69,7 +80,11 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildManageTabIcon(IndexingManager indexing) {
     if (indexing.isIndexing && _indexProgress > 0.0) {
-      return SizedBox(width: 20, height: 20, child: CircularProgressIndicator(value: _indexProgress, strokeWidth: 2));
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(value: _indexProgress, strokeWidth: 2),
+      );
     }
     final icon = const Icon(Icons.folder_outlined);
     if (indexing.albumUpdateStatus == AlbumUpdateStatus.updateAvailable) {
@@ -105,7 +120,11 @@ class _AppShellState extends State<AppShell> {
     final bool useNavigationRail = context.useNavigationRail;
 
     final navigationRailDestinations = [
-      NavigationRailDestination(icon: const Icon(Icons.search), label: Text(context.l10n.search), padding: _padding),
+      NavigationRailDestination(
+        icon: const Icon(Icons.search),
+        label: Text(context.l10n.search),
+        padding: _padding,
+      ),
       NavigationRailDestination(
         icon: _buildManageTabIcon(indexing),
         label: Text(_buildManageTabLabel(context, indexing)),
@@ -119,19 +138,35 @@ class _AppShellState extends State<AppShell> {
     ];
 
     final bottomNavDestinations = [
-      NavigationDestination(icon: const Icon(Icons.search), label: context.l10n.search),
-      NavigationDestination(icon: _buildManageTabIcon(indexing), label: _buildManageTabLabel(context, indexing)),
-      NavigationDestination(icon: const Icon(Icons.settings_outlined), label: context.l10n.settings),
+      NavigationDestination(
+        icon: const Icon(Icons.search),
+        label: context.l10n.search,
+      ),
+      NavigationDestination(
+        icon: _buildManageTabIcon(indexing),
+        label: _buildManageTabLabel(context, indexing),
+      ),
+      NavigationDestination(
+        icon: const Icon(Icons.settings_outlined),
+        label: context.l10n.settings,
+      ),
     ];
 
     Widget appBody = IndexedStack(
       index: _selectedIndex,
-      children: [const SearchPage(), const AlbumManagePage(), const SettingsPage()],
+      children: [
+        const SearchPage(),
+        const AlbumManagePage(),
+        const SettingsPage(),
+      ],
     );
     if (context.isLargeScreen) {
       appBody = Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 12.0, 12.0),
-        child: ClipRRect(borderRadius: BorderRadius.circular(8), child: appBody),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: appBody,
+        ),
       );
     }
 

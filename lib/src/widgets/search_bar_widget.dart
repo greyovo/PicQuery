@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/widgets/add_album_entry.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';

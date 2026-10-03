@@ -8,6 +8,7 @@ import 'package:picquery_app/src/engine/indexer.dart' as indexer;
 import 'package:picquery_app/src/engine/models.dart';
 import 'package:picquery_app/src/engine/ort_engine.dart';
 import 'package:picquery_app/src/engine/translator.dart';
+
 export 'models.dart';
 
 final _log = Logger('engine.api');
@@ -30,15 +31,15 @@ Future<void> loadClipModels({
   force: force,
 );
 
-/// Index all supported images in a folder (recursively).
+/// Index all supported images in a album (recursively).
 /// When [isUpdate] is true, skips already-indexed files and removes deleted
 /// file records.
 /// The stream completes normally when done; when cancelled by the listener,
 /// already-encoded-but-not-inserted results are discarded.
-Stream<IndexProgress> indexFolder({
-  required String folderPath,
+Stream<IndexProgress> indexAlbum({
+  required String albumPath,
   required bool isUpdate,
-}) => indexer.indexFolder(folderPath: folderPath, isUpdate: isUpdate);
+}) => indexer.indexAlbum(albumPath: albumPath, isUpdate: isUpdate);
 
 /// Index a list of image file paths directly (for mobile album selection).
 /// When [isUpdate] is true, skips already-indexed files and removes deleted
@@ -65,27 +66,27 @@ Future<IndexStatus> getIndexStatus() async {
   );
 }
 
-/// Delete an indexed folder and all its associated image records and vectors.
-Future<void> deleteFolder({required int folderId}) async {
-  Db.instance.deleteFolder(folderId);
+/// Delete an indexed album and all its associated image records and vectors.
+Future<void> deleteAlbum({required int albumId}) async {
+  Db.instance.deleteFolder(albumId);
 }
 
-/// Delete all indexed folders and their associated image records and vectors.
+/// Delete all indexed albums and their associated image records and vectors.
 /// For debug use only.
-Future<void> deleteAllFolders() async {
+Future<void> deleteAllAlbums() async {
   Db.instance.deleteAllFolders();
 }
 
-/// Get all indexed folders. Returns an empty list when the database is not
+/// Get all indexed albums. Returns an empty list when the database is not
 /// initialized.
-Future<List<Folder>> getAllFolders() async {
+Future<List<Album>> getAllAlbums() async {
   if (!Db.isInitialized) return const [];
   return Db.instance
       .getAllFolders()
       .map(
-        (f) => Folder(
+        (f) => Album(
           id: f.id,
-          folderPath: f.folderPath,
+          albumPath: f.folderPath,
           indexedAt: f.indexedAt,
           imageCount: f.imageCount,
           totalImageCount: f.totalImageCount,
@@ -96,9 +97,9 @@ Future<List<Folder>> getAllFolders() async {
       .toList();
 }
 
-/// Check for index updates across all indexed folders. Returns an empty list
+/// Check for index updates across all indexed albums. Returns an empty list
 /// when the database is not initialized or the check fails.
-Future<List<FolderUpdateInfo>> checkForUpdates() async {
+Future<List<AlbumUpdateInfo>> checkForUpdates() async {
   if (!Db.isInitialized) return const [];
   try {
     return await indexer.checkForUpdates();
@@ -134,54 +135,54 @@ Future<String> translateZhToEn({required String sentence}) =>
 
 /// Search indexed images by natural language text query.
 /// Returns up to [limit] results sorted by descending cosine similarity.
-/// If [folderIds] is non-empty, only searches within the specified folders.
+/// If [albumIds] is non-empty, only searches within the specified albums.
 Future<List<SearchResult>> searchByText({
   required String query,
   required int limit,
-  required List<int> folderIds,
+  required List<int> albumIds,
 }) async {
   final embedding = await OrtEngine.instance.encodeText(query);
-  return _searchByEmbedding(embedding, limit, folderIds);
+  return _searchByEmbedding(embedding, limit, albumIds);
 }
 
 Future<List<SearchResult>> searchByTextWithFilters({
   required String query,
   required int limit,
-  required List<int> folderIds,
+  required List<int> albumIds,
   int? modifiedAfter,
 }) async {
   final embedding = await OrtEngine.instance.encodeText(query);
   return _searchByEmbedding(
     embedding,
     limit,
-    folderIds,
+    albumIds,
     modifiedAfter: modifiedAfter,
   );
 }
 
 /// Search indexed images by image similarity.
 /// Returns up to [limit] results sorted by descending cosine similarity.
-/// If [folderIds] is non-empty, only searches within the specified folders.
+/// If [albumIds] is non-empty, only searches within the specified albums.
 Future<List<SearchResult>> searchByImage({
   required String imagePath,
   required int limit,
-  required List<int> folderIds,
+  required List<int> albumIds,
 }) async {
   final embedding = await OrtEngine.instance.encodeImageFile(imagePath);
-  return _searchByEmbedding(embedding, limit, folderIds);
+  return _searchByEmbedding(embedding, limit, albumIds);
 }
 
 Future<List<SearchResult>> searchByImageWithFilters({
   required String imagePath,
   required int limit,
-  required List<int> folderIds,
+  required List<int> albumIds,
   int? modifiedAfter,
 }) async {
   final embedding = await OrtEngine.instance.encodeImageFile(imagePath);
   return _searchByEmbedding(
     embedding,
     limit,
-    folderIds,
+    albumIds,
     modifiedAfter: modifiedAfter,
   );
 }
@@ -191,14 +192,14 @@ Future<List<SearchResult>> searchByImageWithFilters({
 Future<List<SearchResult>> _searchByEmbedding(
   List<double> embedding,
   int limit,
-  List<int> folderIds, {
+  List<int> albumIds, {
   int? modifiedAfter,
 }) async {
   final db = Db.instance;
   final knnResults = db.knnSearchWithFilters(
     embedding,
     limit,
-    folderIds,
+    albumIds,
     modifiedAfter: modifiedAfter,
   );
 

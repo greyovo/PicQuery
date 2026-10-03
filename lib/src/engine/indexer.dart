@@ -1,9 +1,9 @@
 // Indexing service.
-// Folder/album scanning, per-image encoding, batched DB insertion,
+// Album/album scanning, per-image encoding, batched DB insertion,
 // IndexProgress streaming with cancel semantics matching the Rust version:
 // when the listener cancels the subscription, the encode loop breaks and
 // already-encoded-but-not-inserted results are NOT written; post-loop cleanup
-// (deleted-record removal, folder record refresh) still runs, then the
+// (deleted-record removal, album record refresh) still runs, then the
 // function completes with cancelled=true (mirrors Rust returning Ok(false)).
 
 import 'dart:async';
@@ -73,21 +73,21 @@ void _scanImagesRecursive(Directory dir, List<String> images) {
   }
 }
 
-/// Scans all indexed folders away from the UI isolate.
+/// Scans all indexed albums away from the UI isolate.
 ///
 /// Update checks can walk a large directory tree. Keeping synchronous file
 /// system traversal here prevents the startup check from delaying frames.
-Future<Map<String, List<String>>> _scanFoldersInBackground(
-  List<String> folderPaths,
+Future<Map<String, List<String>>> _scanAlbumsInBackground(
+  List<String> albumPaths,
 ) {
   return Isolate.run(() {
-    final pathsByFolder = <String, List<String>>{};
-    for (final folderPath in folderPaths) {
-      if (Directory(folderPath).existsSync()) {
-        pathsByFolder[folderPath] = _scanImages(folderPath);
+    final pathsByAlbum = <String, List<String>>{};
+    for (final albumPath in albumPaths) {
+      if (Directory(albumPath).existsSync()) {
+        pathsByAlbum[albumPath] = _scanImages(albumPath);
       }
     }
-    return pathsByFolder;
+    return pathsByAlbum;
   });
 }
 
@@ -98,16 +98,16 @@ class _PendingImage {
   final int fileSize;
   final int modifiedTime;
   final String format;
-  final int folderId;
-  final String folderPath;
+  final int albumId;
+  final String albumPath;
   const _PendingImage({
     required this.pathStr,
     required this.fileName,
     required this.fileSize,
     required this.modifiedTime,
     required this.format,
-    required this.folderId,
-    required this.folderPath,
+    required this.albumId,
+    required this.albumPath,
   });
 }
 
@@ -121,7 +121,7 @@ class _EncodedImage {
   final int height;
   final String format;
   final Float32List embedding;
-  final int folderId;
+  final int albumId;
   const _EncodedImage({
     required this.pathStr,
     required this.fileName,
@@ -131,19 +131,19 @@ class _EncodedImage {
     required this.height,
     required this.format,
     required this.embedding,
-    required this.folderId,
+    required this.albumId,
   });
 }
 
-/// Pending update info for a folder, stored after checkForUpdates().
-class _FolderUpdatePending {
-  final int folderId;
-  final String folderPath;
+/// Pending update info for a album, stored after checkForUpdates().
+class _AlbumUpdatePending {
+  final int albumId;
+  final String albumPath;
   final List<String> newPhotos;
   final List<String> deletedPaths;
-  const _FolderUpdatePending({
-    required this.folderId,
-    required this.folderPath,
+  const _AlbumUpdatePending({
+    required this.albumId,
+    required this.albumPath,
     required this.newPhotos,
     required this.deletedPaths,
   });
@@ -151,7 +151,7 @@ class _FolderUpdatePending {
 
 /// Global storage for pending updates, populated by checkForUpdates() and
 /// consumed by indexPendingUpdates().
-List<_FolderUpdatePending>? _pendingUpdates;
+List<_AlbumUpdatePending>? _pendingUpdates;
 
 /// Mutable cancellation flag shared between the stream controller's onCancel
 /// callback and the indexing body.
@@ -173,8 +173,8 @@ bool _send(
 
 Future<_PendingImage?> _buildPendingImage({
   required String pathStr,
-  required int folderId,
-  required String folderPath,
+  required int albumId,
+  required String albumPath,
 }) async {
   final file = File(pathStr);
   final FileStat stat;
@@ -191,13 +191,13 @@ Future<_PendingImage?> _buildPendingImage({
     fileSize: stat.size,
     modifiedTime: stat.modified.millisecondsSinceEpoch ~/ 1000,
     format: _formatFromPath(pathStr),
-    folderId: folderId,
-    folderPath: folderPath,
+    albumId: albumId,
+    albumPath: albumPath,
   );
 }
 
 /// Generic batch image indexing: encodes each pending image, sends progress,
-/// and inserts encoded results in batches of [kBatchSize] per folder.
+/// and inserts encoded results in batches of [kBatchSize] per album.
 /// Returns true if completed normally, false if cancelled by the listener.
 Future<bool> _indexPendingImages(
   StreamController<IndexProgress> controller,
@@ -205,8 +205,7 @@ Future<bool> _indexPendingImages(
   List<_PendingImage> pending, {
   required int alreadyIndexed,
   required int totalImages,
-}
-) async {
+}) async {
   final now = _nowSeconds();
 
   final totalPending = pending.length;
@@ -231,12 +230,21 @@ Future<bool> _indexPendingImages(
     try {
       final first = batch.first;
       Db.instance.insertImagesAndVectorsBatch(
-        first.folderId,
-        batch.map((e) => ImageRowData(
-          filePath: e.pathStr, fileName: e.fileName, fileSize: e.fileSize,
-          modifiedTime: e.modifiedTime, width: e.width, height: e.height,
-          format: e.format, indexedAt: now,
-        )).toList(),
+        first.albumId,
+        batch
+            .map(
+              (e) => ImageRowData(
+                filePath: e.pathStr,
+                fileName: e.fileName,
+                fileSize: e.fileSize,
+                modifiedTime: e.modifiedTime,
+                width: e.width,
+                height: e.height,
+                format: e.format,
+                indexedAt: now,
+              ),
+            )
+            .toList(),
         batch.map((e) => e.embedding).toList(),
       );
       batch.clear();
@@ -290,7 +298,7 @@ Future<bool> _indexPendingImages(
           total: totalImages,
           errors: errorsCount,
           currentPath: img.pathStr,
-          currentFolder: img.folderPath,
+          currentAlbum: img.albumPath,
         ),
       )) {
         break;
@@ -307,7 +315,7 @@ Future<bool> _indexPendingImages(
         total: totalImages,
         errors: errorsCount,
         currentPath: img.pathStr,
-        currentFolder: img.folderPath,
+        currentAlbum: img.albumPath,
       ),
     )) {
       break;
@@ -323,7 +331,7 @@ Future<bool> _indexPendingImages(
         height: encoded.height,
         format: img.format,
         embedding: encoded.embedding,
-        folderId: img.folderId,
+        albumId: img.albumId,
       ),
     );
     if (batch.length == kBatchSize) {
@@ -335,41 +343,46 @@ Future<bool> _indexPendingImages(
   return !cancelled.value && errorsCount == 0;
 }
 
-/// Update the folder record with the current image count.
-void _updateFolderRecord(Db db, int folderId, int now, int total, bool complete) {
-  final totalIndexed = db.getFolderImageCount(folderId);
-  db.updateFolder(folderId, now, totalIndexed,
-      totalImageCount: total, isIndexComplete: complete);
+/// Update the album record with the current image count.
+void _updateAlbumRecord(Db db, int albumId, int now, int total, bool complete) {
+  final totalIndexed = db.getFolderImageCount(albumId);
+  db.updateFolder(
+    albumId,
+    now,
+    totalIndexed,
+    totalImageCount: total,
+    isIndexComplete: complete,
+  );
 }
 
-/// Index all supported images in a folder (recursively).
+/// Index all supported images in a album (recursively).
 /// When [isUpdate] is true, skips already-indexed files and removes deleted
 /// file records.
-Stream<IndexProgress> indexFolder({
-  required String folderPath,
+Stream<IndexProgress> indexAlbum({
+  required String albumPath,
   required bool isUpdate,
 }) {
   return _runStream((controller, cancelled) async {
-    if (!Directory(folderPath).existsSync()) {
-      throw Exception('Not a directory: $folderPath');
+    if (!Directory(albumPath).existsSync()) {
+      throw Exception('Not a directory: $albumPath');
     }
 
     final db = Db.instance;
     final now = _nowSeconds();
 
-    var folderId = 0;
+    var albumId = 0;
     var existingPaths = <String>{};
-    final existing = db.findFolderByPath(folderPath);
+    final existing = db.findFolderByPath(albumPath);
     if (existing != null) {
-      folderId = existing.id;
+      albumId = existing.id;
       existingPaths = isUpdate
-          ? db.getIndexedFilePaths(folderId).toSet()
+          ? db.getIndexedFilePaths(albumId).toSet()
           : <String>{};
     } else {
-      folderId = db.insertFolder(folderPath, now);
+      albumId = db.insertFolder(albumPath, now);
     }
 
-    final imagePaths = _scanImages(folderPath);
+    final imagePaths = _scanImages(albumPath);
     final total = imagePaths.length;
 
     final pending = <_PendingImage>[];
@@ -379,8 +392,8 @@ Stream<IndexProgress> indexFolder({
       }
       final img = await _buildPendingImage(
         pathStr: pathStr,
-        folderId: folderId,
-        folderPath: folderPath,
+        albumId: albumId,
+        albumPath: albumPath,
       );
       if (img != null) {
         pending.add(img);
@@ -393,11 +406,14 @@ Stream<IndexProgress> indexFolder({
               .where((img) => !db.isImageIndexed(img.pathStr, img.modifiedTime))
               .toList();
     final alreadyIndexed = total - toEncode.length;
-    _updateFolderRecord(db, folderId, now, total, false);
+    _updateAlbumRecord(db, albumId, now, total, false);
 
     final result = await _indexPendingImages(
-      controller, cancelled, toEncode,
-      alreadyIndexed: alreadyIndexed, totalImages: total,
+      controller,
+      cancelled,
+      toEncode,
+      alreadyIndexed: alreadyIndexed,
+      totalImages: total,
     );
 
     // Handle deleted files.
@@ -406,13 +422,13 @@ Stream<IndexProgress> indexFolder({
           .where((path) => !imagePaths.contains(path))
           .toList();
       if (toDelete.isNotEmpty) {
-        final deleted = db.deleteImagesByPaths(folderId, toDelete);
+        final deleted = db.deleteImagesByPaths(albumId, toDelete);
         _log.info('Deleted $deleted removed image records.');
       }
     }
 
     if (alreadyIndexed > 0) {
-      final totalIndexed = db.getFolderImageCount(folderId);
+      final totalIndexed = db.getFolderImageCount(albumId);
       _send(
         controller,
         cancelled,
@@ -420,12 +436,12 @@ Stream<IndexProgress> indexFolder({
           current: totalIndexed,
           total: total,
           errors: 0,
-          currentFolder: folderPath,
+          currentAlbum: albumPath,
         ),
       );
     }
 
-    _updateFolderRecord(db, folderId, now, total, result);
+    _updateAlbumRecord(db, albumId, now, total, result);
 
     return result;
   });
@@ -443,16 +459,16 @@ Stream<IndexProgress> indexImages({
     final db = Db.instance;
     final now = _nowSeconds();
 
-    var folderId = 0;
+    var albumId = 0;
     var existingPaths = <String>{};
     final existing = db.findFolderByPath(albumName);
     if (existing != null) {
-      folderId = existing.id;
+      albumId = existing.id;
       existingPaths = isUpdate
-          ? db.getIndexedFilePaths(folderId).toSet()
+          ? db.getIndexedFilePaths(albumId).toSet()
           : <String>{};
     } else {
-      folderId = db.insertFolder(albumName, now);
+      albumId = db.insertFolder(albumName, now);
     }
 
     final total = imagePaths.length;
@@ -464,8 +480,8 @@ Stream<IndexProgress> indexImages({
       }
       final img = await _buildPendingImage(
         pathStr: pathStr,
-        folderId: folderId,
-        folderPath: albumName,
+        albumId: albumId,
+        albumPath: albumName,
       );
       if (img != null) {
         pending.add(img);
@@ -478,11 +494,14 @@ Stream<IndexProgress> indexImages({
               .where((img) => !db.isImageIndexed(img.pathStr, img.modifiedTime))
               .toList();
     final alreadyIndexed = total - toEncode.length;
-    _updateFolderRecord(db, folderId, now, total, false);
+    _updateAlbumRecord(db, albumId, now, total, false);
 
     final result = await _indexPendingImages(
-      controller, cancelled, toEncode,
-      alreadyIndexed: alreadyIndexed, totalImages: total,
+      controller,
+      cancelled,
+      toEncode,
+      alreadyIndexed: alreadyIndexed,
+      totalImages: total,
     );
 
     // Handle deleted files.
@@ -491,13 +510,13 @@ Stream<IndexProgress> indexImages({
           .where((path) => !imagePaths.contains(path))
           .toList();
       if (toDelete.isNotEmpty) {
-        final deleted = db.deleteImagesByPaths(folderId, toDelete);
+        final deleted = db.deleteImagesByPaths(albumId, toDelete);
         _log.info('Deleted $deleted removed image records.');
       }
     }
 
     if (alreadyIndexed > 0) {
-      final totalIndexed = db.getFolderImageCount(folderId);
+      final totalIndexed = db.getFolderImageCount(albumId);
       _send(
         controller,
         cancelled,
@@ -505,54 +524,54 @@ Stream<IndexProgress> indexImages({
           current: totalIndexed,
           total: total,
           errors: 0,
-          currentFolder: albumName,
+          currentAlbum: albumName,
         ),
       );
     }
 
-    _updateFolderRecord(db, folderId, now, total, result);
+    _updateAlbumRecord(db, albumId, now, total, result);
 
     return result;
   });
 }
 
-/// Check for index updates across all indexed folders.
-/// Returns (folder_id, folder_path, new_count, deleted_count) for folders with
+/// Check for index updates across all indexed albums.
+/// Returns (album_id, album_path, new_count, deleted_count) for albums with
 /// any changes, and stores the pending updates for indexPendingUpdates().
-Future<List<FolderUpdateInfo>> checkForUpdates() async {
+Future<List<AlbumUpdateInfo>> checkForUpdates() async {
   final db = Db.instance;
-  final folders = db.getAllFolders();
-  final results = <FolderUpdateInfo>[];
-  final pending = <_FolderUpdatePending>[];
-  final diskPathsByFolder = await _scanFoldersInBackground(
-    folders.map((folder) => folder.folderPath).toList(),
+  final albums = db.getAllFolders();
+  final results = <AlbumUpdateInfo>[];
+  final pending = <_AlbumUpdatePending>[];
+  final diskPathsByAlbum = await _scanAlbumsInBackground(
+    albums.map((album) => album.folderPath).toList(),
   );
 
-  for (final folder in folders) {
-    final diskPathsList = diskPathsByFolder[folder.folderPath];
+  for (final album in albums) {
+    final diskPathsList = diskPathsByAlbum[album.folderPath];
     if (diskPathsList == null) {
       continue;
     }
 
     final diskPaths = diskPathsList.toSet();
-    final dbPaths = db.getIndexedFilePaths(folder.id).toSet();
+    final dbPaths = db.getIndexedFilePaths(album.id).toSet();
 
     final newPaths = diskPaths.difference(dbPaths).toList();
     final deletedPaths = dbPaths.difference(diskPaths).toList();
 
     if (newPaths.isNotEmpty || deletedPaths.isNotEmpty) {
       results.add(
-        FolderUpdateInfo(
-          folderId: folder.id,
-          folderPath: folder.folderPath,
+        AlbumUpdateInfo(
+          albumId: album.id,
+          albumPath: album.folderPath,
           newCount: newPaths.length,
           deletedCount: deletedPaths.length,
         ),
       );
       pending.add(
-        _FolderUpdatePending(
-          folderId: folder.id,
-          folderPath: folder.folderPath,
+        _AlbumUpdatePending(
+          albumId: album.id,
+          albumPath: album.folderPath,
           newPhotos: newPaths,
           deletedPaths: deletedPaths,
         ),
@@ -580,17 +599,17 @@ Stream<IndexProgress> indexPendingUpdates() {
       );
     }
 
-    // Step 1: Delete removed files for each folder.
-    final folderIdsToUpdate = <int>[];
+    // Step 1: Delete removed files for each album.
+    final albumIdsToUpdate = <int>[];
     for (final update in updates) {
       if (update.deletedPaths.isNotEmpty) {
         final deleted = db.deleteImagesByPaths(
-          update.folderId,
+          update.albumId,
           update.deletedPaths,
         );
         _log.info('Deleted $deleted removed image records.');
       }
-      folderIdsToUpdate.add(update.folderId);
+      albumIdsToUpdate.add(update.albumId);
     }
 
     // Step 2: Prepare pending images from new photos.
@@ -599,8 +618,8 @@ Stream<IndexProgress> indexPendingUpdates() {
       for (final pathStr in update.newPhotos) {
         final img = await _buildPendingImage(
           pathStr: pathStr,
-          folderId: update.folderId,
-          folderPath: update.folderPath,
+          albumId: update.albumId,
+          albumPath: update.albumPath,
         );
         if (img != null) {
           allPending.add(img);
@@ -610,14 +629,17 @@ Stream<IndexProgress> indexPendingUpdates() {
 
     // Step 3: Index all pending images.
     final result = await _indexPendingImages(
-      controller, cancelled, allPending,
-      alreadyIndexed: 0, totalImages: allPending.length,
+      controller,
+      cancelled,
+      allPending,
+      alreadyIndexed: 0,
+      totalImages: allPending.length,
     );
 
-    // Step 4: Update all folder records.
-    for (final folderId in folderIdsToUpdate) {
-      final indexed = db.getFolderImageCount(folderId);
-      _updateFolderRecord(db, folderId, now, indexed, result);
+    // Step 4: Update all album records.
+    for (final albumId in albumIdsToUpdate) {
+      final indexed = db.getFolderImageCount(albumId);
+      _updateAlbumRecord(db, albumId, now, indexed, result);
     }
 
     return result;

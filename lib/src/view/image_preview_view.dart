@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:picquery_app/src/engine/api.dart';
@@ -9,6 +10,7 @@ import 'package:picquery_app/src/utils/localization.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'image_info_bottom_sheet.dart';
 
 class ImagePreviewView extends StatefulWidget {

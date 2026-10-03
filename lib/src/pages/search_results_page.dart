@@ -73,11 +73,11 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         }
       }
 
-      final folderIds = searchManager.selectedFolderIds.value.toList();
+      final albumIds = searchManager.selectedAlbumIds.value.toList();
       final results = await searchByTextWithFilters(
         query: searchQuery,
         limit: searchManager.resultLimit.value,
-        folderIds: folderIds,
+        albumIds: albumIds,
         modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
           DateTime.now(),
         ),
@@ -103,10 +103,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     if (_searching) return;
     setState(() => _searching = true);
     try {
-      final folderIds = searchManager.selectedFolderIds.value.toList();
+      final albumIds = searchManager.selectedAlbumIds.value.toList();
       final results = await pickImageAndSearch(
         context,
-        folderIds,
+        albumIds,
         limit: searchManager.resultLimit.value,
         modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
           DateTime.now(),
@@ -161,9 +161,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               child: Center(
                 child: Text(
                   context.l10n.indexingResultsWarning,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: context.colors.onSurfaceVariant),
                 ),
               ),
             ),
@@ -223,9 +222,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           const SizedBox(height: 16),
           Text(
             context.l10n.noMatchesFound,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
-            ),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
         ],
       ),

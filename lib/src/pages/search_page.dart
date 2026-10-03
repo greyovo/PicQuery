@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/engine/api.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/managers/search_manager.dart';
 import 'package:picquery_app/src/models/search_state.dart';
 import 'package:picquery_app/src/pages/search_results_page.dart';
@@ -10,7 +10,7 @@ import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/image_search_picker.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
-import 'package:picquery_app/src/view/folder_selector_view.dart';
+import 'package:picquery_app/src/view/album_selector_view.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';
 import 'package:picquery_app/src/widgets/search_filter_button.dart';
@@ -28,15 +28,16 @@ class SearchPage extends WatchingStatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final _queryController = TextEditingController();
 
-  Route<void> _searchResultsRoute(SearchResultsPage page) => PageRouteBuilder<void>(
-    pageBuilder: (_, _, _) => page,
-    transitionDuration: const Duration(milliseconds: 280),
-    reverseTransitionDuration: const Duration(milliseconds: 220),
-    transitionsBuilder: (_, animation, _, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-      child: child,
-    ),
-  );
+  Route<void> _searchResultsRoute(SearchResultsPage page) =>
+      PageRouteBuilder<void>(
+        pageBuilder: (_, _, _) => page,
+        transitionDuration: const Duration(milliseconds: 280),
+        reverseTransitionDuration: const Duration(milliseconds: 220),
+        transitionsBuilder: (_, animation, _, child) => FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: child,
+        ),
+      );
 
   @override
   void dispose() {
@@ -61,15 +62,22 @@ class _SearchPageState extends State<SearchPage> {
       final results = await searchByTextWithFilters(
         query: searchQuery,
         limit: searchManager.resultLimit.value,
-        folderIds: searchManager.selectedFolderIds.value.toList(),
-        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(DateTime.now()),
+        albumIds: searchManager.selectedAlbumIds.value.toList(),
+        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
+          DateTime.now(),
+        ),
       );
       searchManager.addRecentSearch(query);
       if (mounted) {
         Navigator.push<void>(
           context,
           _searchResultsRoute(
-            SearchResultsPage(results: results, query: query, realQuery: searchQuery, searchMode: SearchMode.text),
+            SearchResultsPage(
+              results: results,
+              query: query,
+              realQuery: searchQuery,
+              searchMode: SearchMode.text,
+            ),
           ),
         );
       }
@@ -83,14 +91,18 @@ class _SearchPageState extends State<SearchPage> {
     try {
       final results = await pickImageAndSearch(
         context,
-        searchManager.selectedFolderIds.value.toList(),
+        searchManager.selectedAlbumIds.value.toList(),
         limit: searchManager.resultLimit.value,
-        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(DateTime.now()),
+        modifiedAfter: searchManager.timeRange.value.modifiedAfterSeconds(
+          DateTime.now(),
+        ),
       );
       if (results != null && mounted) {
         Navigator.push<void>(
           context,
-          _searchResultsRoute(SearchResultsPage(results: results, searchMode: SearchMode.image)),
+          _searchResultsRoute(
+            SearchResultsPage(results: results, searchMode: SearchMode.image),
+          ),
         );
       }
     } catch (error) {
@@ -99,10 +111,12 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  Future<void> _showFolderSelector() async {
+  Future<void> _showAlbumSelector() async {
     await showContentInDialogOrPage<Set<int>>(
       context: context,
-      builder: (context) => FolderSelectorView(initialSelection: searchManager.selectedFolderIds.value),
+      builder: (context) => AlbumSelectorView(
+        initialSelection: searchManager.selectedAlbumIds.value,
+      ),
     );
   }
 
@@ -115,47 +129,59 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   String _scopeLabel(BuildContext context, Set<int> selectedIds) {
-    if (selectedIds.isEmpty) return context.l10n.allFolders;
+    if (selectedIds.isEmpty) return context.l10n.allAlbums;
     return context.l10n.selectedAlbumsCount(selectedIds.length);
   }
 
-  List<String> _selectedFolderNames(List<Folder> folders, Set<int> selectedIds) {
-    return folders
-        .where((folder) => selectedIds.contains(folder.id))
-        .map((folder) => folder.folderPath.split('/').last)
+  List<String> _selectedAlbumNames(List<Album> albums, Set<int> selectedIds) {
+    return albums
+        .where((album) => selectedIds.contains(album.id))
+        .map((album) => album.albumPath.split('/').last)
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final folders = watchValue((FolderManager manager) => manager.folders);
-    final selectedIds = watchValue((SearchManager manager) => manager.selectedFolderIds);
+    final albums = watchValue((AlbumManager manager) => manager.albums);
+    final selectedIds = watchValue(
+      (SearchManager manager) => manager.selectedAlbumIds,
+    );
     final timeRange = watchValue((SearchManager manager) => manager.timeRange);
-    final recentSearches = watchValue((SearchManager manager) => manager.recentSearches);
-    final selectedFolderNames = _selectedFolderNames(folders, selectedIds);
+    final recentSearches = watchValue(
+      (SearchManager manager) => manager.recentSearches,
+    );
+    final selectedAlbumNames = _selectedAlbumNames(albums, selectedIds);
 
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isDesktopLayout = constraints.maxWidth >= 760;
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: isDesktopLayout ? 40 : 20, vertical: 24),
+            padding: EdgeInsets.symmetric(
+              horizontal: isDesktopLayout ? 40 : 20,
+              vertical: 24,
+            ),
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - 48,
+              ),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: kSearchInputMaxWidth),
+                  constraints: const BoxConstraints(
+                    maxWidth: kSearchInputMaxWidth,
+                  ),
                   child: _HeroSection(
                     controller: _queryController,
                     isDesktop: isDesktopLayout,
                     onSearch: _searchByText,
                     onImageSearch: _searchByImage,
                     scopeLabel: _scopeLabel(context, selectedIds),
-                    selectedFolderNames: selectedFolderNames,
-                    hasFolderFilter: selectedIds.isNotEmpty,
-                    onSelectScope: _showFolderSelector,
+                    selectedAlbumNames: selectedAlbumNames,
+                    hasAlbumFilter: selectedIds.isNotEmpty,
+                    onSelectScope: _showAlbumSelector,
                     timeRange: timeRange,
-                    onTimeRangeChanged: (value) => searchManager.timeRange.value = value,
+                    onTimeRangeChanged: (value) =>
+                        searchManager.timeRange.value = value,
                     onClearFilters: searchManager.clearFilters,
                     recentSearches: recentSearches.take(10).toList(),
                     onRecentSearchSelected: _onRecentSearchSelected,
@@ -177,8 +203,8 @@ class _HeroSection extends StatelessWidget {
     required this.onSearch,
     required this.onImageSearch,
     required this.scopeLabel,
-    required this.selectedFolderNames,
-    required this.hasFolderFilter,
+    required this.selectedAlbumNames,
+    required this.hasAlbumFilter,
     required this.onSelectScope,
     required this.timeRange,
     required this.onTimeRangeChanged,
@@ -192,8 +218,8 @@ class _HeroSection extends StatelessWidget {
   final VoidCallback onSearch;
   final VoidCallback onImageSearch;
   final String scopeLabel;
-  final List<String> selectedFolderNames;
-  final bool hasFolderFilter;
+  final List<String> selectedAlbumNames;
+  final bool hasAlbumFilter;
   final VoidCallback onSelectScope;
   final SearchTimeRange timeRange;
   final ValueChanged<SearchTimeRange> onTimeRangeChanged;
@@ -245,25 +271,33 @@ class _HeroSection extends StatelessWidget {
         SizedBox(height: 12),
         Hero(
           tag: kSearchInputHeroTag,
-          child: SearchInputCard(queryController: controller, onSearch: onSearch, onImageUpload: onImageSearch),
+          child: SearchInputCard(
+            queryController: controller,
+            onSearch: onSearch,
+            onImageUpload: onImageSearch,
+          ),
         ),
         const SizedBox(height: 20),
         _SearchFilters(
           scopeLabel: scopeLabel,
-          hasFolderFilter: hasFolderFilter,
+          hasAlbumFilter: hasAlbumFilter,
           onSelectScope: onSelectScope,
           timeRange: timeRange,
           onTimeRangeChanged: onTimeRangeChanged,
           onClear: onClearFilters,
         ),
-        if (selectedFolderNames.isNotEmpty)
+        if (selectedAlbumNames.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 6, left: 4, right: 4),
             child: Text(
-              [...selectedFolderNames.take(5), if (selectedFolderNames.length > 5) '…'].join(', '),
+              [
+                ...selectedAlbumNames.take(5),
+                if (selectedAlbumNames.length > 5) '…',
+              ].join(', '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colors.primary),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: context.colors.primary),
             ),
           ),
         if (recentSearches.isNotEmpty)
@@ -274,7 +308,8 @@ class _HeroSection extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.recentSearches,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 14),
                 Wrap(
@@ -283,12 +318,18 @@ class _HeroSection extends StatelessWidget {
                   children: [
                     for (final query in recentSearches)
                       ActionChip(
-                        label: Text(query, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        label: Text(
+                          query,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         onPressed: () => onRecentSearchSelected(query),
                         visualDensity: VisualDensity.compact,
                         labelStyle: Theme.of(context).textTheme.labelMedium,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(kSearchFilterButtonBorderRadius),
+                          borderRadius: BorderRadius.circular(
+                            kSearchFilterButtonBorderRadius,
+                          ),
                         ),
                       ),
                   ],
@@ -304,7 +345,7 @@ class _HeroSection extends StatelessWidget {
 class _SearchFilters extends StatelessWidget {
   const _SearchFilters({
     required this.scopeLabel,
-    required this.hasFolderFilter,
+    required this.hasAlbumFilter,
     required this.onSelectScope,
     required this.timeRange,
     required this.onTimeRangeChanged,
@@ -312,7 +353,7 @@ class _SearchFilters extends StatelessWidget {
   });
 
   final String scopeLabel;
-  final bool hasFolderFilter;
+  final bool hasAlbumFilter;
   final VoidCallback onSelectScope;
   final SearchTimeRange timeRange;
   final ValueChanged<SearchTimeRange> onTimeRangeChanged;
@@ -320,7 +361,7 @@ class _SearchFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasFilters = hasFolderFilter || timeRange != SearchTimeRange.anyTime;
+    final hasFilters = hasAlbumFilter || timeRange != SearchTimeRange.anyTime;
     final controls = <Widget>[
       SearchFilterButton<void>.action(
         onPressed: onSelectScope,
@@ -337,7 +378,10 @@ class _SearchFilters extends StatelessWidget {
         label: Text(_timeRangeLabel(context, timeRange)),
         items: [
           for (final option in SearchTimeRange.values)
-            AppMenuItem(value: option, child: Text(_timeRangeLabel(context, option))),
+            AppMenuItem(
+              value: option,
+              child: Text(_timeRangeLabel(context, option)),
+            ),
         ],
       ),
     ];
@@ -356,10 +400,11 @@ class _SearchFilters extends StatelessWidget {
     );
   }
 
-  String _timeRangeLabel(BuildContext context, SearchTimeRange value) => switch (value) {
-    SearchTimeRange.anyTime => context.l10n.timeAny,
-    SearchTimeRange.pastWeek => context.l10n.timeWeek,
-    SearchTimeRange.pastMonth => context.l10n.timeMonth,
-    SearchTimeRange.pastYear => context.l10n.timeYear,
-  };
+  String _timeRangeLabel(BuildContext context, SearchTimeRange value) =>
+      switch (value) {
+        SearchTimeRange.anyTime => context.l10n.timeAny,
+        SearchTimeRange.pastWeek => context.l10n.timeWeek,
+        SearchTimeRange.pastMonth => context.l10n.timeMonth,
+        SearchTimeRange.pastYear => context.l10n.timeYear,
+      };
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
@@ -131,9 +132,8 @@ class _ImageInfoBottomSheetState extends State<ImageInfoBottomSheet> {
             children: [
               Text(
                 context.l10n.imageDetails,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -194,9 +194,8 @@ class _DetailRow extends StatelessWidget {
             width: 80,
             child: Text(
               '$label:',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
           ),
           Expanded(

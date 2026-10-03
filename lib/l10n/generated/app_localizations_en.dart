@@ -99,12 +99,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Opening an album location is only supported on desktop';
 
   @override
-  String get folderUnavailable =>
-      'The folder does not exist or cannot be accessed';
+  String get albumUnavailable =>
+      'The album does not exist or cannot be accessed';
 
   @override
-  String openFolderFailed(Object error) {
-    return 'Could not open folder: $error';
+  String openAlbumFailed(Object error) {
+    return 'Could not open album: $error';
   }
 
   @override
@@ -209,7 +209,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentSearches => 'Recent searches';
 
   @override
-  String get allFolders => 'All folders';
+  String get allAlbums => 'All albums';
 
   @override
   String selectedAlbumsCount(int count) {
@@ -258,13 +258,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAll => 'Select all';
 
   @override
-  String get filterFolders => 'Filter folders…';
+  String get filterAlbums => 'Filter albums…';
 
   @override
-  String get noFoldersFound => 'No folders found';
+  String get noAlbumsFound => 'No albums found';
 
   @override
-  String get selectFolderToIndex => 'Select folder to index';
+  String get selectAlbumToIndex => 'Select album to index';
 
   @override
   String get permissionDenied => 'Permission denied';
@@ -272,9 +272,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get photoPermissionMessage =>
       'Photo library access is required to select albums for indexing.';
-
-  @override
-  String get noAlbumsFound => 'No albums found';
 
   @override
   String get noAlbumsMessage => 'No photo albums were found on your device.';

@@ -15,7 +15,11 @@ Future<void> initClipModels({bool force = false}) async {
   final modelsDir = await extractClipModelAssets(force: force);
   final visualModelPath = '$modelsDir/$kClipVisualModelPath';
   final textModelPath = '$modelsDir/$kClipTextModelPath';
-  await loadClipModels(textModelPath: textModelPath, visualModelPath: visualModelPath, force: force);
+  await loadClipModels(
+    textModelPath: textModelPath,
+    visualModelPath: visualModelPath,
+    force: force,
+  );
 }
 
 Future<void> initTranslationModel({bool force = false}) async {

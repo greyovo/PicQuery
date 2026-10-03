@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/managers/search_manager.dart';
 import 'package:picquery_app/src/managers/theme_manager.dart';
@@ -235,8 +235,8 @@ class SettingsPage extends WatchingWidget {
     );
 
     if (confirmed == true) {
-      await deleteAllFolders();
-      await folderManager.reload();
+      await deleteAllAlbums();
+      await albumManager.reload();
     }
   }
 

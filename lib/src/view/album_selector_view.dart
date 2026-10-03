@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/managers/search_manager.dart';
-import 'package:picquery_app/src/widgets/folder_list_item.dart';
+import 'package:picquery_app/src/widgets/album_list_item.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:watch_it/watch_it.dart';
 
-class FolderSelectorView extends WatchingStatefulWidget {
+class AlbumSelectorView extends WatchingStatefulWidget {
   final Set<int> initialSelection;
 
-  const FolderSelectorView({super.key, required this.initialSelection});
+  const AlbumSelectorView({super.key, required this.initialSelection});
 
   @override
-  State<FolderSelectorView> createState() => _FolderSelectorViewState();
+  State<AlbumSelectorView> createState() => _AlbumSelectorViewState();
 }
 
-class _FolderSelectorViewState extends State<FolderSelectorView> {
+class _AlbumSelectorViewState extends State<AlbumSelectorView> {
   late Set<int> _selectedIds;
   String _filterQuery = '';
 
@@ -26,32 +26,32 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
     _selectedIds = Set.from(widget.initialSelection);
   }
 
-  void _toggleSelectAll(List<Folder> filteredFolders) {
-    if (filteredFolders.isEmpty) return;
+  void _toggleSelectAll(List<Album> filteredAlbums) {
+    if (filteredAlbums.isEmpty) return;
     setState(() {
-      if (_selectedIds.length == filteredFolders.length) {
+      if (_selectedIds.length == filteredAlbums.length) {
         _selectedIds.clear();
       } else {
-        _selectedIds = filteredFolders.map((f) => f.id.toInt()).toSet();
+        _selectedIds = filteredAlbums.map((f) => f.id.toInt()).toSet();
       }
     });
   }
 
   void _confirm() {
-    searchManager.setSelectedFolderIds(_selectedIds);
+    searchManager.setSelectedAlbumIds(_selectedIds);
     Navigator.of(context, rootNavigator: true).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final folders = watchValue((FolderManager m) => m.folders);
-    final isLoading = watchValue((FolderManager m) => m.isLoading);
+    final albums = watchValue((AlbumManager m) => m.albums);
+    final isLoading = watchValue((AlbumManager m) => m.isLoading);
 
-    final filteredFolders = _filterQuery.isEmpty
-        ? folders
-        : folders
+    final filteredAlbums = _filterQuery.isEmpty
+        ? albums
+        : albums
               .where(
-                (f) => f.folderPath.toLowerCase().contains(
+                (f) => f.albumPath.toLowerCase().contains(
                   _filterQuery.toLowerCase(),
                 ),
               )
@@ -59,8 +59,8 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
 
     final rootNav = Navigator.of(context, rootNavigator: true);
     final allSelected =
-        _selectedIds.length == filteredFolders.length &&
-        filteredFolders.isNotEmpty;
+        _selectedIds.length == filteredAlbums.length &&
+        filteredAlbums.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.selectScope)),
@@ -91,7 +91,7 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: context.l10n.filterFolders,
+                hintText: context.l10n.filterAlbums,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -104,9 +104,9 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextButton.icon(
-                onPressed: filteredFolders.isEmpty
+                onPressed: filteredAlbums.isEmpty
                     ? null
-                    : () => _toggleSelectAll(filteredFolders),
+                    : () => _toggleSelectAll(filteredAlbums),
                 icon: Icon(
                   allSelected ? Icons.check_box : Icons.check_box_outline_blank,
                 ),
@@ -117,24 +117,24 @@ class _FolderSelectorViewState extends State<FolderSelectorView> {
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : filteredFolders.isEmpty
-                ? Center(child: Text(context.l10n.noFoldersFound))
+                : filteredAlbums.isEmpty
+                ? Center(child: Text(context.l10n.noAlbumsFound))
                 : ListView.builder(
-                    itemCount: filteredFolders.length,
+                    itemCount: filteredAlbums.length,
                     itemBuilder: (context, index) {
-                      final folder = filteredFolders[index];
+                      final album = filteredAlbums[index];
                       final isSelected = _selectedIds.contains(
-                        folder.id.toInt(),
+                        album.id.toInt(),
                       );
-                      return FolderListItem(
-                        folder: folder,
+                      return AlbumListItem(
+                        album: album,
                         selected: isSelected,
                         onSelected: (selected) {
                           setState(() {
                             if (selected) {
-                              _selectedIds.add(folder.id.toInt());
+                              _selectedIds.add(album.id.toInt());
                             } else {
-                              _selectedIds.remove(folder.id.toInt());
+                              _selectedIds.remove(album.id.toInt());
                             }
                           });
                         },

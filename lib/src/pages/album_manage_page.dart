@@ -2,14 +2,26 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:picquery_app/src/managers/folder_manager.dart';
+import 'package:picquery_app/src/engine/api.dart';
+import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
-import 'package:picquery_app/src/widgets/folder_list_item.dart';
+import 'package:picquery_app/src/widgets/album_grid_card.dart';
 import 'package:watch_it/watch_it.dart';
+
+const _pageHeaderPadding = EdgeInsets.fromLTRB(20, 24, 20, 16);
+const _albumGridPadding = EdgeInsets.fromLTRB(12, 8, 12, 112);
+const _albumGridSpacing = 16.0;
+const _albumGridMaxCardWidth = 220.0;
+const _phoneGridBreakpoint = 600.0;
+const _phoneGridColumnCount = 2;
+const _emptyStateMaxWidth = 440.0;
+const _emptyStateMargin = 28.0;
+const _emptyStatePadding = 36.0;
+const _emptyStateIconRadius = 38.0;
 
 class AlbumManagePage extends WatchingStatefulWidget {
   const AlbumManagePage({super.key});
@@ -19,27 +31,27 @@ class AlbumManagePage extends WatchingStatefulWidget {
 }
 
 class _AlbumManagePageState extends State<AlbumManagePage> {
-  Future<void> _openFolderLocation(String folderPath) async {
+  Future<void> _openAlbumLocation(String albumPath) async {
     final strings = context.l10n;
     if (!isDesktop) {
       Toast.showMessage(strings.desktopOnlyOpenAlbum);
       return;
     }
-    if (!await Directory(folderPath).exists()) {
-      Toast.showMessage(strings.folderUnavailable);
+    if (!await Directory(albumPath).exists()) {
+      Toast.showMessage(strings.albumUnavailable);
       return;
     }
     try {
-      final result = await OpenFilex.open(folderPath);
+      final result = await OpenFilex.open(albumPath);
       if (result.type != ResultType.done) {
-        Toast.showMessage(strings.openFolderFailed(result.message));
+        Toast.showMessage(strings.openAlbumFailed(result.message));
       }
     } catch (error) {
-      Toast.showMessage(strings.openFolderFailed(error));
+      Toast.showMessage(strings.openAlbumFailed(error));
     }
   }
 
-  Future<void> _deleteFolder(int folderId) async {
+  Future<void> _deleteAlbum(int albumId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -63,7 +75,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
       ),
     );
     if (confirmed == true && mounted) {
-      await folderManager.deleteFolders({folderId});
+      await albumManager.deleteAlbums({albumId});
     }
   }
 
@@ -86,7 +98,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           ? null
           : hasUpdate
           ? () => indexing.startUpdateIndexing(
-              onDone: () => folderManager.reload(),
+              onDone: () => albumManager.reload(),
             )
           : () => indexing.checkForUpdates(context: context),
       icon: Icon(
@@ -105,20 +117,20 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
   Widget build(BuildContext context) {
     final indexing = indexingManager;
     watch(indexing);
-    final folders = watchValue((FolderManager m) => m.folders);
-    final isLoading = watchValue((FolderManager m) => m.isLoading);
-    final totalPhotos = folders.fold<int>(
+    final albums = watchValue((AlbumManager m) => m.albums);
+    final isLoading = watchValue((AlbumManager m) => m.isLoading);
+    final totalPhotos = albums.fold<int>(
       0,
       (sum, item) => sum + item.imageCount,
     );
 
     return Scaffold(
-      floatingActionButton: isLoading || folders.isEmpty
+      floatingActionButton: isLoading || albums.isEmpty
           ? null
           : FloatingActionButton.extended(
               onPressed: indexing.isIndexing
                   ? null
-                  : () => indexing.pickAndIndexFolder(context),
+                  : () => indexing.pickAndIndexAlbum(context),
               icon: const Icon(Icons.add_photo_alternate_outlined),
               label: Text(context.l10n.addAlbum),
             ),
@@ -127,7 +139,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                padding: _pageHeaderPadding,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -147,10 +159,10 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                           Text(
                             indexing.isIndexing
                                 ? context.l10n.indexingAlbumsSummary(
-                                    folders.length,
+                                    albums.length,
                                   )
                                 : context.l10n.albumsPhotosSummary(
-                                    folders.length,
+                                    albums.length,
                                     totalPhotos,
                                   ),
                             style: Theme.of(context).textTheme.titleMedium
@@ -172,104 +184,57 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                 hasScrollBody: false,
                 child: Center(child: CircularProgressIndicator()),
               )
-            else if (folders.isEmpty)
+            else if (albums.isEmpty)
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: _EmptyAlbums(
                   onAdd: indexing.isIndexing
                       ? null
-                      : () => indexing.pickAndIndexFolder(context),
+                      : () => indexing.pickAndIndexAlbum(context),
                 ),
               )
             else
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 112),
+                padding: _albumGridPadding,
                 sliver: SliverLayoutBuilder(
                   builder: (context, constraints) {
-                    const spacing = 16.0;
-                    const maxCardWidth = 220.0;
                     final isPhoneLayout =
-                        isMobile && constraints.crossAxisExtent < 600;
+                        isMobile &&
+                        constraints.crossAxisExtent < _phoneGridBreakpoint;
                     final responsiveColumns =
-                        ((constraints.crossAxisExtent + spacing) /
-                                (maxCardWidth + spacing))
+                        ((constraints.crossAxisExtent + _albumGridSpacing) /
+                                (_albumGridMaxCardWidth + _albumGridSpacing))
                             .ceil();
                     // Phones use two columns. Wider layouts add columns as
                     // needed so album cards never grow beyond the target size.
                     final columns = isPhoneLayout
-                        ? 2
+                        ? _phoneGridColumnCount
                         : responsiveColumns < 1
                         ? 1
                         : responsiveColumns;
                     final cardWidth =
                         (constraints.crossAxisExtent -
-                            spacing * (columns - 1)) /
+                            _albumGridSpacing * (columns - 1)) /
                         columns;
-                    const cardDetailsHeight = 60.0;
                     final cardCoverHeight =
                         cardWidth / albumGridCoverAspectRatio;
                     return SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: columns,
-                        mainAxisSpacing: spacing,
-                        crossAxisSpacing: spacing,
-                        mainAxisExtent: cardCoverHeight + cardDetailsHeight,
+                        mainAxisSpacing: _albumGridSpacing,
+                        crossAxisSpacing: _albumGridSpacing,
+                        mainAxisExtent:
+                            cardCoverHeight + albumGridDetailsHeight,
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
-                        final folder = folders[index];
-                        final isCurrent =
-                            indexing.isIndexing &&
-                            (indexing.currentFolder == folder.folderPath ||
-                                indexing.folderName == folder.folderPath);
-                        final progress = isCurrent && indexing.total > 0
-                            ? (indexing.current / indexing.total).clamp(
-                                0.0,
-                                1.0,
-                              )
-                            : null;
-                        final incomplete = !folder.isIndexComplete;
-                        final updateAvailable = indexing
-                            .updateAvailableFolderPaths
-                            .contains(folder.folderPath);
-                        return FolderListItem(
-                          folder: folder,
-                          onTap: () => _openFolderLocation(folder.folderPath),
-                          progress: progress,
-                          indexedCount: isCurrent ? indexing.current : null,
-                          totalCount: isCurrent ? indexing.total : null,
-                          imagesPerSecond: isCurrent
-                              ? indexing.imagesPerSecond
-                              : null,
-                          onCancelIndexing: isCurrent
-                              ? () => indexing.cancelIndexing(context)
-                              : null,
-                          onDelete: () => _deleteFolder(folder.id),
-                          statusLabel: incomplete
-                              ? context.l10n.incompletePhotoCount(
-                                  folder.imageCount,
-                                  folder.totalImageCount,
-                                )
-                              : updateAvailable
-                              ? context.l10n.updatesPhotoCount(
-                                  folder.imageCount,
-                                )
-                              : context.l10n.photoCount(folder.imageCount),
-                          isUpdateAvailable: updateAvailable,
-                          onResumeIndexing:
-                              !indexing.isIndexing &&
-                                  (incomplete || updateAvailable)
-                              ? () => incomplete || isMobile
-                                    ? indexing.continueIndexing(
-                                        folder,
-                                        context: context,
-                                      )
-                                    : indexing.startUpdateIndexing(
-                                        onDone: () => folderManager.reload(),
-                                      )
-                              : null,
-                          isGridCard: true,
+                        final album = albums[index];
+                        return _AlbumCard(
+                          album: album,
+                          indexing: indexing,
+                          onOpen: () => _openAlbumLocation(album.albumPath),
+                          onDelete: () => _deleteAlbum(album.id),
                         );
-                      }, childCount: folders.length),
+                      }, childCount: albums.length),
                     );
                   },
                 ),
@@ -277,6 +242,61 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AlbumCard extends StatelessWidget {
+  const _AlbumCard({
+    required this.album,
+    required this.indexing,
+    required this.onOpen,
+    required this.onDelete,
+  });
+
+  final Album album;
+  final IndexingManager indexing;
+  final VoidCallback onOpen;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final isCurrent =
+        indexing.isIndexing &&
+        (indexing.currentAlbum == album.albumPath ||
+            indexing.albumName == album.albumPath);
+    final incomplete = !album.isIndexComplete;
+    final updateAvailable = indexing.updateAvailableAlbumPaths.contains(
+      album.albumPath,
+    );
+    final canResume = !indexing.isIndexing && (incomplete || updateAvailable);
+
+    return AlbumGridCard(
+      album: album,
+      onTap: onOpen,
+      progress: isCurrent && indexing.total > 0
+          ? (indexing.current / indexing.total).clamp(0.0, 1.0)
+          : null,
+      indexedCount: isCurrent ? indexing.current : null,
+      totalCount: isCurrent ? indexing.total : null,
+      imagesPerSecond: isCurrent ? indexing.imagesPerSecond : null,
+      onDelete: onDelete,
+      statusLabel: incomplete
+          ? context.l10n.incompletePhotoCount(
+              album.imageCount,
+              album.totalImageCount,
+            )
+          : updateAvailable
+          ? context.l10n.updatesPhotoCount(album.imageCount)
+          : context.l10n.photoCount(album.imageCount),
+      isUpdateAvailable: updateAvailable,
+      onResumeIndexing: canResume
+          ? () => incomplete || isMobile
+                ? indexing.continueIndexing(album, context: context)
+                : indexing.startUpdateIndexing(
+                    onDone: () => albumManager.reload(),
+                  )
+          : null,
     );
   }
 }
@@ -290,9 +310,9 @@ class _EmptyAlbums extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 440),
-        margin: const EdgeInsets.all(28),
-        padding: const EdgeInsets.all(36),
+        constraints: const BoxConstraints(maxWidth: _emptyStateMaxWidth),
+        margin: const EdgeInsets.all(_emptyStateMargin),
+        padding: const EdgeInsets.all(_emptyStatePadding),
         decoration: BoxDecoration(
           // color: context.colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(28),
@@ -301,7 +321,7 @@ class _EmptyAlbums extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
-              radius: 38,
+              radius: _emptyStateIconRadius,
               backgroundColor: context.colors.primaryContainer,
               foregroundColor: context.colors.onPrimaryContainer,
               child: const Icon(Icons.photo_library_outlined, size: 36),

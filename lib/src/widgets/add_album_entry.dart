@@ -20,7 +20,7 @@ class AddAlbumEntry extends StatelessWidget {
           Toast.showMessage(context.l10n.addAlbumWhileIndexing);
           return;
         }
-        indexingManager.pickAndIndexFolder(context);
+        indexingManager.pickAndIndexAlbum(context);
       },
     );
   }

@@ -15,17 +15,17 @@ class SWR<T> extends ChangeNotifier {
   AsyncSnapshot<T> _snapshot = const AsyncSnapshot.nothing();
 
   T? get data => _snapshot.data;
-  bool get isLoading => !_snapshot.hasData &&
+  bool get isLoading =>
+      !_snapshot.hasData &&
       _snapshot.connectionState == ConnectionState.waiting;
   bool get isReloading =>
-      _snapshot.hasData &&
-          _snapshot.connectionState == ConnectionState.active;
+      _snapshot.hasData && _snapshot.connectionState == ConnectionState.active;
   bool get isError => _snapshot.hasError;
   Object? get error => _snapshot.error;
   StackTrace? get stackTrace => _snapshot.stackTrace;
 
   SWR._(this.key, Future<T> Function() fetcher, {this.staleTime})
-      : _fetcher = fetcher {
+    : _fetcher = fetcher {
     _fetch(); // 创建时自动发起第一次请求
   }
 
@@ -66,7 +66,11 @@ class SWR<T> extends ChangeNotifier {
         );
       } else {
         // 首次请求失败：进入错误状态
-        _snapshot = AsyncSnapshot<T>.withError(ConnectionState.done, error, stackTrace);
+        _snapshot = AsyncSnapshot<T>.withError(
+          ConnectionState.done,
+          error,
+          stackTrace,
+        );
       }
       notifyListeners();
     }

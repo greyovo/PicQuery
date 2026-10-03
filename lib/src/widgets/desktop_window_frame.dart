@@ -12,7 +12,8 @@ class DesktopWindowFrame extends StatelessWidget {
 
   final Widget child;
 
-  static bool get isSupported => Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+  static bool get isSupported =>
+      Platform.isMacOS || Platform.isWindows || Platform.isLinux;
 
   @override
   Widget build(BuildContext context) {
