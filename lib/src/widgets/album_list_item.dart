@@ -1,48 +1,25 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:path/path.dart' as path;
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
-const _rowMinHeight = 84.0;
-const _coverSize = 60.0;
-const _coverRadius = 9.0;
-const _progressSize = 40.0;
-const _actionGap = 8.0;
+final int _coverSize = 60;
 
-/// Shared album row used by album management and search-scope selection.
+/// A selectable album row used by the album selector.
 class AlbumListItem extends StatelessWidget {
   const AlbumListItem({
     super.key,
     required this.album,
-    this.selected = false,
-    this.onSelected,
-    this.onTap,
-    this.progress,
-    this.indexedCount,
-    this.totalCount,
-    this.imagesPerSecond,
-    this.onCancelIndexing,
-    this.onDelete,
-    this.onResumeIndexing,
-    this.statusLabel,
+    required this.selected,
+    required this.onSelected,
   });
 
   final Album album;
   final bool selected;
-  final ValueChanged<bool>? onSelected;
-  final VoidCallback? onTap;
-  final double? progress;
-  final int? indexedCount;
-  final int? totalCount;
-  final double? imagesPerSecond;
-  final VoidCallback? onCancelIndexing;
-  final VoidCallback? onDelete;
-  final VoidCallback? onResumeIndexing;
-  final String? statusLabel;
+  final ValueChanged<bool> onSelected;
 
   String get _displayName {
     final name = path.basename(album.albumPath);
@@ -52,17 +29,12 @@ class AlbumListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    final isIndexing = progress != null;
 
     return InkWell(
-      onTap:
-          onTap ?? (onSelected != null ? () => onSelected!(!selected) : null),
+      onTap: () => onSelected(!selected),
       child: Container(
-        constraints: const BoxConstraints(minHeight: _rowMinHeight),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
-        ),
+        constraints: const BoxConstraints(minHeight: 84),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -88,110 +60,20 @@ class AlbumListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    isIndexing
-                        ? _indexingSummary(context)
-                        : statusLabel ??
-                              context.l10n.photoCount(album.imageCount),
+                    context.l10n.photoCount(album.imageCount),
                     style: Theme.of(context).textTheme.bodyMedium
                         ?.copyWith(color: colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: _actionGap),
-            if (isIndexing)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _ProgressCircle(progress: progress!),
-                  const SizedBox(width: _actionGap),
-                  IconButton(
-                    onPressed: onCancelIndexing,
-                    tooltip: context.l10n.cancelIndexing,
-                    icon: const Icon(Icons.close),
-                    style: IconButton.styleFrom(
-                      shape: const CircleBorder(),
-                      side: BorderSide(color: colorScheme.outlineVariant),
-                    ),
-                  ),
-                ],
-              )
-            else if (onSelected != null)
-              Checkbox(
-                value: selected,
-                onChanged: (value) => onSelected!(value ?? false),
-              )
-            else ...[
-              if (onResumeIndexing != null)
-                IconButton.outlined(
-                  onPressed: onResumeIndexing,
-                  icon: const Icon(Icons.play_arrow),
-                  tooltip: context.l10n.continueIndexing,
-                ),
-              if (onDelete != null)
-                AppMenuButton<_AlbumAction>(
-                  onSelected: (action) {
-                    if (action == _AlbumAction.delete) onDelete?.call();
-                  },
-                  items: [
-                    AppMenuItem(
-                      value: _AlbumAction.delete,
-                      child: Text(context.l10n.removeAlbumIndex),
-                    ),
-                  ],
-                  builder: (context, controller, child) => IconButton(
-                    tooltip: context.l10n.albumActions,
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () => controller.isOpen
-                        ? controller.close()
-                        : controller.open(),
-                  ),
-                ),
-            ],
+            const SizedBox(width: 8),
+            Checkbox(
+              value: selected,
+              onChanged: (value) => onSelected(value ?? false),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  String _indexingSummary(BuildContext context) {
-    final current = indexedCount ?? 0;
-    final total = totalCount ?? 0;
-    final speed = imagesPerSecond ?? 0;
-    final speedText = speed >= 10
-        ? speed.round().toString()
-        : speed.toStringAsFixed(1);
-    return context.l10n.indexingProgress(current, total, speedText);
-  }
-}
-
-enum _AlbumAction { delete }
-
-class _ProgressCircle extends StatelessWidget {
-  const _ProgressCircle({required this.progress});
-
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-    return SizedBox(
-      width: _progressSize,
-      height: _progressSize,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CircularProgressIndicator(
-            value: progress,
-            strokeWidth: 3,
-            backgroundColor: colorScheme.surfaceContainerHighest,
-          ),
-          Text(
-            '${(progress * 100).round()}%',
-            style: Theme.of(context).textTheme.labelSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
-          ),
-        ],
       ),
     );
   }
@@ -206,10 +88,10 @@ class _AlbumCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(_coverRadius),
+      borderRadius: BorderRadius.circular(9),
       child: SizedBox(
-        width: _coverSize,
-        height: _coverSize,
+        width: _coverSize.toDouble(),
+        height: _coverSize.toDouble(),
         child: path == null
             ? ColoredBox(
                 color: colorScheme.surfaceContainerHighest,
@@ -221,7 +103,9 @@ class _AlbumCover extends StatelessWidget {
             : Image.file(
                 File(path!),
                 fit: BoxFit.cover,
-                filterQuality: FilterQuality.medium,
+                cacheHeight: _coverSize,
+                cacheWidth: _coverSize,
+                filterQuality: FilterQuality.low,
                 errorBuilder: (context, error, stackTrace) => ColoredBox(
                   color: colorScheme.surfaceContainerHighest,
                   child: Icon(
