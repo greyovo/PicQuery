@@ -56,6 +56,7 @@ class IndexStatus {
 class Album {
   final int id;
   final String albumPath;
+  final String? displayName;
   final int indexedAt;
   final int imageCount;
   final int totalImageCount;
@@ -65,6 +66,7 @@ class Album {
   const Album({
     required this.id,
     required this.albumPath,
+    this.displayName,
     required this.indexedAt,
     required this.imageCount,
     required this.totalImageCount,
@@ -76,6 +78,7 @@ class Album {
   int get hashCode =>
       id.hashCode ^
       albumPath.hashCode ^
+      displayName.hashCode ^
       indexedAt.hashCode ^
       imageCount.hashCode ^
       totalImageCount.hashCode ^
@@ -89,6 +92,7 @@ class Album {
           runtimeType == other.runtimeType &&
           id == other.id &&
           albumPath == other.albumPath &&
+          displayName == other.displayName &&
           indexedAt == other.indexedAt &&
           imageCount == other.imageCount &&
           totalImageCount == other.totalImageCount &&

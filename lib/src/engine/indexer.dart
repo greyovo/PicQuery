@@ -452,23 +452,30 @@ Stream<IndexProgress> indexAlbum({
 /// file records.
 Stream<IndexProgress> indexImages({
   required String albumName,
+  String? displayName,
   required List<String> imagePaths,
   required bool isUpdate,
 }) {
   return _runStream((controller, cancelled) async {
     final db = Db.instance;
     final now = _nowSeconds();
+    final effectiveDisplayName = displayName ?? albumName;
 
     var albumId = 0;
     var existingPaths = <String>{};
     final existing = db.findFolderByPath(albumName);
     if (existing != null) {
       albumId = existing.id;
+      db.updateFolderDisplayName(albumId, effectiveDisplayName);
       existingPaths = isUpdate
           ? db.getIndexedFilePaths(albumId).toSet()
           : <String>{};
     } else {
-      albumId = db.insertFolder(albumName, now);
+      albumId = db.insertFolder(
+        albumName,
+        now,
+        displayName: effectiveDisplayName,
+      );
     }
 
     final total = imagePaths.length;

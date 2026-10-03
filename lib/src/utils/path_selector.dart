@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -268,31 +269,79 @@ class _AlbumGridBottomSheet extends StatelessWidget {
   }
 }
 
-class _AlbumGridCell extends StatelessWidget {
+class _AlbumGridCell extends StatefulWidget {
   final AssetPathEntity album;
   final VoidCallback onTap;
 
   const _AlbumGridCell({required this.album, required this.onTap});
 
   @override
+  State<_AlbumGridCell> createState() => _AlbumGridCellState();
+}
+
+class _AlbumGridCellState extends State<_AlbumGridCell> {
+  late final Future<Uint8List?> _cover = _loadCover();
+
+  Future<Uint8List?> _loadCover() async {
+    final assets = await widget.album.getAssetListRange(start: 0, end: 1);
+    if (assets.isEmpty) return null;
+    return assets.first.thumbnailDataWithSize(const ThumbnailSize.square(300));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.hardEdge,
       child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        onTap: widget.onTap,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            Icon(Icons.photo_album, size: 48, color: context.colors.primary),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                album.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium,
+            FutureBuilder<Uint8List?>(
+              future: _cover,
+              builder: (context, snapshot) {
+                final bytes = snapshot.data;
+                if (bytes != null) {
+                  return Image.memory(
+                    bytes,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                  );
+                }
+                return ColoredBox(
+                  color: context.colors.surfaceContainerHighest,
+                  child: snapshot.connectionState == ConnectionState.waiting
+                      ? const Center(child: CircularProgressIndicator())
+                      : Icon(
+                          Icons.photo_album_outlined,
+                          size: 48,
+                          color: context.colors.primary,
+                        ),
+                );
+              },
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black87],
+                  ),
+                ),
+                child: Text(
+                  widget.album.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

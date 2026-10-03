@@ -253,11 +253,9 @@ class _HeroSection extends StatelessWidget {
                 child: Transform.translate(
                   offset: Offset(-2, 4),
                   child: Image.asset(
-                    'assets/picquery-icon.png',
+                    'assets/icon-picquery-transparent.png',
                     height: fontSize * 1.5,
-                    fit: BoxFit.cover,
-                    color: context.colors.surface,
-                    colorBlendMode: BlendMode.multiply,
+                    fit: BoxFit.contain,
                     filterQuality: FilterQuality.high,
                     isAntiAlias: true,
                   ),

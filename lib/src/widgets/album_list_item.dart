@@ -6,7 +6,7 @@ import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
-final int _coverSize = 60;
+final int _coverSize = 80;
 
 /// A selectable album row used by the album selector.
 class AlbumListItem extends StatelessWidget {
@@ -22,6 +22,9 @@ class AlbumListItem extends StatelessWidget {
   final ValueChanged<bool> onSelected;
 
   String get _displayName {
+    if (album.displayName case final displayName? when displayName.isNotEmpty) {
+      return displayName;
+    }
     final name = path.basename(album.albumPath);
     return name.isEmpty || name == '.' ? album.albumPath : name;
   }

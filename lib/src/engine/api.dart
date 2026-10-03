@@ -46,10 +46,12 @@ Stream<IndexProgress> indexAlbum({
 /// file records.
 Stream<IndexProgress> indexImages({
   required String albumName,
+  String? displayName,
   required List<String> imagePaths,
   required bool isUpdate,
 }) => indexer.indexImages(
   albumName: albumName,
+  displayName: displayName,
   imagePaths: imagePaths,
   isUpdate: isUpdate,
 );
@@ -87,6 +89,7 @@ Future<List<Album>> getAllAlbums() async {
         (f) => Album(
           id: f.id,
           albumPath: f.folderPath,
+          displayName: f.displayName,
           indexedAt: f.indexedAt,
           imageCount: f.imageCount,
           totalImageCount: f.totalImageCount,

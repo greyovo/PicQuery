@@ -118,6 +118,7 @@ class IndexingManager extends ChangeNotifier {
     if (imagePaths != null) {
       stream = api.indexImages(
         albumName: path,
+        displayName: displayName,
         imagePaths: imagePaths,
         isUpdate: isUpdate,
       );

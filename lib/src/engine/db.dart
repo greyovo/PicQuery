@@ -36,6 +36,7 @@ Uint8List vectorToBlob(List<double> v) {
 class FolderRow {
   final int id;
   final String folderPath;
+  final String? displayName;
   final int indexedAt;
   final int imageCount;
   final int totalImageCount;
@@ -44,6 +45,7 @@ class FolderRow {
   const FolderRow({
     required this.id,
     required this.folderPath,
+    this.displayName,
     required this.indexedAt,
     required this.imageCount,
     required this.totalImageCount,
@@ -153,11 +155,15 @@ class Db {
         folder_path TEXT NOT NULL UNIQUE,
         indexed_at INTEGER NOT NULL,
         image_count INTEGER NOT NULL DEFAULT 0
+        ,display_name TEXT
         ,total_image_count INTEGER NOT NULL DEFAULT 0
         ,is_index_complete INTEGER NOT NULL DEFAULT 1
       );
     ''');
     // Existing v2 databases need these checkpoint columns too.
+    try {
+      _conn.execute('ALTER TABLE folders ADD COLUMN display_name TEXT');
+    } catch (_) {}
     try {
       _conn.execute(
         'ALTER TABLE folders ADD COLUMN total_image_count INTEGER NOT NULL DEFAULT 0',
@@ -208,10 +214,10 @@ class Db {
   // ---- Folders ----
 
   /// Insert a folder record and return its id.
-  int insertFolder(String folderPath, int indexedAt) {
+  int insertFolder(String folderPath, int indexedAt, {String? displayName}) {
     _conn.execute(
-      'INSERT INTO folders (folder_path, indexed_at) VALUES (?1, ?2)',
-      [folderPath, indexedAt],
+      'INSERT INTO folders (folder_path, indexed_at, display_name) VALUES (?1, ?2, ?3)',
+      [folderPath, indexedAt, displayName],
     );
     return _conn.lastInsertRowId;
   }
@@ -219,7 +225,7 @@ class Db {
   /// Find a folder by path; returns (id, imageCount) or null.
   FolderRow? findFolderByPath(String folderPath) {
     final rows = _conn.select(
-      '''SELECT id, folder_path, indexed_at, image_count, total_image_count, is_index_complete,
+      '''SELECT id, folder_path, display_name, indexed_at, image_count, total_image_count, is_index_complete,
           (SELECT file_path FROM images WHERE folder_id = folders.id
            ORDER BY indexed_at DESC, id DESC LIMIT 1) AS cover_path
          FROM folders WHERE folder_path = ?1''',
@@ -230,12 +236,20 @@ class Db {
     return FolderRow(
       id: r['id'] as int,
       folderPath: r['folder_path'] as String,
+      displayName: r['display_name'] as String?,
       indexedAt: r['indexed_at'] as int,
       imageCount: r['image_count'] as int,
       totalImageCount: r['total_image_count'] as int,
       isIndexComplete: (r['is_index_complete'] as int) == 1,
       coverPath: r['cover_path'] as String?,
     );
+  }
+
+  void updateFolderDisplayName(int folderId, String displayName) {
+    _conn.execute('UPDATE folders SET display_name = ?1 WHERE id = ?2', [
+      displayName,
+      folderId,
+    ]);
   }
 
   /// Update folder's indexed_at timestamp and image_count.
@@ -260,17 +274,16 @@ class Db {
 
   /// Get all indexed folders ordered by indexed_at desc.
   List<FolderRow> getAllFolders() {
-    final rows = _conn.select(
-      '''SELECT id, folder_path, indexed_at, image_count, total_image_count, is_index_complete,
+    final rows = _conn.select('''SELECT id, folder_path, display_name, indexed_at, image_count, total_image_count, is_index_complete,
           (SELECT file_path FROM images WHERE folder_id = folders.id
            ORDER BY indexed_at DESC, id DESC LIMIT 1) AS cover_path
-         FROM folders ORDER BY indexed_at DESC''',
-    );
+         FROM folders ORDER BY indexed_at DESC''');
     return rows
         .map(
           (r) => FolderRow(
             id: r['id'] as int,
             folderPath: r['folder_path'] as String,
+            displayName: r['display_name'] as String?,
             indexedAt: r['indexed_at'] as int,
             imageCount: r['image_count'] as int,
             totalImageCount: r['total_image_count'] as int,

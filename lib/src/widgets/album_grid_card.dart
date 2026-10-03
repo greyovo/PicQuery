@@ -47,6 +47,9 @@ class AlbumGridCard extends StatelessWidget {
   final bool isUpdateAvailable;
 
   String get _displayName {
+    if (album.displayName case final displayName? when displayName.isNotEmpty) {
+      return displayName;
+    }
     final name = path.basename(album.albumPath);
     return name.isEmpty || name == '.' ? album.albumPath : name;
   }

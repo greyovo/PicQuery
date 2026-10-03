@@ -72,7 +72,7 @@ void main() {
 
   group('folders', () {
     test('insert / find / update / get_all', () {
-      final idA = db.insertFolder('/a', 100);
+      final idA = db.insertFolder('/a', 100, displayName: '相机');
       final idB = db.insertFolder('/b', 200);
 
       expect(
@@ -83,12 +83,15 @@ void main() {
       final found = db.findFolderByPath('/a');
       expect(found, isNotNull);
       expect(found!.id, idA);
+      expect(found.displayName, '相机');
       expect(found.imageCount, 0);
       expect(db.findFolderByPath('/missing'), isNull);
 
       db.updateFolder(idA, 500, 7, totalImageCount: 7, isIndexComplete: true);
       expect(db.findFolderByPath('/a')!.indexedAt, 500);
       expect(db.findFolderByPath('/a')!.imageCount, 7);
+      db.updateFolderDisplayName(idA, 'Camera');
+      expect(db.findFolderByPath('/a')!.displayName, 'Camera');
 
       // Ordered by indexed_at desc.
       final all = db.getAllFolders();
