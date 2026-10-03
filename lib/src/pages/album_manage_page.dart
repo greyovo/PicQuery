@@ -80,6 +80,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     }
     final hasUpdate =
         indexing.albumUpdateStatus == AlbumUpdateStatus.updateAvailable;
+    final isUpToDate = indexing.albumUpdateStatus == AlbumUpdateStatus.upToDate;
     return IconButton(
       onPressed: indexing.isIndexing
           ? null
@@ -88,8 +89,13 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
               onDone: () => folderManager.reload(),
             )
           : () => indexing.checkForUpdates(context: context),
-      icon: const Icon(Icons.refresh_rounded),
-      tooltip: hasUpdate
+      icon: Icon(
+        isUpToDate ? Icons.check_circle_rounded : Icons.refresh_rounded,
+        color: isUpToDate ? context.colors.primary : null,
+      ),
+      tooltip: isUpToDate
+          ? context.l10n.indexUpToDate
+          : hasUpdate
           ? context.l10n.updatePhotos(indexing.pendingUpdateCount)
           : context.l10n.checkUpdates,
     );
@@ -199,7 +205,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                         (constraints.crossAxisExtent -
                             spacing * (columns - 1)) /
                         columns;
-                    const cardDetailsHeight = 52.0;
+                    const cardDetailsHeight = 60.0;
                     final cardCoverHeight =
                         cardWidth / albumGridCoverAspectRatio;
                     return SliverGrid(
@@ -288,7 +294,7 @@ class _EmptyAlbums extends StatelessWidget {
         margin: const EdgeInsets.all(28),
         padding: const EdgeInsets.all(36),
         decoration: BoxDecoration(
-          color: context.colors.surfaceContainerLow,
+          // color: context.colors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(28),
         ),
         child: Column(

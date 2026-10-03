@@ -7,7 +7,7 @@ import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
-const albumGridCoverAspectRatio = 1.15;
+const albumGridCoverAspectRatio = 1.0;
 
 /// Shared album row used by album management and search-scope selection.
 class FolderListItem extends StatelessWidget {
@@ -167,15 +167,13 @@ class FolderListItem extends StatelessWidget {
     ColorScheme colorScheme,
     bool isIndexing,
   ) {
-    final coverBorderColor = isIndexing
-        ? colorScheme.primary.withValues(alpha: .45)
-        : colorScheme.outlineVariant.withValues(alpha: .7);
+    final kRadius = 16.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(kRadius),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: .16),
@@ -185,11 +183,10 @@ class FolderListItem extends StatelessWidget {
             ],
           ),
           foregroundDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: coverBorderColor),
+            borderRadius: BorderRadius.circular(kRadius),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(kRadius),
             child: GestureDetector(
               onTap: onTap,
               child: AspectRatio(
@@ -199,15 +196,15 @@ class FolderListItem extends StatelessWidget {
                   children: [
                     _AlbumHero(path: folder.coverPath),
                     if (isIndexing) ...[
-                      ColoredBox(color: Colors.black.withValues(alpha: .3)),
+                      // ColoredBox(color: Colors.black.withValues(alpha: .3)),
                       Center(
                         child: SizedBox.square(
                           dimension: 52,
                           child: CircularProgressIndicator(
                             value: progress,
                             strokeWidth: 4,
-                            color: Colors.white,
-                            backgroundColor: Colors.white.withValues(alpha: .3),
+                            year2023: false,
+                            color: context.colors.primary,
                           ),
                         ),
                       ),
@@ -249,7 +246,7 @@ class FolderListItem extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: onTap,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4, top: 1),
+                    padding: const EdgeInsets.only(left: 4, top: 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -257,8 +254,7 @@ class FolderListItem extends StatelessWidget {
                           _displayName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.normal),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 2),
                         if (isIndexing)
@@ -266,7 +262,7 @@ class FolderListItem extends StatelessWidget {
                             _gridIndexingSummary(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(color: colorScheme.onSurfaceVariant),
                           )
                         else
@@ -436,10 +432,13 @@ class _AlbumHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     if (path == null) {
-      return ColoredBox(color: colors.surfaceContainerHighest);
+      // If the album is not yet indexed
+      return ColoredBox(color: colors.primaryContainer);
     }
     return Image.file(
       File(path!),
+      cacheHeight: 60,
+      cacheWidth: 60,
       fit: BoxFit.cover,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => ColoredBox(

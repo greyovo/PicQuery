@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/engine/api.dart' as api;
@@ -27,7 +28,7 @@ class IndexingManager extends ChangeNotifier {
   int total = 0;
   int alreadyIndexed = 0;
 
-  AlbumUpdateStatus albumUpdateStatus = AlbumUpdateStatus.idle;
+  AlbumUpdateStatus albumUpdateStatus = .idle;
   int pendingUpdateCount = 0;
   Set<String> updateAvailableFolderPaths = const {};
   String? currentPath;
@@ -38,6 +39,7 @@ class IndexingManager extends ChangeNotifier {
       _navigateToManageTabController.stream;
 
   StreamSubscription<IndexProgress>? _subscription;
+  Timer? _upToDateResetTimer;
 
   void start(String folderName, {int alreadyIndexed = 0}) {
     isIndexing = true;
@@ -79,7 +81,7 @@ class IndexingManager extends ChangeNotifier {
   void cancel() {
     _subscription?.cancel();
     isIndexing = false;
-    albumUpdateStatus = AlbumUpdateStatus.idle;
+    albumUpdateStatus = .idle;
     notifyListeners();
     // The engine finishes its current image and writes its checkpoint after
     // the stream subscription has been cancelled.
@@ -93,7 +95,7 @@ class IndexingManager extends ChangeNotifier {
     current = 0;
     total = 0;
     alreadyIndexed = 0;
-    albumUpdateStatus = AlbumUpdateStatus.idle;
+    albumUpdateStatus = .idle;
     pendingUpdateCount = 0;
     updateAvailableFolderPaths = const {};
     currentPath = null;
@@ -158,7 +160,8 @@ class IndexingManager extends ChangeNotifier {
     bool showToast = true,
     bool updateAutomatically = false,
   }) async {
-    albumUpdateStatus = AlbumUpdateStatus.checking;
+    _upToDateResetTimer?.cancel();
+    albumUpdateStatus = .checking;
     pendingUpdateCount = 0;
     notifyListeners();
 
@@ -184,7 +187,7 @@ class IndexingManager extends ChangeNotifier {
       updateAvailableFolderPaths = updatePaths;
 
       if (updatePaths.isNotEmpty) {
-        albumUpdateStatus = AlbumUpdateStatus.updateAvailable;
+        albumUpdateStatus = .updateAvailable;
         pendingUpdateCount = totalNew;
         if (updateAutomatically) {
           startUpdateIndexing(onDone: () => folderManager.reload());
@@ -199,7 +202,7 @@ class IndexingManager extends ChangeNotifier {
         }
       }
     } catch (e) {
-      albumUpdateStatus = AlbumUpdateStatus.idle;
+      albumUpdateStatus = .idle;
       updateAvailableFolderPaths = const {};
       if (showToast) {
         if (context != null && context.mounted) {
@@ -221,7 +224,7 @@ class IndexingManager extends ChangeNotifier {
     void Function(Object error)? onError,
   }) {
     start('增量更新');
-    albumUpdateStatus = AlbumUpdateStatus.idle;
+    albumUpdateStatus = .idle;
     updateAvailableFolderPaths = const {};
 
     final stream = api.indexPendingUpdates();
@@ -239,7 +242,7 @@ class IndexingManager extends ChangeNotifier {
         onDone?.call();
       },
       onError: (error) {
-        albumUpdateStatus = AlbumUpdateStatus.idle;
+        albumUpdateStatus = .idle;
         stop();
         onError?.call(error);
       },
@@ -249,6 +252,7 @@ class IndexingManager extends ChangeNotifier {
   @override
   void dispose() {
     _subscription?.cancel();
+    _upToDateResetTimer?.cancel();
     _navigateToManageTabController.close();
     autoUpdateIndexOnStartup.dispose();
     super.dispose();
@@ -368,14 +372,15 @@ class IndexingManager extends ChangeNotifier {
   }
 
   void setIndexingStatusUpToDate() {
-    albumUpdateStatus = AlbumUpdateStatus.upToDate;
+    _upToDateResetTimer?.cancel();
+    albumUpdateStatus = .upToDate;
     updateAvailableFolderPaths = const {};
     notifyListeners();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (albumUpdateStatus != AlbumUpdateStatus.upToDate) {
+    _upToDateResetTimer = Timer(const Duration(seconds: 5), () {
+      if (albumUpdateStatus != .upToDate) {
         return;
       }
-      albumUpdateStatus = AlbumUpdateStatus.idle;
+      albumUpdateStatus = .idle;
       notifyListeners();
     });
   }
