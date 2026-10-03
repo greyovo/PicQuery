@@ -26,42 +26,33 @@ sudo xattr -rd com.apple.quarantine "/Applications/PicQuery.app"
 
 ## Build from source
 
-Install Git, [Git LFS](https://git-lfs.com/), [FVM](https://fvm.app/), and the Flutter toolchain required by your target platform. The repository's `.fvmrc` selects Flutter stable. You may replace `fvm flutter` with `flutter` below if you do not use FVM.
+Install Git, [Git LFS](https://git-lfs.com/), Flutter 3.47.4 (stable), and the Flutter toolchain required by your target platform.
 
 ```bash
 git lfs install
 git clone https://github.com/greyovo/PicQuery.git
 cd PicQuery
 git lfs pull
-fvm use
-fvm flutter pub get
+flutter pub get
 ```
 
 Before running or building the app, `assets/models/` must contain:
 
 - `mobileclip2_s0_visual.onnx`
 - `mobileclip2_s0_text.onnx`
-- `mt_zho-eng.fp32.quantized.onnx`
+- `mt_zho-eng.fp32.quantized.onnx` // Stored with Git LFS
 
-The translation model is stored with Git LFS and is downloaded by a normal LFS-enabled clone. Export the two MobileCLIP models with the separate [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) repository, then copy them to `assets/models/` under the filenames above.
+Export the two MobileCLIP models with the separate [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) repository, then copy them to `assets/models/` under the filenames above.
 
-Run the app on a connected device or desktop:
-
-```bash
-fvm flutter run
-```
-
-Common checks and builds:
+Run the app:
 
 ```bash
-fvm flutter analyze lib/
-fvm flutter test
-fvm flutter build apk --release --target-platform=android-arm64
-fvm flutter build macos
-fvm flutter build windows
-```
+flutter run
 
-Only run a platform build on a supported host with that platform's Flutter dependencies installed. The core engine lives in `lib/src/engine/`; it uses `flutter_onnxruntime` for on-device ONNX inference and SQLite for image metadata and vector search.
+# For lint and tests
+flutter analyze lib/
+flutter test
+```
 
 ## Contributing and acknowledgments
 

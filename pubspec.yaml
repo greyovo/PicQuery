@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   file_picker: ^8.0.0
   path_provider: ^2.1.0
+  package_info_plus: ^8.0.0
   photo_manager: ^3.6.4
   share_plus: ^10.0.0
   open_filex: ^4.0.0

@@ -26,42 +26,33 @@ sudo xattr -rd com.apple.quarantine "/Applications/PicQuery.app"
 
 ## 从源码构建
 
-需要安装 Git、[Git LFS](https://git-lfs.com/)、[FVM](https://fvm.app/) 和目标平台所需的 Flutter 工具链。仓库使用 `.fvmrc` 指定 Flutter stable；如果不使用 FVM，可将下列命令中的 `fvm flutter` 替换为 `flutter`。
+需要安装 Git、[Git LFS](https://git-lfs.com/)、Flutter 3.47.4（stable）以及目标平台所需的 Flutter 工具链。
 
 ```bash
 git lfs install
 git clone https://github.com/greyovo/PicQuery.git
 cd PicQuery
 git lfs pull
-fvm use
-fvm flutter pub get
+flutter pub get
 ```
 
 运行或构建前，请确保 `assets/models/` 中存在：
 
 - `mobileclip2_s0_visual.onnx`
 - `mobileclip2_s0_text.onnx`
-- `mt_zho-eng.fp32.quantized.onnx`
+- `mt_zho-eng.fp32.quantized.onnx` //  在 Git LFS 存储
 
-翻译模型通过 Git LFS 存储，正常启用 LFS 后克隆会自动下载。两个 MobileCLIP 模型请使用独立的 [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) 仓库导出，再以上述文件名复制到 `assets/models/`。
+两个 MobileCLIP 模型请使用独立的 [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) 仓库导出，再以上述文件名复制到 `assets/models/`。
 
 连接设备或在桌面端运行：
 
 ```bash
-fvm flutter run
+flutter run
+
+# 测试用
+flutter analyze lib/
+flutter test
 ```
-
-常用检查和构建命令：
-
-```bash
-fvm flutter analyze lib/
-fvm flutter test
-fvm flutter build apk --release --target-platform=android-arm64
-fvm flutter build macos
-fvm flutter build windows
-```
-
-各平台构建需要在受支持的宿主系统上执行，并提前安装对应的 Flutter 平台依赖。核心引擎位于 `lib/src/engine/`，使用 `flutter_onnxruntime` 进行端侧 ONNX 推理，使用 SQLite 保存图片信息和向量索引。
 
 ## 贡献与致谢
 
