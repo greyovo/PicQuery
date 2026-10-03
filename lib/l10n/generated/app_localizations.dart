@@ -234,7 +234,7 @@ abstract class AppLocalizations {
   /// No description provided for @buildPhotoLibraryDescription.
   ///
   /// In en, this message translates to:
-  /// **'Add local albums and PicQuery will index them privately on your device.'**
+  /// **'Add an album and finish indexing to start searching.'**
   String get buildPhotoLibraryDescription;
 
   /// No description provided for @addFirstAlbum.

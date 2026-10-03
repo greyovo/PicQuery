@@ -88,7 +88,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get buildPhotoLibrary => '建立你的图片库';
 
   @override
-  String get buildPhotoLibraryDescription => '添加本地相册，PicQuery 会在设备上完成索引。';
+  String get buildPhotoLibraryDescription => '添加相册并索引完成后，即可开始搜索';
 
   @override
   String get addFirstAlbum => '添加第一个相册';
@@ -511,7 +511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get buildPhotoLibrary => '建立你的圖片庫';
 
   @override
-  String get buildPhotoLibraryDescription => '新增本機相簿，PicQuery 會在裝置上完成索引。';
+  String get buildPhotoLibraryDescription => '新增相簿並完成索引後，即可開始搜尋';
 
   @override
   String get addFirstAlbum => '新增第一個相簿';

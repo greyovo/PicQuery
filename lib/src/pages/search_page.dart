@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/managers/album_manager.dart';
+import 'package:picquery_app/src/managers/indexing_manager.dart';
 import 'package:picquery_app/src/managers/search_manager.dart';
 import 'package:picquery_app/src/models/search_state.dart';
 import 'package:picquery_app/src/pages/search_results_page.dart';
@@ -12,6 +13,7 @@ import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/view/album_selector_view.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
+import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';
 import 'package:picquery_app/src/widgets/search_filter_button.dart';
 import 'package:watch_it/watch_it.dart';
@@ -142,7 +144,10 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final indexing = indexingManager;
+    watch(indexing);
     final albums = watchValue((AlbumManager manager) => manager.albums);
+    final isLoading = watchValue((AlbumManager manager) => manager.isLoading);
     final selectedIds = watchValue(
       (SearchManager manager) => manager.selectedAlbumIds,
     );
@@ -153,45 +158,53 @@ class _SearchPageState extends State<SearchPage> {
     final selectedAlbumNames = _selectedAlbumNames(albums, selectedIds);
 
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktopLayout = constraints.maxWidth >= 760;
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isDesktopLayout ? 40 : 20,
-              vertical: 24,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight - 48,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: kSearchInputMaxWidth,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : albums.isEmpty
+          ? EmptyAlbumsGuide(
+              onAdd: indexing.isIndexing
+                  ? null
+                  : () => indexing.pickAndIndexAlbum(context),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isDesktopLayout = constraints.maxWidth >= 760;
+                return SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktopLayout ? 40 : 20,
+                    vertical: 24,
                   ),
-                  child: _HeroSection(
-                    controller: _queryController,
-                    isDesktop: isDesktopLayout,
-                    onSearch: _searchByText,
-                    onImageSearch: _searchByImage,
-                    scopeLabel: _scopeLabel(context, selectedIds),
-                    selectedAlbumNames: selectedAlbumNames,
-                    hasAlbumFilter: selectedIds.isNotEmpty,
-                    onSelectScope: _showAlbumSelector,
-                    timeRange: timeRange,
-                    onTimeRangeChanged: (value) =>
-                        searchManager.timeRange.value = value,
-                    onClearFilters: searchManager.clearFilters,
-                    recentSearches: recentSearches.take(10).toList(),
-                    onRecentSearchSelected: _onRecentSearchSelected,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 48,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: kSearchInputMaxWidth,
+                        ),
+                        child: _HeroSection(
+                          controller: _queryController,
+                          isDesktop: isDesktopLayout,
+                          onSearch: _searchByText,
+                          onImageSearch: _searchByImage,
+                          scopeLabel: _scopeLabel(context, selectedIds),
+                          selectedAlbumNames: selectedAlbumNames,
+                          hasAlbumFilter: selectedIds.isNotEmpty,
+                          onSelectScope: _showAlbumSelector,
+                          timeRange: timeRange,
+                          onTimeRangeChanged: (value) =>
+                              searchManager.timeRange.value = value,
+                          onClearFilters: searchManager.clearFilters,
+                          recentSearches: recentSearches.take(10).toList(),
+                          onRecentSearchSelected: _onRecentSearchSelected,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

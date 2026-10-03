@@ -89,7 +89,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buildPhotoLibraryDescription =>
-      'Add local albums and PicQuery will index them privately on your device.';
+      'Add an album and finish indexing to start searching.';
 
   @override
   String get addFirstAlbum => 'Add your first album';

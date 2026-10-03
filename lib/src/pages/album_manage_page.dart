@@ -10,18 +10,14 @@ import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/album_grid_card.dart';
+import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
 import 'package:watch_it/watch_it.dart';
 
-const _pageHeaderPadding = EdgeInsets.fromLTRB(20, 24, 20, 16);
 const _albumGridPadding = EdgeInsets.fromLTRB(12, 8, 12, 112);
 const _albumGridSpacing = 16.0;
 const _albumGridMaxCardWidth = 220.0;
 const _phoneGridBreakpoint = 600.0;
 const _phoneGridColumnCount = 2;
-const _emptyStateMaxWidth = 440.0;
-const _emptyStateMargin = 28.0;
-const _emptyStatePadding = 36.0;
-const _emptyStateIconRadius = 38.0;
 
 class AlbumManagePage extends WatchingStatefulWidget {
   const AlbumManagePage({super.key});
@@ -125,6 +121,36 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 104,
+        titleSpacing: 20,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              context.l10n.albums,
+              style: Theme.of(context).textTheme.headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -1),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              indexing.isIndexing
+                  ? context.l10n.indexingAlbumsSummary(albums.length)
+                  : context.l10n.albumsPhotosSummary(
+                      albums.length,
+                      totalPhotos,
+                    ),
+              style: Theme.of(context).textTheme.titleMedium
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+          ],
+        ),
+        actions: [_buildUpdateButton(indexing), const SizedBox(width: 12)],
+      ),
       floatingActionButton: isLoading || albums.isEmpty
           ? null
           : FloatingActionButton.extended(
@@ -134,113 +160,67 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
               icon: const Icon(Icons.add_photo_alternate_outlined),
               label: Text(context.l10n.addAlbum),
             ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: _pageHeaderPadding,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            context.l10n.albums,
-                            style: Theme.of(context).textTheme.headlineLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -1,
-                                ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            indexing.isIndexing
-                                ? context.l10n.indexingAlbumsSummary(
-                                    albums.length,
-                                  )
-                                : context.l10n.albumsPhotosSummary(
-                                    albums.length,
-                                    totalPhotos,
-                                  ),
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: context.colors.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
-                      ),
+      body: CustomScrollView(
+        slivers: [
+          if (isLoading)
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (albums.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: EmptyAlbumsGuide(
+                onAdd: indexing.isIndexing
+                    ? null
+                    : () => indexing.pickAndIndexAlbum(context),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: _albumGridPadding,
+              sliver: SliverLayoutBuilder(
+                builder: (context, constraints) {
+                  final isPhoneLayout =
+                      isMobile &&
+                      constraints.crossAxisExtent < _phoneGridBreakpoint;
+                  final responsiveColumns =
+                      ((constraints.crossAxisExtent + _albumGridSpacing) /
+                              (_albumGridMaxCardWidth + _albumGridSpacing))
+                          .ceil();
+                  // Phones use two columns. Wider layouts add columns as
+                  // needed so album cards never grow beyond the target size.
+                  final columns = isPhoneLayout
+                      ? _phoneGridColumnCount
+                      : responsiveColumns < 1
+                      ? 1
+                      : responsiveColumns;
+                  final cardWidth =
+                      (constraints.crossAxisExtent -
+                          _albumGridSpacing * (columns - 1)) /
+                      columns;
+                  final cardCoverHeight = cardWidth / albumGridCoverAspectRatio;
+                  return SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columns,
+                      mainAxisSpacing: _albumGridSpacing,
+                      crossAxisSpacing: _albumGridSpacing,
+                      mainAxisExtent: cardCoverHeight + albumGridDetailsHeight,
                     ),
-                    const SizedBox(width: 16),
-                    _buildUpdateButton(indexing),
-                  ],
-                ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final album = albums[index];
+                      return _AlbumCard(
+                        album: album,
+                        indexing: indexing,
+                        onOpen: () => _openAlbumLocation(album.albumPath),
+                        onDelete: () => _deleteAlbum(album.id),
+                      );
+                    }, childCount: albums.length),
+                  );
+                },
               ),
             ),
-            if (isLoading)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (albums.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: _EmptyAlbums(
-                  onAdd: indexing.isIndexing
-                      ? null
-                      : () => indexing.pickAndIndexAlbum(context),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: _albumGridPadding,
-                sliver: SliverLayoutBuilder(
-                  builder: (context, constraints) {
-                    final isPhoneLayout =
-                        isMobile &&
-                        constraints.crossAxisExtent < _phoneGridBreakpoint;
-                    final responsiveColumns =
-                        ((constraints.crossAxisExtent + _albumGridSpacing) /
-                                (_albumGridMaxCardWidth + _albumGridSpacing))
-                            .ceil();
-                    // Phones use two columns. Wider layouts add columns as
-                    // needed so album cards never grow beyond the target size.
-                    final columns = isPhoneLayout
-                        ? _phoneGridColumnCount
-                        : responsiveColumns < 1
-                        ? 1
-                        : responsiveColumns;
-                    final cardWidth =
-                        (constraints.crossAxisExtent -
-                            _albumGridSpacing * (columns - 1)) /
-                        columns;
-                    final cardCoverHeight =
-                        cardWidth / albumGridCoverAspectRatio;
-                    return SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: columns,
-                        mainAxisSpacing: _albumGridSpacing,
-                        crossAxisSpacing: _albumGridSpacing,
-                        mainAxisExtent:
-                            cardCoverHeight + albumGridDetailsHeight,
-                      ),
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final album = albums[index];
-                        return _AlbumCard(
-                          album: album,
-                          indexing: indexing,
-                          onOpen: () => _openAlbumLocation(album.albumPath),
-                          onDelete: () => _deleteAlbum(album.id),
-                        );
-                      }, childCount: albums.length),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -297,55 +277,6 @@ class _AlbumCard extends StatelessWidget {
                     onDone: () => albumManager.reload(),
                   )
           : null,
-    );
-  }
-}
-
-class _EmptyAlbums extends StatelessWidget {
-  const _EmptyAlbums({required this.onAdd});
-
-  final VoidCallback? onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: _emptyStateMaxWidth),
-        margin: const EdgeInsets.all(_emptyStateMargin),
-        padding: const EdgeInsets.all(_emptyStatePadding),
-        decoration: BoxDecoration(
-          // color: context.colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(28),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: _emptyStateIconRadius,
-              backgroundColor: context.colors.primaryContainer,
-              foregroundColor: context.colors.onPrimaryContainer,
-              child: const Icon(Icons.photo_library_outlined, size: 36),
-            ),
-            const SizedBox(height: 22),
-            Text(
-              context.l10n.buildPhotoLibrary,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.buildPhotoLibraryDescription,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: context.colors.onSurfaceVariant),
-            ),
-            const SizedBox(height: 22),
-            FilledButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add),
-              label: Text(context.l10n.addFirstAlbum),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -28,7 +28,7 @@
   "photoCount": "{count} photos",
   "@photoCount": {"placeholders": {"count": {"type": "int"}}},
   "buildPhotoLibrary": "Build your photo library",
-  "buildPhotoLibraryDescription": "Add local albums and PicQuery will index them privately on your device.",
+  "buildPhotoLibraryDescription": "Add an album and finish indexing to start searching.",
   "addFirstAlbum": "Add your first album",
   "desktopOnlyOpenAlbum": "Opening an album location is only supported on desktop",
   "albumUnavailable": "The album does not exist or cannot be accessed",
