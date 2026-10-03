@@ -10,6 +10,7 @@ import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
+import 'package:picquery_app/src/pages/logs_page.dart';
 import 'package:watch_it/watch_it.dart';
 
 class SettingsPage extends WatchingWidget {
@@ -109,6 +110,14 @@ class SettingsPage extends WatchingWidget {
                   icon: Icons.history_toggle_off_outlined,
                   label: context.l10n.clearRecentSearches,
                   onTap: () => _clearRecentSearches(context),
+                ),
+                _buildActionRow(
+                  context,
+                  icon: Icons.description_outlined,
+                  label: context.l10n.viewLogs,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const LogsPage()),
+                  ),
                 ),
               ],
             ),

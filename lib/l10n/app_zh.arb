@@ -27,5 +27,7 @@
   "clearRecentSearchesTitle": "清空最近搜索", "clearRecentSearchesMessage": "确定要清空所有最近搜索记录吗？", "clear": "清空", "recentSearchesCleared": "最近搜索已清空",
   "reloadModels": "重新加载模型", "modelsReloaded": "模型重新加载成功", "modelsReloadFailed": "模型重新加载失败：{error}",
   "timeAny": "不限时间", "timeDay": "过去一天", "timeWeek": "过去一周", "timeMonth": "过去一个月", "timeYear": "过去一年",
-  "addAlbumWhileIndexing": "索引图片中，请稍后再添加相册"
+  "addAlbumWhileIndexing": "索引图片中，请稍后再添加相册",
+  "logs": "日志", "viewLogs": "查看日志", "exportLogs": "导出日志", "refresh": "刷新", "noLogs": "暂无日志", "logExportSubject": "PicQuery 日志",
+  "loadLogsFailed": "加载日志失败：{error}", "exportLogsFailed": "导出日志失败：{error}"
 }

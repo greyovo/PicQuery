@@ -435,6 +435,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addAlbumWhileIndexing => '索引图片中，请稍后再添加相册';
+
+  @override
+  String get logs => '日志';
+
+  @override
+  String get viewLogs => '查看日志';
+
+  @override
+  String get exportLogs => '导出日志';
+
+  @override
+  String get refresh => '刷新';
+
+  @override
+  String get noLogs => '暂无日志';
+
+  @override
+  String get logExportSubject => 'PicQuery 日志';
+
+  @override
+  String loadLogsFailed(Object error) {
+    return '加载日志失败：$error';
+  }
+
+  @override
+  String exportLogsFailed(Object error) {
+    return '导出日志失败：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -867,4 +895,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get addAlbumWhileIndexing => '索引圖片中，請稍後再新增相簿';
+
+  @override
+  String get logs => '日誌';
+
+  @override
+  String get viewLogs => '查看日誌';
+
+  @override
+  String get exportLogs => '匯出日誌';
+
+  @override
+  String get refresh => '重新整理';
+
+  @override
+  String get noLogs => '暫無日誌';
+
+  @override
+  String get logExportSubject => 'PicQuery 日誌';
+
+  @override
+  String loadLogsFailed(Object error) {
+    return '載入日誌失敗：$error';
+  }
+
+  @override
+  String exportLogsFailed(Object error) {
+    return '匯出日誌失敗：$error';
+  }
 }

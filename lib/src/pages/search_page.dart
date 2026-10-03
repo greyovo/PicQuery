@@ -158,6 +158,7 @@ class _SearchPageState extends State<SearchPage> {
     final selectedAlbumNames = _selectedAlbumNames(albums, selectedIds);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : albums.isEmpty

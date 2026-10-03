@@ -450,4 +450,32 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get addAlbumWhileIndexing =>
       'Please wait until indexing finishes before adding another album';
+
+  @override
+  String get logs => 'Logs';
+
+  @override
+  String get viewLogs => 'View logs';
+
+  @override
+  String get exportLogs => 'Export logs';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get noLogs => 'No logs yet';
+
+  @override
+  String get logExportSubject => 'PicQuery logs';
+
+  @override
+  String loadLogsFailed(Object error) {
+    return 'Could not load logs: $error';
+  }
+
+  @override
+  String exportLogsFailed(Object error) {
+    return 'Could not export logs: $error';
+  }
 }

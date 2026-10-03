@@ -22,7 +22,7 @@ final _log = Logger('main');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _configureDesktopWindow();
-  configureLogging();
+  await configureLogging();
   await SettingsStore.init();
   configureDependencies();
 

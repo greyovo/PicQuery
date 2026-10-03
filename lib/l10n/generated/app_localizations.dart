@@ -884,6 +884,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait until indexing finishes before adding another album'**
   String get addAlbumWhileIndexing;
+
+  /// No description provided for @logs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs'**
+  String get logs;
+
+  /// No description provided for @viewLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View logs'**
+  String get viewLogs;
+
+  /// No description provided for @exportLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Export logs'**
+  String get exportLogs;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @noLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs yet'**
+  String get noLogs;
+
+  /// No description provided for @logExportSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'PicQuery logs'**
+  String get logExportSubject;
+
+  /// No description provided for @loadLogsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load logs: {error}'**
+  String loadLogsFailed(Object error);
+
+  /// No description provided for @exportLogsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export logs: {error}'**
+  String exportLogsFailed(Object error);
 }
 
 class _AppLocalizationsDelegate

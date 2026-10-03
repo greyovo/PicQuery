@@ -147,5 +147,15 @@
   "timeWeek": "Past week",
   "timeMonth": "Past month",
   "timeYear": "Past year",
-  "addAlbumWhileIndexing": "Please wait until indexing finishes before adding another album"
+  "addAlbumWhileIndexing": "Please wait until indexing finishes before adding another album",
+  "logs": "Logs",
+  "viewLogs": "View logs",
+  "exportLogs": "Export logs",
+  "refresh": "Refresh",
+  "noLogs": "No logs yet",
+  "logExportSubject": "PicQuery logs",
+  "loadLogsFailed": "Could not load logs: {error}",
+  "@loadLogsFailed": {"placeholders": {"error": {}}},
+  "exportLogsFailed": "Could not export logs: {error}",
+  "@exportLogsFailed": {"placeholders": {"error": {}}}
 }
