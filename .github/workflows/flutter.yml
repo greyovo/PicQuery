@@ -72,6 +72,7 @@ jobs:
     name: Android
     needs: prepare-models
     runs-on: ubuntu-latest
+    environment: android-build
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -114,6 +115,22 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Configure Android signing
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          {
+            printf 'storeFile=upload-keystore.jks\n'
+            printf 'storePassword=%s\n' "$STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+          } > android/key.properties
+
       - name: Build APK
         run: >-
           flutter build apk --release
@@ -121,15 +138,33 @@ jobs:
           --build-name="${{ steps.version.outputs.build_name }}"
           --build-number="${{ github.run_number }}"
 
-      - name: Prepare artifact
-        shell: bash
-        run: mv build/app/outputs/flutter-apk/app-release.apk "PicQuery-${{ steps.version.outputs.version }}-android-arm64.apk"
+      - name: Build Android App Bundle
+        run: >-
+          flutter build appbundle --release
+          --build-name="${{ steps.version.outputs.build_name }}"
+          --build-number="${{ github.run_number }}"
 
-      - name: Upload workflow artifact
+      - name: Prepare artifacts
+        shell: bash
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk "PicQuery-${{ steps.version.outputs.version }}-android-arm64.apk"
+          mv build/app/outputs/bundle/release/app-release.aab "PicQuery-${{ steps.version.outputs.version }}-android.aab"
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: picquery-android
           path: PicQuery-*-android-arm64.apk
+          if-no-files-found: error
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+      # Deliberately does not use the picquery-* artifact prefix. The release
+      # workflow downloads only that prefix, so this AAB stays in Actions.
+      - name: Upload App Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-appbundle
+          path: PicQuery-*-android.aab
           if-no-files-found: error
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
