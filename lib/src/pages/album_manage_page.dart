@@ -15,7 +15,7 @@ import 'package:watch_it/watch_it.dart';
 
 const _albumGridPadding = EdgeInsets.fromLTRB(12, 8, 12, 112);
 const _albumGridSpacing = 16.0;
-const _albumGridMaxCardWidth = 220.0;
+const _albumGridMaxCardWidth = 180.0;
 const _phoneGridBreakpoint = 600.0;
 const _phoneGridColumnCount = 2;
 
