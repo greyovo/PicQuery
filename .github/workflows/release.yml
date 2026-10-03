@@ -65,7 +65,7 @@ jobs:
             exit 1
           fi
 
-          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
           if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
             echo "Build number must contain digits only: $build_number" >&2
             exit 1

@@ -22,6 +22,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings => '设置';
 
   @override
+  String get currentVersion => '当前版本';
+
+  @override
+  String get buildDate => '构建日期';
+
+  @override
+  String get githubRepository => 'GitHub 地址';
+
+  @override
+  String get openSourceLicenses => '开源许可';
+
+  @override
   String get cancel => '取消';
 
   @override
@@ -481,6 +493,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settings => '設定';
+
+  @override
+  String get currentVersion => '目前版本';
+
+  @override
+  String get buildDate => '建置日期';
+
+  @override
+  String get githubRepository => 'GitHub 位址';
+
+  @override
+  String get openSourceLicenses => '開源授權';
 
   @override
   String get cancel => '取消';

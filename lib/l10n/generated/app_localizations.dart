@@ -123,6 +123,30 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @currentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get currentVersion;
+
+  /// No description provided for @buildDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Build date'**
+  String get buildDate;
+
+  /// No description provided for @githubRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub'**
+  String get githubRepository;
+
+  /// No description provided for @openSourceLicenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Licenses'**
+  String get openSourceLicenses;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

@@ -22,6 +22,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get currentVersion => 'Version';
+
+  @override
+  String get buildDate => 'Build date';
+
+  @override
+  String get githubRepository => 'GitHub';
+
+  @override
+  String get openSourceLicenses => 'Licenses';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

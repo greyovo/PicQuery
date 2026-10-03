@@ -1,6 +1,7 @@
 {
   "@@locale": "zh",
   "appTitle": "PicQuery", "search": "搜索", "albums": "相册", "settings": "设置",
+  "currentVersion": "当前版本", "buildDate": "构建日期", "githubRepository": "GitHub 地址", "openSourceLicenses": "开源许可",
   "cancel": "取消", "confirm": "确认", "remove": "移除", "delete": "删除", "update": "更新", "continueAction": "继续", "stop": "停止", "ok": "确定",
   "addAlbum": "添加相册", "checkUpdates": "检查更新", "checking": "正在检查", "updatePhotos": "更新 {count} 张",
   "indexingAlbumsSummary": "正在建立图片索引 · {count} 个相册", "albumsPhotosSummary": "{albumCount} 个相册 · {photoCount} 张照片",

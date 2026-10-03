@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/managers/search_manager.dart';
@@ -12,6 +13,7 @@ import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/pages/logs_page.dart';
 import 'package:watch_it/watch_it.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends WatchingWidget {
   const SettingsPage({super.key});
@@ -121,7 +123,9 @@ class SettingsPage extends WatchingWidget {
                 ),
               ],
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 28),
+            const _AppInfoFooter(),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -285,6 +289,96 @@ class SettingsPage extends WatchingWidget {
         Toast.showMessage(context.l10n.recentSearchesCleared);
       }
     }
+  }
+}
+
+class _AppInfoFooter extends StatefulWidget {
+  const _AppInfoFooter();
+
+  @override
+  State<_AppInfoFooter> createState() => _AppInfoFooterState();
+}
+
+class _AppInfoFooterState extends State<_AppInfoFooter> {
+  static const String _rawBuildDate = String.fromEnvironment(
+    'BUILD_DATE',
+    defaultValue: '—',
+  );
+  static final Uri _repositoryUri = Uri.parse(
+    'https://github.com/greyovo/PicQuery',
+  );
+
+  late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
+
+  String get _buildDate {
+    final match = RegExp(r'^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\+08:00$')
+        .firstMatch(_rawBuildDate);
+    if (match == null) return '—';
+    return '${match.group(1)} ${match.group(2)} UTC+8';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: context.colors.onSurfaceVariant);
+    final linkStyle = TextButton.styleFrom(
+      foregroundColor: context.colors.onSurfaceVariant,
+      textStyle: textStyle?.copyWith(decoration: TextDecoration.underline),
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: DefaultTextStyle(
+        style: textStyle ?? const TextStyle(fontSize: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder<PackageInfo>(
+              future: _packageInfo,
+              builder: (context, snapshot) {
+                final info = snapshot.data;
+                final version = info == null
+                    ? '—'
+                    : '${info.version}+${info.buildNumber}';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${context.l10n.currentVersion}: $version'),
+                    const SizedBox(height: 4),
+                    Text('${context.l10n.buildDate}: $_buildDate'),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Text('${context.l10n.githubRepository}: '),
+                Flexible(
+                  child: TextButton(
+                    style: linkStyle,
+                    onPressed: () => launchUrl(_repositoryUri),
+                    child: Text(_repositoryUri.toString()),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            TextButton(
+              style: linkStyle,
+              onPressed: () => showLicensePage(
+                context: context,
+                applicationName: context.l10n.appTitle,
+              ),
+              child: Text(context.l10n.openSourceLicenses),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

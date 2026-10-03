@@ -118,14 +118,12 @@ jobs:
             echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
             exit 1
           fi
-          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
-          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
           if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
             echo "Build number must contain digits only: $build_number" >&2
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
       - name: Get dependencies
@@ -149,9 +147,7 @@ jobs:
 
       - name: Build and package Android app
         shell: bash
-        env:
-          BUILD_NAME: ${{ steps.version.outputs.build_name }}
-        run: ci/build-android.sh "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        run: ci/build.sh android "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -212,14 +208,12 @@ jobs:
             echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
             exit 1
           fi
-          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
-          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
           if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
             echo "Build number must contain digits only: $build_number" >&2
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
       - name: Get dependencies
@@ -227,9 +221,7 @@ jobs:
 
       - name: Build and package macOS app
         shell: bash
-        env:
-          BUILD_NAME: ${{ steps.version.outputs.build_name }}
-        run: ci/build-macos.sh "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        run: ci/build.sh macos "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -280,14 +272,12 @@ jobs:
             echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
             exit 1
           fi
-          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
-          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
           if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
             echo "Build number must contain digits only: $build_number" >&2
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
       - name: Get dependencies
@@ -295,9 +285,7 @@ jobs:
 
       - name: Build and package Windows app
         shell: bash
-        env:
-          BUILD_NAME: ${{ steps.version.outputs.build_name }}
-        run: ci/build-windows.sh "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        run: ci/build.sh windows "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -353,14 +341,12 @@ jobs:
             echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
             exit 1
           fi
-          build_name="$(sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+).*/\1/' <<< "$version")"
-          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
           if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
             echo "Build number must contain digits only: $build_number" >&2
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
       - name: Get dependencies
@@ -368,9 +354,7 @@ jobs:
 
       - name: Build and package Linux app
         shell: bash
-        env:
-          BUILD_NAME: ${{ steps.version.outputs.build_name }}
-        run: ci/build-linux.sh "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        run: ci/build.sh linux "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
