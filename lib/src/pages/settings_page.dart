@@ -25,7 +25,18 @@ class SettingsPage extends WatchingWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.settings)),
+      appBar: AppBar(
+        toolbarHeight: 88,
+        titleSpacing: 20,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        forceMaterialTransparency: true,
+        title: Text(
+          context.l10n.settings,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
       body: ListTileTheme(
         data: ListTileThemeData(
           contentPadding: const EdgeInsets.symmetric(

@@ -122,19 +122,17 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 104,
+        toolbarHeight: 88,
         titleSpacing: 20,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
+        forceMaterialTransparency: true,
+        centerTitle: false,
         title: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               context.l10n.albums,
-              style: Theme.of(context).textTheme.headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -1),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 6),
             Text(
@@ -144,12 +142,16 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                       albums.length,
                       totalPhotos,
                     ),
-              style: Theme.of(context).textTheme.titleMedium
+              style: Theme.of(context).textTheme.bodyMedium
                   ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
           ],
         ),
-        actions: [_buildUpdateButton(indexing), const SizedBox(width: 12)],
+        actions: [
+          if (albums.isNotEmpty) 
+            _buildUpdateButton(indexing), 
+          const SizedBox(width: 12)
+        ],
       ),
       floatingActionButton: isLoading || albums.isEmpty
           ? null

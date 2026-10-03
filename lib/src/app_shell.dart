@@ -170,7 +170,7 @@ class _AppShellState extends State<AppShell> {
       );
     }
 
-    return Scaffold(
+    final scaffold = Scaffold(
       backgroundColor: context.colors.surfaceContainer,
       body: Row(
         children: [
@@ -198,6 +198,11 @@ class _AppShellState extends State<AppShell> {
               }),
               destinations: bottomNavDestinations,
             ),
+    );
+
+    return ProgressIndicatorTheme(
+      data: ProgressIndicatorThemeData(year2023: false),
+      child: scaffold,
     );
   }
 }
