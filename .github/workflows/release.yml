@@ -7,6 +7,10 @@ on:
         description: "Version tag (for example: v1.1.0)"
         required: true
         type: string
+      build-number:
+        description: "Build number (defaults to the current date in YYMMDD format)"
+        required: false
+        type: string
       release_notes:
         description: "Release notes in Markdown (optional)"
         required: false
@@ -35,10 +39,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       previous_tag: ${{ steps.release.outputs.previous_tag }}
+      build_number: ${{ steps.release.outputs.build_number }}
     steps:
       - name: Validate tag and find previous release
         id: release
         env:
+          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
         shell: bash
@@ -58,7 +64,15 @@ jobs:
             echo "No previous stable release was found." >&2
             exit 1
           fi
+
+          build_number="${BUILD_NUMBER_INPUT:-$(date +%y%m%d)}"
+          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
+            echo "Build number must contain digits only: $build_number" >&2
+            exit 1
+          fi
+
           echo "previous_tag=$previous_tag" >> "$GITHUB_OUTPUT"
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build release assets
@@ -66,6 +80,7 @@ jobs:
     uses: ./.github/workflows/flutter.yml
     with:
       version: ${{ inputs.tag }}
+      build-number: ${{ needs.validate.outputs.build_number }}
 
   publish:
     name: Publish GitHub Release

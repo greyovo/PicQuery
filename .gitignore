@@ -48,6 +48,8 @@ app.*.map.json
 /android/app/release
 *.jks
 *.keystore
+*.apk
+*.aab
 
 # Environment
 .env*
