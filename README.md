@@ -2,7 +2,7 @@
 
 English | [中文](README_zh.md)
 
-![PicQuery](assets/cover_en.jpg)
+![PicQuery](README_assets/cover_en.jpg)
 
 PicQuery is an offline image search app. It indexes local folders or photo albums and lets you search them with text or a similar image. Photos, indexes, and model inference stay on your device.
 

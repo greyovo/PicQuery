@@ -71,5 +71,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/picquery-icon.png
+    - assets/icon-picquery-transparent.png
     - assets/models/

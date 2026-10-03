@@ -240,27 +240,24 @@ class _HeroSection extends StatelessWidget {
   final List<String> recentSearches;
   final ValueChanged<String> onRecentSearchSelected;
 
-  @override
-  Widget build(BuildContext context) {
-    final fontSize = Theme.of(context).textTheme.headlineMedium?.fontSize ?? 36;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _buildLogo(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.headlineMedium
+        ?.copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.2);
+    final fontSize = textStyle?.fontSize ?? 36;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Image.asset(
+          'assets/icon-picquery-transparent.png',
+          height: fontSize * 0.85,
+          fit: BoxFit.fitWidth,
+        ),
+        const SizedBox(width: 10),
         Text.rich(
           TextSpan(
             children: [
-              WidgetSpan(
-                child: Transform.translate(
-                  offset: Offset(-2, 4),
-                  child: Image.asset(
-                    'assets/icon-picquery-transparent.png',
-                    height: fontSize * 1.5,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                    isAntiAlias: true,
-                  ),
-                ),
-              ),
               TextSpan(
                 text: 'Pic',
                 style: TextStyle(color: context.colors.onSurface),
@@ -271,9 +268,18 @@ class _HeroSection extends StatelessWidget {
               ),
             ],
           ),
-          style: Theme.of(context).textTheme.headlineMedium
-              ?.copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.2),
+          style: textStyle,
         ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildLogo(context),
         // Text(
         //   isDesktop ? context.l10n.searchPhotosDescription : context.l10n.searchPhotosDescriptionMobile,
         //   style: Theme.of(context).textTheme.titleMedium

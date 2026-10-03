@@ -9,6 +9,7 @@ import 'package:picquery_app/src/widgets/app_menu_button.dart';
 
 const albumGridCoverAspectRatio = 1.0;
 const albumGridDetailsHeight = 60.0;
+const albumGridCoverWidth = 120;
 
 const _cardRadius = 16.0;
 const _cardShadowBlur = 8.0;
@@ -342,8 +343,8 @@ class _AlbumHero extends StatelessWidget {
     if (path == null) return ColoredBox(color: colors.primaryContainer);
     return Image.file(
       File(path!),
-      cacheHeight: 60,
-      cacheWidth: 60,
+      cacheHeight: albumGridCoverWidth,
+      cacheWidth: albumGridCoverWidth,
       fit: BoxFit.cover,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => ColoredBox(

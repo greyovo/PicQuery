@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-![PicQuery](assets/cover_cn.jpg)
+![PicQuery](README_assets/cover_cn.jpg)
 
 PicQuery 是一款离线图片搜索应用：在本地建立文件夹或相册索引，然后通过文字或相似图片进行搜索。图片、索引和模型推理均保留在设备本地。
 
