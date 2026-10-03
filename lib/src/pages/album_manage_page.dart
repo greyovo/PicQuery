@@ -47,7 +47,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     }
   }
 
-  Future<void> _deleteAlbum(int albumId) async {
+  Future<void> _deleteAlbum(Album album) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -71,7 +71,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
       ),
     );
     if (confirmed == true && mounted) {
-      await albumManager.deleteAlbums({albumId});
+      await indexingManager.deleteAlbum(album);
     }
   }
 
@@ -148,9 +148,8 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           ],
         ),
         actions: [
-          if (albums.isNotEmpty) 
-            _buildUpdateButton(indexing), 
-          const SizedBox(width: 12)
+          if (albums.isNotEmpty) _buildUpdateButton(indexing),
+          const SizedBox(width: 12),
         ],
       ),
       floatingActionButton: isLoading || albums.isEmpty
@@ -215,7 +214,7 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
                         album: album,
                         indexing: indexing,
                         onOpen: () => _openAlbumLocation(album.albumPath),
-                        onDelete: () => _deleteAlbum(album.id),
+                        onDelete: () => _deleteAlbum(album),
                       );
                     }, childCount: albums.length),
                   );
@@ -243,10 +242,7 @@ class _AlbumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCurrent =
-        indexing.isIndexing &&
-        (indexing.currentAlbum == album.albumPath ||
-            indexing.albumName == album.albumPath);
+    final isCurrent = indexing.isIndexingAlbum(album.albumPath);
     final incomplete = !album.isIndexComplete;
     final updateAvailable = indexing.updateAvailableAlbumPaths.contains(
       album.albumPath,
@@ -263,13 +259,18 @@ class _AlbumCard extends StatelessWidget {
       totalCount: isCurrent ? indexing.total : null,
       imagesPerSecond: isCurrent ? indexing.imagesPerSecond : null,
       onDelete: onDelete,
-      statusLabel: incomplete
+      onPauseIndexing: isCurrent && !indexing.isPausing
+          ? () => indexing.pauseIndexing(context)
+          : null,
+      statusLabel: updateAvailable
+          ? context.l10n.updatesPhotoCount(
+              indexing.pendingUpdateCountForAlbum(album.albumPath),
+            )
+          : incomplete
           ? context.l10n.incompletePhotoCount(
               album.imageCount,
               album.totalImageCount,
             )
-          : updateAvailable
-          ? context.l10n.updatesPhotoCount(album.imageCount)
           : context.l10n.photoCount(album.imageCount),
       isUpdateAvailable: updateAvailable,
       onResumeIndexing: canResume

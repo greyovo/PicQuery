@@ -31,6 +31,7 @@ class AlbumGridCard extends StatelessWidget {
     this.totalCount,
     this.imagesPerSecond,
     this.onDelete,
+    this.onPauseIndexing,
     this.onResumeIndexing,
     this.statusLabel,
     this.isUpdateAvailable = false,
@@ -43,6 +44,7 @@ class AlbumGridCard extends StatelessWidget {
   final int? totalCount;
   final double? imagesPerSecond;
   final VoidCallback? onDelete;
+  final VoidCallback? onPauseIndexing;
   final VoidCallback? onResumeIndexing;
   final String? statusLabel;
   final bool isUpdateAvailable;
@@ -67,6 +69,7 @@ class AlbumGridCard extends StatelessWidget {
           progress: progress,
           onTap: onTap,
           onResumeIndexing: onResumeIndexing,
+          onPauseIndexing: onPauseIndexing,
           isUpdateAvailable: isUpdateAvailable,
         ),
         const SizedBox(height: _detailsGap),
@@ -104,6 +107,7 @@ class _AlbumGridCover extends StatelessWidget {
     required this.progress,
     required this.onTap,
     required this.onResumeIndexing,
+    required this.onPauseIndexing,
     required this.isUpdateAvailable,
   });
 
@@ -111,6 +115,7 @@ class _AlbumGridCover extends StatelessWidget {
   final double? progress;
   final VoidCallback? onTap;
   final VoidCallback? onResumeIndexing;
+  final VoidCallback? onPauseIndexing;
   final bool isUpdateAvailable;
 
   @override
@@ -141,13 +146,28 @@ class _AlbumGridCover extends StatelessWidget {
                 _AlbumHero(path: coverPath),
                 if (progress != null)
                   Center(
-                    child: SizedBox.square(
-                      dimension: _coverProgressSize,
-                      child: CircularProgressIndicator(
-                        value: progress,
-                        strokeWidth: 4,
-                        color: colors.primary,
-                      ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox.square(
+                          dimension: _coverProgressSize,
+                          child: CircularProgressIndicator(
+                            value: progress,
+                            strokeWidth: 4,
+                            color: colors.primary,
+                          ),
+                        ),
+                        IconButton.filled(
+                          onPressed: onPauseIndexing,
+                          tooltip: context.l10n.pauseIndexing,
+                          icon: const Icon(Icons.pause_rounded),
+                          style: IconButton.styleFrom(
+                            minimumSize: const Size.square(_coverActionSize),
+                            maximumSize: const Size.square(_coverActionSize),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 else if (onResumeIndexing != null)

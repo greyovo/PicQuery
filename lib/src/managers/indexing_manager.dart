@@ -31,6 +31,7 @@ class IndexingManager extends ChangeNotifier {
   AlbumUpdateStatus albumUpdateStatus = .idle;
   int pendingUpdateCount = 0;
   Set<String> updateAvailableAlbumPaths = const {};
+  Map<String, int> pendingUpdateCountsByAlbum = const {};
   String? currentPath;
   String? currentAlbum;
 
@@ -39,7 +40,18 @@ class IndexingManager extends ChangeNotifier {
       _navigateToManageTabController.stream;
 
   StreamSubscription<IndexProgress>? _subscription;
+  Set<String> _activeAlbumPaths = const {};
+  bool _isPausing = false;
+  Future<void>? _pauseFuture;
   Timer? _upToDateResetTimer;
+
+  bool get isPausing => _isPausing;
+
+  bool isIndexingAlbum(String albumPath) =>
+      isIndexing && _activeAlbumPaths.contains(albumPath);
+
+  int pendingUpdateCountForAlbum(String albumPath) =>
+      pendingUpdateCountsByAlbum[albumPath] ?? 0;
 
   void start(String albumName, {int alreadyIndexed = 0}) {
     isIndexing = true;
@@ -78,14 +90,36 @@ class IndexingManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void cancel() {
-    _subscription?.cancel();
+  Future<void> pause({bool refreshUpdates = true}) {
+    final ongoingPause = _pauseFuture;
+    if (ongoingPause != null) return ongoingPause;
+    if (!isIndexing) return Future.value();
+
+    final operation = _pauseAndRefresh(refreshUpdates: refreshUpdates);
+    _pauseFuture = operation;
+    return operation.whenComplete(() {
+      if (identical(_pauseFuture, operation)) _pauseFuture = null;
+    });
+  }
+
+  Future<void> _pauseAndRefresh({required bool refreshUpdates}) async {
+    _isPausing = true;
+    notifyListeners();
+
+    final subscription = _subscription;
+    _subscription = null;
+    await subscription?.cancel();
+
     isIndexing = false;
+    _isPausing = false;
+    _activeAlbumPaths = const {};
     albumUpdateStatus = .idle;
     notifyListeners();
-    // The engine finishes its current image and writes its checkpoint after
-    // the stream subscription has been cancelled.
-    Future.delayed(const Duration(milliseconds: 300), albumManager.reload);
+
+    await albumManager.reload();
+    if (refreshUpdates) {
+      await checkForUpdates(showToast: false);
+    }
   }
 
   void reset() {
@@ -98,8 +132,11 @@ class IndexingManager extends ChangeNotifier {
     albumUpdateStatus = .idle;
     pendingUpdateCount = 0;
     updateAvailableAlbumPaths = const {};
+    pendingUpdateCountsByAlbum = const {};
     currentPath = null;
     currentAlbum = null;
+    _activeAlbumPaths = const {};
+    _isPausing = false;
     notifyListeners();
   }
 
@@ -113,6 +150,8 @@ class IndexingManager extends ChangeNotifier {
     void Function(Object error)? onError,
   }) {
     start(displayName, alreadyIndexed: alreadyIndexed);
+    _activeAlbumPaths = {path};
+    notifyListeners();
 
     Stream<IndexProgress> stream;
     if (imagePaths != null) {
@@ -141,10 +180,14 @@ class IndexingManager extends ChangeNotifier {
         }
       },
       onDone: () {
+        _subscription = null;
+        _activeAlbumPaths = const {};
         complete();
         onDone?.call();
       },
       onError: (error) {
+        _subscription = null;
+        _activeAlbumPaths = const {};
         stop();
         onError?.call(error);
       },
@@ -164,12 +207,16 @@ class IndexingManager extends ChangeNotifier {
     _upToDateResetTimer?.cancel();
     albumUpdateStatus = .checking;
     pendingUpdateCount = 0;
+    pendingUpdateCountsByAlbum = const {};
     notifyListeners();
 
     try {
       final results = await api.checkForUpdates();
       var totalNew = results.fold<int>(0, (sum, r) => sum + r.newCount);
       final updatePaths = results.map((r) => r.albumPath).toSet();
+      final updateCounts = {
+        for (final result in results) result.albumPath: result.newCount,
+      };
       // Mobile albums are MediaStore collections, not file-system albums, so
       // the engine's directory scan cannot inspect them. Compare their current
       // asset count here; pressing continue performs the full path-level sync.
@@ -180,11 +227,15 @@ class IndexingManager extends ChangeNotifier {
           if (selection != null &&
               selection.imagePaths!.length != album.imageCount) {
             updatePaths.add(album.albumPath);
-            totalNew += (selection.imagePaths!.length - album.imageCount).abs();
+            final pending = (selection.imagePaths!.length - album.imageCount)
+                .abs();
+            updateCounts[album.albumPath] = pending;
+            totalNew += pending;
           }
         }
       }
       updateAvailableAlbumPaths = updatePaths;
+      pendingUpdateCountsByAlbum = updateCounts;
 
       if (updatePaths.isNotEmpty) {
         albumUpdateStatus = .updateAvailable;
@@ -194,6 +245,7 @@ class IndexingManager extends ChangeNotifier {
         }
       } else {
         updateAvailableAlbumPaths = const {};
+        pendingUpdateCountsByAlbum = const {};
         setIndexingStatusUpToDate();
         if (showToast) {
           if (context != null && context.mounted) {
@@ -204,6 +256,7 @@ class IndexingManager extends ChangeNotifier {
     } catch (e) {
       albumUpdateStatus = .idle;
       updateAvailableAlbumPaths = const {};
+      pendingUpdateCountsByAlbum = const {};
       if (showToast) {
         if (context != null && context.mounted) {
           Toast.showMessage(context.l10n.checkUpdatesFailed(e));
@@ -223,9 +276,13 @@ class IndexingManager extends ChangeNotifier {
     VoidCallback? onDone,
     void Function(Object error)? onError,
   }) {
+    final pathsBeingUpdated = updateAvailableAlbumPaths;
     start('增量更新');
+    _activeAlbumPaths = pathsBeingUpdated;
+    notifyListeners();
     albumUpdateStatus = .idle;
     updateAvailableAlbumPaths = const {};
+    pendingUpdateCountsByAlbum = const {};
 
     final stream = api.indexPendingUpdates();
 
@@ -237,11 +294,15 @@ class IndexingManager extends ChangeNotifier {
         updateProgress(progress.current, progress.total);
       },
       onDone: () {
+        _subscription = null;
+        _activeAlbumPaths = const {};
         setIndexingStatusUpToDate();
         complete();
         onDone?.call();
       },
       onError: (error) {
+        _subscription = null;
+        _activeAlbumPaths = const {};
         albumUpdateStatus = .idle;
         stop();
         onError?.call(error);
@@ -346,12 +407,12 @@ class IndexingManager extends ChangeNotifier {
     );
   }
 
-  Future<void> cancelIndexing(BuildContext context) async {
+  Future<void> pauseIndexing(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(context.l10n.cancelIndexingTitle),
-        content: Text(context.l10n.cancelIndexingMessage),
+        title: Text(context.l10n.pauseIndexingTitle),
+        content: Text(context.l10n.pauseIndexingMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -359,15 +420,26 @@ class IndexingManager extends ChangeNotifier {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.cancel),
+            child: Text(context.l10n.pauseIndexing),
           ),
         ],
       ),
     );
 
     if (confirmed == true) {
-      cancel();
-      albumManager.reload();
+      await pause();
+    }
+  }
+
+  /// Stops an active task touching [album], then removes its persisted index.
+  Future<void> deleteAlbum(Album album) async {
+    if (isIndexingAlbum(album.albumPath)) {
+      await pause(refreshUpdates: false);
+    }
+    await api.deleteAlbum(albumId: album.id);
+    await albumManager.reload();
+    if (!isIndexing) {
+      await checkForUpdates(showToast: false);
     }
   }
 
@@ -375,6 +447,7 @@ class IndexingManager extends ChangeNotifier {
     _upToDateResetTimer?.cancel();
     albumUpdateStatus = .upToDate;
     updateAvailableAlbumPaths = const {};
+    pendingUpdateCountsByAlbum = const {};
     notifyListeners();
     _upToDateResetTimer = Timer(const Duration(seconds: 5), () {
       if (albumUpdateStatus != .upToDate) {

@@ -663,11 +663,16 @@ Stream<IndexProgress> _runStream(
   body,
 ) {
   final cancelled = _CancelFlag();
+  final finished = Completer<void>();
   late final StreamController<IndexProgress> controller;
   controller = StreamController<IndexProgress>(
-    onCancel: () {
+    onCancel: () async {
       cancelled.value = true;
       _log.info('Index stream cancelled by listener.');
+      // Subscription cancellation is also the synchronization barrier used by
+      // pause/delete. Do not let callers mutate the album until the indexing
+      // body has finished its current native inference and DB checkpoint.
+      await finished.future;
     },
   );
 
@@ -679,6 +684,7 @@ Stream<IndexProgress> _runStream(
         controller.addError(e, st);
       }
     } finally {
+      if (!finished.isCompleted) finished.complete();
       await controller.close();
     }
   });

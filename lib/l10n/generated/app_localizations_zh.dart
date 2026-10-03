@@ -117,6 +117,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancelIndexing => '取消索引';
 
   @override
+  String get pauseIndexing => '暂停索引';
+
+  @override
   String get continueIndexing => '继续索引';
 
   @override
@@ -162,6 +165,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cancelIndexingMessage => '确定要取消当前的索引操作吗？已索引的图片将被保留。';
+
+  @override
+  String get pauseIndexingTitle => '暂停索引';
+
+  @override
+  String get pauseIndexingMessage => '确定要暂停当前索引吗？相册和已索引图片会保留，剩余图片可稍后继续索引。';
 
   @override
   String get keepIndexing => '继续索引';
@@ -540,6 +549,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get cancelIndexing => '取消索引';
 
   @override
+  String get pauseIndexing => '暫停索引';
+
+  @override
   String get continueIndexing => '繼續索引';
 
   @override
@@ -585,6 +597,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get cancelIndexingMessage => '確定要取消目前的索引操作嗎？已索引的圖片將被保留。';
+
+  @override
+  String get pauseIndexingTitle => '暫停索引';
+
+  @override
+  String get pauseIndexingMessage => '確定要暫停目前索引嗎？相簿和已索引圖片會保留，剩餘圖片可稍後繼續索引。';
 
   @override
   String get keepIndexing => '繼續索引';

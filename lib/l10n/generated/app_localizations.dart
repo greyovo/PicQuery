@@ -285,6 +285,12 @@ abstract class AppLocalizations {
   /// **'Cancel indexing'**
   String get cancelIndexing;
 
+  /// No description provided for @pauseIndexing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause indexing'**
+  String get pauseIndexing;
+
   /// No description provided for @continueIndexing.
   ///
   /// In en, this message translates to:
@@ -362,6 +368,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel the current indexing operation? Photos already indexed will be kept.'**
   String get cancelIndexingMessage;
+
+  /// No description provided for @pauseIndexingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause indexing'**
+  String get pauseIndexingTitle;
+
+  /// No description provided for @pauseIndexingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause the current indexing operation? The album and photos already indexed will be kept, and remaining photos can be indexed later.'**
+  String get pauseIndexingMessage;
 
   /// No description provided for @keepIndexing.
   ///

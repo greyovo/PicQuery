@@ -121,6 +121,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelIndexing => 'Cancel indexing';
 
   @override
+  String get pauseIndexing => 'Pause indexing';
+
+  @override
   String get continueIndexing => 'Continue indexing';
 
   @override
@@ -169,6 +172,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cancelIndexingMessage =>
       'Cancel the current indexing operation? Photos already indexed will be kept.';
+
+  @override
+  String get pauseIndexingTitle => 'Pause indexing';
+
+  @override
+  String get pauseIndexingMessage =>
+      'Pause the current indexing operation? The album and photos already indexed will be kept, and remaining photos can be indexed later.';
 
   @override
   String get keepIndexing => 'Keep indexing';
