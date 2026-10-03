@@ -16,6 +16,14 @@ PicQuery 是一款离线图片搜索应用：在本地建立文件夹或相册�
 
 从项目的 [GitHub Releases](https://github.com/greyovo/PicQuery/releases) 下载对应平台的安装包。
 
+### macOS
+
+由于应用尚未使用付费 Apple Developer 账户签名和公证，macOS 可能阻止其运行。要允许运行，打开“终端”执行下列命令：
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/PicQuery.app"
+```
+
 ## 从源码构建
 
 需要安装 Git、[Git LFS](https://git-lfs.com/)、[FVM](https://fvm.app/) 和目标平台所需的 Flutter 工具链。仓库使用 `.fvmrc` 指定 Flutter stable；如果不使用 FVM，可将下列命令中的 `fvm flutter` 替换为 `flutter`。

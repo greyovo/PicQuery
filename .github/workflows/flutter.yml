@@ -235,7 +235,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: picquery-macos
-          path: PicQuery-*-macos.zip
+          path: PicQuery-*-macos.dmg
           if-no-files-found: error
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
@@ -303,7 +303,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: picquery-windows
-          path: PicQuery-*-windows-x64.zip
+          path: PicQuery-*-windows-x64-setup.exe
           if-no-files-found: error
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 

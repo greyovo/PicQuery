@@ -16,5 +16,15 @@ if [[ -z "$app_path" ]]; then
   exit 1
 fi
 
-ditto -c -k --sequesterRsrc --keepParent "$app_path" \
-  "PicQuery-$version-macos.zip"
+dmg_staging_dir="$(mktemp -d "${TMPDIR:-/tmp}/picquery-dmg.XXXXXX")"
+trap 'rm -rf "$dmg_staging_dir"' EXIT
+
+ditto "$app_path" "$dmg_staging_dir/$(basename "$app_path")"
+ln -s /Applications "$dmg_staging_dir/Applications"
+
+hdiutil create \
+  -volname "PicQuery" \
+  -srcfolder "$dmg_staging_dir" \
+  -ov \
+  -format UDZO \
+  "PicQuery-$version-macos.dmg"

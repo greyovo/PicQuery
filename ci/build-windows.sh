@@ -10,5 +10,17 @@ flutter build windows --release \
   --build-name="$build_name" \
   --build-number="$build_number"
 
-powershell.exe -NoProfile -Command \
-  "Compress-Archive -Path 'build/windows/x64/runner/Release/*' -DestinationPath 'PicQuery-$version-windows-x64.zip'"
+PICQUERY_VERSION="$version" PICQUERY_FILE_VERSION="$build_name" powershell.exe -NoProfile -Command '
+  $iscc = (Get-Command ISCC.exe -ErrorAction SilentlyContinue).Source
+  if (-not $iscc) {
+    $iscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"
+  }
+  if (-not (Test-Path $iscc)) {
+    throw "Inno Setup 6 was not found. Install it from https://jrsoftware.org/isinfo.php"
+  }
+
+  & $iscc "/DAppVersion=$env:PICQUERY_VERSION" "/DAppFileVersion=$env:PICQUERY_FILE_VERSION" "windows\installer\picquery.iss"
+  if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+  }
+'

@@ -16,6 +16,14 @@ Features include folder and album indexing, Chinese-to-English query translation
 
 Download the package for your platform from [GitHub Releases](https://github.com/greyovo/PicQuery/releases).
 
+### macOS
+
+Because the app is not signed or notarized with a paid Apple Developer account, macOS may prevent it from opening. To allow it, open Terminal and run:
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/PicQuery.app"
+```
+
 ## Build from source
 
 Install Git, [Git LFS](https://git-lfs.com/), [FVM](https://fvm.app/), and the Flutter toolchain required by your target platform. The repository's `.fvmrc` selects Flutter stable. You may replace `fvm flutter` with `flutter` below if you do not use FVM.
