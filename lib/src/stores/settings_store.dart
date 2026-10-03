@@ -10,7 +10,8 @@ class SettingsStore {
   static const String _searchResultLimitKey = 'search_result_limit';
   static const String _recentSearchesKey = 'recent_searches';
   static const String _recentViewedPhotosKey = 'recent_viewed_photos';
-  static const String _androidDcimPromptShownKey = 'android_dcim_prompt_shown';
+  static const String _privacyAgreementAcceptedKey =
+      'privacy_agreement_accepted';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -74,10 +75,10 @@ class SettingsStore {
     await _box.put(_recentViewedPhotosKey, paths);
   }
 
-  static bool getAndroidDcimPromptShown() =>
-      _box.get(_androidDcimPromptShownKey, defaultValue: false) == true;
+  static bool getPrivacyAgreementAccepted() =>
+      _box.get(_privacyAgreementAcceptedKey, defaultValue: false) == true;
 
-  static Future<void> setAndroidDcimPromptShown() async {
-    await _box.put(_androidDcimPromptShownKey, true);
+  static Future<void> acceptPrivacyAgreement() async {
+    await _box.put(_privacyAgreementAcceptedKey, true);
   }
 }

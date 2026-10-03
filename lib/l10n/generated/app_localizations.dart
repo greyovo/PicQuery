@@ -387,29 +387,29 @@ abstract class AppLocalizations {
   /// **'Keep indexing'**
   String get keepIndexing;
 
-  /// No description provided for @indexDcimTitle.
+  /// No description provided for @privacyAgreementTitle.
   ///
   /// In en, this message translates to:
-  /// **'Index the DCIM album?'**
-  String get indexDcimTitle;
+  /// **'欢迎使用图搜'**
+  String get privacyAgreementTitle;
 
-  /// No description provided for @indexDcimMessage.
+  /// No description provided for @privacyAgreementMessage.
   ///
   /// In en, this message translates to:
-  /// **'For your first use, index the phone\'s DCIM album to search photos by content.'**
-  String get indexDcimMessage;
+  /// **'❤️ Thanks for installing PicQuery! During your usage with our application, we follow our PicQuery Privacy Policy.    We may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.'**
+  String get privacyAgreementMessage;
 
-  /// No description provided for @notNow.
+  /// No description provided for @privacyAgreementAgree.
   ///
   /// In en, this message translates to:
-  /// **'Not now'**
-  String get notNow;
+  /// **'Sure'**
+  String get privacyAgreementAgree;
 
-  /// No description provided for @startIndexing.
+  /// No description provided for @privacyAgreementDecline.
   ///
   /// In en, this message translates to:
-  /// **'Start indexing'**
-  String get startIndexing;
+  /// **'Don\'t send'**
+  String get privacyAgreementDecline;
 
   /// No description provided for @searchPhotosTitle.
   ///

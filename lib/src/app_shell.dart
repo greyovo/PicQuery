@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/pages/search_page.dart';
@@ -7,8 +6,6 @@ import 'package:picquery_app/src/pages/album_manage_page.dart';
 import 'package:picquery_app/src/pages/settings_page.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
-import 'package:picquery_app/src/managers/album_manager.dart';
-import 'package:picquery_app/src/stores/settings_store.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:watch_it/watch_it.dart';
@@ -35,38 +32,6 @@ class _AppShellState extends State<AppShell> {
         updateAutomatically: indexing.autoUpdateIndexOnStartup.value,
       ),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_recommendAndroidDcim());
-    });
-  }
-
-  Future<void> _recommendAndroidDcim() async {
-    if (!Platform.isAndroid || SettingsStore.getAndroidDcimPromptShown()) {
-      return;
-    }
-    await SettingsStore.setAndroidDcimPromptShown();
-    await albumManager.reload();
-    if (!mounted || albumManager.albums.value.isNotEmpty) return;
-    final shouldIndex = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.indexDcimTitle),
-        content: Text(context.l10n.indexDcimMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.notNow),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.startIndexing),
-          ),
-        ],
-      ),
-    );
-    if (shouldIndex == true && mounted) {
-      await indexingManager.indexRecommendedAndroidAlbum(context: context);
-    }
   }
 
   double get _indexProgress {
@@ -201,6 +166,7 @@ class _AppShellState extends State<AppShell> {
     );
 
     return ProgressIndicatorTheme(
+      // ignore: deprecated_member_use
       data: ProgressIndicatorThemeData(year2023: false),
       child: scaffold,
     );

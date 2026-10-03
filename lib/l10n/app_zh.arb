@@ -13,7 +13,7 @@
   "alreadyIndexed": "已建立索引", "alreadyIndexedMessage": "这个相册已经建立索引。是否更新？", "indexingError": "索引失败：{error}",
   "albumUnavailableReAdd": "无法访问该相册，请重新添加", "dcimNotFound": "未找到 DCIM 相册或没有可访问的照片",
   "cancelIndexingTitle": "取消索引", "cancelIndexingMessage": "确定要取消当前的索引操作吗？已索引的图片将被保留。", "pauseIndexingTitle": "暂停索引", "pauseIndexingMessage": "确定要暂停当前索引吗？相册和已索引图片会保留，剩余图片可稍后继续索引。", "keepIndexing": "继续索引",
-  "indexDcimTitle": "索引 DCIM 相册？", "indexDcimMessage": "首次使用建议索引手机 DCIM 相册，以便按图片内容搜索。", "notNow": "暂不", "startIndexing": "开始索引",
+  "privacyAgreementTitle": "欢迎使用图搜", "privacyAgreementMessage": "❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。", "privacyAgreementAgree": "好的", "privacyAgreementDecline": "不上报",
   "searchPhotosTitle": "搜索你的图片库", "searchPhotosTitleMobile": "搜索你的照片", "searchPhotosDescription": "用简单的文字或图片寻找回忆。所有搜索均在设备上私密完成。", "searchPhotosDescriptionMobile": "私密、离线的图片搜索",
   "searchPhotosHint": "搜索照片", "searchByImage": "以图搜图", "recentSearches": "最近搜索", "allAlbums": "全部相册", "selectedAlbumsCount": "已选择 {count} 个相册", "searchResultCount": "搜索结果数量", "clearFilters": "清除筛选",
   "searchFailed": "搜索失败：{error}", "imageSearchFailed": "图片搜索失败：{error}", "indexingResultsWarning": "正在索引中，搜索结果可能不完整。", "noMatchesFound": "没有找到匹配结果", "selectImageToSearch": "选择用于搜索的图片",

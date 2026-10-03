@@ -184,17 +184,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepIndexing => 'Keep indexing';
 
   @override
-  String get indexDcimTitle => 'Index the DCIM album?';
+  String get privacyAgreementTitle => '欢迎使用图搜';
 
   @override
-  String get indexDcimMessage =>
-      'For your first use, index the phone\'s DCIM album to search photos by content.';
+  String get privacyAgreementMessage =>
+      '❤️ Thanks for installing PicQuery! During your usage with our application, we follow our PicQuery Privacy Policy.    We may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.';
 
   @override
-  String get notNow => 'Not now';
+  String get privacyAgreementAgree => 'Sure';
 
   @override
-  String get startIndexing => 'Start indexing';
+  String get privacyAgreementDecline => 'Don\'t send';
 
   @override
   String get searchPhotosTitle => 'Search your photo library';

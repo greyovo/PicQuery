@@ -176,16 +176,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get keepIndexing => '继续索引';
 
   @override
-  String get indexDcimTitle => '索引 DCIM 相册？';
+  String get privacyAgreementTitle => '欢迎使用图搜';
 
   @override
-  String get indexDcimMessage => '首次使用建议索引手机 DCIM 相册，以便按图片内容搜索。';
+  String get privacyAgreementMessage =>
+      '❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。';
 
   @override
-  String get notNow => '暂不';
+  String get privacyAgreementAgree => '好的';
 
   @override
-  String get startIndexing => '开始索引';
+  String get privacyAgreementDecline => '不上报';
 
   @override
   String get searchPhotosTitle => '搜索你的图片库';
@@ -636,16 +637,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get keepIndexing => '繼續索引';
 
   @override
-  String get indexDcimTitle => '索引 DCIM 相簿？';
+  String get privacyAgreementTitle => '欢迎使用图搜';
 
   @override
-  String get indexDcimMessage => '首次使用建議索引手機 DCIM 相簿，以便按圖片內容搜尋。';
+  String get privacyAgreementMessage =>
+      '❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。';
 
   @override
-  String get notNow => '暫不';
+  String get privacyAgreementAgree => '好的';
 
   @override
-  String get startIndexing => '開始索引';
+  String get privacyAgreementDecline => '不上报';
 
   @override
   String get searchPhotosTitle => '搜尋你的圖片庫';

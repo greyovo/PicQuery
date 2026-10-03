@@ -15,6 +15,7 @@ import 'package:watch_it/watch_it.dart';
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/utils/app_logger.dart';
 import 'package:picquery_app/src/widgets/desktop_window_frame.dart';
+import 'package:picquery_app/src/widgets/privacy_agreement_gate.dart';
 import 'package:window_manager/window_manager.dart';
 
 final _log = Logger('main');
@@ -92,7 +93,7 @@ class PicQueryApp extends WatchingWidget {
         useMaterial3: true,
         fontFamily: 'Microsoft YaHei',
       ),
-      home: AppShell(),
+      home: const PrivacyAgreementGate(child: AppShell()),
       navigatorObservers: [FlutterSmartDialog.observer],
       builder: (context, child) =>
           DesktopWindowFrame(child: smartDialogBuilder(context, child)),
