@@ -1,4 +1,7 @@
+@file:Suppress("DEPRECATION")
+
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -29,10 +32,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -66,7 +65,7 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         jniLibs {
             pickFirsts += listOf("lib/**/libc++_shared.so")
         }
@@ -85,7 +84,7 @@ android {
         "x86_64" to "x86_64-linux-android",
         "x86" to "i686-linux-android"
     )
-    val cxxLibDir = File(buildDir, "cxx_shared")
+    val cxxLibDir = layout.buildDirectory.dir("cxx_shared").get().asFile
     abiToTriple.forEach { (abi, triple) ->
         val src = File(
             ndkDir, "toolchains/llvm/prebuilt/$hostTag/sysroot/usr/lib/$triple/libc++_shared.so"
@@ -99,10 +98,16 @@ android {
 
     sourceSets {
         getByName("main") {
-            jniLibs.srcDir(cxxLibDir)
+            jniLibs.directories.add(cxxLibDir.absolutePath)
         }
     }
 
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
 }
 
 flutter {

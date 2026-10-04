@@ -12,15 +12,15 @@ Future<List<SearchResult>?> pickImageAndSearch(
   int limit = 50,
   int? modifiedAfter,
 }) async {
-  final result = await FilePicker.platform.pickFiles(
+  final file = await FilePicker.pickFile(
     type: FileType.custom,
     allowedExtensions: ['jpg', 'jpeg', 'png', 'webp', 'bmp'],
     dialogTitle: context.l10n.selectImageToSearch,
   );
 
-  if (result == null || result.files.isEmpty) return null;
+  if (file == null) return null;
 
-  final filePath = result.files.single.path;
+  final filePath = file.path;
   if (filePath == null) return null;
 
   return searchByImageWithFilters(

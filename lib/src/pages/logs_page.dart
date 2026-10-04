@@ -55,12 +55,14 @@ class _LogsPageState extends State<LogsPage> {
         }
         if (!mounted) return;
         final box = context.findRenderObject() as RenderBox?;
-        await Share.shareXFiles(
-          files.map((file) => XFile(file.path)).toList(),
-          subject: context.l10n.logExportSubject,
-          sharePositionOrigin: box == null
-              ? null
-              : box.localToGlobal(Offset.zero) & box.size,
+        await SharePlus.instance.share(
+          ShareParams(
+            files: files.map((file) => XFile(file.path)).toList(),
+            subject: context.l10n.logExportSubject,
+            sharePositionOrigin: box == null
+                ? null
+                : box.localToGlobal(Offset.zero) & box.size,
+          ),
         );
       } else {
         await logger.flush();

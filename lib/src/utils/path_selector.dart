@@ -142,7 +142,7 @@ Future<PathSelectionResult?> _albumToSelection(
 }
 
 Future<PathSelectionResult?> _pickAlbumOnDesktop(BuildContext context) async {
-  final result = await FilePicker.platform.getDirectoryPath(
+  final result = await FilePicker.getDirectoryPath(
     dialogTitle: context.l10n.selectAlbumToIndex,
   );
 

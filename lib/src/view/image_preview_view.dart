@@ -73,7 +73,9 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
     try {
       final file = File(_currentResult.filePath);
       if (await file.exists()) {
-        await Share.shareXFiles([XFile(_currentResult.filePath)]);
+        await SharePlus.instance.share(
+          ShareParams(files: [XFile(_currentResult.filePath)]),
+        );
       } else {
         _showError(strings.fileNotFound);
       }
