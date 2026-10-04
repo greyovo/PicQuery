@@ -163,5 +163,10 @@
   "loadLogsFailed": "Could not load logs: {error}",
   "@loadLogsFailed": {"placeholders": {"error": {}}},
   "exportLogsFailed": "Could not export logs: {error}",
-  "@exportLogsFailed": {"placeholders": {"error": {}}}
+  "@exportLogsFailed": {"placeholders": {"error": {}}},
+  "dropFolderRequired": "Please drop a folder",
+  "dropFolderRequiredMessage": "Adding an album requires a folder. Please drag a single folder instead of a file.",
+  "dropFolderNoImagesMessage": "This folder and its subfolders contain no supported images (JPG, JPEG, PNG, WebP or BMP).",
+  "dragFolderIndexHint": "Drag a folder here to quickly index an album.",
+  "selectOrDropFolder": "Select or drop a folder"
 }

@@ -31,6 +31,10 @@ Future<void> loadClipModels({
   force: force,
 );
 
+/// Whether a folder or its subfolders contain supported image files.
+Future<bool> hasIndexableImages({required String albumPath}) =>
+    indexer.hasIndexableImages(albumPath);
+
 /// Index all supported images in a album (recursively).
 /// When [isUpdate] is true, skips already-indexed files and removes deleted
 /// file records.

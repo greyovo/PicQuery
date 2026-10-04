@@ -11,6 +11,7 @@ import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/album_grid_card.dart';
 import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
+import 'package:picquery_app/src/widgets/desktop_folder_drop_hint.dart';
 import 'package:watch_it/watch_it.dart';
 
 const _albumGridPadding = EdgeInsets.fromLTRB(12, 8, 12, 112);
@@ -125,6 +126,9 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     );
 
     return Scaffold(
+      bottomNavigationBar: isDesktop && albums.isNotEmpty
+          ? const DesktopFolderDropHint()
+          : null,
       appBar: AppBar(
         toolbarHeight: 88,
         titleSpacing: 20,

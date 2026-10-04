@@ -73,6 +73,10 @@ void _scanImagesRecursive(Directory dir, List<String> images) {
   }
 }
 
+/// Checks a dropped folder using the same recursive scan as indexing.
+Future<bool> hasIndexableImages(String albumPath) =>
+    Isolate.run(() => _scanImages(albumPath).isNotEmpty);
+
 /// Scans all indexed albums away from the UI isolate.
 ///
 /// Update checks can walk a large directory tree. Keeping synchronous file

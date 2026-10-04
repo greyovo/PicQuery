@@ -14,6 +14,7 @@ import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/view/album_selector_view.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
+import 'package:picquery_app/src/widgets/desktop_folder_drop_hint.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';
 import 'package:picquery_app/src/widgets/search_filter_button.dart';
 import 'package:watch_it/watch_it.dart';
@@ -162,6 +163,9 @@ class _SearchPageState extends State<SearchPage> {
     final selectedAlbumNames = _selectedAlbumNames(albums, selectedIds);
 
     return Scaffold(
+      bottomNavigationBar: isDesktop && albums.isNotEmpty
+          ? const DesktopFolderDropHint()
+          : null,
       resizeToAvoidBottomInset: false,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

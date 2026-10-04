@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:picquery_app/src/utils/adaptive_display.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
@@ -32,7 +33,9 @@ class EmptyAlbumsGuide extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             Text(
-              context.l10n.buildPhotoLibrary,
+              isDesktop
+                  ? context.l10n.selectOrDropFolder
+                  : context.l10n.buildPhotoLibrary,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),

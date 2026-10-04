@@ -43,6 +43,7 @@ class IndexingManager extends ChangeNotifier {
   StreamSubscription<IndexProgress>? _subscription;
   Set<String> _activeAlbumPaths = const {};
   bool _isPausing = false;
+  bool _isAddingAlbum = false;
   Future<void>? _pauseFuture;
   Timer? _upToDateResetTimer;
 
@@ -338,10 +339,39 @@ class IndexingManager extends ChangeNotifier {
   }
 
   Future<void> pickAndIndexAlbum(BuildContext context) async {
-    final result = await pickIndexPathToIndex(context);
+    if (isIndexing || _isAddingAlbum) return;
+    _isAddingAlbum = true;
+    try {
+      final result = await pickIndexPathToIndex(context);
+      if (result == null || !context.mounted) return;
+      await _indexSelectedAlbum(context, result);
+    } finally {
+      _isAddingAlbum = false;
+    }
+  }
 
-    if (result == null || !context.mounted) return;
+  Future<void> indexDroppedAlbum(
+    BuildContext context,
+    PathSelectionResult selection,
+  ) async {
+    if (_isAddingAlbum) return;
+    if (isIndexing) {
+      Toast.showMessage(context.l10n.addAlbumWhileIndexing);
+      return;
+    }
+    _isAddingAlbum = true;
+    try {
+      await _indexSelectedAlbum(context, selection);
+    } finally {
+      _isAddingAlbum = false;
+    }
+  }
 
+  Future<void> _indexSelectedAlbum(
+    BuildContext context,
+    PathSelectionResult result,
+  ) async {
+    if (!context.mounted || isIndexing) return;
     final albums = albumManager.albums.value;
     final existingAlbum = albums
         .where((f) => f.albumPath == result.path)
@@ -370,6 +400,7 @@ class IndexingManager extends ChangeNotifier {
       if (confirmed != true || !context.mounted) return;
     }
 
+    if (isIndexing) return;
     _navigateToManageTabController.add(null);
 
     startIndexing(

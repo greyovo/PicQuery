@@ -1,4 +1,6 @@
 PODS:
+  - desktop_drop (0.0.1):
+    - FlutterMacOS
   - file_picker_darwin (1.0.0):
     - Flutter
     - FlutterMacOS
@@ -26,6 +28,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - desktop_drop (from `Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos`)
   - file_picker_darwin (from `Flutter/ephemeral/.symlinks/plugins/file_picker_darwin/darwin`)
   - flutter_onnxruntime (from `Flutter/ephemeral/.symlinks/plugins/flutter_onnxruntime/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -42,6 +45,8 @@ SPEC REPOS:
     - onnxruntime-objc
 
 EXTERNAL SOURCES:
+  desktop_drop:
+    :path: Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos
   file_picker_darwin:
     :path: Flutter/ephemeral/.symlinks/plugins/file_picker_darwin/darwin
   flutter_onnxruntime:
@@ -62,6 +67,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
+  desktop_drop: 10a3e6a7fa9dbe350541f2574092fecfa345a07b
   file_picker_darwin: 4c2b9a50ea44cb3b071381ea0cf48591bdd80251
   flutter_onnxruntime: d570120dc629019ed214b5bbebad37cce61e140c
   FlutterMacOS: c232990155153907050900a2e175c7773903ba4e

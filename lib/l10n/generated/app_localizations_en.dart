@@ -495,4 +495,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String exportLogsFailed(Object error) {
     return 'Could not export logs: $error';
   }
+
+  @override
+  String get dropFolderRequired => 'Please drop a folder';
+
+  @override
+  String get dropFolderRequiredMessage =>
+      'Adding an album requires a folder. Please drag a single folder instead of a file.';
+
+  @override
+  String get dropFolderNoImagesMessage =>
+      'This folder and its subfolders contain no supported images (JPG, JPEG, PNG, WebP or BMP).';
+
+  @override
+  String get dragFolderIndexHint =>
+      'Drag a folder here to quickly index an album.';
+
+  @override
+  String get selectOrDropFolder => 'Select or drop a folder';
 }

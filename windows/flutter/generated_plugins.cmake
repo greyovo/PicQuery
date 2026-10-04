@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_drop
   flutter_onnxruntime
   screen_retriever_windows
   share_plus

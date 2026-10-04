@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/pages/search_page.dart';
+import 'package:picquery_app/src/widgets/desktop_album_drop_target.dart';
 import 'package:picquery_app/src/pages/album_manage_page.dart';
 import 'package:picquery_app/src/pages/settings_page.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
@@ -168,7 +169,13 @@ class _AppShellState extends State<AppShell> {
     return ProgressIndicatorTheme(
       // ignore: deprecated_member_use
       data: ProgressIndicatorThemeData(year2023: false),
-      child: scaffold,
+      child: isDesktop
+          ? DesktopAlbumDropTarget(
+              onFolderDropped: (selection) =>
+                  indexing.indexDroppedAlbum(context, selection),
+              child: scaffold,
+            )
+          : scaffold,
     );
   }
 }

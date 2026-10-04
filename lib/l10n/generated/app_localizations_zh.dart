@@ -481,6 +481,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String exportLogsFailed(Object error) {
     return '导出日志失败：$error';
   }
+
+  @override
+  String get dropFolderRequired => '请拖入文件夹';
+
+  @override
+  String get dropFolderRequiredMessage => '添加相册需要一个文件夹，请拖入单个文件夹，而不是文件。';
+
+  @override
+  String get dropFolderNoImagesMessage =>
+      '此文件夹及其子文件夹中没有支持的图片（JPG、JPEG、PNG、WebP 或 BMP）。';
+
+  @override
+  String get dragFolderIndexHint => '可直接拖入文件夹快速索引相册';
+
+  @override
+  String get selectOrDropFolder => '选择或拖入文件夹';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -959,4 +975,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String exportLogsFailed(Object error) {
     return '匯出日誌失敗：$error';
   }
+
+  @override
+  String get dropFolderRequired => '請拖入資料夾';
+
+  @override
+  String get dropFolderRequiredMessage => '新增相簿需要一個資料夾，請拖入單個資料夾，而不是檔案。';
+
+  @override
+  String get dropFolderNoImagesMessage =>
+      '此資料夾及其子資料夾中沒有支援的圖片（JPG、JPEG、PNG、WebP 或 BMP）。';
+
+  @override
+  String get dragFolderIndexHint => '可直接拖入資料夾快速索引相簿';
+
+  @override
+  String get selectOrDropFolder => '選擇或拖入資料夾';
 }

@@ -30,5 +30,10 @@
   "timeAny": "不限時間", "timeDay": "過去一天", "timeWeek": "過去一週", "timeMonth": "過去一個月", "timeYear": "過去一年",
   "addAlbumWhileIndexing": "索引圖片中，請稍後再新增相簿",
   "logs": "日誌", "viewLogs": "查看日誌", "exportLogs": "匯出日誌", "refresh": "重新整理", "noLogs": "暫無日誌", "logExportSubject": "PicQuery 日誌",
-  "loadLogsFailed": "載入日誌失敗：{error}", "exportLogsFailed": "匯出日誌失敗：{error}"
+  "loadLogsFailed": "載入日誌失敗：{error}", "exportLogsFailed": "匯出日誌失敗：{error}",
+  "dropFolderRequired": "請拖入資料夾",
+  "dropFolderRequiredMessage": "新增相簿需要一個資料夾，請拖入單個資料夾，而不是檔案。",
+  "dropFolderNoImagesMessage": "此資料夾及其子資料夾中沒有支援的圖片（JPG、JPEG、PNG、WebP 或 BMP）。",
+  "dragFolderIndexHint": "可直接拖入資料夾快速索引相簿",
+  "selectOrDropFolder": "選擇或拖入資料夾"
 }

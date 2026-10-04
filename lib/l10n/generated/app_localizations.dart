@@ -962,6 +962,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not export logs: {error}'**
   String exportLogsFailed(Object error);
+
+  /// No description provided for @dropFolderRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please drop a folder'**
+  String get dropFolderRequired;
+
+  /// No description provided for @dropFolderRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding an album requires a folder. Please drag a single folder instead of a file.'**
+  String get dropFolderRequiredMessage;
+
+  /// No description provided for @dropFolderNoImagesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder and its subfolders contain no supported images (JPG, JPEG, PNG, WebP or BMP).'**
+  String get dropFolderNoImagesMessage;
+
+  /// No description provided for @dragFolderIndexHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag a folder here to quickly index an album.'**
+  String get dragFolderIndexHint;
+
+  /// No description provided for @selectOrDropFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Select or drop a folder'**
+  String get selectOrDropFolder;
 }
 
 class _AppLocalizationsDelegate
