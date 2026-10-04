@@ -107,6 +107,14 @@ class AppLogger with WidgetsBindingObserver {
     return sections.join('\n');
   }
 
+  Future<void> clearLogs() async {
+    await flush();
+    final files = await _listLogFiles();
+    for (final file in files) {
+      if (await file.exists()) await file.delete();
+    }
+  }
+
   Future<List<File>> _listLogFiles() async {
     if (!await _logDirectory.exists()) return [];
     return _logDirectory

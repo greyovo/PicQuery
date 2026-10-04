@@ -159,6 +159,9 @@ class _CancelFlag {
   bool value = false;
 }
 
+String _formatMilliseconds(Duration duration) =>
+    (duration.inMicroseconds / 1000).toStringAsFixed(1);
+
 /// Send a progress event; returns false when the subscription was cancelled
 /// (mirrors the Rust send_progress sink-closed check).
 bool _send(
@@ -223,6 +226,11 @@ Future<bool> _indexPendingImages(
 
   var completed = 0;
   var errorsCount = 0;
+  var timedImages = 0;
+  var totalImageTimeUs = 0;
+  var minImageTimeUs = 0;
+  var maxImageTimeUs = 0;
+  var lastLoggedProgressBucket = -1;
   final batch = <_EncodedImage>[];
 
   Future<bool> flushBatch() async {
@@ -278,14 +286,51 @@ Future<bool> _indexPendingImages(
         );
       }
 
+      final encodeWatch = Stopwatch()..start();
       final embedding = await OrtEngine.instance.encodeImage(
         preprocessed.tensor,
       );
+      final encodeElapsed = encodeWatch.elapsed;
       encoded = (
         embedding: embedding,
         width: preprocessed.width,
         height: preprocessed.height,
       );
+
+      final imageTimeUs =
+          preprocessed.timings.total.inMicroseconds +
+          encodeElapsed.inMicroseconds;
+      timedImages++;
+      totalImageTimeUs += imageTimeUs;
+      if (timedImages == 1 || imageTimeUs < minImageTimeUs) {
+        minImageTimeUs = imageTimeUs;
+      }
+      if (imageTimeUs > maxImageTimeUs) maxImageTimeUs = imageTimeUs;
+
+      final processed = index + 1;
+      final progressBucket = processed * 10 ~/ totalPending;
+      final shouldLog =
+          index == 0 ||
+          processed == totalPending ||
+          progressBucket > lastLoggedProgressBucket;
+      if (shouldLog) {
+        lastLoggedProgressBucket = progressBucket;
+        final averageUs = totalImageTimeUs ~/ timedImages;
+        _log.info(
+          'Index timing: photo=$processed/$totalPending '
+          'progress=${(processed * 100 / totalPending).toStringAsFixed(1)}% '
+          'path=${img.pathStr} '
+          'preprocess(read+header=${_formatMilliseconds(preprocessed.timings.readAndHeader)}ms, '
+          'decode=${_formatMilliseconds(preprocessed.timings.decode)}ms, '
+          'crop=${_formatMilliseconds(preprocessed.timings.crop)}ms, '
+          'tensor=${_formatMilliseconds(preprocessed.timings.tensor)}ms, '
+          'total=${_formatMilliseconds(preprocessed.timings.total)}ms) '
+          'encode=${_formatMilliseconds(encodeElapsed)}ms '
+          'image(avg=${_formatMilliseconds(Duration(microseconds: averageUs))}ms, '
+          'max=${_formatMilliseconds(Duration(microseconds: maxImageTimeUs))}ms, '
+          'min=${_formatMilliseconds(Duration(microseconds: minImageTimeUs))}ms)',
+        );
+      }
     } catch (_) {
       _log.severe('Failed to encode image.');
       errorsCount++;

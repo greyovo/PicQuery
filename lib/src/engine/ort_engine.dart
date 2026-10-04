@@ -221,16 +221,12 @@ class OrtEngine {
       throw StateError('Models not initialized. Call loadClipModels() first.');
     }
     final inputName = session.inputNames.first;
-    final sw = Stopwatch()..start();
     final input = await _visualInput(tensor);
-    final createMs = sw.elapsedMilliseconds;
     Map<String, OrtValue> outputs;
     try {
       outputs = await session.run({inputName: input});
-      final runMs = sw.elapsedMilliseconds - createMs;
       try {
         final flat = await outputs.values.first.asFlattenedList();
-        final extractMs = sw.elapsedMilliseconds - createMs - runMs;
         final embedding = Float32List.fromList(
           flat.map((e) => (e as num).toDouble()).toList(),
         );
@@ -240,9 +236,6 @@ class OrtEngine {
           );
         }
         final result = l2Normalize(embedding);
-        _log.fine(
-          'Visual inference: create=${createMs}ms run=${runMs}ms extract=${extractMs}ms.',
-        );
         return result;
       } finally {
         for (final v in outputs.values) {

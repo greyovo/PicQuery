@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,28 +22,63 @@ import 'package:window_manager/window_manager.dart';
 
 final _log = Logger('main');
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await _configureDesktopWindow();
-  await configureLogging();
-  await SettingsStore.init();
-  configureDependencies();
+void main() async {
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await configureLogging();
+      _installGlobalErrorHandlers();
+      _log.info(">>>>>>>>>>>>>>>>>>>>>");
+      _log.info(">>>> App started >>>>");
+      _log.info(">>>>>>>>>>>>>>>>>>>>>");
 
-  try {
-    await _initDatabase();
-  } catch (_) {
-    _log.severe('Database initialization failed.');
-  }
+      await _configureDesktopWindow();
+      await SettingsStore.init();
+      configureDependencies();
 
-  initClipModels().catchError((_) {
-    _log.severe('CLIP model initialization failed.');
-  });
+      try {
+        await _initDatabase();
+      } catch (error, stackTrace) {
+        _log.severe('Database initialization failed.', error, stackTrace);
+      }
 
-  initTranslationModel().catchError((_) {
-    _log.severe('Translation model initialization failed.');
-  });
+      initClipModels().catchError((Object error, StackTrace stackTrace) {
+        _log.severe('CLIP model initialization failed.', error, stackTrace);
+      });
 
-  runApp(PicQueryApp());
+      initTranslationModel().catchError((Object error, StackTrace stackTrace) {
+        _log.severe(
+          'Translation model initialization failed.',
+          error,
+          stackTrace,
+        );
+      });
+
+      runApp(PicQueryApp());
+    },
+    (error, stackTrace) {
+      _log.severe('Unhandled asynchronous error.', error, stackTrace);
+      unawaited(AppLogger.instance.flush());
+    },
+  );
+}
+
+void _installGlobalErrorHandlers() {
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    _log.severe(
+      'Unhandled Flutter framework error.',
+      details.exception,
+      details.stack,
+    );
+    unawaited(AppLogger.instance.flush());
+  };
+
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    _log.severe('Unhandled platform error.', error, stackTrace);
+    unawaited(AppLogger.instance.flush());
+    return true;
+  };
 }
 
 Future<void> _configureDesktopWindow() async {

@@ -7,12 +7,26 @@ import 'dart:isolate';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('engine.preprocess');
 
 const int kResizeDim = 256;
 const int kTensorSize = 3 * kResizeDim * kResizeDim;
+
+/// Wall-clock timings for the stages of one image preprocessing operation.
+final class ImagePreprocessTimings {
+  const ImagePreprocessTimings({
+    required this.readAndHeader,
+    required this.decode,
+    required this.crop,
+    required this.tensor,
+    required this.total,
+  });
+
+  final Duration readAndHeader;
+  final Duration decode;
+  final Duration crop;
+  final Duration tensor;
+  final Duration total;
+}
 
 /// Tensor and source dimensions produced by one decode.
 final class PreprocessedImage {
@@ -20,11 +34,13 @@ final class PreprocessedImage {
     required this.tensor,
     required this.width,
     required this.height,
+    required this.timings,
   });
 
   final Float32List tensor;
   final int width;
   final int height;
+  final ImagePreprocessTimings timings;
 }
 
 /// A persistent isolate keeps CHW conversion off the UI isolate. It receives
@@ -107,7 +123,7 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
   final descriptor = await ui.ImageDescriptor.encoded(buffer);
   final width = descriptor.width;
   final height = descriptor.height;
-  final headerMs = total.elapsedMilliseconds;
+  final readAndHeader = total.elapsed;
 
   ui.Codec? codec;
   ui.Image? image;
@@ -123,7 +139,7 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
     );
     final frame = await codec.getNextFrame();
     image = frame.image;
-    final decodeMs = decode.elapsedMilliseconds;
+    final decodeElapsed = decode.elapsed;
 
     if (image.width < kResizeDim || image.height < kResizeDim) {
       throw FormatException('Decoded image is smaller than $kResizeDim pixels');
@@ -149,16 +165,23 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
         from,
       );
     }
-    final cropMs = crop.elapsedMilliseconds;
+    final cropElapsed = crop.elapsed;
 
     final tensorWatch = Stopwatch()..start();
     final tensor = await _TensorWorker.instance.process(cropped);
-    final tensorMs = tensorWatch.elapsedMilliseconds;
-    _log.fine(
-      'Image preprocessing: format=${imagePath.split(".").lastOrNull} size=${buffer.length}(bytes) read+header=${headerMs}ms decode=${decodeMs}ms crop=${cropMs}ms '
-      'tensor=${tensorMs}ms total=${total.elapsedMilliseconds}ms',
+    final tensorElapsed = tensorWatch.elapsed;
+    return PreprocessedImage(
+      tensor: tensor,
+      width: width,
+      height: height,
+      timings: ImagePreprocessTimings(
+        readAndHeader: readAndHeader,
+        decode: decodeElapsed,
+        crop: cropElapsed,
+        tensor: tensorElapsed,
+        total: total.elapsed,
+      ),
     );
-    return PreprocessedImage(tensor: tensor, width: width, height: height);
   } finally {
     image?.dispose();
     codec?.dispose();
