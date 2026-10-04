@@ -10,6 +10,11 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String pausedPhotoCount(int current, int total) {
+    return 'Paused · $current/$total photos';
+  }
+
+  @override
   String get appTitle => 'PicQuery';
 
   @override

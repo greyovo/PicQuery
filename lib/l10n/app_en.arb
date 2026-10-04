@@ -1,4 +1,6 @@
 {
+  "pausedPhotoCount": "Paused · {current}/{total} photos",
+  "@pausedPhotoCount": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
   "@@locale": "en",
   "appTitle": "PicQuery",
   "search": "Search",

@@ -27,6 +27,8 @@ class IndexingManager extends ChangeNotifier {
   int current = 0;
   int total = 0;
   int alreadyIndexed = 0;
+  int _speedBaseline = 0;
+  final Set<String> _pausedAlbumPaths = {};
 
   AlbumUpdateStatus albumUpdateStatus = .idle;
   int pendingUpdateCount = 0;
@@ -55,6 +57,8 @@ class IndexingManager extends ChangeNotifier {
   int pendingUpdateCountForAlbum(String albumPath) =>
       pendingUpdateCountsByAlbum[albumPath] ?? 0;
 
+  bool isAlbumPaused(String albumPath) => _pausedAlbumPaths.contains(albumPath);
+
   Object? errorForAlbum(String albumPath) => _errorsByAlbum[albumPath];
 
   void start(String albumName, {int alreadyIndexed = 0}) {
@@ -62,6 +66,7 @@ class IndexingManager extends ChangeNotifier {
     startTime = DateTime.now();
     this.albumName = albumName;
     this.alreadyIndexed = alreadyIndexed;
+    _speedBaseline = alreadyIndexed;
     current = 0;
     total = 0;
     currentPath = null;
@@ -81,7 +86,7 @@ class IndexingManager extends ChangeNotifier {
     final elapsedSeconds =
         DateTime.now().difference(startedAt).inMilliseconds / 1000;
     if (elapsedSeconds <= 0) return 0;
-    return current / elapsedSeconds;
+    return (current - _speedBaseline).clamp(0, current) / elapsedSeconds;
   }
 
   void complete() {
@@ -110,6 +115,7 @@ class IndexingManager extends ChangeNotifier {
     _isPausing = true;
     notifyListeners();
 
+    _pausedAlbumPaths.addAll(_activeAlbumPaths);
     final subscription = _subscription;
     _subscription = null;
     await subscription?.cancel();
@@ -133,6 +139,8 @@ class IndexingManager extends ChangeNotifier {
     current = 0;
     total = 0;
     alreadyIndexed = 0;
+    _speedBaseline = 0;
+    _pausedAlbumPaths.clear();
     albumUpdateStatus = .idle;
     pendingUpdateCount = 0;
     updateAvailableAlbumPaths = const {};
@@ -156,6 +164,7 @@ class IndexingManager extends ChangeNotifier {
   }) {
     start(displayName, alreadyIndexed: alreadyIndexed);
     _activeAlbumPaths = {path};
+    _pausedAlbumPaths.remove(path);
     _errorsByAlbum.remove(path);
     notifyListeners();
 
@@ -177,6 +186,10 @@ class IndexingManager extends ChangeNotifier {
       (progress) {
         currentPath = progress.currentPath;
         currentAlbum = progress.currentAlbum;
+        // The first event includes images indexed before this run.
+        if (!hasReloadedAlbums) {
+          _speedBaseline = progress.current;
+        }
         updateProgress(progress.current, progress.total);
         // A new album record is created before the first progress event. Reload
         // once so its card can show the in-place indexing state immediately.
@@ -288,6 +301,7 @@ class IndexingManager extends ChangeNotifier {
     final pathsBeingUpdated = updateAvailableAlbumPaths;
     start('增量更新');
     _activeAlbumPaths = pathsBeingUpdated;
+    _pausedAlbumPaths.removeAll(pathsBeingUpdated);
     for (final path in pathsBeingUpdated) {
       _errorsByAlbum.remove(path);
     }
@@ -466,29 +480,7 @@ class IndexingManager extends ChangeNotifier {
     );
   }
 
-  Future<void> pauseIndexing(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.pauseIndexingTitle),
-        content: Text(context.l10n.pauseIndexingMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.keepIndexing),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.pauseIndexing),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await pause();
-    }
-  }
+  Future<void> pauseIndexing(BuildContext context) => pause();
 
   /// Stops an active task touching [album], then removes its persisted index.
   Future<void> deleteAlbum(Album album) async {
@@ -497,6 +489,7 @@ class IndexingManager extends ChangeNotifier {
     }
     await api.deleteAlbum(albumId: album.id);
     _errorsByAlbum.remove(album.albumPath);
+    _pausedAlbumPaths.remove(album.albumPath);
     await albumManager.reload();
     if (!isIndexing) {
       await checkForUpdates(showToast: false);

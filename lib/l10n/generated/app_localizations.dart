@@ -99,6 +99,12 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
+  /// No description provided for @pausedPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · {current}/{total} photos'**
+  String pausedPhotoCount(int current, int total);
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:

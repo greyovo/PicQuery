@@ -253,10 +253,11 @@ class _AlbumCard extends StatelessWidget {
     final isCurrent = indexing.isIndexingAlbum(album.albumPath);
     final incomplete = !album.isIndexComplete;
     final hasIndexingError = indexing.errorForAlbum(album.albumPath) != null;
-    final updateAvailable = indexing.updateAvailableAlbumPaths.contains(
-      album.albumPath,
-    );
-    final canResume = !indexing.isIndexing && (incomplete || updateAvailable);
+    final paused = indexing.isAlbumPaused(album.albumPath);
+    final updateAvailable =
+        !paused && indexing.updateAvailableAlbumPaths.contains(album.albumPath);
+    final canResume =
+        !indexing.isIndexing && (paused || incomplete || updateAvailable);
 
     return AlbumGridCard(
       album: album,
@@ -276,6 +277,11 @@ class _AlbumCard extends StatelessWidget {
               album.imageCount,
               album.totalImageCount,
             )
+          : paused
+          ? context.l10n.pausedPhotoCount(
+              album.imageCount,
+              album.totalImageCount,
+            )
           : updateAvailable
           ? context.l10n.updatesPhotoCount(
               indexing.pendingUpdateCountForAlbum(album.albumPath),
@@ -289,7 +295,7 @@ class _AlbumCard extends StatelessWidget {
       isUpdateAvailable: updateAvailable,
       hasIndexingError: hasIndexingError,
       onResumeIndexing: canResume
-          ? () => incomplete || isMobile
+          ? () => paused || incomplete || isMobile
                 ? indexing.continueIndexing(album, context: context)
                 : indexing.startUpdateIndexing(
                     onDone: () => albumManager.reload(),

@@ -10,6 +10,11 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String pausedPhotoCount(int current, int total) {
+    return '已暂停 · $current/$total 张';
+  }
+
+  @override
   String get appTitle => 'PicQuery';
 
   @override
@@ -93,12 +98,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String updatesPhotoCount(int count) {
-    return '有更新 · $count 张照片';
+    return '有更新 · $count 张';
   }
 
   @override
   String photoCount(int count) {
-    return '$count 张照片';
+    return '$count 张';
   }
 
   @override
@@ -504,6 +509,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
 
   @override
+  String pausedPhotoCount(int current, int total) {
+    return '已暫停 · $current/$total 張';
+  }
+
+  @override
   String get appTitle => 'PicQuery';
 
   @override
@@ -587,12 +597,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String updatesPhotoCount(int count) {
-    return '有更新 · $count 張照片';
+    return '有更新 · $count 張';
   }
 
   @override
   String photoCount(int count) {
-    return '$count 張照片';
+    return '$count 張';
   }
 
   @override
