@@ -230,7 +230,7 @@ class _AlbumGridDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, top: 4),
+      padding: const EdgeInsets.only(left: 6, top: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -348,11 +348,12 @@ class _AlbumActionsMenu extends StatelessWidget {
         onPressed: () =>
             controller.isOpen ? controller.close() : controller.open(),
         tooltip: context.l10n.albumActions,
-        icon: const Icon(Icons.more_vert, size: 16),
+        icon: const Icon(Icons.more_vert, size: 18),
         style: IconButton.styleFrom(
           minimumSize: const Size.square(_menuButtonSize),
           maximumSize: const Size.square(_menuButtonSize),
           padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       items: [

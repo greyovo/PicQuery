@@ -79,9 +79,9 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     if (indexing.albumUpdateStatus == AlbumUpdateStatus.checking) {
       return IconButton(
         onPressed: null,
-        icon: const SizedBox.square(
-          dimension: 16,
-          child: CircularProgressIndicator(strokeWidth: 2),
+        icon: SizedBox.square(
+          dimension: isMobile ? 24 : 16,
+          child: const CircularProgressIndicator(strokeWidth: 2),
         ),
         tooltip: context.l10n.checking,
       );
