@@ -78,6 +78,7 @@ jobs:
     name: Build release assets
     needs: validate
     uses: ./.github/workflows/flutter.yml
+    secrets: inherit
     with:
       version: ${{ inputs.tag }}
       build-number: ${{ needs.validate.outputs.build_number }}
