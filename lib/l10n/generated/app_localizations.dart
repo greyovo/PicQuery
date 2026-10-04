@@ -237,6 +237,12 @@ abstract class AppLocalizations {
   /// **'Incomplete · {current}/{total} photos'**
   String incompletePhotoCount(int current, int total);
 
+  /// No description provided for @indexingFailedPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Indexing failed · {current}/{total} photos'**
+  String indexingFailedPhotoCount(int current, int total);
+
   /// No description provided for @updatesPhotoCount.
   ///
   /// In en, this message translates to:

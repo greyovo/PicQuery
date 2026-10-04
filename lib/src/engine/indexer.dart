@@ -157,6 +157,7 @@ List<_AlbumUpdatePending>? _pendingUpdates;
 /// callback and the indexing body.
 class _CancelFlag {
   bool value = false;
+  bool failed = false;
 }
 
 String _formatMilliseconds(Duration duration) =>
@@ -233,8 +234,8 @@ Future<bool> _indexPendingImages(
   var lastLoggedProgressBucket = -1;
   final batch = <_EncodedImage>[];
 
-  Future<bool> flushBatch() async {
-    if (batch.isEmpty) return true;
+  Future<void> flushBatch() async {
+    if (batch.isEmpty) return;
     try {
       final first = batch.first;
       Db.instance.insertImagesAndVectorsBatch(
@@ -256,12 +257,9 @@ Future<bool> _indexPendingImages(
         batch.map((e) => e.embedding).toList(),
       );
       batch.clear();
-      return true;
-    } catch (_) {
-      _log.severe('Failed to insert an image batch.');
-      errorsCount += batch.length;
-      batch.clear();
-      return false;
+    } catch (error, stackTrace) {
+      _log.severe('Failed to insert an image batch.', error, stackTrace);
+      rethrow;
     }
   }
 
@@ -331,8 +329,11 @@ Future<bool> _indexPendingImages(
           'min=${_formatMilliseconds(Duration(microseconds: minImageTimeUs))}ms)',
         );
       }
-    } catch (_) {
-      _log.severe('Failed to encode image.');
+    } catch (error, stackTrace) {
+      _log.severe('Failed to encode image.', error, stackTrace);
+      // Model/session failures affect every following image. Propagate them
+      // through the stream instead of reporting normal completion.
+      if (error is StateError) rethrow;
       errorsCount++;
       completed++;
       if (!_send(
@@ -713,7 +714,9 @@ Stream<IndexProgress> _runStream(
   controller = StreamController<IndexProgress>(
     onCancel: () async {
       cancelled.value = true;
-      _log.info('Index stream cancelled by listener.');
+      if (!cancelled.failed) {
+        _log.info('Index stream cancelled by listener.');
+      }
       // Subscription cancellation is also the synchronization barrier used by
       // pause/delete. Do not let callers mutate the album until the indexing
       // body has finished its current native inference and DB checkpoint.
@@ -725,6 +728,7 @@ Stream<IndexProgress> _runStream(
     try {
       await body(controller, cancelled);
     } catch (e, st) {
+      cancelled.failed = true;
       if (!controller.isClosed) {
         controller.addError(e, st);
       }

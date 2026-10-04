@@ -87,6 +87,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String indexingFailedPhotoCount(int current, int total) {
+    return '索引失败 · $current/$total 张';
+  }
+
+  @override
   String updatesPhotoCount(int count) {
     return '有更新 · $count 张照片';
   }
@@ -557,6 +562,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String incompletePhotoCount(int current, int total) {
     return '未完成 · $current/$total 張';
+  }
+
+  @override
+  String indexingFailedPhotoCount(int current, int total) {
+    return '索引失敗 · $current/$total 張';
   }
 
   @override

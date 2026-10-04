@@ -5,7 +5,7 @@
   "cancel": "取消", "confirm": "確認", "remove": "移除", "delete": "刪除", "update": "更新", "continueAction": "繼續", "stop": "停止", "ok": "確定",
   "addAlbum": "新增相簿", "checkUpdates": "檢查更新", "checking": "正在檢查", "updatePhotos": "更新 {count} 張",
   "indexingAlbumsSummary": "正在建立圖片索引 · {count} 個相簿", "albumsPhotosSummary": "{albumCount} 個相簿 · {photoCount} 張照片",
-  "incompletePhotoCount": "未完成 · {current}/{total} 張", "updatesPhotoCount": "有更新 · {count} 張照片", "photoCount": "{count} 張照片",
+  "incompletePhotoCount": "未完成 · {current}/{total} 張", "indexingFailedPhotoCount": "索引失敗 · {current}/{total} 張", "updatesPhotoCount": "有更新 · {count} 張照片", "photoCount": "{count} 張照片",
   "buildPhotoLibrary": "建立你的圖片庫", "buildPhotoLibraryDescription": "新增相簿並完成索引後，即可開始搜尋", "addFirstAlbum": "新增第一個相簿",
   "desktopOnlyOpenAlbum": "僅支援在桌面端開啟相簿位置", "albumUnavailable": "相簿不存在或無法存取", "openAlbumFailed": "無法開啟相簿：{error}",
   "removeAlbumIndex": "移除相簿索引", "removeAlbumIndexMessage": "確定要移除這個相簿的索引嗎？原始照片不會被刪除。", "albumActions": "相簿操作",

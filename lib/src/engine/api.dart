@@ -154,13 +154,24 @@ Future<List<SearchResult>> searchByTextWithFilters({
   required List<int> albumIds,
   int? modifiedAfter,
 }) async {
+  final stopwatch = Stopwatch()..start();
+  _log.info(
+    'Text search start: queryLength=${query.length}, limit=$limit, '
+    'albums=${albumIds.length}, modifiedAfter=$modifiedAfter.',
+  );
   final embedding = await OrtEngine.instance.encodeText(query);
-  return _searchByEmbedding(
+  _log.info('Text embedding completed in ${stopwatch.elapsedMilliseconds}ms.');
+  final results = await _searchByEmbedding(
     embedding,
     limit,
     albumIds,
     modifiedAfter: modifiedAfter,
   );
+  _log.info(
+    'Text search complete: results=${results.length}, '
+    'elapsed=${stopwatch.elapsedMilliseconds}ms.',
+  );
+  return results;
 }
 
 /// Search indexed images by image similarity.
@@ -181,13 +192,24 @@ Future<List<SearchResult>> searchByImageWithFilters({
   required List<int> albumIds,
   int? modifiedAfter,
 }) async {
+  final stopwatch = Stopwatch()..start();
+  _log.info(
+    'Image search start: limit=$limit, albums=${albumIds.length}, '
+    'modifiedAfter=$modifiedAfter.',
+  );
   final embedding = await OrtEngine.instance.encodeImageFile(imagePath);
-  return _searchByEmbedding(
+  _log.info('Image embedding completed in ${stopwatch.elapsedMilliseconds}ms.');
+  final results = await _searchByEmbedding(
     embedding,
     limit,
     albumIds,
     modifiedAfter: modifiedAfter,
   );
+  _log.info(
+    'Image search complete: results=${results.length}, '
+    'elapsed=${stopwatch.elapsedMilliseconds}ms.',
+  );
+  return results;
 }
 
 /// KNN lookup + distance→similarity conversion + metadata join, shared by
@@ -207,15 +229,24 @@ Future<List<SearchResult>> _searchByEmbedding(
   );
 
   final results = <SearchResult>[];
+  var missingMetadata = 0;
   for (final hit in knnResults) {
     final image = db.getImageById(hit.rowid);
-    if (image == null) continue;
+    if (image == null) {
+      missingMetadata++;
+      continue;
+    }
     results.add(
       SearchResult(
         filePath: image.$1,
         fileName: image.$2,
         similarity: similarityFromDistance(hit.distance),
       ),
+    );
+  }
+  if (missingMetadata != 0) {
+    _log.warning(
+      'Dropped $missingMetadata KNN hits because image metadata was missing.',
     );
   }
   return results;

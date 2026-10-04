@@ -12,11 +12,14 @@ import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite_vector/sqlite_vector.dart';
 
 const int kBatchSize = 10;
 const int kEmbeddingDim = 512;
+
+final _log = Logger('engine.db');
 
 /// Convert a measured `vector_full_scan` distance (L2, FLOAT32 metric) to
 /// cosine similarity. Vectors are L2-normalized, so d = sqrt(2 - 2*cos) =>
@@ -146,6 +149,13 @@ class Db {
 
     _db = conn;
     _initSchema();
+    final vectorVersion = _conn.select('SELECT vector_version() AS version');
+    final vectorBackend = _conn.select('SELECT vector_backend() AS backend');
+    _log.info(
+      'Database ready: sqlite=${sqlite3.version}; '
+      'sqlite-vector=${vectorVersion.first['version']}; '
+      'backend=${vectorBackend.first['backend']}; path=$path.',
+    );
   }
 
   void _initSchema() {
@@ -430,6 +440,13 @@ class Db {
     return rows.first['c'] as int;
   }
 
+  /// Get the number of stored embeddings. Useful for checking that indexing
+  /// committed both halves of an image/vector batch.
+  int getTotalVectorCount() {
+    final rows = _conn.select('SELECT COUNT(*) AS c FROM vector_images');
+    return rows.first['c'] as int;
+  }
+
   /// Get image count for a specific folder.
   int getFolderImageCount(int folderId) {
     final rows = _conn.select(
@@ -453,6 +470,7 @@ class Db {
   /// KNN search: find the k nearest vectors to the query embedding.
   /// Returns a list of (rowid, distance) sorted by ascending distance.
   List<KnnHit> knnSearch(List<double> query, int limit) {
+    _validateKnnArguments(query, limit);
     final rows = _conn.select(
       "SELECT rowid, distance FROM vector_full_scan('vector_images', 'embedding', vector_as_f32(?), ?)",
       [vectorToBlob(query), limit],
@@ -482,8 +500,22 @@ class Db {
     List<int> folderIds, {
     int? modifiedAfter,
   }) {
+    _validateKnnArguments(query, limit);
+    final imageCount = getTotalImageCount();
+    final vectorCount = getTotalVectorCount();
+    _log.info(
+      'KNN start: limit=$limit, folders=${folderIds.length}, '
+      'modifiedAfter=$modifiedAfter, images=$imageCount, vectors=$vectorCount.',
+    );
+    if (imageCount != vectorCount) {
+      _log.warning(
+        'Index integrity mismatch: images=$imageCount, vectors=$vectorCount.',
+      );
+    }
     if (folderIds.isEmpty && modifiedAfter == null) {
-      return knnSearch(query, limit);
+      final results = knnSearch(query, limit);
+      _log.info('KNN complete: hits=${results.length}.');
+      return results;
     }
     final conditions = <String>[];
     final parameters = <Object?>[];
@@ -504,6 +536,7 @@ class Db {
           )
           .map((r) => r['id'] as int),
     );
+    _log.info('KNN filter matched ${validRowids.length} image rows.');
     if (validRowids.isEmpty) return const [];
 
     final rows = _conn.select(
@@ -520,6 +553,29 @@ class Db {
         if (results.length >= limit) break;
       }
     }
+    _log.info(
+      'KNN complete: scanned=${rows.length}, filteredHits=${results.length}.',
+    );
     return results;
+  }
+
+  void _validateKnnArguments(List<double> query, int limit) {
+    if (query.length != kEmbeddingDim) {
+      throw ArgumentError.value(
+        query.length,
+        'query.length',
+        'Expected $kEmbeddingDim',
+      );
+    }
+    if (limit <= 0) {
+      throw ArgumentError.value(limit, 'limit', 'Must be positive');
+    }
+    final nonFinite = query.where((value) => !value.isFinite).length;
+    if (nonFinite != 0) {
+      throw StateError(
+        'Query embedding contains $nonFinite non-finite values. '
+        'Execution provider may have produced invalid output.',
+      );
+    }
   }
 }

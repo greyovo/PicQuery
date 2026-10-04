@@ -32,6 +32,7 @@ class IndexingManager extends ChangeNotifier {
   int pendingUpdateCount = 0;
   Set<String> updateAvailableAlbumPaths = const {};
   Map<String, int> pendingUpdateCountsByAlbum = const {};
+  final Map<String, Object> _errorsByAlbum = {};
   String? currentPath;
   String? currentAlbum;
 
@@ -52,6 +53,8 @@ class IndexingManager extends ChangeNotifier {
 
   int pendingUpdateCountForAlbum(String albumPath) =>
       pendingUpdateCountsByAlbum[albumPath] ?? 0;
+
+  Object? errorForAlbum(String albumPath) => _errorsByAlbum[albumPath];
 
   void start(String albumName, {int alreadyIndexed = 0}) {
     isIndexing = true;
@@ -136,6 +139,7 @@ class IndexingManager extends ChangeNotifier {
     currentPath = null;
     currentAlbum = null;
     _activeAlbumPaths = const {};
+    _errorsByAlbum.clear();
     _isPausing = false;
     notifyListeners();
   }
@@ -151,6 +155,7 @@ class IndexingManager extends ChangeNotifier {
   }) {
     start(displayName, alreadyIndexed: alreadyIndexed);
     _activeAlbumPaths = {path};
+    _errorsByAlbum.remove(path);
     notifyListeners();
 
     Stream<IndexProgress> stream;
@@ -180,17 +185,20 @@ class IndexingManager extends ChangeNotifier {
         }
       },
       onDone: () {
+        _errorsByAlbum.remove(path);
         _subscription = null;
         _activeAlbumPaths = const {};
         complete();
         onDone?.call();
       },
       onError: (error) {
+        _errorsByAlbum[path] = error;
         _subscription = null;
         _activeAlbumPaths = const {};
         stop();
         onError?.call(error);
       },
+      cancelOnError: true,
     );
   }
 
@@ -279,6 +287,9 @@ class IndexingManager extends ChangeNotifier {
     final pathsBeingUpdated = updateAvailableAlbumPaths;
     start('增量更新');
     _activeAlbumPaths = pathsBeingUpdated;
+    for (final path in pathsBeingUpdated) {
+      _errorsByAlbum.remove(path);
+    }
     notifyListeners();
     albumUpdateStatus = .idle;
     updateAvailableAlbumPaths = const {};
@@ -294,6 +305,9 @@ class IndexingManager extends ChangeNotifier {
         updateProgress(progress.current, progress.total);
       },
       onDone: () {
+        for (final path in pathsBeingUpdated) {
+          _errorsByAlbum.remove(path);
+        }
         _subscription = null;
         _activeAlbumPaths = const {};
         setIndexingStatusUpToDate();
@@ -301,12 +315,16 @@ class IndexingManager extends ChangeNotifier {
         onDone?.call();
       },
       onError: (error) {
+        for (final path in pathsBeingUpdated) {
+          _errorsByAlbum[path] = error;
+        }
         _subscription = null;
         _activeAlbumPaths = const {};
         albumUpdateStatus = .idle;
         stop();
         onError?.call(error);
       },
+      cancelOnError: true,
     );
   }
 
@@ -386,7 +404,12 @@ class IndexingManager extends ChangeNotifier {
       imagePaths: selection?.imagePaths,
       isUpdate: true,
       onDone: () => albumManager.reload(),
-      onError: (_) => albumManager.reload(),
+      onError: (error) {
+        if (context != null && context.mounted) {
+          Toast.showMessage(context.l10n.indexingError(error));
+        }
+        albumManager.reload();
+      },
     );
   }
 
@@ -403,7 +426,12 @@ class IndexingManager extends ChangeNotifier {
       selection.displayName,
       imagePaths: selection.imagePaths,
       onDone: () => albumManager.reload(),
-      onError: (_) => albumManager.reload(),
+      onError: (error) {
+        if (context != null && context.mounted) {
+          Toast.showMessage(context.l10n.indexingError(error));
+        }
+        albumManager.reload();
+      },
     );
   }
 
@@ -437,6 +465,7 @@ class IndexingManager extends ChangeNotifier {
       await pause(refreshUpdates: false);
     }
     await api.deleteAlbum(albumId: album.id);
+    _errorsByAlbum.remove(album.albumPath);
     await albumManager.reload();
     if (!isIndexing) {
       await checkForUpdates(showToast: false);

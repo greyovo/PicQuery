@@ -27,6 +27,8 @@
   "@albumsPhotosSummary": {"placeholders": {"albumCount": {"type": "int"}, "photoCount": {"type": "int"}}},
   "incompletePhotoCount": "Incomplete · {current}/{total} photos",
   "@incompletePhotoCount": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "indexingFailedPhotoCount": "Indexing failed · {current}/{total} photos",
+  "@indexingFailedPhotoCount": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
   "updatesPhotoCount": "Updates available · {count} photos",
   "@updatesPhotoCount": {"placeholders": {"count": {"type": "int"}}},
   "photoCount": "{count} photos",

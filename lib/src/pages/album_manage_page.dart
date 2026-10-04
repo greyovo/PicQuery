@@ -95,6 +95,10 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           : hasUpdate
           ? () => indexing.startUpdateIndexing(
               onDone: () => albumManager.reload(),
+              onError: (error) {
+                Toast.showMessage(context.l10n.indexingError(error));
+                albumManager.reload();
+              },
             )
           : () => indexing.checkForUpdates(context: context),
       icon: Icon(
@@ -244,6 +248,7 @@ class _AlbumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCurrent = indexing.isIndexingAlbum(album.albumPath);
     final incomplete = !album.isIndexComplete;
+    final hasIndexingError = indexing.errorForAlbum(album.albumPath) != null;
     final updateAvailable = indexing.updateAvailableAlbumPaths.contains(
       album.albumPath,
     );
@@ -262,7 +267,12 @@ class _AlbumCard extends StatelessWidget {
       onPauseIndexing: isCurrent && !indexing.isPausing
           ? () => indexing.pauseIndexing(context)
           : null,
-      statusLabel: updateAvailable
+      statusLabel: hasIndexingError
+          ? context.l10n.indexingFailedPhotoCount(
+              album.imageCount,
+              album.totalImageCount,
+            )
+          : updateAvailable
           ? context.l10n.updatesPhotoCount(
               indexing.pendingUpdateCountForAlbum(album.albumPath),
             )
@@ -273,11 +283,16 @@ class _AlbumCard extends StatelessWidget {
             )
           : context.l10n.photoCount(album.imageCount),
       isUpdateAvailable: updateAvailable,
+      hasIndexingError: hasIndexingError,
       onResumeIndexing: canResume
           ? () => incomplete || isMobile
                 ? indexing.continueIndexing(album, context: context)
                 : indexing.startUpdateIndexing(
                     onDone: () => albumManager.reload(),
+                    onError: (error) {
+                      Toast.showMessage(context.l10n.indexingError(error));
+                      albumManager.reload();
+                    },
                   )
           : null,
     );

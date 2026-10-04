@@ -57,8 +57,12 @@ class _SearchPageState extends State<SearchPage> {
       if (_containsChinese(query)) {
         try {
           searchQuery = await translateZhToEn(sentence: query);
-        } catch (_) {
-          _log.severe('Translation failed; using the original query.');
+        } catch (error, stackTrace) {
+          _log.severe(
+            'Translation failed; using the original query.',
+            error,
+            stackTrace,
+          );
         }
       }
       final results = await searchByTextWithFilters(
@@ -83,8 +87,8 @@ class _SearchPageState extends State<SearchPage> {
           ),
         );
       }
-    } catch (error) {
-      _log.severe('Text search failed.');
+    } catch (error, stackTrace) {
+      _log.severe('Text search failed.', error, stackTrace);
       if (mounted) Toast.showMessage(context.l10n.searchFailed(error));
     }
   }
@@ -107,8 +111,8 @@ class _SearchPageState extends State<SearchPage> {
           ),
         );
       }
-    } catch (error) {
-      _log.severe('Image search failed.');
+    } catch (error, stackTrace) {
+      _log.severe('Image search failed.', error, stackTrace);
       if (mounted) Toast.showMessage(context.l10n.imageSearchFailed(error));
     }
   }

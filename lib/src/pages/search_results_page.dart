@@ -67,8 +67,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           searchQuery = await translateZhToEn(sentence: query);
           final costTime = DateTime.now().difference(startTime).inMilliseconds;
           _log.info('Translation completed in $costTime ms.');
-        } catch (_) {
-          _log.severe('Translation failed; using the original query.');
+        } catch (error, stackTrace) {
+          _log.severe(
+            'Translation failed; using the original query.',
+            error,
+            stackTrace,
+          );
           // Fallback to original query on translation failure
         }
       }
@@ -89,8 +93,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           // _realQuery = searchQuery;
         });
       }
-    } catch (e) {
-      _log.severe('Text search failed.');
+    } catch (e, stackTrace) {
+      _log.severe('Text search failed.', e, stackTrace);
       if (mounted) {
         Toast.showMessage(context.l10n.searchFailed(e));
       }
@@ -119,8 +123,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           _queryController.clear();
         });
       }
-    } catch (e) {
-      _log.severe('Image search failed.');
+    } catch (e, stackTrace) {
+      _log.severe('Image search failed.', e, stackTrace);
       if (mounted) {
         Toast.showMessage(context.l10n.imageSearchFailed(e));
       }

@@ -87,6 +87,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String indexingFailedPhotoCount(int current, int total) {
+    return 'Indexing failed · $current/$total photos';
+  }
+
+  @override
   String updatesPhotoCount(int count) {
     return 'Updates available · $count photos';
   }

@@ -35,6 +35,7 @@ class AlbumGridCard extends StatelessWidget {
     this.onResumeIndexing,
     this.statusLabel,
     this.isUpdateAvailable = false,
+    this.hasIndexingError = false,
   });
 
   final Album album;
@@ -48,6 +49,7 @@ class AlbumGridCard extends StatelessWidget {
   final VoidCallback? onResumeIndexing;
   final String? statusLabel;
   final bool isUpdateAvailable;
+  final bool hasIndexingError;
 
   String get _displayName {
     if (album.displayName case final displayName? when displayName.isNotEmpty) {
@@ -82,6 +84,7 @@ class AlbumGridCard extends StatelessWidget {
             isIndexing: _isIndexing,
             indexingSummary: _indexingSummary,
             isUpdateAvailable: isUpdateAvailable,
+            hasIndexingError: hasIndexingError,
             onTap: onTap,
             onDelete: onDelete,
           ),
@@ -209,6 +212,7 @@ class _AlbumGridDetails extends StatelessWidget {
     required this.isIndexing,
     required this.indexingSummary,
     required this.isUpdateAvailable,
+    required this.hasIndexingError,
     required this.onTap,
     required this.onDelete,
   });
@@ -219,6 +223,7 @@ class _AlbumGridDetails extends StatelessWidget {
   final bool isIndexing;
   final String indexingSummary;
   final bool isUpdateAvailable;
+  final bool hasIndexingError;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
 
@@ -251,8 +256,12 @@ class _AlbumGridDetails extends StatelessWidget {
                   else
                     _AlbumStatus(
                       label: statusLabel,
-                      showIcon: !isIndexComplete || isUpdateAvailable,
+                      showIcon:
+                          !isIndexComplete ||
+                          isUpdateAvailable ||
+                          hasIndexingError,
                       isUpdateAvailable: isUpdateAvailable,
+                      hasIndexingError: hasIndexingError,
                     ),
                 ],
               ),
@@ -270,11 +279,13 @@ class _AlbumStatus extends StatelessWidget {
     required this.label,
     required this.showIcon,
     required this.isUpdateAvailable,
+    required this.hasIndexingError,
   });
 
   final String label;
   final bool showIcon;
   final bool isUpdateAvailable;
+  final bool hasIndexingError;
 
   @override
   Widget build(BuildContext context) {
@@ -282,18 +293,24 @@ class _AlbumStatus extends StatelessWidget {
       children: [
         if (showIcon) ...[
           Icon(
-            isUpdateAvailable
+            hasIndexingError
+                ? Icons.error_outline_rounded
+                : isUpdateAvailable
                 ? Icons.arrow_upward_rounded
                 : Icons.pause_rounded,
             size: _statusIconSize,
-            color: context.colors.primary,
+            color: hasIndexingError
+                ? context.colors.error
+                : context.colors.primary,
           ),
           const SizedBox(width: 5),
         ],
         Expanded(
           child: _StatusText(
             text: label,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: hasIndexingError ? context.colors.error : null,
+            ),
           ),
         ),
       ],

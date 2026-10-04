@@ -33,6 +33,33 @@ Float32List l2Normalize(Float32List v) {
   return out;
 }
 
+void _validateEmbedding(
+  Float32List embedding,
+  String model,
+  List<OrtProvider> providers,
+) {
+  var sumSq = 0.0;
+  var nonFinite = 0;
+  for (final value in embedding) {
+    if (!value.isFinite) {
+      nonFinite++;
+    } else {
+      sumSq += value * value;
+    }
+  }
+  final norm = math.sqrt(sumSq);
+  _log.fine(
+    '$model embedding: dimensions=${embedding.length}, '
+    'nonFinite=$nonFinite, norm=${norm.toStringAsFixed(6)}.',
+  );
+  if (nonFinite != 0 || norm < 1e-12) {
+    throw StateError(
+      '$model model produced an invalid embedding '
+      '(nonFinite=$nonFinite, norm=$norm, providers=$providers).',
+    );
+  }
+}
+
 /// Select the execution providers to request for a session, based on the
 /// platform and what the runtime reports as available. Mirrors the platform
 /// matrix of the Rust `init_ort_environment`.
@@ -43,13 +70,13 @@ List<OrtProvider> _preferredProviders(Set<OrtProvider> available) {
     return const [OrtProvider.CPU];
   }
 
-  // On Android, ORT 1.28 crashes natively on the tested device when a session
-  // is created with NNAPI and XNNPACK together (or when XNNPACK is selected by
-  // the benchmark directly). NNAPI is preferred whenever it is available;
-  // retain CPU solely as its safe fallback. Devices without NNAPI can still use
-  // XNNPACK before falling back to CPU.
-  if (Platform.isAndroid && available.contains(OrtProvider.NNAPI)) {
-    return const [OrtProvider.NNAPI, OrtProvider.CPU];
+  // NNAPI returned all-NaN MobileCLIP embeddings on a tested Android 14
+  // device while reporting successful inference. XNNPACK also crashes
+  // natively with the current ORT build on that device. Use the CPU EP for
+  // correctness until the accelerated providers are known to handle these
+  // graphs reliably; invalid output is additionally rejected below.
+  if (Platform.isAndroid && available.contains(OrtProvider.CPU)) {
+    return const [OrtProvider.CPU];
   }
 
   final prefs = <OrtProvider>[
@@ -235,6 +262,7 @@ class OrtEngine {
             'Unexpected embedding dimension: got ${embedding.length}, expected $_embeddingDim',
           );
         }
+        _validateEmbedding(embedding, 'Visual', _activeProviders);
         final result = l2Normalize(embedding);
         return result;
       } finally {
@@ -297,6 +325,7 @@ class OrtEngine {
           'Unexpected embedding dimension: got ${embedding.length}, expected $_embeddingDim',
         );
       }
+      _validateEmbedding(embedding, 'Text', _activeProviders);
       return l2Normalize(embedding);
     } finally {
       for (final v in outputs.values) {
