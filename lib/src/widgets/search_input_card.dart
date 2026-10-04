@@ -23,85 +23,82 @@ class SearchInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: TextField(
-        autofocus: false,
-        controller: queryController,
-        maxLength: 77,
-        maxLines: 1,
-        decoration: InputDecoration(
-          hintText: context.l10n.searchPhotosHint,
-          counter: const SizedBox.shrink(),
-          hintStyle: TextStyle(
-            color: context.colors.onSurfaceVariant.withValues(alpha: 0.6),
-          ),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: onImageUpload,
-                icon: const Icon(Icons.image_outlined),
-                tooltip: context.l10n.searchByImage,
-                style: IconButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+    return TextField(
+      autofocus: false,
+      controller: queryController,
+      maxLength: 77,
+      maxLines: 1,
+      decoration: InputDecoration(
+        hintText: context.l10n.searchPhotosHint,
+        counter: const SizedBox.shrink(),
+        hintStyle: TextStyle(
+          color: context.colors.onSurfaceVariant.withValues(alpha: 0.6),
+        ),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: onImageUpload,
+              icon: const Icon(Icons.image_outlined),
+              tooltip: context.l10n.searchByImage,
+              style: IconButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              const SizedBox(height: 24, child: VerticalDivider()),
-              Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: context.isLargeScreen
-                    ? FilledButton.icon(
-                        onPressed: onSearch,
-                        icon: const Icon(Icons.search_rounded, size: 24),
-                        label: Text(context.l10n.search),
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(124, 48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      )
-                    : Tooltip(
-                        message: context.l10n.search,
-                        child: FilledButton(
-                          onPressed: onSearch,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.square(48),
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Icon(Icons.search_rounded, size: 24),
+            ),
+            const SizedBox(height: 24, child: VerticalDivider()),
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: context.isLargeScreen
+                  ? FilledButton.icon(
+                      onPressed: onSearch,
+                      icon: const Icon(Icons.search_rounded, size: 24),
+                      label: Text(context.l10n.search),
+                      style: FilledButton.styleFrom(
+                        maximumSize: const Size(124, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-              ),
-            ],
-          ),
-          filled: true,
-          fillColor: context.colors.surface.withValues(alpha: 0.72),
-          border: OutlineInputBorder(
-            borderRadius: _largeBorderRadius,
-            borderSide: BorderSide(color: context.colors.outlineVariant),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: _largeBorderRadius,
-            borderSide: BorderSide(color: context.colors.outlineVariant),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: _largeBorderRadius,
-            borderSide: BorderSide(color: context.colors.primary, width: 1.5),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
+                    )
+                  : Tooltip(
+                      message: context.l10n.search,
+                      child: FilledButton(
+                        onPressed: onSearch,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.square(42),
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Icon(Icons.search_rounded, size: 24),
+                      ),
+                    ),
+            ),
+          ],
         ),
-        onSubmitted: (_) => onSearch(),
+        filled: true,
+        fillColor: context.colors.surface.withValues(alpha: 0.72),
+        border: OutlineInputBorder(
+          borderRadius: _largeBorderRadius,
+          borderSide: BorderSide(color: context.colors.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: _largeBorderRadius,
+          borderSide: BorderSide(color: context.colors.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: _largeBorderRadius,
+          borderSide: BorderSide(color: context.colors.primary, width: 1.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
+      onSubmitted: (_) => onSearch(),
     );
   }
 }
