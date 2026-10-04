@@ -57,6 +57,13 @@ app.*.map.json
 *.apk
 *.aab
 
+# Desktop binaries
+*.dmg
+*.app
+*.zip
+*.exe
+*.msi
+
 # Environment
 .env*
 

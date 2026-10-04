@@ -68,10 +68,7 @@ Note: the old `picquery.db` (sqlite-vec vec0 format) is intentionally not read; 
 
 ### Desktop Icons
 
-- 桌面图标必须裁切为透明圆角，不能保留直角背景。以后更换图标统一使用 `scripts/generate_desktop_icons.dart`，不使用 ImageGen 或 ImageMagick。
-- 将正方形原图保存为 `assets/icon-picquery.png`，运行 `fvm dart run scripts/generate_desktop_icons.dart`（无 FVM 时使用 `dart run`）；也可传入其他正方形源图片路径。
-- 脚本使用现有 `image` 依赖，保留原图透明度，以 4 倍采样裁切约 22% 半径的圆角；macOS 添加透明留白并生成全部 AppIcon PNG 尺寸；Windows 生成包含 7 个尺寸的 ICO。源图和移动端图标不由此脚本覆盖。
-- 提交生成的 macOS / Windows 图标资源，并预览 1024px macOS 图标检查裁切。脚本自动校验四角透明及中心可见。
+- 如果需要更换桌面端 App 的图标，确保图标文件 `assets/icon-picquery.png` 更新后，运行脚本 `scripts/generate_desktop_icons.dart` 会自动生成对应平台的圆角图标。
 
 ### Reference Data
 
