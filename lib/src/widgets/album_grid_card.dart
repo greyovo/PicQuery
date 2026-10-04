@@ -378,10 +378,12 @@ class _AlbumHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     if (path == null) return ColoredBox(color: colors.primaryContainer);
+
+    final imageWidth = (MediaQuery.devicePixelRatioOf(context) * albumGridCoverWidth).toInt();
     return Image.file(
       File(path!),
-      cacheHeight: albumGridCoverWidth,
-      cacheWidth: albumGridCoverWidth,
+      cacheHeight: imageWidth,
+      cacheWidth: imageWidth,
       fit: BoxFit.cover,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => ColoredBox(

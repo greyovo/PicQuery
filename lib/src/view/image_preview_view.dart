@@ -148,6 +148,8 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
   }
 
   Scaffold _buildBody() {
+    final mediaQuery = MediaQuery.of(context);
+    final imageWidth = mediaQuery.size.width * mediaQuery.devicePixelRatio * 1.1;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -203,9 +205,8 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
                   child: Image.file(
                     key: ValueKey(result.filePath),
                     File(result.filePath),
-                    width: MediaQuery.of(context).size.width * 1.1,
-                    cacheWidth: (MediaQuery.of(context).size.width * 1.1)
-                        .toInt(),
+                    width: imageWidth,
+                    cacheWidth: imageWidth.toInt(),
                     fit: BoxFit.contain,
                     errorBuilder: (context, _, __) => Center(
                       child: Icon(

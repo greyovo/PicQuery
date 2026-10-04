@@ -90,11 +90,12 @@ class _AlbumCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
+    final coverSize = _coverSize * MediaQuery.devicePixelRatioOf(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(9),
       child: SizedBox(
-        width: _coverSize.toDouble(),
-        height: _coverSize.toDouble(),
+        width: coverSize,
+        height: coverSize,
         child: path == null
             ? ColoredBox(
                 color: colorScheme.surfaceContainerHighest,
@@ -106,8 +107,8 @@ class _AlbumCover extends StatelessWidget {
             : Image.file(
                 File(path!),
                 fit: BoxFit.cover,
-                cacheHeight: _coverSize,
-                cacheWidth: _coverSize,
+                cacheHeight: coverSize.toInt(),
+                cacheWidth: coverSize.toInt(),
                 filterQuality: FilterQuality.low,
                 errorBuilder: (context, error, stackTrace) => ColoredBox(
                   color: colorScheme.surfaceContainerHighest,
