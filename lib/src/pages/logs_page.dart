@@ -16,13 +16,21 @@ class LogsPage extends StatefulWidget {
 }
 
 class _LogsPageState extends State<LogsPage> {
-  static final _logRecordPattern = RegExp(
-    r'^\d{4}-\d{2}-\d{2}T\S+ \[([A-Z]+)\] ',
-  );
+  // Keep this as a getter so hot reload cannot retain an older RegExp whose
+  // capture-group layout no longer matches the parser below.
+  static RegExp get _logRecordPattern =>
+      RegExp(r'^(\d{4}-\d{2}-\d{2}T\S+) \[([A-Z]+)\] (.*)$');
 
   late Future<String> _logs = AppLogger.instance.readAllLogs();
+  final _horizontalScrollController = ScrollController();
   bool _isExporting = false;
   bool _isClearing = false;
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
+  }
 
   Future<void> _reload() async {
     _logs = AppLogger.instance.readAllLogs();
@@ -136,28 +144,46 @@ class _LogsPageState extends State<LogsPage> {
               ? Colors.amberAccent
               : Colors.amber.shade800;
           final errorColor = isDark ? Colors.redAccent : Colors.red.shade700;
-          return SelectionArea(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: entries.length,
-              itemBuilder: (context, index) {
-                final entry = entries[index];
-                final color = switch (entry.severity) {
-                  _LogSeverity.warning => warningColor,
-                  _LogSeverity.error => errorColor,
-                  _LogSeverity.normal => null,
-                };
-                return Text(
-                  entry.text,
-                  style: TextStyle(
-                    color: color,
-                    fontFamily: _monospaceFontFamily,
-                    fontFamilyFallback: _monospaceFontFallback,
-                    fontSize: 14,
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final contentWidth = _estimateContentWidth(
+                context,
+                entries,
+              ).clamp(constraints.maxWidth, double.infinity).toDouble();
+              return Scrollbar(
+                controller: _horizontalScrollController,
+                scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: _horizontalScrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: contentWidth,
+                    height: constraints.maxHeight,
+                    child: SelectionArea(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+                        itemCount: entries.length,
+                        itemBuilder: (context, index) {
+                          final entry = entries[index];
+                          return _LogEntryRow(
+                            entry: entry,
+                            color: switch (entry.severity) {
+                              _LogSeverity.warning => warningColor,
+                              _LogSeverity.error => errorColor,
+                              _LogSeverity.normal => Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                            },
+                            fontFamily: _monospaceFontFamily,
+                            fontFamilyFallback: _monospaceFontFallback,
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -180,30 +206,77 @@ class _LogsPageState extends State<LogsPage> {
     TargetPlatform.android || TargetPlatform.fuchsia => const ['Roboto Mono'],
   };
 
+  double _estimateContentWidth(BuildContext context, List<_LogEntry> entries) {
+    var widestColumns = 0;
+    for (final entry in entries) {
+      final prefixColumns = entry.timestamp == null ? 0 : 27;
+      final levelColumns = entry.level == null ? 0 : 5;
+      for (final line in entry.message.split('\n')) {
+        final columns = prefixColumns + levelColumns + _visualColumns(line);
+        if (columns > widestColumns) widestColumns = columns;
+      }
+    }
+    final characterWidth = MediaQuery.textScalerOf(context).scale(13) * 0.62;
+    return widestColumns * characterWidth + 32;
+  }
+
+  int _visualColumns(String text) {
+    var columns = 0;
+    for (final rune in text.runes) {
+      columns += switch (rune) {
+        0x09 => 4,
+        <= 0x7f => 1,
+        _ => 2,
+      };
+    }
+    return columns;
+  }
+
   List<_LogEntry> _parseLogEntries(String logs) {
     final lines = logs.split('\n');
     final entries = <_LogEntry>[];
     var buffer = StringBuffer();
     var severity = _LogSeverity.normal;
+    String? timestamp;
+    String? level;
 
     void addBufferedEntry() {
       if (buffer.isEmpty) return;
-      entries.add(_LogEntry(buffer.toString(), severity));
+      entries.add(
+        _LogEntry(
+          timestamp: timestamp,
+          level: level,
+          message: buffer.toString(),
+          severity: severity,
+        ),
+      );
       buffer = StringBuffer();
     }
 
-    for (var index = 0; index < lines.length; index++) {
-      final line = lines[index];
+    for (final line in lines) {
       final match = _logRecordPattern.firstMatch(line);
-      if (match != null || line.startsWith('===== ')) {
+      if (match != null && match.groupCount >= 3) {
         addBufferedEntry();
-        severity = switch (match?.group(1)) {
-          'WARN' || 'WARNING' => _LogSeverity.warning,
-          'ERROR' || 'SEVERE' || 'SHOUT' => _LogSeverity.error,
+        timestamp = match.group(1);
+        level = match.group(2);
+        severity = switch (level) {
+          'W' || 'WARN' || 'WARNING' => _LogSeverity.warning,
+          'E' || 'ERROR' || 'SEVERE' || 'SHOUT' => _LogSeverity.error,
           _ => _LogSeverity.normal,
         };
+        buffer.write(match.group(3));
+        continue;
+      }
+      if (line.startsWith('===== ')) {
+        addBufferedEntry();
+        timestamp = null;
+        level = null;
+        severity = _LogSeverity.normal;
+        buffer.write(line);
+        continue;
       }
 
+      if (buffer.isNotEmpty) buffer.write('\n');
       buffer.write(line);
     }
 
@@ -215,8 +288,99 @@ class _LogsPageState extends State<LogsPage> {
 enum _LogSeverity { normal, warning, error }
 
 class _LogEntry {
-  const _LogEntry(this.text, this.severity);
+  const _LogEntry({
+    required this.timestamp,
+    required this.level,
+    required this.message,
+    required this.severity,
+  });
 
-  final String text;
+  final String? timestamp;
+  final String? level;
+  final String message;
   final _LogSeverity severity;
+}
+
+class _LogEntryRow extends StatelessWidget {
+  const _LogEntryRow({
+    required this.entry,
+    required this.color,
+    required this.fontFamily,
+    required this.fontFamilyFallback,
+  });
+
+  final _LogEntry entry;
+  final Color color;
+  final String fontFamily;
+  final List<String> fontFamilyFallback;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = TextStyle(
+      color: color,
+      fontFamily: fontFamily,
+      fontFamilyFallback: fontFamilyFallback,
+      fontSize: 13,
+      height: 1.55,
+    );
+    final timestamp = entry.timestamp;
+    final level = entry.level;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.35),
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (timestamp != null) ...[
+              Text(
+                timestamp.replaceFirst('T', ' '),
+                softWrap: false,
+                style: textStyle.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface
+                      .withValues(alpha: 0.45),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+            if (level != null) ...[
+              Container(
+                constraints: const BoxConstraints(minWidth: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _displayLevel(level),
+                  softWrap: false,
+                  style: textStyle.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Text(entry.message, softWrap: false, style: textStyle),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _displayLevel(String level) => switch (level) {
+    'INFO' => 'I',
+    'WARN' || 'WARNING' => 'W',
+    'ERROR' || 'SEVERE' || 'SHOUT' => 'E',
+    _ => level,
+  };
 }

@@ -53,12 +53,19 @@ class AppLogger with WidgetsBindingObserver {
   String _format(LogRecord record) {
     final output = StringBuffer()
       ..write(record.time.toLocal().toIso8601String())
-      ..write(' [${record.level.name}] ')
+      ..write(' [${_shortLevelName(record.level)}] ')
       ..write('${record.loggerName}: ${record.message}');
     if (record.error != null) output.write('\nError: ${record.error}');
     if (record.stackTrace != null) output.write('\n${record.stackTrace}');
     return output.toString();
   }
+
+  String _shortLevelName(Level level) => switch (level.name) {
+    'INFO' => 'I',
+    'WARNING' => 'W',
+    'SEVERE' || 'SHOUT' => 'E',
+    _ => level.name,
+  };
 
   Future<void> flush() {
     if (_buffer.isEmpty) return _pendingWrite;
