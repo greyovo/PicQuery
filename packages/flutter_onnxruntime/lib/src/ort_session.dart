@@ -106,7 +106,12 @@ class OrtSession {
   }
 }
 
+/// Graph optimization level for Android sessions. Null preserves ORT defaults.
+enum OrtGraphOptimizationLevel { disabled, basic, extended, all }
+
 class OrtSessionOptions {
+  /// Currently supported by the Android implementation only.
+  final OrtGraphOptimizationLevel? graphOptimizationLevel;
   // Sets the number of threads used to parallelize the execution within nodes
   final int? intraOpNumThreads;
   // Sets the number of threads used to parallelize the execution of the graph (across nodes)
@@ -119,6 +124,7 @@ class OrtSessionOptions {
   // set the device id for the session, default is 0
   final int? deviceId;
   OrtSessionOptions({
+    this.graphOptimizationLevel,
     this.intraOpNumThreads,
     this.interOpNumThreads,
     this.providers,
@@ -128,6 +134,8 @@ class OrtSessionOptions {
 
   Map<String, dynamic> toMap() {
     return {
+      if (graphOptimizationLevel != null)
+        'graphOptimizationLevel': graphOptimizationLevel!.name,
       if (intraOpNumThreads != null) 'intraOpNumThreads': intraOpNumThreads,
       if (interOpNumThreads != null) 'interOpNumThreads': interOpNumThreads,
       if (providers != null && providers!.isNotEmpty)

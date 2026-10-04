@@ -53,6 +53,11 @@ void main() {
         try {
           final values = await outputs.values.first.asFlattenedList();
           expect(values, hasLength(512));
+          expect(
+            values.every((value) => (value as num).isFinite),
+            isTrue,
+            reason: 'Inference timings are only valid for finite embeddings',
+          );
           final extractMs = watch.elapsedMicroseconds / 1000 - createMs - runMs;
           return (create: createMs, run: runMs, extract: extractMs);
         } finally {

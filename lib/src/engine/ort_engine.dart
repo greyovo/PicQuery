@@ -70,11 +70,11 @@ List<OrtProvider> _preferredProviders(Set<OrtProvider> available) {
     return const [OrtProvider.CPU];
   }
 
-  // NNAPI returned all-NaN MobileCLIP embeddings on a tested Android 14
-  // device while reporting successful inference. XNNPACK also crashes
-  // natively with the current ORT build on that device. Use the CPU EP for
-  // correctness until the accelerated providers are known to handle these
-  // graphs reliably; invalid output is additionally rejected below.
+  // With BASIC optimization, NNAPI claims zero nodes for our FP16 visual
+  // graph on the tested Android 14 device, so requesting it still runs on
+  // ORT CPU (~93 ms for either provider order). Earlier NaNs were caused by
+  // the advanced ORT optimization path, not proven NNAPI execution.
+  // XNNPACK also crashes natively with the current build on that device.
   if (Platform.isAndroid && available.contains(OrtProvider.CPU)) {
     return const [OrtProvider.CPU];
   }
@@ -106,7 +106,7 @@ class OrtEngine {
 
   List<OrtProvider> get activeProviders => _activeProviders;
 
-  Future<OrtSessionOptions?> _sessionOptions() async {
+  Future<OrtSessionOptions?> _sessionOptions({bool clip = false}) async {
     try {
       final available = (await OnnxRuntime().getAvailableProviders()).toSet();
       _activeProviders = _preferredProviders(available);
@@ -115,6 +115,12 @@ class OrtEngine {
       );
       return OrtSessionOptions(
         providers: _activeProviders,
+        // ORT 1.23 Android advanced optimizations produce all-NaN outputs
+        // for our FP16 MobileCLIP visual graph, even on CPU. Basic retains
+        // safe rewrites; input transport was verified on-device.
+        graphOptimizationLevel: Platform.isAndroid && clip
+            ? OrtGraphOptimizationLevel.basic
+            : null,
         intraOpNumThreads: Platform.isMacOS
             ? math.min(4, Platform.numberOfProcessors)
             : null,
@@ -178,7 +184,7 @@ class OrtEngine {
     await ClipTokenizer.instance.init();
 
     _log.info('Loading visual model.');
-    final options = await _sessionOptions();
+    final options = await _sessionOptions(clip: true);
     final OrtSession visual;
     try {
       visual = await _createSession(visualModelPath, options);

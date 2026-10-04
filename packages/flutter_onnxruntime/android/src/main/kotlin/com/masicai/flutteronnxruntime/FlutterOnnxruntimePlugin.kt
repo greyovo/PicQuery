@@ -225,6 +225,18 @@ class FlutterOnnxruntimePlugin : FlutterPlugin, MethodCallHandler {
                         }
 
                         val ortSessionOptions = OrtSession.SessionOptions()
+                        val optimizationLevel = sessionOptions["graphOptimizationLevel"] as? String
+                        if (optimizationLevel != null) {
+                            ortSessionOptions.setOptimizationLevel(
+                                when (optimizationLevel) {
+                                    "disabled" -> OrtSession.SessionOptions.OptLevel.NO_OPT
+                                    "basic" -> OrtSession.SessionOptions.OptLevel.BASIC_OPT
+                                    "extended" -> OrtSession.SessionOptions.OptLevel.EXTENDED_OPT
+                                    "all" -> OrtSession.SessionOptions.OptLevel.ALL_OPT
+                                    else -> throw IllegalArgumentException("Unknown graph optimization level: $optimizationLevel")
+                                },
+                            )
+                        }
 
                         // Configure session options based on the provided map
                         if (sessionOptions.containsKey("intraOpNumThreads")) {
