@@ -49,14 +49,14 @@ class SearchInputCard extends StatelessWidget {
             ),
             const SizedBox(height: 24, child: VerticalDivider()),
             Padding(
-              padding: const EdgeInsets.only(right: 4),
+              padding: EdgeInsets.only(right: isMobile ? 4 : 8),
               child: context.isLargeScreen
                   ? FilledButton.icon(
                       onPressed: onSearch,
                       icon: const Icon(Icons.search_rounded, size: 24),
                       label: Text(context.l10n.search),
                       style: FilledButton.styleFrom(
-                        maximumSize: const Size(124, 48),
+                        maximumSize: const Size(118, 48),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
