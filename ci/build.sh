@@ -33,22 +33,37 @@ flutter_args=(
   "--dart-define=BUILD_DATE=$build_date"
 )
 
+if command -v flutter >/dev/null 2>&1; then
+  flutter_command=(flutter)
+elif command -v fvm >/dev/null 2>&1; then
+  flutter_command=(fvm flutter)
+elif [[ "$platform" == "windows" && -n "${FLUTTER_ROOT:-}" ]]; then
+  flutter_root="$FLUTTER_ROOT"
+  if command -v cygpath >/dev/null 2>&1; then
+    flutter_root="$(cygpath -u "$flutter_root")"
+  fi
+  flutter_command=("$flutter_root/bin/flutter.bat")
+else
+  echo "Flutter was not found. Install Flutter or FVM, or set FLUTTER_ROOT on Windows." >&2
+  exit 127
+fi
+
 case "$platform" in
   android)
-    flutter build apk "${flutter_args[@]}" --target-platform=android-arm64
-    flutter build appbundle "${flutter_args[@]}"
+    "${flutter_command[@]}" build apk "${flutter_args[@]}" --target-platform=android-arm64
+    "${flutter_command[@]}" build appbundle "${flutter_args[@]}"
     mv build/app/outputs/flutter-apk/app-release.apk \
       "PicQuery-$version-android-arm64.apk"
     mv build/app/outputs/bundle/release/app-release.aab \
       "PicQuery-$version-android.aab"
     ;;
   linux)
-    flutter build linux "${flutter_args[@]}"
+    "${flutter_command[@]}" build linux "${flutter_args[@]}"
     tar -C build/linux/x64/release -czf \
       "PicQuery-$version-linux-x64.tar.gz" bundle
     ;;
   macos)
-    flutter build macos "${flutter_args[@]}"
+    "${flutter_command[@]}" build macos "${flutter_args[@]}"
 
     app_path="$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
     if [[ -z "$app_path" ]]; then
@@ -68,9 +83,15 @@ case "$platform" in
       "PicQuery-$version-macos.dmg"
     ;;
   windows)
-    flutter build windows "${flutter_args[@]}"
+    "${flutter_command[@]}" build windows "${flutter_args[@]}"
     PICQUERY_VERSION="$version" PICQUERY_FILE_VERSION="$build_name" \
       powershell.exe -NoProfile -Command '
+        $languageFile = Join-Path $PWD "windows\installer\ChineseSimplified.isl"
+        Invoke-WebRequest `
+          -UseBasicParsing `
+          -Uri "https://raw.githubusercontent.com/jrsoftware/issrc/28eab5faa5d08478a2447cec3d42c3dd806c8274/Files/Languages/ChineseSimplified.isl" `
+          -OutFile $languageFile
+
         $iscc = (Get-Command ISCC.exe -ErrorAction SilentlyContinue).Source
         if (-not $iscc) {
           $iscc = Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"
