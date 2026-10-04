@@ -6,7 +6,7 @@ import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
-final int _coverSize = 80;
+final _coverSize = 80.0;
 
 /// A selectable album row used by the album selector.
 class AlbumListItem extends StatelessWidget {
@@ -90,12 +90,12 @@ class _AlbumCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    final coverSize = _coverSize * MediaQuery.devicePixelRatioOf(context);
+    final coverImageSize = _coverSize * MediaQuery.devicePixelRatioOf(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(9),
       child: SizedBox(
-        width: coverSize,
-        height: coverSize,
+        width: _coverSize,
+        height: _coverSize,
         child: path == null
             ? ColoredBox(
                 color: colorScheme.surfaceContainerHighest,
@@ -107,8 +107,8 @@ class _AlbumCover extends StatelessWidget {
             : Image.file(
                 File(path!),
                 fit: BoxFit.cover,
-                cacheHeight: coverSize.toInt(),
-                cacheWidth: coverSize.toInt(),
+                cacheHeight: coverImageSize.toInt(),
+                cacheWidth: coverImageSize.toInt(),
                 filterQuality: FilterQuality.low,
                 errorBuilder: (context, error, stackTrace) => ColoredBox(
                   color: colorScheme.surfaceContainerHighest,
