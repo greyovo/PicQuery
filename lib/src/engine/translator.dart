@@ -42,8 +42,6 @@ class Translator {
       return;
     }
 
-    _log.info('Loading translation model.');
-
     // Load tokenizers first so a failure here doesn't leave a half-initialized
     // session state.
     final source = SpTokenizer();
@@ -63,7 +61,6 @@ class Translator {
 
     _sourceTokenizer = source;
     _targetTokenizer = target;
-    _log.info('Translation model loaded successfully.');
   }
 
   /// Translate a Chinese sentence to English via greedy decoding.

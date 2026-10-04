@@ -27,7 +27,7 @@ class _LogsPageState extends State<LogsPage> {
   Future<void> _reload() async {
     _logs = AppLogger.instance.readAllLogs();
     if (mounted) {
-       setState(() {} );
+      setState(() {});
     }
   }
 
@@ -89,7 +89,7 @@ class _LogsPageState extends State<LogsPage> {
                 ? SizedBox.square(
                     dimension: 20,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2,
+                      strokeWidth: 1,
                       color: Theme.of(context).colorScheme.error,
                     ),
                   )
@@ -109,7 +109,7 @@ class _LogsPageState extends State<LogsPage> {
             icon: _isExporting
                 ? const SizedBox.square(
                     dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(strokeWidth: 1),
                   )
                 : const Icon(Icons.ios_share_outlined),
           ),
@@ -128,18 +128,33 @@ class _LogsPageState extends State<LogsPage> {
           }
           final logs = snapshot.data ?? '';
           if (logs.isEmpty) return Center(child: Text(context.l10n.noLogs));
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: SelectableText.rich(
-              TextSpan(
-                children: _buildLogSpans(context, logs),
-                style: TextStyle(
-                  fontFamily: _monospaceFontFamily,
-                  fontFamilyFallback: _monospaceFontFallback,
-                  fontSize: 14,
-                  height: 1.45,
-                ),
-              ),
+          final entries = _parseLogEntries(logs);
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final warningColor = isDark
+              ? Colors.amberAccent
+              : Colors.amber.shade800;
+          final errorColor = isDark ? Colors.redAccent : Colors.red.shade700;
+          return SelectionArea(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: entries.length,
+              itemBuilder: (context, index) {
+                final entry = entries[index];
+                final color = switch (entry.severity) {
+                  _LogSeverity.warning => warningColor,
+                  _LogSeverity.error => errorColor,
+                  _LogSeverity.normal => null,
+                };
+                return Text(
+                  entry.text,
+                  style: TextStyle(
+                    color: color,
+                    fontFamily: _monospaceFontFamily,
+                    fontFamilyFallback: _monospaceFontFallback,
+                    fontSize: 14,
+                  ),
+                );
+              },
             ),
           );
         },
@@ -163,35 +178,43 @@ class _LogsPageState extends State<LogsPage> {
     TargetPlatform.android || TargetPlatform.fuchsia => const ['Roboto Mono'],
   };
 
-  List<InlineSpan> _buildLogSpans(BuildContext context, String logs) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final warningColor = isDark ? Colors.amberAccent : Colors.amber.shade800;
-    final errorColor = isDark ? Colors.redAccent : Colors.red.shade700;
+  List<_LogEntry> _parseLogEntries(String logs) {
     final lines = logs.split('\n');
-    final spans = <InlineSpan>[];
-    Color? currentColor;
+    final entries = <_LogEntry>[];
+    var buffer = StringBuffer();
+    var severity = _LogSeverity.normal;
+
+    void addBufferedEntry() {
+      if (buffer.isEmpty) return;
+      entries.add(_LogEntry(buffer.toString(), severity));
+      buffer = StringBuffer();
+    }
 
     for (var index = 0; index < lines.length; index++) {
       final line = lines[index];
       final match = _logRecordPattern.firstMatch(line);
-      if (match != null) {
-        currentColor = switch (match.group(1)) {
-          'WARN' || 'WARNING' => warningColor,
-          'ERROR' || 'SEVERE' || 'SHOUT' => errorColor,
-          _ => null,
+      if (match != null || line.startsWith('===== ')) {
+        addBufferedEntry();
+        severity = switch (match?.group(1)) {
+          'WARN' || 'WARNING' => _LogSeverity.warning,
+          'ERROR' || 'SEVERE' || 'SHOUT' => _LogSeverity.error,
+          _ => _LogSeverity.normal,
         };
-      } else if (line.startsWith('===== ')) {
-        currentColor = null;
       }
 
-      spans.add(
-        TextSpan(
-          text: index == lines.length - 1 ? line : '$line\n',
-          style: TextStyle(color: currentColor),
-        ),
-      );
+      buffer.write(line);
     }
 
-    return spans;
+    addBufferedEntry();
+    return entries;
   }
+}
+
+enum _LogSeverity { normal, warning, error }
+
+class _LogEntry {
+  const _LogEntry(this.text, this.severity);
+
+  final String text;
+  final _LogSeverity severity;
 }
