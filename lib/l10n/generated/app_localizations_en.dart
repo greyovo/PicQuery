@@ -416,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get model => 'Model';
 
   @override
-  String get dataManagement => 'Data management';
+  String get dataManagement => 'Other';
 
   @override
   String get clearAllIndexes => 'Clear all indexes';

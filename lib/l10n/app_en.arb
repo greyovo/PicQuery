@@ -137,7 +137,7 @@
   "autoUpdateOnStartup": "Update index on startup",
   "autoUpdateOnStartupDescription": "Automatically update indexed albums when photo changes are detected",
   "model": "Model",
-  "dataManagement": "Data management",
+  "dataManagement": "Other",
   "clearAllIndexes": "Clear all indexes",
   "clearRecentSearches": "Clear recent searches",
   "deleteAllIndexesTitle": "Delete all indexes",

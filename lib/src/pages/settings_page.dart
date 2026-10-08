@@ -130,14 +130,6 @@ class SettingsPage extends WatchingWidget {
                 ),
                 _buildActionRow(
                   context,
-                  icon: Icons.delete_forever_outlined,
-                  label: context.l10n.clearAllIndexes,
-                  onTap: () => _deleteAllIndexes(context),
-                  textColor: context.colors.error,
-                  iconColor: context.colors.error,
-                ),
-                _buildActionRow(
-                  context,
                   icon: Icons.history_toggle_off_outlined,
                   label: context.l10n.clearRecentSearches,
                   onTap: () => _clearRecentSearches(context),
@@ -153,6 +145,17 @@ class SettingsPage extends WatchingWidget {
               ],
             ),
             const SizedBox(height: 28),
+            Center(
+              child: TextButton(
+                onPressed: () => _deleteAllIndexes(context),
+                style: TextButton.styleFrom(
+                  foregroundColor: context.colors.error,
+                  textStyle: Theme.of(context).textTheme.bodySmall,
+                ),
+                child: Text(context.l10n.clearAllIndexes),
+              ),
+            ),
+            const SizedBox(height: 12),
             const _AppInfoFooter(),
             const SizedBox(height: 32),
           ],

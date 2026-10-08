@@ -404,7 +404,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get model => '模型';
 
   @override
-  String get dataManagement => '数据管理';
+  String get dataManagement => '其他';
 
   @override
   String get clearAllIndexes => '清空所有索引';
@@ -997,7 +997,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get model => '模型';
 
   @override
-  String get dataManagement => '資料管理';
+  String get dataManagement => '其他';
 
   @override
   String get clearAllIndexes => '清空所有索引';

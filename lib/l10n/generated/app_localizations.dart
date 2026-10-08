@@ -816,7 +816,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataManagement.
   ///
   /// In en, this message translates to:
-  /// **'Data management'**
+  /// **'Other'**
   String get dataManagement;
 
   /// No description provided for @clearAllIndexes.
