@@ -13,6 +13,8 @@ import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/pages/logs_page.dart';
+import 'package:picquery_app/src/utils/error_reporting.dart';
+import 'package:picquery_app/src/pages/privacy_policy_page.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -106,6 +108,26 @@ class SettingsPage extends WatchingWidget {
               context,
               title: context.l10n.dataManagement,
               children: [
+                ValueListenableBuilder<bool>(
+                  valueListenable: ErrorReporting.automaticReporting,
+                  builder: (context, enabled, _) => SwitchListTile(
+                    secondary: const Icon(Icons.bug_report_outlined),
+                    title: Text(context.l10n.automaticErrorReporting),
+                    subtitle: Text(context.l10n.errorReportingDescription),
+                    value: enabled,
+                    onChanged: ErrorReporting.setAutomaticReporting,
+                  ),
+                ),
+                _buildActionRow(
+                  context,
+                  icon: Icons.privacy_tip_outlined,
+                  label: context.l10n.privacyPolicy,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const PrivacyPolicyPage(),
+                    ),
+                  ),
+                ),
                 _buildActionRow(
                   context,
                   icon: Icons.delete_forever_outlined,

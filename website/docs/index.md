@@ -26,7 +26,7 @@ hero:
 features:
   - title: Privacy First
     icon: 🔒
-    details: Indexing and searching of images works completely offline without worrying about privacy.
+    details: Image indexing, search and translation run locally. Optional Sentry diagnostics require your consent; images are not uploaded.
   - title: Optimized for Android
     icon: ⚡️
     details: Works on Android 10+, show results in 1 sec when searching for 8,000+ photos.

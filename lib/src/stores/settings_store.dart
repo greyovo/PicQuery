@@ -82,9 +82,18 @@ class SettingsStore {
   }
 
   static bool getPrivacyAgreementAccepted() =>
-      _box.get(_privacyAgreementAcceptedKey, defaultValue: false) == true;
+      _box.get(_privacyAgreementAcceptedKey, defaultValue: false) == true &&
+      _box.get('privacy_policy_version') == 2;
+
+  static bool getAutomaticErrorReporting() =>
+      getPrivacyAgreementAccepted() &&
+      _box.get('automatic_error_reporting', defaultValue: false) == true;
+
+  static Future<void> setAutomaticErrorReporting(bool enabled) =>
+      _box.put('automatic_error_reporting', enabled);
 
   static Future<void> acceptPrivacyAgreement() async {
     await _box.put(_privacyAgreementAcceptedKey, true);
+    await _box.put('privacy_policy_version', 2);
   }
 }

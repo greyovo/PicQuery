@@ -90,7 +90,20 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (error, stackTrace) {
       _log.severe('Text search failed.', error, stackTrace);
-      if (mounted) Toast.showMessage(context.l10n.searchFailed(error));
+      if (mounted) {
+        Toast.showMessage(context.l10n.searchFailed(error));
+        Navigator.push<void>(
+          context,
+          _searchResultsRoute(
+            SearchResultsPage(
+              results: const [],
+              query: _queryController.text.trim(),
+              searchMode: SearchMode.text,
+              error: error,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -114,7 +127,19 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (error, stackTrace) {
       _log.severe('Image search failed.', error, stackTrace);
-      if (mounted) Toast.showMessage(context.l10n.imageSearchFailed(error));
+      if (mounted) {
+        Toast.showMessage(context.l10n.imageSearchFailed(error));
+        Navigator.push<void>(
+          context,
+          _searchResultsRoute(
+            SearchResultsPage(
+              results: const [],
+              searchMode: SearchMode.image,
+              error: error,
+            ),
+          ),
+        );
+      }
     }
   }
 

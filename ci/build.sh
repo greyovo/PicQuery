@@ -31,6 +31,8 @@ flutter_args=(
   "--build-name=$build_name"
   "--build-number=$version_code"
   "--dart-define=BUILD_DATE=$build_date"
+  "--dart-define=SENTRY_DSN=${SENTRY_DSN:-}"
+  "--dart-define=SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}"
 )
 
 if command -v flutter >/dev/null 2>&1; then

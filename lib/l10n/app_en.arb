@@ -69,8 +69,8 @@
   "keepIndexing": "Keep indexing",
   "privacyAgreementTitle": "欢迎使用图搜",
   "privacyAgreementMessage": "❤️ Thanks for installing PicQuery! During your usage with our application, we follow our PicQuery Privacy Policy.    We may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.",
-  "privacyAgreementAgree": "Sure",
-  "privacyAgreementDecline": "Don't send",
+  "privacyAgreementAgree": "Enable reporting",
+  "privacyAgreementDecline": "Continue without reporting",
   "searchPhotosTitle": "Search your photo library",
   "searchPhotosTitleMobile": "Search your photos",
   "searchPhotosDescription": "Find your memories with simple words or an image. All search happens privately on your device.",
@@ -204,5 +204,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reportProblemPrompt": "Having trouble? Click to report error logs",
+  "errorReportSubmitted": "Report submitted",
+  "errorReportingUnavailable": "Error reporting is not configured yet.",
+  "errorReportFailed": "Could not submit the report. Check your connection and retry.",
+  "automaticErrorReporting": "Automatic crash and exception reporting",
+  "errorReportingDescription": "Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.",
+  "privacyPolicy": "Privacy Policy",
+  "indexingReportHint": "Indexing failed. You can report error logs below.",
+  "privacyPolicyLoadFailed": "Could not load the Privacy Policy."
 }

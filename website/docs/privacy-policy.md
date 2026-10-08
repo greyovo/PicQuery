@@ -1,79 +1,65 @@
-# Privacy Policy of PicQuery
+# PicQuery Privacy Policy
 
-# 图搜APP 隐私协议
+Updated: October 8, 2026
 
-本隐私协议分别提供英文和中文版本，它们具有相同的内容。
-This Privacy Agreement is available in English and Chinese respectively, and they have the same content. 
+## Local image processing
 
-感谢您阅读并理解我们的隐私协议。通过使用我们的应用程序"图搜"，即表示您同意本隐私协议的条款和条件。
-Thank you for reading and understanding our privacy policy. By using our app "PicQuery," you agree to the terms and conditions outlined in this privacy policy.
+PicQuery indexes and searches selected folders or photo albums on your device. Image decoding, embeddings, similarity search and translation run locally. The local index stores image paths and metadata so the app can display results. Images, thumbnails, embeddings and search text are not uploaded to Sentry. Clearing indexes removes the local index records; it does not delete your original images.
 
-如果您对我们的隐私协议有任何疑问、意见或建议，请通过以下联系方式与我们联系：
-If you have any questions, concerns, or suggestions regarding our privacy policy, please contact us using the following information:
+## Optional error diagnostics
 
-> 邮箱 / Email: grey030@foxmail.com 
+Automatic reporting is off until you explicitly enable it. Existing users are shown the revised notice before automatic reporting is enabled. Choosing “Continue without reporting” does not restrict indexing or search. You can enable or disable automatic reporting in Settings at any time. Disabling it stops future automatic collection and transmission; it does not erase reports already received by Sentry.
 
-生效日期：2023年10月1日 / Effective Date: Oct. 1, 2023
+With your permission, we use Sentry, provided by Functional Software, Inc., to diagnose crashes and exceptions. Reports may include timestamps, app version/build, operating system, device/runtime diagnostics, error messages and stacks, diagnostic breadcrumbs and redacted application logs. These reports help us identify and fix defects. We do not set an account identity or deliberately include names, email addresses or IP addresses in event payloads. Network transmission nevertheless exposes the connection's IP address to the receiving servers. We therefore do not describe all diagnostics as entirely anonymous or free of personal data.
 
----
+Application log messages, error text and stacks are filtered to remove filesystem paths before writing to the log file or console. Older local log files are also filtered when the app starts. Dart Sentry events are filtered again before transmission. Native crash reports may include runtime and binary information collected by the platform SDK. Screenshots, widget hierarchies, session recordings and performance tracing are not enabled.
 
-# Privacy Policy (English)
+When search results are empty, a search fails, or indexing encounters an error, you can click “Report error logs” to send a diagnostic report and redacted logs to Sentry. Clicking this button separately authorizes that report, even when automatic reporting is disabled; it does not enable automatic reporting. Manual reports may include search mode, result/filter counts, indexing progress and platform, but do not intentionally contain the query text, image content, album names or paths. A normal empty search is not automatically treated as an error.
 
-Thank you for using our app "*PicQuery*". We value your privacy and are committed to protecting your personal information. This privacy policy explains how we collect, use, and safeguard your information when you use our app.
+## Service provider and storage
 
-## Information Collection
+Sentry's official privacy information: https://sentry.io/privacy/
 
-PicQuery operates entirely offline and does not require any data exchange with servers. It does not collect, store, or upload any personal information or image data. The app only requests access to your device's photo library in order to allow you to select images for searching. We do not access or store the content of your photo library or any other personal information. In addition, we only collect some necessary log information when the APP crashes (it does not contain any personal information, and you can turn it off at any time in the Settings).
+Diagnostic data is transmitted over HTTPS when a Sentry project is configured. Depending on the configured hosting region, it may be processed outside your country or region. The project's actual region and retention period will be specified with the production service configuration; this policy does not promise a particular region or period before that configuration exists.
 
-## Information Usage
+The app keeps at most seven daily local log files and supports clearing them on the Logs page. The latest log attachment is limited to 256 KiB. Automatic crash/error reports may be buffered by the SDK and sent later when a network connection is available. Manual reports show whether submission succeeded; failed reports can be retried. Uploaded diagnostics are retained according to the Sentry project's settings. Local log deletion does not delete uploaded reports.
 
-PicQuery only accesses your photo library with your explicit permission and solely for the purpose of enabling image search functionality. The selected images are used locally within the app and are not uploaded to any servers or shared with any third parties. We do not analyze, store, or use any information other than the images you choose for searching.
+## Your choices and contact
 
-## Information Security
+You may decline automatic reporting, withdraw it in Settings, clear local logs, or contact grey030@foxmail.com to request information, access, correction or deletion of diagnostic data where applicable. Because reports do not carry an account identity, identifying a particular report may require its approximate time, app version or other report details. We use diagnostics to maintain the app and do not sell them or use them for advertising.
 
-We take reasonable security measures to protect your personal information from unauthorized access, use, or disclosure. We employ industry-standard technologies and safeguards to ensure the security of your information and prevent unauthorized access. However, please be aware that no method of transmission or electronic storage is completely secure, and we cannot guarantee the absolute security of your information.
-
-## Third-Party Links
-
-Our app may include links to third-party websites or services. Please note that this privacy policy applies only to our app. When you click on these links, you will be redirected to third-party websites or services that have their own privacy policies. We strongly advise you to review the privacy policies of any third-party websites or services before accessing them.
-
-## Legal Requirements
-
-While PicQuery does not collect any personally identifiable information, we may disclose your information in response to any applicable laws, regulations, legal processes, or governmental requests.
-
-## Changes to Privacy Policy
-
-We reserve the right to modify this privacy policy at any time. Any changes will be reflected in an updated version of the privacy policy within the app and will be effective immediately upon posting. We encourage you to review our privacy policy periodically to understand how we protect your personal information.
-
-
+We take reasonable steps to limit and protect diagnostics, but cannot guarantee absolute security or that every third-party error message will be free of incidental personal data. Material changes to collection or use will be disclosed before asking for renewed consent.
 
 ---
 
-# 隐私协议（中文）
+# 图搜隐私政策
 
-感谢您使用我们的应用程序"图搜"。我们非常重视您的隐私和数据安全。为了确保您在使用我们的应用程序时的隐私权保护，我们制定了以下隐私协议，详细说明了我们收集、使用和保护您的个人信息的方式。
+更新日期：2026年10月8日
 
-## 信息收集
+## 本地图片处理
 
-我们的应用程序"图搜"在使用过程中是完全离线使用的，不需要与任何服务器进行数据交互，也不会收集、存储或上传任何与您个人身份相关的信息。我们仅在应用程序运行时请求您的相册读取权限，目的是让您能够选择要搜索的图片。我们不会访问或保存您的相册内容或任何其他个人信息。此外，我们仅在APP崩溃时收集一些必要的日志信息（不包含任何个人信息，并且您可以在设置中随时关闭）。
+图搜在您的设备上索引和搜索您选择的目录或相册。图片解码、向量生成、相似度搜索和翻译均在本机完成。本地索引会保存图片路径及元数据，用于展示搜索结果。图片、缩略图、向量和搜索文本不会上传至 Sentry。清除索引会删除本地索引记录，不会删除原始图片。
 
-## 信息使用
+## 可选的错误诊断
 
-我们的应用程序"图搜"仅在您的授权下访问您的相册，并将所选图片用于搜索引擎的目的。我们不会将这些图片上传到任何服务器或与任何第三方共享。我们不会分析、存储或使用除这些图片以外的任何信息。
+自动上报默认关闭，仅在您明确开启后启用。已有用户也会先看到修订后的说明。选择“不上报，继续使用”不影响索引和搜索。您可以随时在设置中开启或关闭自动上报。关闭后停止后续自动收集和发送，但不会删除 Sentry 已接收的报告。
 
-## 信息安全
+经您同意，我们使用 Functional Software, Inc. 提供的 Sentry 服务诊断崩溃和异常。报告可能包含时间、应用版本和构建号、操作系统、设备及运行环境诊断信息、错误文本和堆栈、诊断事件记录及脱敏应用日志，用于定位和修复缺陷。我们不设置账号身份，不主动在事件载荷中包含姓名、邮箱或 IP 地址。但网络传输会使接收服务器接触连接的 IP 地址，因此我们不承诺所有诊断数据完全匿名或绝不涉及个人信息。
 
-我们采取合理的安全措施来保护您的个人信息免受未经授权的访问、使用或泄露。我们使用的技术和措施旨在确保您的信息安全，并防止未经授权的访问。然而，由于互联网的性质以及电子存储的风险，我们不能完全保证信息的绝对安全。
+应用日志中的消息、错误文本和堆栈会在写入文件或控制台前移除文件系统路径，旧版已有日志也会在应用启动时进行处理。Dart Sentry 事件发送前会再次过滤。原生崩溃报告可能包含平台 SDK 收集的运行环境和二进制信息。我们未启用截图、界面层级、会话录像或性能追踪。
 
-## 第三方链接
+搜索结果为空、搜索失败或索引出现错误时，您可以点击“上报错误日志”，向 Sentry 发送诊断报告及脱敏日志。点击该按钮表示单独同意发送本次报告，即使自动上报已关闭，也不会因此开启自动上报。手动报告可能包含搜索方式、结果及筛选数量、索引进度和平台信息，不主动包含搜索文本、图片内容、相册名称或路径。正常的空搜索结果不会被自动视为错误上报。
 
-我们的应用程序可能包含指向第三方网站或服务的链接。请注意，此隐私协议仅适用于我们的应用程序。当您点击这些链接时，您将被重定向到第三方网站或服务，这些网站或服务有自己的隐私政策。我们强烈建议您在访问任何第三方网站或服务之前查阅其隐私政策。
+## 服务提供方与存储
 
-## 法律要求
+Sentry 官方隐私说明： https://sentry.io/privacy/
 
-尽管我们的应用程序"图搜"不会收集任何与您个人身份相关的信息，但我们可能会根据适用的法律、法规、法律程序或政府要求来披露您的信息。
+配置 Sentry 项目后，诊断数据通过 HTTPS 传输。根据项目托管区域，数据可能在您所在国家或地区之外处理。实际项目区域和保存期限将在生产服务配置时确定；在配置完成前，本政策不承诺具体区域或期限。
 
-## 隐私政策的变更
+应用最多保留七份按日记录的本地日志，您可在日志页面清除。最新日志附件限制为 256 KiB。SDK 可能暂存自动崩溃和错误报告，待网络可用时再发送。手动报告会提示提交结果，失败后可重试。上传的诊断数据按 Sentry 项目配置的期限保存。清除本地日志不会删除已上传的报告。
 
-我们保留随时修改本隐私政策的权利。任何变更将在我们的应用程序中发布更新的隐私政策版本，并在生效前通知您。我们鼓励您定期查阅我们的隐私政策，以了解我们如何保护您的个人信息。
+## 您的选择与联系方式
 
+您可以拒绝自动上报、在设置中撤回、清除本地日志，或联系 grey030@foxmail.com，在适用情况下请求了解、访问、更正或删除诊断数据。报告不关联账号身份，定位具体报告时可能需要大致发生时间、应用版本或其他报告线索。我们仅使用诊断信息维护应用，不出售诊断数据，也不将其用于广告。
+
+我们采取合理措施限制和保护诊断数据，但无法保证绝对安全，也无法保证第三方产生的每条错误文本完全不含偶发的个人信息。如果收集或使用方式发生实质变化，我们会在请求重新同意前进行说明。

@@ -438,13 +438,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyAgreementAgree.
   ///
   /// In en, this message translates to:
-  /// **'Sure'**
+  /// **'Enable reporting'**
   String get privacyAgreementAgree;
 
   /// No description provided for @privacyAgreementDecline.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t send'**
+  /// **'Continue without reporting'**
   String get privacyAgreementDecline;
 
   /// No description provided for @searchPhotosTitle.
@@ -1118,6 +1118,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get appUpdateClose;
+
+  /// No description provided for @reportProblemPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Having trouble? Click to report error logs'**
+  String get reportProblemPrompt;
+
+  /// No description provided for @errorReportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted'**
+  String get errorReportSubmitted;
+
+  /// No description provided for @errorReportingUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Error reporting is not configured yet.'**
+  String get errorReportingUnavailable;
+
+  /// No description provided for @errorReportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit the report. Check your connection and retry.'**
+  String get errorReportFailed;
+
+  /// No description provided for @automaticErrorReporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic crash and exception reporting'**
+  String get automaticErrorReporting;
+
+  /// No description provided for @errorReportingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.'**
+  String get errorReportingDescription;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @indexingReportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Indexing failed. You can report error logs below.'**
+  String get indexingReportHint;
+
+  /// No description provided for @privacyPolicyLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the Privacy Policy.'**
+  String get privacyPolicyLoadFailed;
 }
 
 class _AppLocalizationsDelegate

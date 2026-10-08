@@ -205,10 +205,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。';
 
   @override
-  String get privacyAgreementAgree => '好的';
+  String get privacyAgreementAgree => '同意并开启上报';
 
   @override
-  String get privacyAgreementDecline => '不上报';
+  String get privacyAgreementDecline => '不上报，继续使用';
 
   @override
   String get searchPhotosTitle => '搜索你的图片库';
@@ -568,6 +568,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appUpdateClose => '关闭';
+
+  @override
+  String get reportProblemPrompt => '遇到问题？点击上报错误日志';
+
+  @override
+  String get errorReportSubmitted => '报告已提交';
+
+  @override
+  String get errorReportingUnavailable => '错误上报尚未配置。';
+
+  @override
+  String get errorReportFailed => '报告提交失败，请检查网络后重试。';
+
+  @override
+  String get automaticErrorReporting => '自动上报崩溃和异常';
+
+  @override
+  String get errorReportingDescription =>
+      '向 Sentry 发送诊断信息和脱敏日志。手动报告仅在您点击上报时发送。';
+
+  @override
+  String get privacyPolicy => '隐私政策';
+
+  @override
+  String get indexingReportHint => '索引失败，您可以在下方上报错误日志。';
+
+  @override
+  String get privacyPolicyLoadFailed => '无法加载隐私政策。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -770,10 +798,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '❤️ 感谢您下载并使用图搜！本应用在运行时遵循《图搜APP隐私政策》。\n\n我们可能会收集应用的运行情况、崩溃日志等信息，以便更好地改进您的使用体验。所收集的数据不包含您的任何个人信息（也不包含任何图片信息），您也可以在设置中随时关掉这些匿名信息的上传功能。';
 
   @override
-  String get privacyAgreementAgree => '好的';
+  String get privacyAgreementAgree => '同意並開啟回報';
 
   @override
-  String get privacyAgreementDecline => '不上报';
+  String get privacyAgreementDecline => '不回報，繼續使用';
 
   @override
   String get searchPhotosTitle => '搜尋你的圖片庫';
@@ -1133,4 +1161,32 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get appUpdateClose => '關閉';
+
+  @override
+  String get reportProblemPrompt => '遇到問題？點擊回報錯誤日誌';
+
+  @override
+  String get errorReportSubmitted => '報告已提交';
+
+  @override
+  String get errorReportingUnavailable => '錯誤回報尚未設定。';
+
+  @override
+  String get errorReportFailed => '報告提交失敗，請檢查網路後重試。';
+
+  @override
+  String get automaticErrorReporting => '自動回報當機和例外';
+
+  @override
+  String get errorReportingDescription =>
+      '向 Sentry 傳送診斷資訊和去識別日誌。手動報告僅在您點擊回報時傳送。';
+
+  @override
+  String get privacyPolicy => '隱私政策';
+
+  @override
+  String get indexingReportHint => '索引失敗，您可以在下方回報錯誤日誌。';
+
+  @override
+  String get privacyPolicyLoadFailed => '無法載入隱私政策。';
 }

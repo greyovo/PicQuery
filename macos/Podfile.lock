@@ -20,6 +20,11 @@ PODS:
     - FlutterMacOS
   - screen_retriever_macos (0.0.1):
     - FlutterMacOS
+  - Sentry/HybridSDK (8.58.4)
+  - sentry_flutter (9.30.1):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.58.4)
   - share_plus (0.0.1):
     - FlutterMacOS
   - url_launcher_macos (0.0.1):
@@ -35,6 +40,7 @@ DEPENDENCIES:
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - photo_manager (from `Flutter/ephemeral/.symlinks/plugins/photo_manager/darwin`)
   - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
+  - sentry_flutter (from `Flutter/ephemeral/.symlinks/plugins/sentry_flutter/macos`)
   - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
   - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
@@ -43,6 +49,7 @@ SPEC REPOS:
   trunk:
     - onnxruntime-c
     - onnxruntime-objc
+    - Sentry
 
 EXTERNAL SOURCES:
   desktop_drop:
@@ -59,6 +66,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/photo_manager/darwin
   screen_retriever_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos
+  sentry_flutter:
+    :path: Flutter/ephemeral/.symlinks/plugins/sentry_flutter/macos
   share_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/share_plus/macos
   url_launcher_macos:
@@ -76,6 +85,8 @@ SPEC CHECKSUMS:
   package_info_plus: f0052d280d17aa382b932f399edf32507174e870
   photo_manager: c303e4476f6c220274119f0212a7753e45edd4a2
   screen_retriever_macos: c5508cc3c66ff0d4db650480cf0ab691e220d933
+  Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
+  sentry_flutter: c89c731736fabbbac53a4714df8ba0d21ba4100d
   share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
   url_launcher_macos: f87a979182d112f911de6820aefddaf56ee9fbfd
   window_manager: b729e31d38fb04905235df9ea896128991cad99e

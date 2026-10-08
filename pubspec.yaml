@@ -54,6 +54,8 @@ dependencies:
   path: ^1.9.0
   window_manager: ^0.5.2
   desktop_drop: ^0.8.4
+  sentry_flutter: ^9.30.1
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -77,3 +79,4 @@ flutter:
   assets:
     - assets/icon-picquery-transparent.png
     - assets/models/
+    - website/docs/privacy-policy.md

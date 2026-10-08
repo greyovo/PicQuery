@@ -10,6 +10,7 @@ import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:picquery_app/src/widgets/album_grid_card.dart';
+import 'package:picquery_app/src/widgets/report_problem_button.dart';
 import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
 import 'package:picquery_app/src/widgets/desktop_folder_drop_hint.dart';
 import 'package:watch_it/watch_it.dart';
@@ -171,6 +172,26 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
             ),
       body: CustomScrollView(
         slivers: [
+          if (indexing.lastIndexingError != null)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Text(context.l10n.indexingReportHint),
+                    ReportProblemButton(
+                      key: ObjectKey(indexing.lastIndexingError),
+                      source: 'indexing_error',
+                      error: indexing.lastIndexingError,
+                      diagnostics: {
+                        'indexed_count': indexing.current,
+                        'total_count': indexing.total,
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (isLoading)
             const SliverFillRemaining(
               hasScrollBody: false,

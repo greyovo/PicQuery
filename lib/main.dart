@@ -17,6 +17,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/utils/app_logger.dart';
+import 'package:picquery_app/src/utils/error_reporting.dart';
 import 'package:picquery_app/src/widgets/desktop_window_frame.dart';
 import 'package:picquery_app/src/widgets/privacy_agreement_gate.dart';
 import 'package:window_manager/window_manager.dart';
@@ -44,6 +45,7 @@ void main() async {
 
       await _configureDesktopWindow();
       await SettingsStore.init();
+      await ErrorReporting.initialize();
       configureDependencies();
 
       try {

@@ -11,6 +11,7 @@ import 'package:picquery_app/src/widgets/search_input_card.dart';
 import 'package:picquery_app/src/widgets/search_result_grid.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
+import 'package:picquery_app/src/widgets/report_problem_button.dart';
 
 final _log = Logger('search_results_page');
 
@@ -19,6 +20,7 @@ class SearchResultsPage extends WatchingStatefulWidget {
   final String? query;
   final String? realQuery; // 实际的查询字符串(可能是翻译为英文的)
   final SearchMode searchMode;
+  final Object? error;
 
   const SearchResultsPage({
     super.key,
@@ -26,6 +28,7 @@ class SearchResultsPage extends WatchingStatefulWidget {
     this.query,
     this.realQuery,
     required this.searchMode,
+    this.error,
   });
 
   @override
@@ -37,12 +40,17 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   late List<SearchResult> _results;
   // late String? _realQuery;
   bool _searching = false;
+  int _searchRevision = 0;
+  Object? _searchError;
+  late SearchMode _searchMode;
 
   @override
   void initState() {
     super.initState();
     _queryController = TextEditingController(text: widget.query ?? '');
     _results = widget.results;
+    _searchMode = widget.searchMode;
+    _searchError = widget.error;
     // _realQuery = widget.realQuery;
   }
 
@@ -90,12 +98,21 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       if (mounted) {
         setState(() {
           _results = results;
+          _searchMode = SearchMode.text;
+          _searchError = null;
+          _searchRevision++;
           // _realQuery = searchQuery;
         });
       }
     } catch (e, stackTrace) {
       _log.severe('Text search failed.', e, stackTrace);
       if (mounted) {
+        setState(() {
+          _results = [];
+          _searchError = e;
+          _searchMode = SearchMode.text;
+          _searchRevision++;
+        });
         Toast.showMessage(context.l10n.searchFailed(e));
       }
     } finally {
@@ -119,6 +136,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       if (results != null && mounted) {
         setState(() {
           _results = results;
+          _searchMode = SearchMode.image;
+          _searchError = null;
+          _searchRevision++;
           // _realQuery = null;
           _queryController.clear();
         });
@@ -126,6 +146,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     } catch (e, stackTrace) {
       _log.severe('Image search failed.', e, stackTrace);
       if (mounted) {
+        setState(() {
+          _results = [];
+          _searchError = e;
+          _searchMode = SearchMode.image;
+          _searchRevision++;
+        });
         Toast.showMessage(context.l10n.imageSearchFailed(e));
       }
     } finally {
@@ -229,6 +255,20 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
             style: Theme.of(context).textTheme.titleMedium
                 ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
+          if (!_searching)
+            ReportProblemButton(
+              key: ValueKey(_searchRevision),
+              source: _searchError == null ? 'empty_search' : 'search_error',
+              error: _searchError,
+              diagnostics: {
+                'search_mode': _searchMode.name,
+                'result_count': _results.length,
+                'album_filter_count':
+                    searchManager.selectedAlbumIds.value.length,
+                'result_limit': searchManager.resultLimit.value,
+                'indexing_in_progress': indexingManager.isIndexing,
+              },
+            ),
         ],
       ),
     );

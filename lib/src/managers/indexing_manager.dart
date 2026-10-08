@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:logging/logging.dart';
+
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/engine/api.dart' as api;
@@ -17,6 +19,7 @@ IndexingManager get indexingManager => di<IndexingManager>();
 enum AlbumUpdateStatus { idle, checking, updateAvailable, upToDate }
 
 class IndexingManager extends ChangeNotifier {
+  Object? lastIndexingError;
   final autoUpdateIndexOnStartup = ValueNotifier<bool>(
     SettingsStore.getAutoUpdateIndexOnStartup(),
   );
@@ -62,6 +65,7 @@ class IndexingManager extends ChangeNotifier {
   Object? errorForAlbum(String albumPath) => _errorsByAlbum[albumPath];
 
   void start(String albumName, {int alreadyIndexed = 0}) {
+    lastIndexingError = null;
     isIndexing = true;
     startTime = DateTime.now();
     this.albumName = albumName;
@@ -149,6 +153,7 @@ class IndexingManager extends ChangeNotifier {
     currentAlbum = null;
     _activeAlbumPaths = const {};
     _errorsByAlbum.clear();
+    lastIndexingError = null;
     _isPausing = false;
     notifyListeners();
   }
@@ -184,6 +189,10 @@ class IndexingManager extends ChangeNotifier {
     var hasReloadedAlbums = false;
     _subscription = stream.listen(
       (progress) {
+        if (progress.errors > 0) {
+          lastIndexingError ??= StateError('Some images could not be indexed.');
+          _errorsByAlbum[path] = lastIndexingError!;
+        }
         currentPath = progress.currentPath;
         currentAlbum = progress.currentAlbum;
         // The first event includes images indexed before this run.
@@ -199,13 +208,16 @@ class IndexingManager extends ChangeNotifier {
         }
       },
       onDone: () {
-        _errorsByAlbum.remove(path);
+        if (lastIndexingError == null) _errorsByAlbum.remove(path);
         _subscription = null;
         _activeAlbumPaths = const {};
         complete();
         onDone?.call();
       },
-      onError: (error) {
+      onError: (Object error, StackTrace stackTrace) {
+        lastIndexingError = error;
+        Logger('IndexingManager')
+            .severe('Album indexing failed.', error, stackTrace);
         _errorsByAlbum[path] = error;
         _subscription = null;
         _activeAlbumPaths = const {};
@@ -315,21 +327,34 @@ class IndexingManager extends ChangeNotifier {
     _subscription?.cancel();
     _subscription = stream.listen(
       (progress) {
+        if (progress.errors > 0) {
+          lastIndexingError ??= StateError('Some images could not be indexed.');
+          for (final path in pathsBeingUpdated) {
+            _errorsByAlbum[path] = lastIndexingError!;
+          }
+        }
         currentPath = progress.currentPath;
         currentAlbum = progress.currentAlbum;
         updateProgress(progress.current, progress.total);
       },
       onDone: () {
         for (final path in pathsBeingUpdated) {
-          _errorsByAlbum.remove(path);
+          if (lastIndexingError == null) _errorsByAlbum.remove(path);
         }
         _subscription = null;
         _activeAlbumPaths = const {};
-        setIndexingStatusUpToDate();
+        if (lastIndexingError == null) {
+          setIndexingStatusUpToDate();
+        } else {
+          albumUpdateStatus = .idle;
+        }
         complete();
         onDone?.call();
       },
-      onError: (error) {
+      onError: (Object error, StackTrace stackTrace) {
+        lastIndexingError = error;
+        Logger('IndexingManager')
+            .severe('Incremental indexing failed.', error, stackTrace);
         for (final path in pathsBeingUpdated) {
           _errorsByAlbum[path] = error;
         }
@@ -489,6 +514,7 @@ class IndexingManager extends ChangeNotifier {
     }
     await api.deleteAlbum(albumId: album.id);
     _errorsByAlbum.remove(album.albumPath);
+    if (_errorsByAlbum.isEmpty) lastIndexingError = null;
     _pausedAlbumPaths.remove(album.albumPath);
     await albumManager.reload();
     if (!isIndexing) {

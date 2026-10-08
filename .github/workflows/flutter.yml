@@ -15,6 +15,9 @@ on:
         required: false
         type: string
   workflow_call:
+    secrets:
+      SENTRY_DSN:
+        required: false
     inputs:
       version:
         description: "Version used for the build"
@@ -29,6 +32,8 @@ permissions:
   contents: read
 
 env:
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_ENVIRONMENT: production
   ARTIFACT_RETENTION_DAYS: 14
   MODEL_REPOSITORY_REF: master
 

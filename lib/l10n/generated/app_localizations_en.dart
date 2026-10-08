@@ -213,10 +213,10 @@ class AppLocalizationsEn extends AppLocalizations {
       '❤️ Thanks for installing PicQuery! During your usage with our application, we follow our PicQuery Privacy Policy.    We may collect information about the operation of PicQuery (e.g., crash logs), in order to better improve your experience. The collected data does not contain any of your personal information (not including any pictures either). You can also turn off the upload function of these anonymous information at any time in settings.';
 
   @override
-  String get privacyAgreementAgree => 'Sure';
+  String get privacyAgreementAgree => 'Enable reporting';
 
   @override
-  String get privacyAgreementDecline => 'Don\'t send';
+  String get privacyAgreementDecline => 'Continue without reporting';
 
   @override
   String get searchPhotosTitle => 'Search your photo library';
@@ -588,4 +588,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appUpdateClose => 'Close';
+
+  @override
+  String get reportProblemPrompt =>
+      'Having trouble? Click to report error logs';
+
+  @override
+  String get errorReportSubmitted => 'Report submitted';
+
+  @override
+  String get errorReportingUnavailable =>
+      'Error reporting is not configured yet.';
+
+  @override
+  String get errorReportFailed =>
+      'Could not submit the report. Check your connection and retry.';
+
+  @override
+  String get automaticErrorReporting =>
+      'Automatic crash and exception reporting';
+
+  @override
+  String get errorReportingDescription =>
+      'Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get indexingReportHint =>
+      'Indexing failed. You can report error logs below.';
+
+  @override
+  String get privacyPolicyLoadFailed => 'Could not load the Privacy Policy.';
 }

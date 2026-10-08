@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
   flutter_onnxruntime
   screen_retriever_linux
+  sentry_flutter
   url_launcher_linux
   window_manager
 )
