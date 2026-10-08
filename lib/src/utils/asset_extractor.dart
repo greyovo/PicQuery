@@ -24,7 +24,7 @@ Future<String> extractClipModelAssets({bool force = false}) async {
 
   // Bump whenever the bytes or I/O contract of a bundled CLIP model changes.
   // Existing installations previously kept stale extracted models forever.
-  const assetRevision = '3-mobileclip2-s0-fp16-fp32-io';
+  const assetRevision = '4-mobileclip2-s0-int8-text-fp16-visual';
   final revisionFile = File('${modelsDir.path}/.clip-model-revision');
   final installedRevision = await revisionFile.exists()
       ? await revisionFile.readAsString()

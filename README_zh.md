@@ -42,7 +42,11 @@ flutter pub get
 - `mobileclip2_s0_text.onnx`
 - `mt_zho-eng.fp32.quantized.onnx` //  在 Git LFS 存储
 
-两个 MobileCLIP 模型请使用独立的 [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) 仓库导出，再以上述文件名复制到 `assets/models/`。
+模型由 [`greyovo/picquery-models`](https://github.com/greyovo/picquery-models) 中的 `export.sh` 导出。安装 [uv](https://docs.astral.sh/uv/getting-started/installation/) 后运行：
+
+```bash
+bash scripts/prepare_models.sh
+```
 
 连接设备或在桌面端运行：
 

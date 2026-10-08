@@ -86,5 +86,5 @@ Flutter packages (`flutter_onnxruntime`, `sqlite_vector`, `sqlite3`, `image`) wi
 
 ### Model Assets
 
-- MobileCLIP export tooling lives in the separate `greyovo/ml-mobileclip` repository; use `uv` as its Python environment manager.
+- Model export tooling lives in `greyovo/picquery-models` (default sibling directory `../picquery-models`); `scripts/prepare_models.sh` runs `uv sync --locked` and `export.sh`, then copies outputs into `assets/models/`.
 - Translation model: MarianMT Chinese→English (`mt_zho-eng.fp32.quantized.onnx`) + SentencePiece tokenizers (`source_tokenizer.json`, `target_tokenizer.json`)

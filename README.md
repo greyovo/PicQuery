@@ -42,7 +42,13 @@ Before running or building the app, `assets/models/` must contain:
 - `mobileclip2_s0_text.onnx`
 - `mt_zho-eng.fp32.quantized.onnx` // Stored with Git LFS
 
-Export the two MobileCLIP models with the separate [`greyovo/ml-mobileclip`](https://github.com/greyovo/ml-mobileclip) repository, then copy them to `assets/models/` under the filenames above.
+Models are exported by `export.sh` in [`greyovo/picquery-models`](https://github.com/greyovo/picquery-models). Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run:
+
+```bash
+bash scripts/prepare_models.sh
+```
+
+The script uses the sibling directory `../picquery-models` by default. If missing, it clones the repository, installs dependencies, exports models, and copies them into `assets/models/`. `ci/build.sh` runs this preparation automatically before building the app.
 
 Run the app:
 

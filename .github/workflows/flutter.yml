@@ -35,52 +35,47 @@ env:
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_ENVIRONMENT: production
   ARTIFACT_RETENTION_DAYS: 14
-  MODEL_REPOSITORY_REF: master
+  PICQUERY_MODELS_BUNDLE_DIR: generated-models
 
 jobs:
   prepare-models:
-    name: Export MobileCLIP models
+    name: Export PicQuery models
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
       - name: Check out model exporter
         uses: actions/checkout@v4
         with:
-          repository: greyovo/ml-mobileclip
-          ref: ${{ env.MODEL_REPOSITORY_REF }}
-          path: ml-mobileclip
+          repository: greyovo/picquery-models
+          path: picquery-models
 
-      - name: astral-sh/setup-uv
+      - name: Set up uv
         uses: astral-sh/setup-uv@v10.2.0
         with:
           enable-cache: true
-          cache-dependency-glob: ml-mobileclip/uv.lock
+          cache-dependency-glob: picquery-models/uv.lock
 
-      - name: Cache MobileCLIP checkpoint
+      - name: Cache model checkpoints
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface
-          key: mobileclip2-s0-${{ runner.os }}-v1
+          key: picquery-models-${{ runner.os }}-v1
 
-      - name: Install model exporter dependencies
-        working-directory: ml-mobileclip
-        run: uv sync
-
-      - name: Export MobileCLIP2-S0 models
-        working-directory: ml-mobileclip
-        run: uv run python export_fp16_onnx.py s0
-
-      - name: Prepare models for PicQuery
+      - name: Export and copy models
         shell: bash
-        run: |
-          mkdir exported-models
-          cp ml-mobileclip/mobileclip2_s0_text_fp16.onnx exported-models/mobileclip2_s0_text.onnx
-          cp ml-mobileclip/mobileclip2_s0_visual_fp16.onnx exported-models/mobileclip2_s0_visual.onnx
+        env:
+          PICQUERY_MODELS_DIR: ${{ github.workspace }}/picquery-models
+        run: bash scripts/prepare_models.sh
 
       - name: Upload generated models
         uses: actions/upload-artifact@v4
         with:
-          name: mobileclip2-s0-models
-          path: exported-models/*.onnx
+          name: picquery-models
+          path: assets/models/*
           if-no-files-found: error
           retention-days: 1
 
@@ -98,12 +93,8 @@ jobs:
       - name: Download generated models
         uses: actions/download-artifact@v4
         with:
-          name: mobileclip2-s0-models
+          name: picquery-models
           path: generated-models
-
-      - name: Import generated models
-        shell: bash
-        run: cp generated-models/*.onnx assets/models/
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -188,12 +179,8 @@ jobs:
       - name: Download generated models
         uses: actions/download-artifact@v4
         with:
-          name: mobileclip2-s0-models
+          name: picquery-models
           path: generated-models
-
-      - name: Import generated models
-        shell: bash
-        run: cp generated-models/*.onnx assets/models/
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -252,12 +239,8 @@ jobs:
       - name: Download generated models
         uses: actions/download-artifact@v4
         with:
-          name: mobileclip2-s0-models
+          name: picquery-models
           path: generated-models
-
-      - name: Import generated models
-        shell: bash
-        run: cp generated-models/*.onnx assets/models/
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -316,12 +299,8 @@ jobs:
       - name: Download generated models
         uses: actions/download-artifact@v4
         with:
-          name: mobileclip2-s0-models
+          name: picquery-models
           path: generated-models
-
-      - name: Import generated models
-        shell: bash
-        run: cp generated-models/*.onnx assets/models/
 
       - name: Install Linux build dependencies
         run: |
