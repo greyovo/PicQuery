@@ -36,5 +36,39 @@
   "dropFolderRequiredMessage": "添加相册需要一个文件夹，请拖入单个文件夹，而不是文件。",
   "dropFolderNoImagesMessage": "此文件夹及其子文件夹中没有支持的图片（JPG、JPEG、PNG、WebP 或 BMP）。",
   "dragFolderIndexHint": "可直接拖入文件夹快速索引相册",
-  "selectOrDropFolder": "选择或拖入文件夹"
+  "selectOrDropFolder": "选择或拖入文件夹",
+  "checkAppUpdates": "检查应用更新",
+  "appUpdateTitle": "应用更新",
+  "appUpdateChecking": "正在检查 GitHub 发布版本…",
+  "appUpdateCurrent": "当前已是最新版本。",
+  "appUpdateAvailable": "发现新版本：{version}",
+  "appUpdateFailed": "更新操作失败，请检查网络并重试。",
+  "appUpdateUnsupported": "此设备暂无兼容的安装包，可查看发布页面获取下载选项。",
+  "appUpdateDownload": "下载并安装",
+  "appUpdateInstall": "安装已下载的更新",
+  "appUpdateDownloading": "正在下载… {percent}%",
+  "appUpdateInstalling": "正在打开安装程序…",
+  "appUpdateOpened": "已打开更新包。请在系统窗口完成安装，然后重新启动 PicQuery。",
+  "appUpdateMacGuidance": "在磁盘映像窗口中，退出 PicQuery，然后将新应用拖入“应用程序”并替换旧版本。",
+  "appUpdateLinuxGuidance": "解压更新包，退出 PicQuery，然后用解压后的文件替换原安装目录。",
+  "appUpdatePermission": "请在系统设置中允许 PicQuery 安装应用，然后返回并点击“安装已下载的更新”。",
+  "appUpdateSkip": "跳过此版本",
+  "appUpdateLater": "稍后再说",
+  "appUpdateRetry": "重试",
+  "appUpdateReleasePage": "查看发布页面",
+  "appUpdateClose": "关闭",
+  "@appUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@appUpdateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

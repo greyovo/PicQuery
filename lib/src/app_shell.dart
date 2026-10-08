@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:picquery_app/src/widgets/app_update_sheet.dart';
+
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/pages/search_page.dart';
 import 'package:picquery_app/src/widgets/desktop_album_drop_target.dart';
@@ -24,6 +26,9 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(checkAppUpdatesOnStartup(context));
+    });
     // Keep the update state current for the manage tab without interrupting
     // startup with success or error toasts.
     final indexing = indexingManager;

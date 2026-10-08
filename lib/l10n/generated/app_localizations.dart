@@ -998,6 +998,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select or drop a folder'**
   String get selectOrDropFolder;
+
+  /// No description provided for @checkAppUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkAppUpdates;
+
+  /// No description provided for @appUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App update'**
+  String get appUpdateTitle;
+
+  /// No description provided for @appUpdateChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking GitHub releases…'**
+  String get appUpdateChecking;
+
+  /// No description provided for @appUpdateCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'You are using the latest version.'**
+  String get appUpdateCurrent;
+
+  /// No description provided for @appUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'New version: {version}'**
+  String appUpdateAvailable(String version);
+
+  /// No description provided for @appUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed. Check your connection and try again.'**
+  String get appUpdateFailed;
+
+  /// No description provided for @appUpdateUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'No compatible installer is available for this device. View the release page for download options.'**
+  String get appUpdateUnsupported;
+
+  /// No description provided for @appUpdateDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and install'**
+  String get appUpdateDownload;
+
+  /// No description provided for @appUpdateInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Install downloaded update'**
+  String get appUpdateInstall;
+
+  /// No description provided for @appUpdateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading… {percent}%'**
+  String appUpdateDownloading(String percent);
+
+  /// No description provided for @appUpdateInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening installer…'**
+  String get appUpdateInstalling;
+
+  /// No description provided for @appUpdateOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'The package has been opened. Complete installation in the system window, then restart PicQuery.'**
+  String get appUpdateOpened;
+
+  /// No description provided for @appUpdateMacGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'In the disk image window, quit PicQuery and drag the new app to Applications to replace the existing app.'**
+  String get appUpdateMacGuidance;
+
+  /// No description provided for @appUpdateLinuxGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract the archive, quit PicQuery and replace your existing installation with the extracted files.'**
+  String get appUpdateLinuxGuidance;
+
+  /// No description provided for @appUpdatePermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow PicQuery to install apps in system settings, then return and tap Install downloaded update.'**
+  String get appUpdatePermission;
+
+  /// No description provided for @appUpdateSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip this version'**
+  String get appUpdateSkip;
+
+  /// No description provided for @appUpdateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appUpdateLater;
+
+  /// No description provided for @appUpdateRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get appUpdateRetry;
+
+  /// No description provided for @appUpdateReleasePage.
+  ///
+  /// In en, this message translates to:
+  /// **'View release page'**
+  String get appUpdateReleasePage;
+
+  /// No description provided for @appUpdateClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get appUpdateClose;
 }
 
 class _AppLocalizationsDelegate

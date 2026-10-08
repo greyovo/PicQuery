@@ -6,10 +6,48 @@ import io.flutter.plugin.common.MethodChannel
 import android.content.ContentUris
 import android.content.Intent
 import android.provider.MediaStore
+import android.os.Build
+import android.net.Uri
+import android.provider.Settings
+import androidx.core.content.FileProvider
+import java.io.File
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "picquery/updates")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "architecture" -> result.success(Build.SUPPORTED_ABIS.firstOrNull() ?: "")
+                    "install" -> {
+                        try {
+                            val path = call.argument<String>("path")
+                            require(!path.isNullOrBlank()) { "Missing update package" }
+                            val file = File(path).canonicalFile
+                            val updateDir = File(filesDir, "updates").canonicalFile
+                            require(file.parentFile == updateDir && file.extension == "apk" && file.isFile) {
+                                "Invalid update package"
+                            }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                                !packageManager.canRequestPackageInstalls()) {
+                                startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                    Uri.parse("package:$packageName")))
+                                result.success(false)
+                            } else {
+                                val uri = FileProvider.getUriForFile(this, "$packageName.updates", file)
+                                startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "application/vnd.android.package-archive")
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                })
+                                result.success(true)
+                            }
+                        } catch (error: Exception) {
+                            result.error("install_failed", error.message, null)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "picquery/media")
             .setMethodCallHandler { call, result ->
                 if (call.method != "openImage") {

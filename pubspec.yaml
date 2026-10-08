@@ -35,6 +35,8 @@ dependencies:
   share_plus: ^13.3.1
   open_filex: ^4.0.0
   url_launcher: ^6.0.0
+  crypto: ^3.0.7
+  pub_semver: ^2.2.0
   collection: any
   hive: ^2.2.3
   hive_flutter: ^1.1.0

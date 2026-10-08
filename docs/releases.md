@@ -65,3 +65,38 @@ actionlint .github/workflows/android.yml
 ```
 
 The unit tests exercise model ZIP validation and APK selection with fixture archives. A real release additionally needs the SDK build, signature verification, and upload checks; unit tests alone do not establish that an APK has been published.
+
+## In-app update checks
+
+After privacy consent, each launch checks the latest stable release using GitHub's
+[latest-release API](https://docs.github.com/en/rest/releases/releases#get-the-latest-release).
+A newer semantic version opens a bottom sheet with release notes. Settings →
+Check for updates performs a manual check, including versions previously skipped.
+Skipping persists only the exact release version; subsequent releases still prompt.
+Build metadata does not affect version precedence.
+
+Keep release installer names consistent with `ci/build.sh`:
+
+| Device | Installer |
+|---|---|
+| Android arm64 | `PicQuery-VERSION-android-arm64.apk` |
+| macOS arm64 | `PicQuery-VERSION-macos.dmg` |
+| Windows x64 | `PicQuery-VERSION-windows-x64-setup.exe` |
+| Linux x64 | `PicQuery-VERSION-linux-x64.tar.gz` |
+
+The current macOS project excludes x86_64. Unsupported architectures and iOS show
+the release page instead of downloading a potentially incompatible package.
+
+Downloads live under the application's support directory in `updates/`. The app
+streams into a `.part` file, validates the release byte count and GitHub's SHA-256
+digest when supplied, then renames the file and stores a completion receipt.
+Before reuse or installation, it rechecks the size and SHA-256. Partial files,
+missing receipts and corrupted files trigger a fresh download.
+
+The update button opens the system installer; the app does not silently replace
+itself. Android may first request permission to install unknown apps; after granting
+it, return and tap the install button again. APKs must use the existing signing key.
+Windows opens the Inno Setup installer. macOS opens the DMG: quit PicQuery and drag
+the new app into Applications, replacing the old app. Linux opens the archive:
+quit PicQuery and replace the existing installation with the extracted bundle.
+Restart PicQuery after completing installation.

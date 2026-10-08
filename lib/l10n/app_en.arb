@@ -170,5 +170,39 @@
   "dropFolderRequiredMessage": "Adding an album requires a folder. Please drag a single folder instead of a file.",
   "dropFolderNoImagesMessage": "This folder and its subfolders contain no supported images (JPG, JPEG, PNG, WebP or BMP).",
   "dragFolderIndexHint": "Drag a folder here to quickly index an album.",
-  "selectOrDropFolder": "Select or drop a folder"
+  "selectOrDropFolder": "Select or drop a folder",
+  "checkAppUpdates": "Check for updates",
+  "appUpdateTitle": "App update",
+  "appUpdateChecking": "Checking GitHub releases…",
+  "appUpdateCurrent": "You are using the latest version.",
+  "appUpdateAvailable": "New version: {version}",
+  "appUpdateFailed": "Update failed. Check your connection and try again.",
+  "appUpdateUnsupported": "No compatible installer is available for this device. View the release page for download options.",
+  "appUpdateDownload": "Download and install",
+  "appUpdateInstall": "Install downloaded update",
+  "appUpdateDownloading": "Downloading… {percent}%",
+  "appUpdateInstalling": "Opening installer…",
+  "appUpdateOpened": "The package has been opened. Complete installation in the system window, then restart PicQuery.",
+  "appUpdateMacGuidance": "In the disk image window, quit PicQuery and drag the new app to Applications to replace the existing app.",
+  "appUpdateLinuxGuidance": "Extract the archive, quit PicQuery and replace your existing installation with the extracted files.",
+  "appUpdatePermission": "Allow PicQuery to install apps in system settings, then return and tap Install downloaded update.",
+  "appUpdateSkip": "Skip this version",
+  "appUpdateLater": "Later",
+  "appUpdateRetry": "Try again",
+  "appUpdateReleasePage": "View release page",
+  "appUpdateClose": "Close",
+  "@appUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@appUpdateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

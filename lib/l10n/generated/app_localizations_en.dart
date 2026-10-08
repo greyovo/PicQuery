@@ -518,4 +518,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectOrDropFolder => 'Select or drop a folder';
+
+  @override
+  String get checkAppUpdates => 'Check for updates';
+
+  @override
+  String get appUpdateTitle => 'App update';
+
+  @override
+  String get appUpdateChecking => 'Checking GitHub releases…';
+
+  @override
+  String get appUpdateCurrent => 'You are using the latest version.';
+
+  @override
+  String appUpdateAvailable(String version) {
+    return 'New version: $version';
+  }
+
+  @override
+  String get appUpdateFailed =>
+      'Update failed. Check your connection and try again.';
+
+  @override
+  String get appUpdateUnsupported =>
+      'No compatible installer is available for this device. View the release page for download options.';
+
+  @override
+  String get appUpdateDownload => 'Download and install';
+
+  @override
+  String get appUpdateInstall => 'Install downloaded update';
+
+  @override
+  String appUpdateDownloading(String percent) {
+    return 'Downloading… $percent%';
+  }
+
+  @override
+  String get appUpdateInstalling => 'Opening installer…';
+
+  @override
+  String get appUpdateOpened =>
+      'The package has been opened. Complete installation in the system window, then restart PicQuery.';
+
+  @override
+  String get appUpdateMacGuidance =>
+      'In the disk image window, quit PicQuery and drag the new app to Applications to replace the existing app.';
+
+  @override
+  String get appUpdateLinuxGuidance =>
+      'Extract the archive, quit PicQuery and replace your existing installation with the extracted files.';
+
+  @override
+  String get appUpdatePermission =>
+      'Allow PicQuery to install apps in system settings, then return and tap Install downloaded update.';
+
+  @override
+  String get appUpdateSkip => 'Skip this version';
+
+  @override
+  String get appUpdateLater => 'Later';
+
+  @override
+  String get appUpdateRetry => 'Try again';
+
+  @override
+  String get appUpdateReleasePage => 'View release page';
+
+  @override
+  String get appUpdateClose => 'Close';
 }

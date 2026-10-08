@@ -13,6 +13,12 @@ class SettingsStore {
   static const String _privacyAgreementAcceptedKey =
       'privacy_agreement_accepted';
 
+  static String? getSkippedUpdateVersion() =>
+      _box.get('skipped_update_version') as String?;
+
+  static Future<void> setSkippedUpdateVersion(String version) =>
+      _box.put('skipped_update_version', version);
+
   static Future<void> init() async {
     await Hive.initFlutter();
     await Hive.openBox(_boxName);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:picquery_app/src/widgets/app_update_sheet.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/engine/api.dart';
@@ -69,6 +70,12 @@ class SettingsPage extends WatchingWidget {
                   values: AppLocale.values,
                   labelFor: (value) => _localeLabel(context, value),
                   onChanged: localeManager.setLocale,
+                ),
+                _buildActionRow(
+                  context,
+                  icon: Icons.system_update_alt,
+                  label: context.l10n.checkAppUpdates,
+                  onTap: () => showAppUpdateSheet(context, manual: true),
                 ),
               ],
             ),

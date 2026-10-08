@@ -502,6 +502,72 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectOrDropFolder => '选择或拖入文件夹';
+
+  @override
+  String get checkAppUpdates => '检查应用更新';
+
+  @override
+  String get appUpdateTitle => '应用更新';
+
+  @override
+  String get appUpdateChecking => '正在检查 GitHub 发布版本…';
+
+  @override
+  String get appUpdateCurrent => '当前已是最新版本。';
+
+  @override
+  String appUpdateAvailable(String version) {
+    return '发现新版本：$version';
+  }
+
+  @override
+  String get appUpdateFailed => '更新操作失败，请检查网络并重试。';
+
+  @override
+  String get appUpdateUnsupported => '此设备暂无兼容的安装包，可查看发布页面获取下载选项。';
+
+  @override
+  String get appUpdateDownload => '下载并安装';
+
+  @override
+  String get appUpdateInstall => '安装已下载的更新';
+
+  @override
+  String appUpdateDownloading(String percent) {
+    return '正在下载… $percent%';
+  }
+
+  @override
+  String get appUpdateInstalling => '正在打开安装程序…';
+
+  @override
+  String get appUpdateOpened => '已打开更新包。请在系统窗口完成安装，然后重新启动 PicQuery。';
+
+  @override
+  String get appUpdateMacGuidance =>
+      '在磁盘映像窗口中，退出 PicQuery，然后将新应用拖入“应用程序”并替换旧版本。';
+
+  @override
+  String get appUpdateLinuxGuidance => '解压更新包，退出 PicQuery，然后用解压后的文件替换原安装目录。';
+
+  @override
+  String get appUpdatePermission =>
+      '请在系统设置中允许 PicQuery 安装应用，然后返回并点击“安装已下载的更新”。';
+
+  @override
+  String get appUpdateSkip => '跳过此版本';
+
+  @override
+  String get appUpdateLater => '稍后再说';
+
+  @override
+  String get appUpdateRetry => '重试';
+
+  @override
+  String get appUpdateReleasePage => '查看发布页面';
+
+  @override
+  String get appUpdateClose => '关闭';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1001,4 +1067,70 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get selectOrDropFolder => '選擇或拖入資料夾';
+
+  @override
+  String get checkAppUpdates => '檢查應用更新';
+
+  @override
+  String get appUpdateTitle => '應用更新';
+
+  @override
+  String get appUpdateChecking => '正在檢查 GitHub 發佈版本…';
+
+  @override
+  String get appUpdateCurrent => '目前已是最新版本。';
+
+  @override
+  String appUpdateAvailable(String version) {
+    return '發現新版本：$version';
+  }
+
+  @override
+  String get appUpdateFailed => '更新操作失敗，請檢查網路並重試。';
+
+  @override
+  String get appUpdateUnsupported => '此裝置暫無相容的安裝套件，可查看發佈頁面取得下載選項。';
+
+  @override
+  String get appUpdateDownload => '下載並安裝';
+
+  @override
+  String get appUpdateInstall => '安裝已下載的更新';
+
+  @override
+  String appUpdateDownloading(String percent) {
+    return '正在下載… $percent%';
+  }
+
+  @override
+  String get appUpdateInstalling => '正在開啟安裝程式…';
+
+  @override
+  String get appUpdateOpened => '已開啟更新套件。請在系統視窗完成安裝，然後重新啟動 PicQuery。';
+
+  @override
+  String get appUpdateMacGuidance =>
+      '在磁碟映像視窗中，結束 PicQuery，然後將新應用程式拖入「應用程式」並取代舊版本。';
+
+  @override
+  String get appUpdateLinuxGuidance => '解壓更新套件，結束 PicQuery，然後用解壓後的檔案取代原安裝目錄。';
+
+  @override
+  String get appUpdatePermission =>
+      '請在系統設定中允許 PicQuery 安裝應用程式，然後返回並點選「安裝已下載的更新」。';
+
+  @override
+  String get appUpdateSkip => '略過此版本';
+
+  @override
+  String get appUpdateLater => '稍後再說';
+
+  @override
+  String get appUpdateRetry => '重試';
+
+  @override
+  String get appUpdateReleasePage => '查看發佈頁面';
+
+  @override
+  String get appUpdateClose => '關閉';
 }
