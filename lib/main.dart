@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/models_config.dart';
@@ -31,6 +32,15 @@ void main() async {
       _log.info(">>>>>>>>>>>>>>>>>>>>>");
       _log.info(">>>> App started >>>>");
       _log.info(">>>>>>>>>>>>>>>>>>>>>");
+
+      try {
+        final packageInfo = await PackageInfo.fromPlatform();
+        _log.info(
+          'App version: ${packageInfo.version}+${packageInfo.buildNumber}',
+        );
+      } catch (error, stackTrace) {
+        _log.warning('Failed to read app version.', error, stackTrace);
+      }
 
       await _configureDesktopWindow();
       await SettingsStore.init();
