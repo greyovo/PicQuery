@@ -46,6 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+          path: PicQuery
 
       - name: Check out model exporter
         uses: actions/checkout@v4
@@ -67,15 +68,14 @@ jobs:
 
       - name: Export and copy models
         shell: bash
-        env:
-          PICQUERY_MODELS_DIR: ${{ github.workspace }}/picquery-models
+        working-directory: PicQuery
         run: bash scripts/prepare_models.sh
 
       - name: Upload generated models
         uses: actions/upload-artifact@v4
         with:
           name: picquery-models
-          path: assets/models/*
+          path: PicQuery/assets/models/*
           if-no-files-found: error
           retention-days: 1
 
