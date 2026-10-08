@@ -421,6 +421,21 @@ class Db {
     return rowids.length;
   }
 
+  /// Resolve the indexed album, rather than a mobile photo's cache directory.
+  (String, String?)? getImageAlbum(String filePath) {
+    final rows = _conn.select(
+      '''SELECT folders.folder_path, folders.display_name FROM images
+         JOIN folders ON folders.id = images.folder_id
+         WHERE images.file_path = ?1''',
+      [filePath],
+    );
+    if (rows.isEmpty) return null;
+    return (
+      rows.first['folder_path'] as String,
+      rows.first['display_name'] as String?,
+    );
+  }
+
   /// Get image metadata by rowid; returns (filePath, fileName) or null.
   (String, String)? getImageById(int id) {
     final rows = _conn.select(

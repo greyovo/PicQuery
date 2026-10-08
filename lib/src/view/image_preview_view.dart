@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:picquery_app/src/engine/api.dart';
@@ -8,8 +10,7 @@ import 'package:picquery_app/src/utils/toast_helper.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:picquery_app/src/utils/image_opener.dart';
 
 import 'image_info_bottom_sheet.dart';
 
@@ -28,6 +29,31 @@ class ImagePreviewView extends StatefulWidget {
 }
 
 class _ImagePreviewViewState extends State<ImagePreviewView> {
+  bool _isScrolling = false;
+  final Map<String, String> _albumNames = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAlbumName();
+  }
+
+  Future<void> _loadAlbumName() async {
+    final path = _currentResult.filePath;
+    if (_albumNames.containsKey(path)) return;
+    final album = await getImageAlbum(filePath: path);
+    if (!mounted) return;
+    setState(() {
+      _albumNames[path] = album?.$2?.trim().isNotEmpty == true
+          ? album!.$2!
+          : album != null
+          ? p.basename(album.$1)
+          : isMobile
+          ? context.l10n.unknown
+          : p.basename(p.dirname(path));
+    });
+  }
+
   late int _currentIndex = widget.initialIndex;
   late final _pageController = PageController(initialPage: widget.initialIndex);
 
@@ -88,23 +114,14 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
     final strings = context.l10n;
     try {
       final file = File(_currentResult.filePath);
-      if (!await file.exists()) {
+      if (!Platform.isIOS && !await file.exists()) {
         if (mounted) {
           _showError(strings.fileNotFound);
         }
         return;
       }
 
-      if (isDesktop) {
-        await OpenFilex.open(_currentResult.filePath);
-      } else {
-        final uri = Uri.file(_currentResult.filePath);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri);
-        } else {
-          await OpenFilex.open(_currentResult.filePath);
-        }
-      }
+      await openImageExternally(file.path);
     } catch (e) {
       if (mounted) {
         _showError(strings.openFailed(e));
@@ -149,35 +166,17 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
 
   Scaffold _buildBody() {
     final mediaQuery = MediaQuery.of(context);
-    final imageWidth = mediaQuery.size.width * mediaQuery.devicePixelRatio * 1.1;
+    final imageWidth =
+        mediaQuery.size.width * mediaQuery.devicePixelRatio * 1.1;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        flexibleSpace: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 42),
-            child: ListTile(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      _currentResult.fileName,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('${_currentIndex + 1} / ${widget.results.length}'),
-                ],
-              ),
-            ),
-          ),
+        centerTitle: true,
+        title: Text(
+          _albumNames[_currentResult.filePath] ??
+              (isMobile ? '' : p.basename(p.dirname(_currentResult.filePath))),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         actions: [
           if (context.isLargeScreen)
@@ -191,33 +190,74 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
       body: Column(
         children: [
           Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: widget.results.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                final result = widget.results[index];
-                return Center(
-                  child: Image.file(
-                    key: ValueKey(result.filePath),
-                    File(result.filePath),
-                    width: imageWidth,
-                    cacheWidth: imageWidth.toInt(),
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, _, __) => Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 64,
-                        color: context.colors.onSurfaceVariant,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification.depth != 0) return false;
+                    if (notification is ScrollStartNotification) {
+                      setState(() => _isScrolling = true);
+                    } else if (notification is ScrollEndNotification) {
+                      setState(() => _isScrolling = false);
+                    }
+                    return false;
+                  },
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.results.length,
+                    onPageChanged: (index) {
+                      setState(() => _currentIndex = index);
+                      _loadAlbumName();
+                    },
+                    itemBuilder: (context, index) {
+                      final result = widget.results[index];
+                      return Center(
+                        child: Image.file(
+                          key: ValueKey(result.filePath),
+                          File(result.filePath),
+                          width: imageWidth,
+                          cacheWidth: imageWidth.toInt(),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, _, __) => Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 64,
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: _isScrolling ? 1 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.55),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Text(
+                          '${_currentIndex + 1} / ${widget.results.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
           _buildBottomToolbar(),

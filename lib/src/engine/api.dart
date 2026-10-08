@@ -11,6 +11,12 @@ import 'package:picquery_app/src/engine/translator.dart';
 
 export 'models.dart';
 
+/// The indexed album's path and display name for a photo, including history.
+Future<(String, String?)?> getImageAlbum({required String filePath}) async {
+  if (!Db.isInitialized) return null;
+  return Db.instance.getImageAlbum(filePath);
+}
+
 final _log = Logger('engine.api');
 
 /// Initialize the database at the given path.

@@ -40,6 +40,17 @@ void main() {
   );
 
   group('schema init', () {
+    test('resolves mobile album names from indexed image membership', () {
+      final albumId = db.insertFolder('mobile-album-id', 1, displayName: '旅行');
+      db.insertImagesAndVectorsBatch(
+        albumId,
+        [image('/cache/photo.jpg')],
+        [unitVector(kEmbeddingDim, 0)],
+      );
+      expect(db.getImageAlbum('/cache/photo.jpg'), ('mobile-album-id', '旅行'));
+      expect(db.getImageAlbum('/cache/missing.jpg'), isNull);
+    });
+
     test('is idempotent across reopen (file db)', () async {
       final tmpDir = Directory.systemTemp.createTempSync();
       addTearDown(() => tmpDir.deleteSync(recursive: true));
