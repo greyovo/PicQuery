@@ -154,7 +154,7 @@ class Db {
     _log.info(
       'Database ready: sqlite=${sqlite3.version}; '
       'sqlite-vector=${vectorVersion.first['version']}; '
-      'backend=${vectorBackend.first['backend']}; path=$path.',
+      'backend=${vectorBackend.first['backend']}.',
     );
   }
 

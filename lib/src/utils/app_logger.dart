@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:picquery_app/src/utils/log_redactor.dart';
 
 /// Captures only records emitted through [Logger] and persists them by day.
 class AppLogger with WidgetsBindingObserver {
@@ -29,6 +30,14 @@ class AppLogger with WidgetsBindingObserver {
     );
     await _logDirectory.create(recursive: true);
     await _removeOldLogFiles();
+    // Migrate logs written by versions that included user directories.
+    for (final file in await _listLogFiles()) {
+      final original = await file.readAsString();
+      final sanitized = LogRedactor.redact(original);
+      if (sanitized != original) {
+        await file.writeAsString(sanitized, flush: true);
+      }
+    }
 
     Logger.root.level = Level.ALL;
     Logger.root.onRecord.listen(_handleRecord);
@@ -37,16 +46,15 @@ class AppLogger with WidgetsBindingObserver {
   }
 
   void _handleRecord(LogRecord record) {
+    final text = _format(record);
     developer.log(
-      record.message,
+      text,
       name: record.loggerName,
       level: record.level.value,
       time: record.time,
       sequenceNumber: record.sequenceNumber,
-      error: record.error,
-      stackTrace: record.stackTrace,
     );
-    _buffer.add(_BufferedLogRecord(record.time.toLocal(), _format(record)));
+    _buffer.add(_BufferedLogRecord(record.time.toLocal(), text));
     if (_buffer.length >= _flushThreshold) unawaited(flush());
   }
 
@@ -57,7 +65,7 @@ class AppLogger with WidgetsBindingObserver {
       ..write('${record.loggerName}: ${record.message}');
     if (record.error != null) output.write('\nError: ${record.error}');
     if (record.stackTrace != null) output.write('\n${record.stackTrace}');
-    return output.toString();
+    return LogRedactor.redact(output.toString());
   }
 
   String _shortLevelName(Level level) => switch (level.name) {
@@ -111,7 +119,7 @@ class AppLogger with WidgetsBindingObserver {
         '===== ${file.uri.pathSegments.last} =====\n${await file.readAsString()}',
       );
     }
-    return sections.join('\n');
+    return LogRedactor.redact(sections.join('\n'));
   }
 
   Future<void> clearLogs() async {
