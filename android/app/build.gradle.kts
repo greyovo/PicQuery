@@ -71,37 +71,41 @@ android {
         }
     }
 
-    val ndkDir = ndkDirectory
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDir(layout.buildDirectory.dir("cxx_shared").get().asFile)
+        }
+    }
+}
+
+// Resolve the NDK when the task runs, after AGP has finalized ndkVersion.
+// Reading android.ndkDirectory inside the DSL can resolve the default NDK too early.
+val copyNdkCxxShared by tasks.registering(Sync::class) {
     val hostTag = when {
         System.getProperty("os.name").lowercase().contains("mac") -> "darwin-x86_64"
         System.getProperty("os.name").lowercase().contains("linux") -> "linux-x86_64"
         System.getProperty("os.name").lowercase().contains("win") -> "windows-x86_64"
         else -> error("Unsupported host OS")
     }
+    val ndkDirectory = androidComponents.sdkComponents.ndkDirectory
     val abiToTriple = mapOf(
         "arm64-v8a" to "aarch64-linux-android",
         "armeabi-v7a" to "arm-linux-androideabi",
         "x86_64" to "x86_64-linux-android",
         "x86" to "i686-linux-android"
     )
-    val cxxLibDir = layout.buildDirectory.dir("cxx_shared").get().asFile
     abiToTriple.forEach { (abi, triple) ->
-        val src = File(
-            ndkDir, "toolchains/llvm/prebuilt/$hostTag/sysroot/usr/lib/$triple/libc++_shared.so"
-        )
-        if (src.exists()) {
-            val dst = File(cxxLibDir, "$abi/libc++_shared.so")
-            dst.parentFile.mkdirs()
-            src.copyTo(dst, overwrite = true)
+        from(ndkDirectory.map {
+            it.file("toolchains/llvm/prebuilt/$hostTag/sysroot/usr/lib/$triple/libc++_shared.so")
+        }) {
+            into(abi)
         }
     }
+    into(layout.buildDirectory.dir("cxx_shared"))
+}
 
-    sourceSets {
-        getByName("main") {
-            jniLibs.directories.add(cxxLibDir.absolutePath)
-        }
-    }
-
+tasks.named("preBuild") {
+    dependsOn(copyNdkCxxShared)
 }
 
 kotlin {
