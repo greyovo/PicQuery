@@ -61,8 +61,8 @@ jobs:
             exit 1
           fi
 
-          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/$TAG" >/dev/null 2>&1; then
-            echo "Tag already exists: $TAG" >&2
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/$TAG" >/dev/null 2>&1; then
+            echo "Release already exists for tag: $TAG" >&2
             exit 1
           fi
 
