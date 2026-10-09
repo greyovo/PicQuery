@@ -11,10 +11,6 @@ on:
         description: "Build number (defaults to the current date in YYMMDD format)"
         required: false
         type: string
-      release_notes:
-        description: "Release notes in Markdown (optional)"
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -41,6 +37,17 @@ jobs:
       previous_tag: ${{ steps.release.outputs.previous_tag }}
       build_number: ${{ steps.release.outputs.build_number }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Validate changelog entry
+        env:
+          TAG: ${{ inputs.tag }}
+        run: dart ci/extract_release_notes.dart "$TAG" release-notes.md
+
       - name: Validate tag and find previous release
         id: release
         env:
@@ -90,6 +97,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: dart-lang/setup-dart@v1
+
       - name: Download release assets
         uses: actions/download-artifact@v4
         with:
@@ -99,16 +112,11 @@ jobs:
 
       - name: Prepare release notes
         env:
-          RELEASE_NOTES: ${{ inputs.release_notes }}
           PREVIOUS_TAG: ${{ needs.validate.outputs.previous_tag }}
           TAG: ${{ inputs.tag }}
         shell: bash
         run: |
-          if [[ -n "$RELEASE_NOTES" ]]; then
-            printf '%s\n\n' "$RELEASE_NOTES" > release-notes.md
-          else
-            : > release-notes.md
-          fi
+          dart ci/extract_release_notes.dart "$TAG" release-notes.md
           printf '[查看提交对比](https://github.com/%s/compare/%s...%s)\n' \
             "$GITHUB_REPOSITORY" "$PREVIOUS_TAG" "$TAG" >> release-notes.md
 

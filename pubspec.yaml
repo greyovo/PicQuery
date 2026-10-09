@@ -56,6 +56,7 @@ dependencies:
   desktop_drop: ^0.8.4
   sentry_flutter: ^9.30.1
   http: ^1.6.0
+  flutter_markdown_plus: ^1.0.12
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,8 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/CHANGELOG_zh.md
+    - assets/CHANGELOG_en.md
     - assets/icon-picquery-transparent.png
     - assets/models/
     - website/docs/privacy-policy.md

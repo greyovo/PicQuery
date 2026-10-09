@@ -1155,6 +1155,18 @@ abstract class AppLocalizations {
   /// **'Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.'**
   String get errorReportingDescription;
 
+  /// No description provided for @changelog.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog'**
+  String get changelog;
+
+  /// No description provided for @changelogLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the changelog.'**
+  String get changelogLoadFailed;
+
   /// No description provided for @privacyPolicy.
   ///
   /// In en, this message translates to:

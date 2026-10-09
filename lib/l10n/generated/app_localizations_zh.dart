@@ -589,6 +589,12 @@ class AppLocalizationsZh extends AppLocalizations {
       '向 Sentry 发送诊断信息和脱敏日志。手动报告仅在您点击上报时发送。';
 
   @override
+  String get changelog => '更新日志';
+
+  @override
+  String get changelogLoadFailed => '无法加载更新日志。';
+
+  @override
   String get privacyPolicy => '隐私政策';
 
   @override
@@ -1211,6 +1217,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get errorReportingDescription =>
       '向 Sentry 傳送診斷資訊和去識別日誌。手動報告僅在您點擊回報時傳送。';
+
+  @override
+  String get changelog => '更新日誌';
+
+  @override
+  String get changelogLoadFailed => '無法載入更新日誌。';
 
   @override
   String get privacyPolicy => '隱私政策';

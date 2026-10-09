@@ -211,6 +211,8 @@
   "errorReportFailed": "Could not submit the report. Check your connection and retry.",
   "automaticErrorReporting": "Automatic crash and exception reporting",
   "errorReportingDescription": "Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.",
+  "changelog": "Changelog",
+  "changelogLoadFailed": "Could not load the changelog.",
   "privacyPolicy": "Privacy Policy",
   "indexingReportHint": "Indexing failed. You can report error logs below.",
   "privacyPolicyLoadFailed": "Could not load the Privacy Policy.",

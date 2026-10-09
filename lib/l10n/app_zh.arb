@@ -77,6 +77,8 @@
   "errorReportFailed": "报告提交失败，请检查网络后重试。",
   "automaticErrorReporting": "自动上报崩溃和异常",
   "errorReportingDescription": "向 Sentry 发送诊断信息和脱敏日志。手动报告仅在您点击上报时发送。",
+  "changelog": "更新日志",
+  "changelogLoadFailed": "无法加载更新日志。",
   "privacyPolicy": "隐私政策",
   "indexingReportHint": "索引失败，您可以在下方上报错误日志。",
   "privacyPolicyLoadFailed": "无法加载隐私政策。",

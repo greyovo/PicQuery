@@ -613,6 +613,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.';
 
   @override
+  String get changelog => 'Changelog';
+
+  @override
+  String get changelogLoadFailed => 'Could not load the changelog.';
+
+  @override
   String get privacyPolicy => 'Privacy Policy';
 
   @override

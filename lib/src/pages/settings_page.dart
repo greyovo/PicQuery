@@ -15,6 +15,7 @@ import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/pages/logs_page.dart';
 import 'package:picquery_app/src/utils/error_reporting.dart';
 import 'package:picquery_app/src/pages/privacy_policy_page.dart';
+import 'package:picquery_app/src/pages/changelog_page.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -78,6 +79,16 @@ class SettingsPage extends WatchingWidget {
                   icon: Icons.system_update_alt,
                   label: context.l10n.checkAppUpdates,
                   onTap: () => showAppUpdateSheet(context, manual: true),
+                ),
+                _buildActionRow(
+                  context,
+                  icon: Icons.history_outlined,
+                  label: context.l10n.changelog,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const ChangelogPage(),
+                    ),
+                  ),
                 ),
               ],
             ),

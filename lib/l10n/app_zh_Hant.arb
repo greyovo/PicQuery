@@ -77,6 +77,8 @@
   "errorReportFailed": "報告提交失敗，請檢查網路後重試。",
   "automaticErrorReporting": "自動回報當機和例外",
   "errorReportingDescription": "向 Sentry 傳送診斷資訊和去識別日誌。手動報告僅在您點擊回報時傳送。",
+  "changelog": "更新日誌",
+  "changelogLoadFailed": "無法載入更新日誌。",
   "privacyPolicy": "隱私政策",
   "indexingReportHint": "索引失敗，您可以在下方回報錯誤日誌。",
   "privacyPolicyLoadFailed": "無法載入隱私政策。",
