@@ -48,10 +48,6 @@ void _validateEmbedding(
     }
   }
   final norm = math.sqrt(sumSq);
-  _log.fine(
-    '$model embedding: dimensions=${embedding.length}, '
-    'nonFinite=$nonFinite, norm=${norm.toStringAsFixed(6)}.',
-  );
   if (nonFinite != 0 || norm < 1e-12) {
     throw StateError(
       '$model model produced an invalid embedding '
