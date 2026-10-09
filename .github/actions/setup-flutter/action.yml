@@ -1,0 +1,21 @@
+name: Set up Flutter and model assets
+description: Restore model assets and Flutter dependencies.
+runs:
+  using: composite
+  steps:
+    - name: Download generated models
+      uses: actions/download-artifact@v4
+      with:
+        name: picquery-models
+        path: generated-models
+    - name: Import generated models
+      shell: bash
+      run: bash ci/prepare_models.sh --import generated-models
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: Get dependencies
+      shell: bash
+      run: flutter pub get

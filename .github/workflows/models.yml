@@ -1,0 +1,76 @@
+name: Prepare PicQuery models
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-models:
+    name: Export PicQuery models
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          path: PicQuery
+
+      # No ref: checkout resolves the exporter repository default branch.
+      - name: Check out model exporter
+        uses: actions/checkout@v4
+        with:
+          repository: greyovo/picquery-models
+          path: picquery-models
+
+      - name: Resolve picquery-models default branch commit
+        id: exporter
+        shell: bash
+        working-directory: picquery-models
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache exported ONNX models
+        id: onnx
+        uses: actions/cache@v4
+        with:
+          path: |
+            picquery-models/outputs/mobileclip2_s0_visual.onnx
+            picquery-models/outputs/mobileclip2_s0_text.onnx
+          key: picquery-onnx-${{ steps.exporter.outputs.sha }}
+
+      - name: Set up uv
+        if: steps.onnx.outputs.cache-hit != 'true'
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: picquery-models/uv.lock
+
+      - name: Cache model checkpoints
+        if: steps.onnx.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: picquery-checkpoints-${{ runner.os }}-${{ steps.exporter.outputs.sha }}
+          restore-keys: picquery-checkpoints-${{ runner.os }}-
+
+      - name: Export and copy models
+        if: steps.onnx.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: PicQuery
+        run: bash ci/prepare_models.sh
+
+      - name: Import cached ONNX models
+        if: steps.onnx.outputs.cache-hit == 'true'
+        shell: bash
+        working-directory: PicQuery
+        run: bash ci/prepare_models.sh --import ../picquery-models/outputs
+
+      - name: Upload generated models
+        uses: actions/upload-artifact@v4
+        with:
+          name: picquery-models
+          path: PicQuery/assets/models/*
+          if-no-files-found: error
+          retention-days: 1
+

@@ -64,6 +64,8 @@ mkdir -p "$assets_dir"
 for index in "${!asset_names[@]}"; do
   source="${sources[$index]}"
   [[ -n "$source" ]] || continue
-  cp "$source" "$assets_dir/${asset_names[$index]}"
+  destination="$assets_dir/${asset_names[$index]}"
+  # Common CI setup may already have imported this exact directory.
+  [[ "$source" -ef "$destination" ]] || cp "$source" "$destination"
 done
 echo "Model assets prepared in $assets_dir"

@@ -44,49 +44,28 @@ env:
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_ENVIRONMENT: production
   ARTIFACT_RETENTION_DAYS: 14
-  PICQUERY_MODELS_BUNDLE_DIR: generated-models
+  PICQUERY_MODELS_BUNDLE_DIR: assets/models
 
 jobs:
-  prepare-models:
-    name: Export PicQuery models
+  metadata:
+    name: Resolve build metadata
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      build_number: ${{ steps.version.outputs.build_number }}
+      build_date: ${{ steps.version.outputs.build_date }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-          path: PicQuery
-
-      - name: Check out model exporter
-        uses: actions/checkout@v4
-        with:
-          repository: greyovo/picquery-models
-          path: picquery-models
-
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v10.2.0
-        with:
-          enable-cache: true
-          cache-dependency-glob: picquery-models/uv.lock
-
-      - name: Cache model checkpoints
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface
-          key: picquery-models-${{ runner.os }}-v1
-
-      - name: Export and copy models
+      - uses: actions/checkout@v4
+      - name: Resolve version
+        id: version
         shell: bash
-        working-directory: PicQuery
-        run: bash ci/prepare_models.sh
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
+        run: bash ci/resolve_version.sh >> "$GITHUB_OUTPUT"
 
-      - name: Upload generated models
-        uses: actions/upload-artifact@v4
-        with:
-          name: picquery-models
-          path: PicQuery/assets/models/*
-          if-no-files-found: error
-          retention-days: 1
+  prepare-models:
+    uses: ./.github/workflows/models.yml
 
   unit-tests:
     name: Unit tests
@@ -96,26 +75,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Import generated models
-        run: bash ci/prepare_models.sh --import generated-models
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
       - name: Analyze application
         run: flutter analyze lib/
@@ -136,26 +98,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Import generated models
-        run: bash ci/prepare_models.sh --import generated-models
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
       - name: Run desktop integration tests
         run: bash ci/test_integration.sh macos
@@ -168,17 +113,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Import generated models
-        run: bash ci/prepare_models.sh --import generated-models
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -186,14 +120,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Enable KVM access
         run: |
@@ -216,52 +147,24 @@ jobs:
     name: Android
     # Fork PRs have no signing secrets and must not request the build environment.
     if: github.event_name != 'pull_request'
-    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
+    needs: [prepare-models, metadata, unit-tests]
     runs-on: ubuntu-latest
     environment: android-build
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          lfs: true
+          distribution: temurin
+          java-version: '17'
 
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve version
-        id: version
-        shell: bash
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
-        run: |
-          raw_version="${{ inputs.version }}"
-          if [[ -z "$raw_version" ]]; then
-            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
-          fi
-          version="${raw_version#v}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
-            exit 1
-          fi
-          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
-          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
-            echo "Build number must contain digits only: $build_number" >&2
-            exit 1
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Configure Android signing
         shell: bash
@@ -281,7 +184,9 @@ jobs:
 
       - name: Build and package Android app
         shell: bash
-        run: ci/build.sh android "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        env:
+          BUILD_DATE: ${{ needs.metadata.outputs.build_date }}
+        run: ci/build.sh android "${{ needs.metadata.outputs.version }}" "${{ needs.metadata.outputs.build_number }}"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -301,57 +206,23 @@ jobs:
           if-no-files-found: error
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
+  # Builds overlap integration tests; the release caller still waits for every job.
   build-macos:
     name: macOS
-    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
+    needs: [prepare-models, metadata, unit-tests]
     runs-on: macos-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve version
-        id: version
-        shell: bash
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
-        run: |
-          raw_version="${{ inputs.version }}"
-          if [[ -z "$raw_version" ]]; then
-            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
-          fi
-          version="${raw_version#v}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
-            exit 1
-          fi
-          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
-          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
-            echo "Build number must contain digits only: $build_number" >&2
-            exit 1
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
       - name: Build and package macOS app
         shell: bash
-        run: ci/build.sh macos "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        env:
+          BUILD_DATE: ${{ needs.metadata.outputs.build_date }}
+        run: ci/build.sh macos "${{ needs.metadata.outputs.version }}" "${{ needs.metadata.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -363,55 +234,20 @@ jobs:
 
   build-windows:
     name: Windows
-    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
+    needs: [prepare-models, metadata, unit-tests]
     runs-on: windows-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve version
-        id: version
-        shell: bash
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
-        run: |
-          raw_version="${{ inputs.version }}"
-          if [[ -z "$raw_version" ]]; then
-            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
-          fi
-          version="${raw_version#v}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
-            exit 1
-          fi
-          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
-          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
-            echo "Build number must contain digits only: $build_number" >&2
-            exit 1
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
       - name: Build and package Windows app
         shell: bash
-        run: ci/build.sh windows "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        env:
+          BUILD_DATE: ${{ needs.metadata.outputs.build_date }}
+        run: ci/build.sh windows "${{ needs.metadata.outputs.version }}" "${{ needs.metadata.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -423,60 +259,25 @@ jobs:
 
   build-linux:
     name: Linux
-    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
+    needs: [prepare-models, metadata, unit-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Download generated models
-        uses: actions/download-artifact@v4
-        with:
-          name: picquery-models
-          path: generated-models
 
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libcurl4-openssl-dev
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Resolve version
-        id: version
-        shell: bash
-        env:
-          BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
-        run: |
-          raw_version="${{ inputs.version }}"
-          if [[ -z "$raw_version" ]]; then
-            raw_version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
-          fi
-          version="${raw_version#v}"
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Version/tag must look like v1.2.3, 1.2.3, or v1.2.3-beta.1: $raw_version" >&2
-            exit 1
-          fi
-          build_number="${BUILD_NUMBER_INPUT:-$(TZ=Asia/Shanghai date +%y%m%d)}"
-          if [[ ! "$build_number" =~ ^[0-9]+$ ]]; then
-            echo "Build number must contain digits only: $build_number" >&2
-            exit 1
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Set up Flutter and model assets
+        uses: ./.github/actions/setup-flutter
 
       - name: Build and package Linux app
         shell: bash
-        run: ci/build.sh linux "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.build_number }}"
+        env:
+          BUILD_DATE: ${{ needs.metadata.outputs.build_date }}
+        run: ci/build.sh linux "${{ needs.metadata.outputs.version }}" "${{ needs.metadata.outputs.build_number }}"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
