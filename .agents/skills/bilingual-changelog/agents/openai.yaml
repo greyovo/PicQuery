@@ -1,0 +1,4 @@
+interface:
+  display_name: "中英双语更新日志"
+  short_description: "根据两个 Git tag 之间的提交与代码差异，生成中英双语版本更新日志"
+  default_prompt: "使用 $bilingual-changelog，根据 当前最新 tag 和上一个 tag 之间的提交内容撰写中英双语更新日志。"
