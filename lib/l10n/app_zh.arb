@@ -79,5 +79,15 @@
   "errorReportingDescription": "向 Sentry 发送诊断信息和脱敏日志。手动报告仅在您点击上报时发送。",
   "privacyPolicy": "隐私政策",
   "indexingReportHint": "索引失败，您可以在下方上报错误日志。",
-  "privacyPolicyLoadFailed": "无法加载隐私政策。"
+  "privacyPolicyLoadFailed": "无法加载隐私政策。",
+  "startupTitle": "正在准备 PicQuery",
+  "startupMessage": "首次启动需要准备本地模型资源，可能需要一些时间。所有操作均在设备上完成。",
+  "startupDatabase": "正在打开本地数据库…",
+  "startupClipAssets": "正在准备图片搜索资源…",
+  "startupClipLoading": "正在加载图片搜索模型…",
+  "startupTranslationAssets": "正在准备翻译资源…",
+  "startupTranslationLoading": "正在加载翻译模型…",
+  "startupFailed": "准备失败",
+  "startupFailedMessage": "无法准备本地资源。请检查设备是否有足够的可用空间，然后重试。如果问题仍然存在，请重启应用。",
+  "startupRetry": "重试"
 }

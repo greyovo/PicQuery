@@ -4,9 +4,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:picquery_app/src/engine/api.dart';
-import 'package:picquery_app/src/utils/models_config.dart';
+import 'package:picquery_app/src/utils/app_startup.dart';
+import 'package:picquery_app/src/widgets/startup_gate.dart';
 import 'package:picquery_app/src/stores/settings_store.dart';
 import 'package:picquery_app/src/managers/theme_manager.dart';
 import 'package:picquery_app/src/managers/locale_manager.dart';
@@ -47,24 +46,6 @@ void main() async {
       await SettingsStore.init();
       await ErrorReporting.initialize();
       configureDependencies();
-
-      try {
-        await _initDatabase();
-      } catch (error, stackTrace) {
-        _log.severe('Database initialization failed.', error, stackTrace);
-      }
-
-      initClipModels().catchError((Object error, StackTrace stackTrace) {
-        _log.severe('CLIP model initialization failed.', error, stackTrace);
-      });
-
-      initTranslationModel().catchError((Object error, StackTrace stackTrace) {
-        _log.severe(
-          'Translation model initialization failed.',
-          error,
-          stackTrace,
-        );
-      });
 
       runApp(PicQueryApp());
     },
@@ -108,12 +89,6 @@ Future<void> _configureDesktopWindow() async {
   });
 }
 
-Future<void> _initDatabase() async {
-  final appDir = await getApplicationDocumentsDirectory();
-  final dbPath = '${appDir.path}/picquery_v2.db';
-  await initDb(dbPath: dbPath);
-}
-
 class PicQueryApp extends WatchingWidget {
   const PicQueryApp({super.key});
 
@@ -142,7 +117,10 @@ class PicQueryApp extends WatchingWidget {
         useMaterial3: true,
         fontFamily: 'Microsoft YaHei',
       ),
-      home: const PrivacyAgreementGate(child: AppShell()),
+      home: const StartupGate(
+        initialize: initializeApp,
+        child: PrivacyAgreementGate(child: AppShell()),
+      ),
       navigatorObservers: [FlutterSmartDialog.observer],
       builder: (context, child) =>
           DesktopWindowFrame(child: smartDialogBuilder(context, child)),

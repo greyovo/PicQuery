@@ -11,8 +11,18 @@ const kTranslationModelPath = 'mt_zho-eng.fp32.quantized.onnx';
 const kSourceSpModelPath = 'source_tokenizer.json';
 const kTargetSpModelPath = 'target_tokenizer.json';
 
-Future<void> initClipModels({bool force = false}) async {
-  final modelsDir = await extractClipModelAssets(force: force);
+typedef ModelAssetProgress = void Function(int completed, int total);
+
+Future<void> initClipModels({
+  bool force = false,
+  ModelAssetProgress? onProgress,
+  void Function()? onLoading,
+}) async {
+  final modelsDir = await extractClipModelAssets(
+    force: force,
+    onProgress: onProgress,
+  );
+  onLoading?.call();
   final visualModelPath = '$modelsDir/$kClipVisualModelPath';
   final textModelPath = '$modelsDir/$kClipTextModelPath';
   await loadClipModels(
@@ -22,8 +32,16 @@ Future<void> initClipModels({bool force = false}) async {
   );
 }
 
-Future<void> initTranslationModel({bool force = false}) async {
-  final modelsDir = await extractTranslationModelAssets(force: force);
+Future<void> initTranslationModel({
+  bool force = false,
+  ModelAssetProgress? onProgress,
+  void Function()? onLoading,
+}) async {
+  final modelsDir = await extractTranslationModelAssets(
+    force: force,
+    onProgress: onProgress,
+  );
+  onLoading?.call();
   final modelPath = '$modelsDir/$kTranslationModelPath';
   final sourceSpPath = '$modelsDir/$kSourceSpModelPath';
   final targetSpPath = '$modelsDir/$kTargetSpModelPath';

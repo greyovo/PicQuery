@@ -1172,6 +1172,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load the Privacy Policy.'**
   String get privacyPolicyLoadFailed;
+
+  /// No description provided for @startupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing PicQuery'**
+  String get startupTitle;
+
+  /// No description provided for @startupMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The first launch needs to prepare local model resources and may take a little longer. Everything stays on your device.'**
+  String get startupMessage;
+
+  /// No description provided for @startupDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening local database…'**
+  String get startupDatabase;
+
+  /// No description provided for @startupClipAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing image search resources…'**
+  String get startupClipAssets;
+
+  /// No description provided for @startupClipLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading image search models…'**
+  String get startupClipLoading;
+
+  /// No description provided for @startupTranslationAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing translation resources…'**
+  String get startupTranslationAssets;
+
+  /// No description provided for @startupTranslationLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading translation model…'**
+  String get startupTranslationLoading;
+
+  /// No description provided for @startupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation failed'**
+  String get startupFailed;
+
+  /// No description provided for @startupFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not prepare local resources. Check that your device has enough free space, then retry. If the problem persists, restart the app.'**
+  String get startupFailedMessage;
+
+  /// No description provided for @startupRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get startupRetry;
 }
 
 class _AppLocalizationsDelegate

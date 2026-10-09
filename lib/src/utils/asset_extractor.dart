@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
@@ -9,7 +10,10 @@ final _log = Logger('asset_extractor');
 
 /// Extracts ONNX model files from the Flutter asset bundle to the app's
 /// persistent storage directory. Only copies if files don't already exist.
-Future<String> extractClipModelAssets({bool force = false}) async {
+Future<String> extractClipModelAssets({
+  bool force = false,
+  void Function(int completed, int total)? onProgress,
+}) async {
   final appDir = await getApplicationSupportDirectory();
   final modelsDir = Directory('${appDir.path}/models');
 
@@ -31,16 +35,19 @@ Future<String> extractClipModelAssets({bool force = false}) async {
       : null;
   final refresh = force || installedRevision != assetRevision;
 
+  var completed = 0;
+  onProgress?.call(completed, modelFiles.length);
   for (final assetPath in modelFiles) {
     final fileName = assetPath.split('/').last;
     final targetFile = File('${modelsDir.path}/$fileName');
 
-    if (!await targetFile.exists() || refresh) {
+    if (!await targetFile.exists() ||
+        await targetFile.length() == 0 ||
+        refresh) {
       _log.info('Extracting bundled CLIP model asset.');
-      final data = await rootBundle.load(assetPath);
-      final bytes = data.buffer.asUint8List();
-      await targetFile.writeAsBytes(bytes);
+      await _copyAsset(assetPath, targetFile.path);
     }
+    onProgress?.call(++completed, modelFiles.length);
   }
 
   if (refresh) {
@@ -53,7 +60,10 @@ Future<String> extractClipModelAssets({bool force = false}) async {
 /// Extracts translation model files (ONNX model and tokenizer JSON files)
 /// from the Flutter asset bundle to the app's persistent storage directory.
 /// Only copies if files don't already exist.
-Future<String> extractTranslationModelAssets({bool force = false}) async {
+Future<String> extractTranslationModelAssets({
+  bool force = false,
+  void Function(int completed, int total)? onProgress,
+}) async {
   final appDir = await getApplicationSupportDirectory();
   final modelsDir = Directory('${appDir.path}/models');
 
@@ -67,17 +77,42 @@ Future<String> extractTranslationModelAssets({bool force = false}) async {
     'assets/models/$kTargetSpModelPath',
   ];
 
+  var completed = 0;
+  onProgress?.call(completed, modelFiles.length);
   for (final assetPath in modelFiles) {
     final fileName = assetPath.split('/').last;
     final targetFile = File('${modelsDir.path}/$fileName');
 
-    if (!await targetFile.exists() || force) {
+    if (!await targetFile.exists() || await targetFile.length() == 0 || force) {
       _log.info('Extracting bundled translation model asset.');
-      final data = await rootBundle.load(assetPath);
-      final bytes = data.buffer.asUint8List();
-      await targetFile.writeAsBytes(bytes);
+      await _copyAsset(assetPath, targetFile.path);
     }
+    onProgress?.call(++completed, modelFiles.length);
   }
 
   return modelsDir.path;
+}
+
+/// Asset loading uses Flutter's asynchronous bundle API. Write on a worker and
+/// install via a temporary file, so interrupted first launches cannot leave a
+/// partial model that a later launch mistakes for a usable one.
+Future<void> _copyAsset(String assetPath, String targetPath) async {
+  final data = await rootBundle.load(assetPath);
+  if (data.lengthInBytes == 0) {
+    throw StateError('Bundled model asset is empty: $assetPath');
+  }
+  // Transfer the buffer once rather than copying it when spawning the worker.
+  final transferable = TransferableTypedData.fromList([
+    Uint8List.sublistView(data),
+  ]);
+  await Isolate.run(() async {
+    final bytes = transferable.materialize().asUint8List();
+    final temporary = File('$targetPath.part');
+    try {
+      await temporary.writeAsBytes(bytes, flush: true);
+      await temporary.rename(targetPath);
+    } finally {
+      if (await temporary.exists()) await temporary.delete();
+    }
+  });
 }

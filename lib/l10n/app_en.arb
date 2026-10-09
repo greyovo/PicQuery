@@ -213,5 +213,15 @@
   "errorReportingDescription": "Send diagnostics and redacted logs to Sentry. Manual reports are sent only when you click Report.",
   "privacyPolicy": "Privacy Policy",
   "indexingReportHint": "Indexing failed. You can report error logs below.",
-  "privacyPolicyLoadFailed": "Could not load the Privacy Policy."
+  "privacyPolicyLoadFailed": "Could not load the Privacy Policy.",
+  "startupTitle": "Preparing PicQuery",
+  "startupMessage": "The first launch needs to prepare local model resources and may take a little longer. Everything stays on your device.",
+  "startupDatabase": "Opening local database…",
+  "startupClipAssets": "Preparing image search resources…",
+  "startupClipLoading": "Loading image search models…",
+  "startupTranslationAssets": "Preparing translation resources…",
+  "startupTranslationLoading": "Loading translation model…",
+  "startupFailed": "Preparation failed",
+  "startupFailedMessage": "Could not prepare local resources. Check that your device has enough free space, then retry. If the problem persists, restart the app.",
+  "startupRetry": "Retry"
 }

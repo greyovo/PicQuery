@@ -621,4 +621,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyLoadFailed => 'Could not load the Privacy Policy.';
+
+  @override
+  String get startupTitle => 'Preparing PicQuery';
+
+  @override
+  String get startupMessage =>
+      'The first launch needs to prepare local model resources and may take a little longer. Everything stays on your device.';
+
+  @override
+  String get startupDatabase => 'Opening local database…';
+
+  @override
+  String get startupClipAssets => 'Preparing image search resources…';
+
+  @override
+  String get startupClipLoading => 'Loading image search models…';
+
+  @override
+  String get startupTranslationAssets => 'Preparing translation resources…';
+
+  @override
+  String get startupTranslationLoading => 'Loading translation model…';
+
+  @override
+  String get startupFailed => 'Preparation failed';
+
+  @override
+  String get startupFailedMessage =>
+      'Could not prepare local resources. Check that your device has enough free space, then retry. If the problem persists, restart the app.';
+
+  @override
+  String get startupRetry => 'Retry';
 }

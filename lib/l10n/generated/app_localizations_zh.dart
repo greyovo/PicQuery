@@ -596,6 +596,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get privacyPolicyLoadFailed => '无法加载隐私政策。';
+
+  @override
+  String get startupTitle => '正在准备 PicQuery';
+
+  @override
+  String get startupMessage => '首次启动需要准备本地模型资源，可能需要一些时间。所有操作均在设备上完成。';
+
+  @override
+  String get startupDatabase => '正在打开本地数据库…';
+
+  @override
+  String get startupClipAssets => '正在准备图片搜索资源…';
+
+  @override
+  String get startupClipLoading => '正在加载图片搜索模型…';
+
+  @override
+  String get startupTranslationAssets => '正在准备翻译资源…';
+
+  @override
+  String get startupTranslationLoading => '正在加载翻译模型…';
+
+  @override
+  String get startupFailed => '准备失败';
+
+  @override
+  String get startupFailedMessage =>
+      '无法准备本地资源。请检查设备是否有足够的可用空间，然后重试。如果问题仍然存在，请重启应用。';
+
+  @override
+  String get startupRetry => '重试';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1189,4 +1220,35 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get privacyPolicyLoadFailed => '無法載入隱私政策。';
+
+  @override
+  String get startupTitle => '正在準備 PicQuery';
+
+  @override
+  String get startupMessage => '首次啟動需要準備本機模型資源，可能需要一些時間。所有操作均在裝置上完成。';
+
+  @override
+  String get startupDatabase => '正在開啟本機資料庫…';
+
+  @override
+  String get startupClipAssets => '正在準備圖片搜尋資源…';
+
+  @override
+  String get startupClipLoading => '正在載入圖片搜尋模型…';
+
+  @override
+  String get startupTranslationAssets => '正在準備翻譯資源…';
+
+  @override
+  String get startupTranslationLoading => '正在載入翻譯模型…';
+
+  @override
+  String get startupFailed => '準備失敗';
+
+  @override
+  String get startupFailedMessage =>
+      '無法準備本機資源。請檢查裝置是否有足夠的可用空間，然後重試。如果問題仍然存在，請重新啟動應用程式。';
+
+  @override
+  String get startupRetry => '重試';
 }
