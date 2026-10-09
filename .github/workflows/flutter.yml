@@ -78,7 +78,7 @@ jobs:
       - name: Export and copy models
         shell: bash
         working-directory: PicQuery
-        run: bash scripts/prepare_models.sh
+        run: bash ci/prepare_models.sh
 
       - name: Upload generated models
         uses: actions/upload-artifact@v4
@@ -106,7 +106,7 @@ jobs:
           path: generated-models
 
       - name: Import generated models
-        run: bash scripts/prepare_models.sh --import generated-models
+        run: bash ci/prepare_models.sh --import generated-models
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -146,7 +146,7 @@ jobs:
           path: generated-models
 
       - name: Import generated models
-        run: bash scripts/prepare_models.sh --import generated-models
+        run: bash ci/prepare_models.sh --import generated-models
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -178,7 +178,7 @@ jobs:
           path: generated-models
 
       - name: Import generated models
-        run: bash scripts/prepare_models.sh --import generated-models
+        run: bash ci/prepare_models.sh --import generated-models
 
       - name: Set up Java
         uses: actions/setup-java@v4

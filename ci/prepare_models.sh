@@ -13,7 +13,7 @@ fail() {
 }
 
 if [[ $# -gt 0 ]]; then
-  [[ $# -eq 2 && "$1" == "--import" ]] || fail "Usage: scripts/prepare_models.sh [--import <directory>]"
+  [[ $# -eq 2 && "$1" == "--import" ]] || fail "Usage: ci/prepare_models.sh [--import <directory>]"
   source_dir="$2"
   [[ -d "$source_dir" ]] || fail "Model bundle does not exist: $source_dir"
 else

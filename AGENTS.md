@@ -68,7 +68,7 @@ Note: the old `picquery.db` (sqlite-vec vec0 format) is intentionally not read; 
 
 ### Desktop Icons
 
-- 如果需要更换桌面端 App 的图标，确保图标文件 `assets/icon-picquery.png` 更新后，运行脚本 `scripts/generate_desktop_icons.dart` 会自动生成对应平台的圆角图标。
+- 如果需要更换桌面端 App 的图标，确保图标文件 `assets/icon-picquery.png` 更新后，运行脚本 `ci/generate_desktop_icons.dart` 会自动生成对应平台的圆角图标。
 
 ### Reference Data
 
@@ -86,5 +86,5 @@ Flutter packages (`flutter_onnxruntime`, `sqlite_vector`, `sqlite3`, `image`) wi
 
 ### Model Assets
 
-- Model export tooling lives in `greyovo/picquery-models` (default sibling directory `../picquery-models`); `scripts/prepare_models.sh` runs `uv sync --locked` and `export.sh`, then copies outputs into `assets/models/`.
+- Model export tooling lives in `greyovo/picquery-models` (default sibling directory `../picquery-models`); `ci/prepare_models.sh` runs `uv sync --locked` and `export.sh`, then copies outputs into `assets/models/`.
 - Translation model: MarianMT Chinese→English (`mt_zho-eng.fp32.quantized.onnx`) + SentencePiece tokenizers (`source_tokenizer.json`, `target_tokenizer.json`)

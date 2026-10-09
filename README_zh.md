@@ -45,7 +45,7 @@ flutter pub get
 模型由 [`greyovo/picquery-models`](https://github.com/greyovo/picquery-models) 中的 `export.sh` 导出。安装 [uv](https://docs.astral.sh/uv/getting-started/installation/) 后运行：
 
 ```bash
-bash scripts/prepare_models.sh
+bash ci/prepare_models.sh
 ```
 
 连接设备或在桌面端运行：

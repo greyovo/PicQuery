@@ -1,4 +1,4 @@
-// Run: fvm dart run scripts/generate_desktop_icons.dart [square-source.png]
+// Run: fvm dart run ci/generate_desktop_icons.dart [square-source.png]
 import 'dart:io';
 import 'dart:math' as math;
 

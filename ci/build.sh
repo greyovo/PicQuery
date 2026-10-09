@@ -53,9 +53,9 @@ fi
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$project_root"
 if [[ -n "${PICQUERY_MODELS_BUNDLE_DIR:-}" ]]; then
-  bash scripts/prepare_models.sh --import "$PICQUERY_MODELS_BUNDLE_DIR"
+  bash ci/prepare_models.sh --import "$PICQUERY_MODELS_BUNDLE_DIR"
 else
-  bash scripts/prepare_models.sh
+  bash ci/prepare_models.sh
 fi
 
 case "$platform" in
