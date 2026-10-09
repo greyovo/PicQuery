@@ -10,8 +10,7 @@ import 'package:picquery_app/src/utils/color_scheme.dart';
 class SearchResultGrid extends StatelessWidget {
   final List<SearchResult> results;
 
-  /// Extra top padding so the first rows are not covered by the floating
-  /// search bar on the results page.
+  /// Spacing above the first row of results.
   final double topPadding;
   final ValueChanged<SearchResult>? onResultOpened;
 
@@ -73,11 +72,6 @@ class _ResultCard extends StatelessWidget {
     );
   }
 
-  double getImageHeight(BuildContext context) {
-    final height = MediaQuery.of(context).size.width / 3;
-    return height;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Focus(
@@ -90,24 +84,25 @@ class _ResultCard extends StatelessWidget {
         margin: EdgeInsets.all(2.5),
         child: InkWell(
           onTap: () => _openPreview(context),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.file(
-                  File(result.filePath),
-                  fit: BoxFit.cover,
-                  height: getImageHeight(context),
-                  cacheHeight: getImageHeight(context).toInt(),
-                  errorBuilder: (context, _, __) => Center(
-                    child: Icon(
-                      Icons.broken_image,
-                      size: 48,
-                      color: context.colors.onSurfaceVariant,
-                    ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+              return Image.file(
+                File(result.filePath),
+                fit: BoxFit.cover,
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                cacheWidth: (constraints.maxWidth * pixelRatio).ceil(),
+                cacheHeight: (constraints.maxHeight * pixelRatio).ceil(),
+                errorBuilder: (context, _, __) => Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    size: 48,
+                    color: context.colors.onSurfaceVariant,
                   ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

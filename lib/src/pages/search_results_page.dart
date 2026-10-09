@@ -161,82 +161,74 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top + 84.0;
     final indexing = indexingManager;
     watch(indexing);
 
     return Scaffold(
-      body: Stack(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 84,
+        titleSpacing: 0,
+        title: _buildSearchInput(),
+        backgroundColor: context.colors.surface,
+        surfaceTintColor: Colors.transparent,
+        bottom: _searching
+            ? const PreferredSize(
+                preferredSize: Size.fromHeight(4),
+                child: LinearProgressIndicator(),
+              )
+            : null,
+      ),
+      body: Column(
         children: [
-          // Result content, pushed down far enough that the first rows are not
-          // covered by the floating search bar.
-          if (_results.isEmpty)
-            Padding(
-              padding: EdgeInsets.only(top: topInset),
-              child: _buildEmptyState(context),
-            )
-          else
-            SearchResultGrid(
-              results: _results,
-              topPadding: topInset,
-              onResultOpened: searchManager.addRecentViewedPhoto,
-            ),
-          // Floating search bar over the results.
-          Positioned(top: 0, left: 0, right: 0, child: _buildSearchInput()),
           if (indexing.isIndexing)
-            Positioned(
-              top: topInset,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
-                  context.l10n.indexingResultsWarning,
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: context.colors.onSurfaceVariant),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Text(
+                context.l10n.indexingResultsWarning,
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.colors.onSurfaceVariant),
               ),
             ),
-          if (_searching)
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: LinearProgressIndicator(),
-            ),
+          Expanded(
+            child: _results.isEmpty
+                ? _buildEmptyState(context)
+                : SearchResultGrid(
+                    results: _results,
+                    onResultOpened: searchManager.addRecentViewedPhoto,
+                  ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildSearchInput() {
-    return SafeArea(
-      child: Container(
-        color: context.colors.surface.withValues(alpha: 0.88),
-        padding: const EdgeInsets.only(left: 8, right: 10, top: 12, bottom: 12),
-        child: Center(
-          child: ConstrainedBox(
-            // 48px for the back button + the 568px search input used on the
-            // search page. Centering this group also centers the button.
-            constraints: const BoxConstraints(
-              maxWidth: kSearchInputMaxWidth + 48,
-            ),
-            child: Row(
-              children: [
-                BackButton(onPressed: () => Navigator.of(context).maybePop()),
-                Expanded(
-                  child: Hero(
-                    tag: kSearchInputHeroTag,
-                    createRectTween: (begin, end) =>
-                        RectTween(begin: begin, end: end),
-                    child: SearchInputCard(
-                      queryController: _queryController,
-                      onSearch: _searchByText,
-                      onImageUpload: _searchByImage,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 10, top: 12, bottom: 12),
+      child: Center(
+        child: ConstrainedBox(
+          // 48px for the back button + the 568px search input used on the
+          // search page. Centering this group also centers the button.
+          constraints: const BoxConstraints(
+            maxWidth: kSearchInputMaxWidth + 48,
+          ),
+          child: Row(
+            children: [
+              BackButton(onPressed: () => Navigator.of(context).maybePop()),
+              Expanded(
+                child: Hero(
+                  tag: kSearchInputHeroTag,
+                  createRectTween: (begin, end) =>
+                      RectTween(begin: begin, end: end),
+                  child: SearchInputCard(
+                    queryController: _queryController,
+                    onSearch: _searchByText,
+                    onImageUpload: _searchByImage,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
