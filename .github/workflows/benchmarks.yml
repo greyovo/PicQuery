@@ -2,9 +2,6 @@ name: Model performance benchmarks
 
 on:
   workflow_dispatch:
-  schedule:
-    # Weekly, Monday 10:00 Asia/Shanghai.
-    - cron: '0 2 * * 1'
 
 permissions:
   contents: read
@@ -37,32 +34,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Prepare Android and run benchmarks
+        uses: ./.github/actions/test-android
         with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Flutter and model assets
-        uses: ./.github/actions/setup-flutter
-
-      - name: Set up Gradle cache
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Enable KVM access
-        run: |
-          sudo chmod 666 /dev/kvm
-
-      - name: Run Android benchmarks on an emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          arch: x86_64
-          target: google_apis
-          profile: pixel_6
-          ram-size: 4096M
-          heap-size: 1024M
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: bash ci/test_integration.sh android emulator-5554 benchmarks
-
+          mode: benchmarks

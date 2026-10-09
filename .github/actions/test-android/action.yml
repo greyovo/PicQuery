@@ -1,0 +1,39 @@
+name: Prepare Android and run integration tests
+description: Set up Java, Flutter, models, Gradle, and an emulator on the current runner.
+inputs:
+  mode:
+    description: Integration suite selection (correctness, benchmarks, or all).
+    default: correctness
+runs:
+  using: composite
+  steps:
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
+
+    - name: Set up Flutter and model assets
+      uses: ./.github/actions/setup-flutter
+
+    - name: Set up Gradle cache
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Enable KVM access
+      shell: bash
+      run: |
+        sudo chmod 666 /dev/kvm
+
+    - name: Run Android integration tests on an emulator
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 34
+        arch: x86_64
+        target: google_apis
+        profile: pixel_6
+        ram-size: 4096M
+        heap-size: 1024M
+        disable-animations: true
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        script: bash ci/test_integration.sh android emulator-5554 "${{ inputs.mode }}"
+

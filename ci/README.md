@@ -1,22 +1,29 @@
 # CI workflows
 
-- `flutter.yml`: prepares models once, runs unit and correctness integration tests,
-  and builds all platforms. Builds wait for unit tests but overlap integration
-  tests. `release.yml` waits for the entire reusable workflow to succeed before
-  publishing, including both integration test jobs.
+- `flutter.yml`: skips pushes and PR updates that only change `website/` or
+  `deploy.yml`. Otherwise, prepares models once, runs analysis and unit tests,
+  then runs platform jobs in parallel. Android and macOS each run correctness
+  integration tests before packaging on the same runner, reusing their setup and
+  native dependency state. PRs run Android tests without the signing environment
+  or signed builds; other events run Android tests and builds in `android-build`.
+  Windows and Linux have build jobs. `release.yml` waits for the entire reusable
+  workflow to succeed before publishing, including all integration tests.
 - `models.yml`: checks out the default branch of `greyovo/picquery-models` and
   caches the two MobileCLIP ONNX outputs under `picquery-onnx-<full HEAD SHA>`.
   Any commit on that branch invalidates the cache. There is no fallback key for
   exported models. Cache hits skip Python setup and export; translation and
   tokenizer assets always come from the current PicQuery checkout.
-- `benchmarks.yml`: runs performance suites manually or weekly on Monday at
-  10:00 Asia/Shanghai. Each suite still runs in its own application process.
+- `benchmarks.yml`: runs performance suites only when manually dispatched. Each
+  suite still runs in its own application process.
 - `deploy.yml`: deploys Pages only for changes under `website/` or to the deploy
   workflow itself, or when manually dispatched.
 
 `.github/actions/setup-flutter` downloads and imports the complete model bundle,
 restores Flutter/pub caches, and resolves dependencies. Consumer checkouts do not
-fetch LFS again. Android jobs also restore Gradle state.
+fetch LFS again. `.github/actions/test-android` additionally sets up Java,
+restores Gradle state, and runs the selected suites on an emulator. The Android
+release build runs after this action in the same job; signing is configured only
+after tests pass.
 
 `resolve_version.sh` resolves `VERSION_INPUT` (defaults to `pubspec.yaml`) and
 `BUILD_NUMBER_INPUT` (defaults to the date in Asia/Shanghai), validates them, and

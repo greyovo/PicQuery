@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - "website/**"
+      - ".github/workflows/deploy.yml"
   pull_request:
+    paths-ignore:
+      - "website/**"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
     inputs:
       version:
@@ -90,81 +96,34 @@ jobs:
       - name: Test diagnostics with a configured DSN
         run: flutter test test/error_reporting_test.dart --dart-define=SENTRY_DSN=https://public@example.invalid/1
 
-  integration-tests-desktop:
-    name: Desktop integration tests
-    needs: prepare-models
-    runs-on: macos-latest
-    timeout-minutes: 45
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter and model assets
-        uses: ./.github/actions/setup-flutter
-
-      - name: Run desktop integration tests
-        run: bash ci/test_integration.sh macos
-
   integration-tests-android:
-    name: Android integration tests
-    needs: prepare-models
+    name: Android integration tests (PR)
+    # PRs must not request the signing environment or build signed artifacts.
+    if: github.event_name == 'pull_request'
+    needs: [prepare-models, unit-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Flutter and model assets
-        uses: ./.github/actions/setup-flutter
-
-      - name: Set up Gradle cache
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Enable KVM access
-        run: |
-          sudo chmod 666 /dev/kvm
-
-      - name: Run Android integration tests on an emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          arch: x86_64
-          target: google_apis
-          profile: pixel_6
-          ram-size: 4096M
-          heap-size: 1024M
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: bash ci/test_integration.sh android emulator-5554
+      - name: Prepare Android and run integration tests
+        uses: ./.github/actions/test-android
 
   build-android:
-    name: Android
+    name: Android integration tests and build
     # Fork PRs have no signing secrets and must not request the build environment.
     if: github.event_name != 'pull_request'
     needs: [prepare-models, metadata, unit-tests]
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     environment: android-build
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter and model assets
-        uses: ./.github/actions/setup-flutter
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Gradle cache
-        uses: gradle/actions/setup-gradle@v4
+      - name: Prepare Android and run integration tests
+        uses: ./.github/actions/test-android
 
       - name: Configure Android signing
         shell: bash
@@ -206,17 +165,20 @@ jobs:
           if-no-files-found: error
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-  # Builds overlap integration tests; the release caller still waits for every job.
   build-macos:
-    name: macOS
+    name: macOS integration tests and build
     needs: [prepare-models, metadata, unit-tests]
     runs-on: macos-latest
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Flutter and model assets
         uses: ./.github/actions/setup-flutter
+
+      - name: Run desktop integration tests
+        run: bash ci/test_integration.sh macos
 
       - name: Build and package macOS app
         shell: bash
