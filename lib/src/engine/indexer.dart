@@ -241,9 +241,8 @@ Future<bool> _indexPendingImages(
   Future<void> flushBatch() async {
     if (batch.isEmpty) return;
     try {
-      final first = batch.first;
-      Db.instance.insertImagesAndVectorsBatch(
-        first.albumId,
+      Db.instance.insertImagesAndVectorsForFoldersBatch(
+        batch.map((e) => e.albumId).toList(),
         batch
             .map(
               (e) => ImageRowData(

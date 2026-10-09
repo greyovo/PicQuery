@@ -337,7 +337,19 @@ class Db {
     int folderId,
     List<ImageRowData> images,
     List<List<double>> vectors,
+  ) => insertImagesAndVectorsForFoldersBatch(
+    List<int>.filled(images.length, folderId),
+    images,
+    vectors,
+  );
+
+  /// Inserts a mixed-album batch atomically, preserving each image's owner.
+  int insertImagesAndVectorsForFoldersBatch(
+    List<int> folderIds,
+    List<ImageRowData> images,
+    List<List<double>> vectors,
   ) {
+    assert(folderIds.length == images.length);
     assert(images.length == vectors.length);
     _conn.execute('BEGIN');
     try {
@@ -348,7 +360,7 @@ class Db {
           'INSERT INTO images (folder_id, file_path, file_name, file_size, modified_time, width, height, format, indexed_at) '
           'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)',
           [
-            folderId,
+            folderIds[i],
             img.filePath,
             img.fileName,
             img.fileSize,

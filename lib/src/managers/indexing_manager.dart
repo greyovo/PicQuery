@@ -255,6 +255,7 @@ class IndexingManager extends ChangeNotifier {
   }) async {
     _upToDateResetTimer?.cancel();
     albumUpdateStatus = .checking;
+    updateAvailableAlbumPaths = const {};
     pendingUpdateCount = 0;
     pendingUpdateCountsByAlbum = const {};
     notifyListeners();
@@ -535,6 +536,7 @@ class IndexingManager extends ChangeNotifier {
   void setIndexingStatusUpToDate() {
     _upToDateResetTimer?.cancel();
     albumUpdateStatus = .upToDate;
+    pendingUpdateCount = 0;
     updateAvailableAlbumPaths = const {};
     pendingUpdateCountsByAlbum = const {};
     notifyListeners();

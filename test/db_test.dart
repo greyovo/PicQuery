@@ -154,6 +154,48 @@ void main() {
   });
 
   group('images & vectors', () {
+    test('mixed-album batch preserves ownership and vector alignment', () {
+      final idA = db.insertFolder('/a', 100);
+      final idB = db.insertFolder('/b', 100);
+      final inserted = db.insertImagesAndVectorsForFoldersBatch(
+        [idA, idB, idA],
+        [image('/a/1.jpg'), image('/b/1.jpg'), image('/a/2.jpg')],
+        [
+          unitVector(kEmbeddingDim, 0),
+          unitVector(kEmbeddingDim, 1),
+          unitVector(kEmbeddingDim, 2),
+        ],
+      );
+
+      expect(inserted, 3);
+      expect(db.getIndexedFilePaths(idA).toSet(), {'/a/1.jpg', '/a/2.jpg'});
+      expect(db.getIndexedFilePaths(idB), ['/b/1.jpg']);
+      final hits = db.knnSearchFiltered(unitVector(kEmbeddingDim, 1), 1, [idB]);
+      expect(hits, hasLength(1));
+      expect(db.getImageById(hits.single.rowid)!.$1, '/b/1.jpg');
+      expect(hits.single.distance, closeTo(0, 1e-5));
+    });
+
+    test('mixed-album batch rolls back images and vectors on conflict', () {
+      final idA = db.insertFolder('/a', 100);
+      final idB = db.insertFolder('/b', 100);
+      expect(
+        () => db.insertImagesAndVectorsForFoldersBatch(
+          [idA, idB, idB],
+          [image('/a/1.jpg'), image('/b/1.jpg'), image('/a/1.jpg')],
+          [
+            unitVector(kEmbeddingDim, 0),
+            unitVector(kEmbeddingDim, 1),
+            unitVector(kEmbeddingDim, 2),
+          ],
+        ),
+        throwsA(anything),
+      );
+      expect(db.getIndexedFilePaths(idA), isEmpty);
+      expect(db.getIndexedFilePaths(idB), isEmpty);
+      expect(db.knnSearch(unitVector(kEmbeddingDim, 0), 10), isEmpty);
+    });
+
     test('batch insert is atomic (unique violation rolls back everything)', () {
       final idA = db.insertFolder('/a', 100);
       final imgs = [
