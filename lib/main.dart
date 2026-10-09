@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:picquery_app/src/utils/app_startup.dart';
@@ -43,6 +44,11 @@ void main() async {
       }
 
       await _configureDesktopWindow();
+      if (Platform.isMacOS) {
+        // PicQuery disables App Sandbox in every macOS build configuration.
+        // The picker's sandbox entitlement checks would block native dialogs.
+        await FilePicker.skipEntitlementsChecks();
+      }
       await SettingsStore.init();
       await ErrorReporting.initialize();
       configureDependencies();
