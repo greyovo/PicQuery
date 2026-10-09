@@ -436,7 +436,7 @@ Stream<IndexProgress> indexAlbum({
 
     final pending = <_PendingImage>[];
     for (final pathStr in imagePaths) {
-      if (isUpdate && existingPaths.contains(pathStr)) {
+      if (db.linkIndexedImage(albumId, pathStr)) {
         continue;
       }
       final img = await _buildPendingImage(
@@ -449,11 +449,7 @@ Stream<IndexProgress> indexAlbum({
       }
     }
 
-    final toEncode = isUpdate
-        ? pending
-        : pending
-              .where((img) => !db.isImageIndexed(img.pathStr, img.modifiedTime))
-              .toList();
+    final toEncode = pending;
     final alreadyIndexed = total - toEncode.length;
     _updateAlbumRecord(db, albumId, now, total, false);
 
@@ -531,7 +527,7 @@ Stream<IndexProgress> indexImages({
 
     final pending = <_PendingImage>[];
     for (final pathStr in imagePaths) {
-      if (isUpdate && existingPaths.contains(pathStr)) {
+      if (db.linkIndexedImage(albumId, pathStr)) {
         continue;
       }
       final img = await _buildPendingImage(
@@ -544,11 +540,7 @@ Stream<IndexProgress> indexImages({
       }
     }
 
-    final toEncode = isUpdate
-        ? pending
-        : pending
-              .where((img) => !db.isImageIndexed(img.pathStr, img.modifiedTime))
-              .toList();
+    final toEncode = pending;
     final alreadyIndexed = total - toEncode.length;
     _updateAlbumRecord(db, albumId, now, total, false);
 
@@ -676,6 +668,7 @@ Stream<IndexProgress> indexPendingUpdates() {
       final indexedPaths = db.getIndexedFilePaths(update.albumId).toSet();
       for (final pathStr in update.newPhotos) {
         if (!indexedPaths.add(pathStr)) continue;
+        if (db.linkIndexedImage(update.albumId, pathStr)) continue;
         final img = await _buildPendingImage(
           pathStr: pathStr,
           albumId: update.albumId,

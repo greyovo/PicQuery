@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:picquery_app/src/engine/db.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,63 @@ void main() {
       );
       expect(db.getImageAlbum('/cache/photo.jpg'), ('mobile-album-id', '旅行'));
       expect(db.getImageAlbum('/cache/missing.jpg'), isNull);
+    });
+
+    test('migrates legacy album ownership without losing IDs or vectors', () async {
+      final directory = Directory.systemTemp.createTempSync();
+      addTearDown(() => directory.deleteSync(recursive: true));
+      final path = '${directory.path}/legacy.db';
+      final legacy = sqlite3.open(path);
+      legacy.execute(
+        '''CREATE TABLE folders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, folder_path TEXT NOT NULL UNIQUE,
+        indexed_at INTEGER NOT NULL, image_count INTEGER NOT NULL DEFAULT 0)''',
+      );
+      legacy.execute('''CREATE TABLE images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        folder_id INTEGER NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+        file_path TEXT NOT NULL UNIQUE, file_name TEXT NOT NULL,
+        file_size INTEGER NOT NULL, modified_time INTEGER NOT NULL,
+        width INTEGER NOT NULL, height INTEGER NOT NULL, format TEXT NOT NULL,
+        indexed_at INTEGER NOT NULL, ocr_text TEXT)''');
+      legacy.execute(
+        'CREATE INDEX idx_images_modified ON images(file_path, modified_time)',
+      );
+      legacy.execute('CREATE INDEX idx_images_folder ON images(folder_id)');
+      legacy.execute(
+        'CREATE TABLE vector_images (rowid INTEGER PRIMARY KEY, embedding BLOB NOT NULL)',
+      );
+      legacy.execute("INSERT INTO folders VALUES (7, 'camera', 1, 1)");
+      legacy.execute(
+        "INSERT INTO images VALUES (42, 7, '/shared.jpg', 'shared.jpg', 123, 100, 10, 10, 'jpeg', 1000, 'saved OCR')",
+      );
+      legacy.execute('INSERT INTO vector_images VALUES (?, ?)', [
+        42,
+        vectorToBlob(unitVector(kEmbeddingDim, 0)),
+      ]);
+      legacy.close();
+      await Db.init(path);
+      addTearDown(() => Db.instance.close());
+      final migrated = Db.instance;
+      expect(migrated.getIndexedFilePaths(7), ['/shared.jpg']);
+      expect(migrated.getFolderImageCount(7), 1);
+      expect(
+        migrated.knnSearch(unitVector(kEmbeddingDim, 0), 1).single.rowid,
+        42,
+      );
+      final recent = migrated.insertFolder('recent', 2);
+      expect(migrated.linkIndexedImage(recent, '/shared.jpg'), isTrue);
+      migrated.deleteFolder(7);
+      expect(migrated.getImageById(42)!.$1, '/shared.jpg');
+      migrated.close();
+      await Db.init(path);
+      expect(Db.instance.getIndexedFilePaths(recent), ['/shared.jpg']);
+      expect(
+        Db.instance.knnSearch(unitVector(kEmbeddingDim, 0), 1).single.rowid,
+        42,
+      );
+      Db.instance.deleteFolder(recent);
+      expect(Db.instance.getTotalVectorCount(), 0);
     });
 
     test('is idempotent across reopen (file db)', () async {
@@ -176,12 +234,12 @@ void main() {
       expect(hits.single.distance, closeTo(0, 1e-5));
     });
 
-    test('mixed-album batch rolls back images and vectors on conflict', () {
+    test('mixed-album batch rolls back on invalid album membership', () {
       final idA = db.insertFolder('/a', 100);
       final idB = db.insertFolder('/b', 100);
       expect(
         () => db.insertImagesAndVectorsForFoldersBatch(
-          [idA, idB, idB],
+          [idA, idB, -1],
           [image('/a/1.jpg'), image('/b/1.jpg'), image('/a/1.jpg')],
           [
             unitVector(kEmbeddingDim, 0),
@@ -196,27 +254,101 @@ void main() {
       expect(db.knnSearch(unitVector(kEmbeddingDim, 0), 10), isEmpty);
     });
 
-    test('batch insert is atomic (unique violation rolls back everything)', () {
-      final idA = db.insertFolder('/a', 100);
-      final imgs = [
-        image('/a/1.jpg'),
-        image('/a/2.jpg'),
-        image('/a/1.jpg'),
-      ]; // dup path
-      final vecs = [
-        unitVector(kEmbeddingDim, 0),
-        unitVector(kEmbeddingDim, 1),
-        unitVector(kEmbeddingDim, 2),
-      ];
-
-      expect(
-        () => db.insertImagesAndVectorsBatch(idA, imgs, vecs),
-        throwsA(anything),
+    test('duplicate paths reuse the original vector within a batch', () {
+      final album = db.insertFolder('/a', 100);
+      final inserted = db.insertImagesAndVectorsBatch(
+        album,
+        [image('/a/1.jpg'), image('/a/2.jpg'), image('/a/1.jpg')],
+        [
+          unitVector(kEmbeddingDim, 0),
+          unitVector(kEmbeddingDim, 1),
+          unitVector(kEmbeddingDim, 2),
+        ],
       );
-      // Nothing written — no partial state.
-      expect(db.getIndexedFilePaths(idA), isEmpty);
+      expect(inserted, 2);
+      expect(db.getFolderImageCount(album), 2);
+      expect(db.getTotalImageCount(), 2);
+      expect(db.getTotalVectorCount(), 2);
+      final hit = db.knnSearch(unitVector(kEmbeddingDim, 0), 1).single;
+      expect(db.getImageById(hit.rowid)!.$1, '/a/1.jpg');
+      expect(hit.distance, closeTo(0, 1e-5));
+    });
+
+    for (final recentFirst in [false, true]) {
+      test('shared photo survives album deletion (recentFirst=$recentFirst)', () {
+        final original = db.insertFolder('camera', 1);
+        final recent = db.insertFolder('recent', 2);
+        final first = recentFirst ? recent : original;
+        final second = recentFirst ? original : recent;
+        const path = '/cache/shared.jpg';
+        db.insertImagesAndVectorsBatch(
+          first,
+          [image(path)],
+          [unitVector(kEmbeddingDim, 0)],
+        );
+        expect(db.linkIndexedImage(second, path), isTrue);
+        expect(db.linkIndexedImage(second, path), isTrue);
+        // A later batch with the same path must also reuse the original vector.
+        expect(
+          db.insertImagesAndVectorsBatch(
+            second,
+            [image(path)],
+            [unitVector(kEmbeddingDim, 1)],
+          ),
+          0,
+        );
+        expect(db.getTotalImageCount(), 1);
+        expect(db.getTotalVectorCount(), 1);
+        for (final album in [original, recent]) {
+          expect(db.getIndexedFilePaths(album), [path]);
+          expect(db.getFolderImageCount(album), 1);
+          expect(
+            db.getAllFolders().firstWhere((f) => f.id == album).coverPath,
+            path,
+          );
+          final hit = db.knnSearchFiltered(unitVector(kEmbeddingDim, 0), 10, [
+            album,
+          ]).single;
+          expect(hit.distance, closeTo(0, 1e-5));
+        }
+        expect(
+          db.knnSearchFiltered(unitVector(kEmbeddingDim, 0), 10, [
+            original,
+            recent,
+          ]),
+          hasLength(1),
+        );
+        db.deleteFolder(recent);
+        expect(db.getIndexedFilePaths(original), [path]);
+        expect(db.getTotalImageCount(), 1);
+        expect(db.getTotalVectorCount(), 1);
+        expect(
+          db.knnSearchFiltered(unitVector(kEmbeddingDim, 0), 10, [original]),
+          hasLength(1),
+        );
+        db.deleteFolder(original);
+        expect(db.getTotalImageCount(), 0);
+        expect(db.getTotalVectorCount(), 0);
+      });
+    }
+
+    test('album update removes membership without deleting shared photo', () {
+      final original = db.insertFolder('camera', 1);
+      final recent = db.insertFolder('recent', 2);
+      const path = '/cache/shared.jpg';
+      db.insertImagesAndVectorsForFoldersBatch(
+        [original, recent],
+        [image(path), image(path)],
+        [unitVector(kEmbeddingDim, 0), unitVector(kEmbeddingDim, 1)],
+      );
+      expect(db.deleteImagesByPaths(recent, [path]), 1);
+      expect(db.getIndexedFilePaths(recent), isEmpty);
+      expect(db.getIndexedFilePaths(original), [path]);
+      expect(db.getTotalVectorCount(), 1);
+      expect(db.deleteImagesByPaths(recent, [path]), 0);
+      expect(db.deleteImagesByPaths(original, [path]), 1);
       expect(db.getTotalImageCount(), 0);
-      expect(db.knnSearch(unitVector(kEmbeddingDim, 0), 10), isEmpty);
+      expect(db.getTotalVectorCount(), 0);
     });
 
     test('isImageIndexed matches on path AND mtime', () {

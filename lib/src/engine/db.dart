@@ -184,10 +184,14 @@ class Db {
         'ALTER TABLE folders ADD COLUMN is_index_complete INTEGER NOT NULL DEFAULT 1',
       );
     } catch (_) {}
-    _conn.execute('''
-      CREATE TABLE IF NOT EXISTS images (
+    final legacy = _conn
+        .select('PRAGMA table_info(images)')
+        .any((column) => column['name'] == 'folder_id');
+    _conn.execute('BEGIN');
+    try {
+      if (legacy) _conn.execute('ALTER TABLE images RENAME TO images_legacy');
+      _conn.execute('''CREATE TABLE IF NOT EXISTS images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        folder_id INTEGER NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
         file_path TEXT NOT NULL UNIQUE,
         file_name TEXT NOT NULL,
         file_size INTEGER NOT NULL,
@@ -197,14 +201,34 @@ class Db {
         format TEXT NOT NULL,
         indexed_at INTEGER NOT NULL,
         ocr_text TEXT
+      )''');
+      _conn.execute('''CREATE TABLE IF NOT EXISTS folder_images (
+        folder_id INTEGER NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+        image_id INTEGER NOT NULL REFERENCES images(id) ON DELETE CASCADE,
+        PRIMARY KEY (folder_id, image_id)
+      )''');
+      if (legacy) {
+        _conn.execute(
+          '''INSERT INTO images
+          SELECT id, file_path, file_name, file_size, modified_time,
+                 width, height, format, indexed_at, ocr_text FROM images_legacy''',
+        );
+        _conn.execute(
+          'INSERT INTO folder_images SELECT folder_id, id FROM images_legacy',
+        );
+        _conn.execute('DROP TABLE images_legacy');
+      }
+      _conn.execute(
+        'CREATE INDEX IF NOT EXISTS idx_images_modified ON images(file_path, modified_time)',
       );
-    ''');
-    _conn.execute(
-      'CREATE INDEX IF NOT EXISTS idx_images_modified ON images(file_path, modified_time);',
-    );
-    _conn.execute(
-      'CREATE INDEX IF NOT EXISTS idx_images_folder ON images(folder_id);',
-    );
+      _conn.execute(
+        'CREATE INDEX IF NOT EXISTS idx_folder_images_image ON folder_images(image_id)',
+      );
+      _conn.execute('COMMIT');
+    } catch (_) {
+      _conn.execute('ROLLBACK');
+      rethrow;
+    }
     _conn.execute('''
       CREATE TABLE IF NOT EXISTS vector_images (
         rowid INTEGER PRIMARY KEY,
@@ -236,8 +260,8 @@ class Db {
   FolderRow? findFolderByPath(String folderPath) {
     final rows = _conn.select(
       '''SELECT id, folder_path, display_name, indexed_at, image_count, total_image_count, is_index_complete,
-          (SELECT file_path FROM images WHERE folder_id = folders.id
-           ORDER BY indexed_at DESC, id DESC LIMIT 1) AS cover_path
+          (SELECT file_path FROM images JOIN folder_images ON image_id = images.id WHERE folder_id = folders.id
+           ORDER BY images.indexed_at DESC, images.id DESC LIMIT 1) AS cover_path
          FROM folders WHERE folder_path = ?1''',
       [folderPath],
     );
@@ -285,8 +309,8 @@ class Db {
   /// Get all indexed folders ordered by indexed_at desc.
   List<FolderRow> getAllFolders() {
     final rows = _conn.select('''SELECT id, folder_path, display_name, indexed_at, image_count, total_image_count, is_index_complete,
-          (SELECT file_path FROM images WHERE folder_id = folders.id
-           ORDER BY indexed_at DESC, id DESC LIMIT 1) AS cover_path
+          (SELECT file_path FROM images JOIN folder_images ON image_id = images.id WHERE folder_id = folders.id
+           ORDER BY images.indexed_at DESC, images.id DESC LIMIT 1) AS cover_path
          FROM folders ORDER BY indexed_at DESC''');
     return rows
         .map(
@@ -304,18 +328,12 @@ class Db {
         .toList();
   }
 
-  /// Delete a folder and all associated images (CASCADE) and vectors.
+  /// Remove an album, retaining images and vectors referenced by other albums.
   void deleteFolder(int folderId) {
-    final rowids = _conn
-        .select('SELECT id FROM images WHERE folder_id = ?1', [folderId])
-        .map((r) => r['id'] as int)
-        .toList();
     _conn.execute('BEGIN');
     try {
-      for (final rowid in rowids) {
-        _conn.execute('DELETE FROM vector_images WHERE rowid = ?1', [rowid]);
-      }
       _conn.execute('DELETE FROM folders WHERE id = ?1', [folderId]);
+      _deleteUnreferencedImages();
       _conn.execute('COMMIT');
     } catch (_) {
       _conn.execute('ROLLBACK');
@@ -323,10 +341,19 @@ class Db {
     }
   }
 
+  void _deleteUnreferencedImages() {
+    const orphanIds =
+        'SELECT id FROM images WHERE NOT EXISTS '
+        '(SELECT 1 FROM folder_images WHERE image_id = images.id)';
+    _conn.execute('DELETE FROM vector_images WHERE rowid IN ($orphanIds)');
+    _conn.execute('DELETE FROM images WHERE id IN ($orphanIds)');
+  }
+
   /// Delete all folders, images, and vectors. For debug use only.
   void deleteAllFolders() {
     _conn.execute('DELETE FROM vector_images;');
     _conn.execute('DELETE FROM folders;');
+    _conn.execute('DELETE FROM images;');
   }
 
   // ---- Images & vectors ----
@@ -343,7 +370,7 @@ class Db {
     vectors,
   );
 
-  /// Inserts a mixed-album batch atomically, preserving each image's owner.
+  /// Insert unique images atomically and attach every album membership.
   int insertImagesAndVectorsForFoldersBatch(
     List<int> folderIds,
     List<ImageRowData> images,
@@ -356,11 +383,18 @@ class Db {
       var count = 0;
       for (var i = 0; i < images.length; i++) {
         final img = images[i];
+        final existing = _conn.select(
+          'SELECT id FROM images WHERE file_path = ?1',
+          [img.filePath],
+        );
+        if (existing.isNotEmpty) {
+          _linkImage(folderIds[i], existing.first['id'] as int);
+          continue;
+        }
         _conn.execute(
-          'INSERT INTO images (folder_id, file_path, file_name, file_size, modified_time, width, height, format, indexed_at) '
-          'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)',
+          'INSERT INTO images (file_path, file_name, file_size, modified_time, width, height, format, indexed_at) '
+          'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)',
           [
-            folderIds[i],
             img.filePath,
             img.fileName,
             img.fileSize,
@@ -376,6 +410,7 @@ class Db {
           'INSERT INTO vector_images (rowid, embedding) VALUES (?1, vector_as_f32(?2))',
           [rowid, vectorToBlob(vectors[i])],
         );
+        _linkImage(folderIds[i], rowid);
         count++;
       }
       _conn.execute('COMMIT');
@@ -384,6 +419,23 @@ class Db {
       _conn.execute('ROLLBACK');
       rethrow;
     }
+  }
+
+  void _linkImage(int folderId, int imageId) {
+    _conn.execute(
+      'INSERT INTO folder_images (folder_id, image_id) VALUES (?1, ?2) ON CONFLICT DO NOTHING',
+      [folderId, imageId],
+    );
+  }
+
+  /// Reuse a stored image and embedding, adding this album's membership.
+  bool linkIndexedImage(int folderId, String filePath) {
+    final rows = _conn.select('SELECT id FROM images WHERE file_path = ?1', [
+      filePath,
+    ]);
+    if (rows.isEmpty) return false;
+    _linkImage(folderId, rows.first['id'] as int);
+    return true;
   }
 
   /// Check if an image is already indexed (by path and unchanged mtime).
@@ -398,47 +450,43 @@ class Db {
   /// Get all indexed file paths for a given folder_id.
   List<String> getIndexedFilePaths(int folderId) {
     return _conn
-        .select('SELECT file_path FROM images WHERE folder_id = ?1', [folderId])
+        .select(
+          'SELECT file_path FROM images JOIN folder_images ON image_id = images.id WHERE folder_id = ?1',
+          [folderId],
+        )
         .map((r) => r['file_path'] as String)
         .toList();
   }
 
-  /// Delete image records and their corresponding vector records for the
-  /// given file_paths. Returns the number of deleted image records.
+  /// Remove album memberships and clean up unreferenced images/vectors.
+  /// Returns the number of removed memberships.
   int deleteImagesByPaths(int folderId, List<String> filePaths) {
     if (filePaths.isEmpty) return 0;
     final placeholders = List.filled(filePaths.length, '?').join(',');
-    final rowids = _conn
-        .select(
-          'SELECT id FROM images WHERE folder_id = ?1 AND file_path IN ($placeholders)',
-          [folderId, ...filePaths],
-        )
-        .map((r) => r['id'] as int)
-        .toList();
-
     _conn.execute('BEGIN');
     try {
-      for (final rowid in rowids) {
-        _conn.execute('DELETE FROM vector_images WHERE rowid = ?1', [rowid]);
-      }
       _conn.execute(
-        'DELETE FROM images WHERE folder_id = ?1 AND file_path IN ($placeholders)',
+        'DELETE FROM folder_images WHERE folder_id = ? AND image_id IN '
+        '(SELECT id FROM images WHERE file_path IN ($placeholders))',
         [folderId, ...filePaths],
       );
+      final removed = _conn.updatedRows;
+      _deleteUnreferencedImages();
       _conn.execute('COMMIT');
+      return removed;
     } catch (_) {
       _conn.execute('ROLLBACK');
       rethrow;
     }
-    return rowids.length;
   }
 
   /// Resolve the indexed album, rather than a mobile photo's cache directory.
   (String, String?)? getImageAlbum(String filePath) {
     final rows = _conn.select(
       '''SELECT folders.folder_path, folders.display_name FROM images
-         JOIN folders ON folders.id = images.folder_id
-         WHERE images.file_path = ?1''',
+         JOIN folder_images ON folder_images.image_id = images.id
+         JOIN folders ON folders.id = folder_images.folder_id
+         WHERE images.file_path = ?1 ORDER BY folders.id LIMIT 1''',
       [filePath],
     );
     if (rows.isEmpty) return null;
@@ -477,7 +525,7 @@ class Db {
   /// Get image count for a specific folder.
   int getFolderImageCount(int folderId) {
     final rows = _conn.select(
-      'SELECT COUNT(*) AS c FROM images WHERE folder_id = ?1',
+      'SELECT COUNT(*) AS c FROM folder_images WHERE folder_id = ?1',
       [folderId],
     );
     return rows.first['c'] as int;
@@ -548,7 +596,9 @@ class Db {
     final parameters = <Object?>[];
     if (folderIds.isNotEmpty) {
       final placeholders = List.filled(folderIds.length, '?').join(',');
-      conditions.add('folder_id IN ($placeholders)');
+      conditions.add(
+        'EXISTS (SELECT 1 FROM folder_images WHERE image_id = images.id AND folder_id IN ($placeholders))',
+      );
       parameters.addAll(folderIds);
     }
     if (modifiedAfter != null) {
