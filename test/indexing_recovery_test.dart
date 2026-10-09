@@ -132,6 +132,31 @@ void main() {
     expect(Db.instance.getFolderImageCount(otherId), 0);
   });
 
+  test('incremental indexing skips paths indexed after the update check',
+      () async {
+    final album = Directory('${temporary.path}/stale')..createSync();
+    final photo = File('${album.path}/photo.jpg')..writeAsBytesSync([0]);
+    final albumId = Db.instance.insertFolder(album.path, 1);
+    Db.instance.updateFolder(
+      albumId,
+      1,
+      0,
+      totalImageCount: 1,
+      isIndexComplete: false,
+    );
+    final updates = await indexer.checkForUpdates();
+    expect(updates.single.newCount, 1);
+
+    // Recovery writes the image after the snapshot was created. Its contents
+    // are deliberately invalid: trying to encode it again would report errors.
+    insertIndexedImage(albumId, photo);
+    final events = await indexer.indexPendingUpdates().toList();
+    expect(events.every((event) => event.errors == 0), isTrue);
+    expect(Db.instance.getFolderImageCount(albumId), 1);
+    expect(Db.instance.findFolderByPath(album.path)!.isIndexComplete, isTrue);
+    expect(await indexer.checkForUpdates(), isEmpty);
+  });
+
   test('normal completion does not log cancellation; explicit cancel does',
       () async {
     final album = Directory('${temporary.path}/empty')..createSync();

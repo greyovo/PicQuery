@@ -672,7 +672,11 @@ Stream<IndexProgress> indexPendingUpdates() {
     // Step 2: Prepare pending images from new photos.
     final allPending = <_PendingImage>[];
     for (final update in updates) {
+      // A single-album recovery may have indexed these paths since the update
+      // check. Revalidate the snapshot before preparing or encoding any image.
+      final indexedPaths = db.getIndexedFilePaths(update.albumId).toSet();
       for (final pathStr in update.newPhotos) {
+        if (!indexedPaths.add(pathStr)) continue;
         final img = await _buildPendingImage(
           pathStr: pathStr,
           albumId: update.albumId,
