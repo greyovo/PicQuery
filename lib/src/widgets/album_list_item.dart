@@ -106,9 +106,8 @@ class _AlbumCover extends StatelessWidget {
               )
             : Image.file(
                 File(path!),
+                cacheWidth: coverImageSize.ceil(),
                 fit: BoxFit.cover,
-                cacheHeight: coverImageSize.toInt(),
-                cacheWidth: coverImageSize.toInt(),
                 filterQuality: FilterQuality.low,
                 errorBuilder: (context, error, stackTrace) => ColoredBox(
                   color: colorScheme.surfaceContainerHighest,

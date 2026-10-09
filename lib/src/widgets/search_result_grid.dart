@@ -89,11 +89,10 @@ class _ResultCard extends StatelessWidget {
               final pixelRatio = MediaQuery.devicePixelRatioOf(context);
               return Image.file(
                 File(result.filePath),
+                cacheWidth: (constraints.maxWidth * pixelRatio).ceil(),
                 fit: BoxFit.cover,
                 width: constraints.maxWidth,
                 height: constraints.maxHeight,
-                cacheWidth: (constraints.maxWidth * pixelRatio).ceil(),
-                cacheHeight: (constraints.maxHeight * pixelRatio).ceil(),
                 errorBuilder: (context, _, __) => Center(
                   child: Icon(
                     Icons.broken_image,
