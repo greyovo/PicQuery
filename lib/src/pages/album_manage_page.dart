@@ -316,15 +316,7 @@ class _AlbumCard extends StatelessWidget {
       isUpdateAvailable: updateAvailable,
       hasIndexingError: hasIndexingError,
       onResumeIndexing: canResume
-          ? () => paused || incomplete || isMobile
-                ? indexing.continueIndexing(album, context: context)
-                : indexing.startUpdateIndexing(
-                    onDone: () => albumManager.reload(),
-                    onError: (error) {
-                      Toast.showMessage(context.l10n.indexingError(error));
-                      albumManager.reload();
-                    },
-                  )
+          ? () => indexing.continueIndexing(album, context: context)
           : null,
     );
   }
