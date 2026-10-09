@@ -158,6 +158,21 @@ class IndexingManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Refresh both album records and the engine's pending-update snapshot before
+  /// allowing another indexing task to start.
+  Future<void> _finishIndexing(VoidCallback? onDone) async {
+    try {
+      await albumManager.reload();
+      await checkForUpdates(showToast: false);
+    } catch (error, stackTrace) {
+      Logger('IndexingManager')
+          .severe('Failed to refresh albums after indexing.', error, stackTrace);
+    } finally {
+      complete();
+      onDone?.call();
+    }
+  }
+
   void startIndexing(
     String path,
     String displayName, {
@@ -167,6 +182,7 @@ class IndexingManager extends ChangeNotifier {
     VoidCallback? onDone,
     void Function(Object error)? onError,
   }) {
+    if (isIndexing || _isPausing) return;
     start(displayName, alreadyIndexed: alreadyIndexed);
     _activeAlbumPaths = {path};
     _pausedAlbumPaths.remove(path);
@@ -211,8 +227,7 @@ class IndexingManager extends ChangeNotifier {
         if (lastIndexingError == null) _errorsByAlbum.remove(path);
         _subscription = null;
         _activeAlbumPaths = const {};
-        complete();
-        onDone?.call();
+        unawaited(_finishIndexing(onDone));
       },
       onError: (Object error, StackTrace stackTrace) {
         lastIndexingError = error;
@@ -310,6 +325,7 @@ class IndexingManager extends ChangeNotifier {
     VoidCallback? onDone,
     void Function(Object error)? onError,
   }) {
+    if (isIndexing || _isPausing || albumUpdateStatus == .checking) return;
     final pathsBeingUpdated = updateAvailableAlbumPaths;
     start('增量更新');
     _activeAlbumPaths = pathsBeingUpdated;
@@ -343,13 +359,7 @@ class IndexingManager extends ChangeNotifier {
         }
         _subscription = null;
         _activeAlbumPaths = const {};
-        if (lastIndexingError == null) {
-          setIndexingStatusUpToDate();
-        } else {
-          albumUpdateStatus = .idle;
-        }
-        complete();
-        onDone?.call();
+        unawaited(_finishIndexing(onDone));
       },
       onError: (Object error, StackTrace stackTrace) {
         lastIndexingError = error;

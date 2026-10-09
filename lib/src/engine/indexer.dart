@@ -717,6 +717,9 @@ Stream<IndexProgress> _runStream(
   late final StreamController<IndexProgress> controller;
   controller = StreamController<IndexProgress>(
     onCancel: () async {
+      // Normal stream completion also invokes onCancel. Once the indexing body
+      // has finished, there is no active work to cancel or wait for.
+      if (finished.isCompleted) return;
       cancelled.value = true;
       if (!cancelled.failed) {
         _log.info('Index stream cancelled by listener.');
