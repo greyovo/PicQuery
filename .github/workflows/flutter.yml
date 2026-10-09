@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  pull_request:
   workflow_dispatch:
     inputs:
       version:
@@ -17,6 +18,14 @@ on:
   workflow_call:
     secrets:
       SENTRY_DSN:
+        required: false
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_STORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
         required: false
     inputs:
       version:
@@ -79,9 +88,135 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  unit-tests:
+    name: Unit tests
+    needs: prepare-models
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: picquery-models
+          path: generated-models
+
+      - name: Import generated models
+        run: bash scripts/prepare_models.sh --import generated-models
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze application
+        run: flutter analyze lib/
+
+      - name: Run all unit tests without diagnostics configured
+        run: flutter test test/
+
+      # Report tests use MockClient. A placeholder DSN enables their configured
+      # branches without production credentials or sending diagnostics.
+      - name: Test diagnostics with a configured DSN
+        run: flutter test test/error_reporting_test.dart --dart-define=SENTRY_DSN=https://public@example.invalid/1
+
+  integration-tests-desktop:
+    name: Desktop integration tests
+    needs: prepare-models
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: picquery-models
+          path: generated-models
+
+      - name: Import generated models
+        run: bash scripts/prepare_models.sh --import generated-models
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run desktop integration tests
+        run: bash ci/test_integration.sh macos
+
+  integration-tests-android:
+    name: Android integration tests
+    needs: prepare-models
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download generated models
+        uses: actions/download-artifact@v4
+        with:
+          name: picquery-models
+          path: generated-models
+
+      - name: Import generated models
+        run: bash scripts/prepare_models.sh --import generated-models
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Enable KVM access
+        run: |
+          sudo chmod 666 /dev/kvm
+
+      - name: Run Android integration tests on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          ram-size: 4096M
+          heap-size: 1024M
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash ci/test_integration.sh android emulator-5554
+
   build-android:
     name: Android
-    needs: prepare-models
+    # Fork PRs have no signing secrets and must not request the build environment.
+    if: github.event_name != 'pull_request'
+    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
     runs-on: ubuntu-latest
     environment: android-build
     steps:
@@ -168,7 +303,7 @@ jobs:
 
   build-macos:
     name: macOS
-    needs: prepare-models
+    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
     runs-on: macos-latest
     steps:
       - name: Check out repository
@@ -228,7 +363,7 @@ jobs:
 
   build-windows:
     name: Windows
-    needs: prepare-models
+    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -288,7 +423,7 @@ jobs:
 
   build-linux:
     name: Linux
-    needs: prepare-models
+    needs: [prepare-models, unit-tests, integration-tests-desktop, integration-tests-android]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

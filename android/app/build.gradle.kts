@@ -43,7 +43,13 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            // Release packages remain ARM64-only. Debug integration tests also run
+            // on accelerated x86_64 CI emulators.
+            abiFilters += if (isReleaseBuild) {
+                listOf("arm64-v8a")
+            } else {
+                listOf("arm64-v8a", "x86_64")
+            }
         }
     }
 
