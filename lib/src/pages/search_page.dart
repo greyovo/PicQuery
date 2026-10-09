@@ -16,7 +16,6 @@ import 'package:picquery_app/src/widgets/app_menu_button.dart';
 import 'package:picquery_app/src/widgets/empty_albums_guide.dart';
 import 'package:picquery_app/src/widgets/desktop_folder_drop_hint.dart';
 import 'package:picquery_app/src/widgets/search_input_card.dart';
-import 'package:picquery_app/src/widgets/search_filter_button.dart';
 import 'package:watch_it/watch_it.dart';
 
 final _log = Logger('search_page');
@@ -378,9 +377,7 @@ class _HeroSection extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         labelStyle: Theme.of(context).textTheme.labelMedium,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            kSearchFilterButtonBorderRadius,
-                          ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                   ],
@@ -413,8 +410,26 @@ class _SearchFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasFilters = hasAlbumFilter || timeRange != SearchTimeRange.anyTime;
+    Widget buildButton({
+      required Widget icon,
+      required Widget label,
+      required VoidCallback onPressed,
+    }) => OutlinedButton.icon(
+      icon: icon,
+      label: label,
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: context.colors.onSurface,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        visualDensity: VisualDensity.compact,
+        textStyle: Theme.of(context).textTheme.labelMedium,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        side: BorderSide(color: context.colors.outlineVariant),
+      ),
+    );
+
     final controls = <Widget>[
-      SearchFilterButton<void>.action(
+      buildButton(
         onPressed: onSelectScope,
         icon: const Icon(Icons.folder_outlined, size: 18),
         label: ConstrainedBox(
@@ -422,11 +437,9 @@ class _SearchFilters extends StatelessWidget {
           child: Text(scopeLabel, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ),
-      SearchFilterButton<SearchTimeRange>.menu(
-        initialValue: timeRange,
+      AppMenuButton<SearchTimeRange>(
+        selectedValue: timeRange,
         onSelected: onTimeRangeChanged,
-        icon: const Icon(Icons.calendar_today_outlined, size: 17),
-        label: Text(_timeRangeLabel(context, timeRange)),
         items: [
           for (final option in SearchTimeRange.values)
             AppMenuItem(
@@ -434,6 +447,12 @@ class _SearchFilters extends StatelessWidget {
               child: Text(_timeRangeLabel(context, option)),
             ),
         ],
+        builder: (context, controller, child) => buildButton(
+          onPressed: () =>
+              controller.isOpen ? controller.close() : controller.open(),
+          icon: const Icon(Icons.calendar_today_outlined, size: 18),
+          label: Text(_timeRangeLabel(context, timeRange)),
+        ),
       ),
     ];
     final clearButton = IconButton(
