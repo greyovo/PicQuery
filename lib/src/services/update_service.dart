@@ -50,18 +50,16 @@ class UpdateAsset {
 class AppRelease {
   const AppRelease({
     required this.version,
-    required this.notes,
     required this.page,
     required this.assets,
   });
   final Version version;
-  final String notes;
   final Uri page;
   final List<UpdateAsset> assets;
 
   factory AppRelease.fromJson(Map<String, dynamic> json) => AppRelease(
     version: parseReleaseVersion(json['tag_name'] as String),
-    notes: json['body'] as String? ?? '',
+
     page: Uri.parse(json['html_url'] as String),
     assets: (json['assets'] as List)
         .map((a) => UpdateAsset.fromJson(a as Map<String, dynamic>))
@@ -167,6 +165,25 @@ class UpdateService {
     if (json['draft'] == true || json['prerelease'] == true) return null;
     final release = AppRelease.fromJson(json);
     return release.version.isPreRelease ? null : release;
+  }
+
+  /// Load the selected language from a release attachment, never the body.
+  Future<String> releaseNotes(AppRelease release, String languageCode) async {
+    final language = languageCode == 'zh' ? 'zh' : 'en';
+    final asset = release.assets
+        .where((asset) => asset.name == 'CHANGELOG_$language.md')
+        .firstOrNull;
+    if (asset == null || asset.size <= 0) {
+      throw const FormatException('Release changelog attachment is missing');
+    }
+    final response = await _get(asset.url);
+    final notes = await utf8.decoder
+        .bind(response.timeout(_idleTimeout))
+        .join();
+    if (notes.trim().isEmpty) {
+      throw const FormatException('Release changelog attachment is empty');
+    }
+    return notes;
   }
 
   Future<File> _package(UpdateAsset asset) async {

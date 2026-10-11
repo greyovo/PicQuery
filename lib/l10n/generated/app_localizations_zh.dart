@@ -527,10 +527,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appUpdateUnsupported => '此设备暂无兼容的安装包，可查看发布页面获取下载选项。';
 
   @override
-  String get appUpdateDownload => '下载更新';
+  String get appUpdateDownload => '下载并安装';
 
   @override
-  String get appUpdateInstall => '安装已下载的更新';
+  String get appUpdateInstall => '安装更新';
 
   @override
   String appUpdateDownloading(String percent) {
@@ -551,8 +551,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appUpdateLinuxGuidance => '解压更新包，退出 PicQuery，然后用解压后的文件替换原安装目录。';
 
   @override
-  String get appUpdatePermission =>
-      '请在系统设置中允许 PicQuery 安装应用，然后返回并点击“安装已下载的更新”。';
+  String get appUpdatePermission => '请在系统设置中允许 PicQuery 安装应用，然后返回并点击“安装更新”。';
 
   @override
   String get appUpdateSkip => '跳过本次';
@@ -1160,7 +1159,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get appUpdateDownload => '下載並安裝';
 
   @override
-  String get appUpdateInstall => '安裝已下載的更新';
+  String get appUpdateInstall => '安裝更新';
 
   @override
   String appUpdateDownloading(String percent) {
@@ -1181,8 +1180,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get appUpdateLinuxGuidance => '解壓更新套件，結束 PicQuery，然後用解壓後的檔案取代原安裝目錄。';
 
   @override
-  String get appUpdatePermission =>
-      '請在系統設定中允許 PicQuery 安裝應用程式，然後返回並點選「安裝已下載的更新」。';
+  String get appUpdatePermission => '請在系統設定中允許 PicQuery 安裝應用程式，然後返回並點選「安裝更新」。';
 
   @override
   String get appUpdateSkip => '略過此版本';

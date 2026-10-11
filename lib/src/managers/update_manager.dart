@@ -90,6 +90,9 @@ class UpdateManager extends ChangeNotifier {
     }
   }
 
+  Future<String> releaseNotes(AppRelease release, String languageCode) =>
+      _service.releaseNotes(release, languageCode);
+
   Future<void> skip() async {
     if (release == null || busy) return;
     await _writeSkipped(release!.version.toString());

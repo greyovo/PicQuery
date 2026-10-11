@@ -50,7 +50,7 @@ void main() {
             .toList();
     final release = AppRelease(
       version: version,
-      notes: '',
+
       page: Uri.parse('https://github.com'),
       assets: assets,
     );
@@ -64,7 +64,7 @@ void main() {
     expect(release.assetFor('ios', 'arm64'), isNull);
     final malicious = AppRelease(
       version: version,
-      notes: '',
+
       page: release.page,
       assets: [
         UpdateAsset(
@@ -146,6 +146,46 @@ void main() {
         releaseJson['draft'] = false;
         releaseJson['tag_name'] = 'v2.1.0-beta.1';
         expect(await service.latestRelease(), isNull);
+      },
+    );
+
+    test(
+      'loads only the selected changelog attachment, ignoring release body',
+      () async {
+        final english = utf8.encode('**Added**\n\n- English notes');
+        final chinese = utf8.encode('**新增**\n\n- 中文日志');
+        releaseJson['assets'] = [
+          for (final language in ['en', 'zh'])
+            {
+              'id': language == 'en' ? 1 : 2,
+              'name': 'CHANGELOG_$language.md',
+              'browser_download_url': base.resolve('/$language').toString(),
+              'size': language == 'en' ? english.length : chinese.length,
+            },
+        ];
+        final release = (await service.latestRelease())!;
+        payload = chinese;
+        expect(await service.releaseNotes(release, 'zh'), utf8.decode(chinese));
+        payload = english;
+        expect(await service.releaseNotes(release, 'en'), utf8.decode(english));
+        expect(await service.releaseNotes(release, 'fr'), utf8.decode(english));
+        status = 404;
+        await expectLater(
+          service.releaseNotes(release, 'zh'),
+          throwsA(isA<HttpException>()),
+        );
+        status = 200;
+        payload = [];
+        await expectLater(
+          service.releaseNotes(release, 'en'),
+          throwsFormatException,
+        );
+        releaseJson['assets'] = [];
+        final missing = (await service.latestRelease())!;
+        await expectLater(
+          service.releaseNotes(missing, 'en'),
+          throwsFormatException,
+        );
       },
     );
 

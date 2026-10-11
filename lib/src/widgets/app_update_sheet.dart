@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
 import 'package:picquery_app/src/managers/update_manager.dart';
+import 'package:picquery_app/src/services/update_service.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -98,23 +99,18 @@ class AppUpdateSheet extends WatchingWidget {
                           l.appUpdateAvailable(release.version.toString()),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        if (release.notes.trim().isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: isDesktop
-                                  ? 280
-                                  : MediaQuery.sizeOf(context).height * .5,
-                            ),
-                            child: SingleChildScrollView(
-                              primary: false,
-                              child: MarkdownBody(
-                                data: release.notes,
-                                selectable: true,
-                              ),
-                            ),
+                        const SizedBox(height: 12),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: isDesktop
+                                ? 280
+                                : MediaQuery.sizeOf(context).height * .5,
                           ),
-                        ],
+                          child: SingleChildScrollView(
+                            primary: false,
+                            child: _ReleaseNotes(release: release),
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         if (manager.asset == null) Text(l.appUpdateUnsupported),
                         if (manager.asset != null && manager.os == 'macos')
@@ -173,7 +169,12 @@ class AppUpdateSheet extends WatchingWidget {
                           ? manager.openRelease
                           : manager.update,
                       icon: const Icon(Icons.download),
-                      label: Text(l.appUpdateDownload),
+                      label: Text(
+                        phase == UpdatePhase.ready ||
+                                phase == UpdatePhase.permission
+                            ? l.appUpdateInstall
+                            : l.appUpdateDownload,
+                      ),
                     ),
                   ],
                   if (!hasUpdate && phase == UpdatePhase.failed)
@@ -189,4 +190,63 @@ class AppUpdateSheet extends WatchingWidget {
       ),
     );
   }
+}
+
+class _ReleaseNotes extends StatefulWidget {
+  const _ReleaseNotes({required this.release});
+
+  final AppRelease release;
+
+  @override
+  State<_ReleaseNotes> createState() => _ReleaseNotesState();
+}
+
+class _ReleaseNotesState extends State<_ReleaseNotes> {
+  String? _language;
+  Future<String>? _notes;
+
+  void _load() {
+    _notes = updateManager.releaseNotes(widget.release, _language!);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode == 'zh'
+        ? 'zh'
+        : 'en';
+    if (language != _language) {
+      _language = language;
+      _load();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _ReleaseNotes oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.release != widget.release) _load();
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<String>(
+    key: ValueKey((widget.release, _language)),
+    future: _notes,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Column(
+          children: [
+            Text(context.l10n.changelogLoadFailed),
+            TextButton(
+              onPressed: () => setState(_load),
+              child: Text(context.l10n.appUpdateRetry),
+            ),
+          ],
+        );
+      }
+      if (!snapshot.hasData) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return MarkdownBody(data: snapshot.data!, selectable: true);
+    },
+  );
 }

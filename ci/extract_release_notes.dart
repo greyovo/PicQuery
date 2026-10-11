@@ -1,4 +1,4 @@
-// Run: dart ci/extract_release_notes.dart <tag> <output>
+// Run: dart ci/extract_release_notes.dart <tag> <output> [artifact-directory]
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,13 +31,16 @@ String extractReleaseNotes(String text, String tag) {
 }
 
 void main(List<String> args) {
-  if (args.length != 2) {
-    stderr.writeln('Usage: dart ci/extract_release_notes.dart <tag> <output>');
+  if (args.length != 2 && args.length != 3) {
+    stderr.writeln(
+      'Usage: dart ci/extract_release_notes.dart <tag> <output> [artifact-directory]',
+    );
     exitCode = 1;
     return;
   }
   try {
     final notes = StringBuffer();
+    final localized = <String, String>{};
     for (final language in ['en', 'zh']) {
       final source = File('assets/CHANGELOG_$language.md');
       late String body;
@@ -46,11 +49,19 @@ void main(List<String> args) {
       } on FormatException catch (error) {
         throw FormatException('${source.path}: ${error.message}');
       }
+      localized[language] = body;
       if (language == 'zh') notes.write('---');
       notes.write(body);
     }
     // Write bytes to preserve the source's line endings on every platform.
     File(args[1]).writeAsBytesSync(utf8.encode(notes.toString()));
+    if (args.length == 3) {
+      final directory = Directory(args[2])..createSync(recursive: true);
+      for (final entry in localized.entries) {
+        File('${directory.path}/CHANGELOG_${entry.key}.md')
+            .writeAsBytesSync(utf8.encode(entry.value));
+      }
+    }
   } on FormatException catch (error) {
     stderr.writeln(error.message);
     exitCode = 1;

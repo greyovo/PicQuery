@@ -1044,13 +1044,13 @@ abstract class AppLocalizations {
   /// No description provided for @appUpdateDownload.
   ///
   /// In en, this message translates to:
-  /// **'Download update'**
+  /// **'Download and install'**
   String get appUpdateDownload;
 
   /// No description provided for @appUpdateInstall.
   ///
   /// In en, this message translates to:
-  /// **'Install downloaded update'**
+  /// **'Install update'**
   String get appUpdateInstall;
 
   /// No description provided for @appUpdateDownloading.
@@ -1086,7 +1086,7 @@ abstract class AppLocalizations {
   /// No description provided for @appUpdatePermission.
   ///
   /// In en, this message translates to:
-  /// **'Allow PicQuery to install apps in system settings, then return and tap Install downloaded update.'**
+  /// **'Allow PicQuery to install apps in system settings, then return and tap Install update.'**
   String get appUpdatePermission;
 
   /// No description provided for @appUpdateSkip.

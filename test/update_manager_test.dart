@@ -16,7 +16,7 @@ class FakeUpdateService extends UpdateService {
   Version installed = Version.parse('2.0.0');
   AppRelease? latest = AppRelease(
     version: Version.parse('2.1.0'),
-    notes: 'New release notes',
+
     page: Uri.parse('https://github.com/greyovo/PicQuery/releases/tag/v2.1.0'),
     assets: [
       UpdateAsset(
@@ -29,6 +29,15 @@ class FakeUpdateService extends UpdateService {
       ),
     ],
   );
+  String? notesLanguage;
+  bool failNotes = false;
+  @override
+  Future<String> releaseNotes(AppRelease release, String languageCode) async {
+    notesLanguage = languageCode;
+    if (failNotes) throw const SocketException('offline');
+    return languageCode == 'zh' ? '中文更新日志' : 'New release notes';
+  }
+
   bool cached = false;
   bool permission = true;
   bool failCheck = false;
@@ -103,7 +112,7 @@ void main() {
       expect(await manager.check(manual: true), isTrue);
       service.latest = AppRelease(
         version: Version.parse('2.2.0'),
-        notes: '',
+
         page: service.latest!.page,
         assets: [],
       );
@@ -190,7 +199,7 @@ void main() {
       expect(find.text('Later'), findsNothing);
       expect(find.text('View release page'), findsNothing);
       expect(
-        find.widgetWithText(FilledButton, 'Download update'),
+        find.widgetWithText(FilledButton, 'Download and install'),
         findsOneWidget,
       );
       expect(find.byType(AlertDialog), findsNothing);
@@ -199,6 +208,45 @@ void main() {
       await tester.pumpAndSettle();
       expect(skipped, '2.1.0');
       expect(find.byType(isDesktop ? Dialog : BottomSheet), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Chinese locale loads Chinese attachment and retries notes independently',
+    (tester) async {
+      GetIt.I.registerSingleton<UpdateManager>(manager);
+      service.failNotes = true;
+      await manager.check();
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('zh', 'TW'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: AppUpdateSheet()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(service.notesLanguage, 'zh');
+      expect(find.byType(MarkdownBody), findsNothing);
+      expect(manager.phase, UpdatePhase.available);
+      service.failNotes = false;
+      final context = tester.element(find.byType(AppUpdateSheet));
+      final retry = AppLocalizations.of(context)!.appUpdateRetry;
+      await tester.tap(find.text(retry));
+      await tester.pumpAndSettle();
+      expect(find.text('中文更新日志'), findsOneWidget);
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: AppUpdateSheet()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(service.notesLanguage, 'en');
+      expect(find.text('New release notes'), findsOneWidget);
+      expect(find.text('中文更新日志'), findsNothing);
     },
   );
 

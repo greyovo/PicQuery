@@ -545,10 +545,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'No compatible installer is available for this device. View the release page for download options.';
 
   @override
-  String get appUpdateDownload => 'Download update';
+  String get appUpdateDownload => 'Download and install';
 
   @override
-  String get appUpdateInstall => 'Install downloaded update';
+  String get appUpdateInstall => 'Install update';
 
   @override
   String appUpdateDownloading(String percent) {
@@ -572,7 +572,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appUpdatePermission =>
-      'Allow PicQuery to install apps in system settings, then return and tap Install downloaded update.';
+      'Allow PicQuery to install apps in system settings, then return and tap Install update.';
 
   @override
   String get appUpdateSkip => 'Skip this version';
