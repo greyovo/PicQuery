@@ -527,7 +527,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appUpdateUnsupported => '此设备暂无兼容的安装包，可查看发布页面获取下载选项。';
 
   @override
-  String get appUpdateDownload => '下载并安装';
+  String get appUpdateDownload => '下载更新';
 
   @override
   String get appUpdateInstall => '安装已下载的更新';
@@ -555,7 +555,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '请在系统设置中允许 PicQuery 安装应用，然后返回并点击“安装已下载的更新”。';
 
   @override
-  String get appUpdateSkip => '跳过此版本';
+  String get appUpdateSkip => '跳过本次';
 
   @override
   String get appUpdateLater => '稍后再说';

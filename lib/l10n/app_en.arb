@@ -178,7 +178,7 @@
   "appUpdateAvailable": "New version: {version}",
   "appUpdateFailed": "Update failed. Check your connection and try again.",
   "appUpdateUnsupported": "No compatible installer is available for this device. View the release page for download options.",
-  "appUpdateDownload": "Download and install",
+  "appUpdateDownload": "Download update",
   "appUpdateInstall": "Install downloaded update",
   "appUpdateDownloading": "Downloading… {percent}%",
   "appUpdateInstalling": "Opening installer…",

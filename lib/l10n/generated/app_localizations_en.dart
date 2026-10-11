@@ -545,7 +545,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No compatible installer is available for this device. View the release page for download options.';
 
   @override
-  String get appUpdateDownload => 'Download and install';
+  String get appUpdateDownload => 'Download update';
 
   @override
   String get appUpdateInstall => 'Install downloaded update';

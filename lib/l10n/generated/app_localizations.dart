@@ -1044,7 +1044,7 @@ abstract class AppLocalizations {
   /// No description provided for @appUpdateDownload.
   ///
   /// In en, this message translates to:
-  /// **'Download and install'**
+  /// **'Download update'**
   String get appUpdateDownload;
 
   /// No description provided for @appUpdateInstall.

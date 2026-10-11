@@ -8,6 +8,8 @@ import 'package:picquery_app/l10n/generated/app_localizations.dart';
 import 'package:picquery_app/src/managers/update_manager.dart';
 import 'package:picquery_app/src/services/update_service.dart';
 import 'package:picquery_app/src/widgets/app_update_sheet.dart';
+import 'package:picquery_app/src/utils/adaptive_display.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class FakeUpdateService extends UpdateService {
@@ -164,7 +166,7 @@ void main() {
   );
 
   testWidgets(
-    'manual update uses a bottom sheet, displays notes and permits skipping',
+    'manual update uses the platform prompt, renders notes and permits skipping',
     (tester) async {
       GetIt.I.registerSingleton<UpdateManager>(manager);
       await tester.pumpWidget(
@@ -183,13 +185,20 @@ void main() {
       );
       await tester.tap(find.text('Check'));
       await tester.pumpAndSettle();
-      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(find.byType(isDesktop ? Dialog : BottomSheet), findsOneWidget);
+      expect(find.byType(MarkdownBody), findsOneWidget);
+      expect(find.text('Later'), findsNothing);
+      expect(find.text('View release page'), findsNothing);
+      expect(
+        find.widgetWithText(FilledButton, 'Download update'),
+        findsOneWidget,
+      );
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.text('New release notes'), findsOneWidget);
       await tester.tap(find.text('Skip this version'));
       await tester.pumpAndSettle();
       expect(skipped, '2.1.0');
-      expect(find.byType(BottomSheet), findsNothing);
+      expect(find.byType(isDesktop ? Dialog : BottomSheet), findsNothing);
     },
   );
 
