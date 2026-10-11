@@ -165,10 +165,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   List<String> _selectedAlbumNames(List<Album> albums, Set<int> selectedIds) {
-    return albums
-        .where((album) => selectedIds.contains(album.id))
-        .map((album) => album.albumPath.split('/').last)
-        .toList();
+    return albums.where((album) => selectedIds.contains(album.id)).map((album) {
+      if (album.displayName case final name? when name.isNotEmpty) {
+        return name;
+      }
+      return album.albumPath.split('/').last;
+    }).toList();
   }
 
   @override
