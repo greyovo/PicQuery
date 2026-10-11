@@ -1,104 +1,44 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/utils/color_scheme.dart';
 import 'package:picquery_app/src/utils/localization.dart';
 
-class ImageDetail {
-  final String filePath;
-  final String fileName;
-  final String format;
-  final String dimensions;
-  final String fileSize;
-  final String modifyTime;
-  final double similarity;
-
-  const ImageDetail({
-    required this.filePath,
-    required this.fileName,
-    required this.format,
-    required this.dimensions,
-    required this.fileSize,
-    required this.modifyTime,
-    required this.similarity,
-  });
-}
-
-class ImageInfoBottomSheet extends StatefulWidget {
+class ImageInfoBottomSheet extends StatelessWidget {
   final SearchResult searchResult;
 
   const ImageInfoBottomSheet({super.key, required this.searchResult});
 
-  @override
-  State<ImageInfoBottomSheet> createState() => _ImageInfoBottomSheetState();
-}
-
-class _ImageInfoBottomSheetState extends State<ImageInfoBottomSheet> {
-  ImageDetail? _imageDetail;
-  bool _isLoadingDetail = false;
-  late String _unknownLabel;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _unknownLabel = context.l10n.unknown;
-    if (_imageDetail == null && !_isLoadingDetail) {
-      _loadImageDetail();
+  Future<String> _loadDimensions() async {
+    final buffer = await ui.ImmutableBuffer.fromFilePath(searchResult.filePath);
+    try {
+      final descriptor = await ui.ImageDescriptor.encoded(buffer);
+      try {
+        return '${descriptor.width} x ${descriptor.height}';
+      } finally {
+        descriptor.dispose();
+      }
+    } finally {
+      buffer.dispose();
     }
   }
 
-  Future<void> _loadImageDetail() async {
-    if (_isLoadingDetail) return;
-    setState(() => _isLoadingDetail = true);
-
-    try {
-      final file = File(widget.searchResult.filePath);
-      String dimensions = _unknownLabel;
-      String fileSize = _unknownLabel;
-      String modifyTime = _unknownLabel;
-
-      if (await file.exists()) {
-        final stat = await file.stat();
-        fileSize = _formatFileSize(stat.size);
-        modifyTime = _formatDateTime(stat.modified);
-
-        try {
-          final decodedImage = await decodeImageFromList(
-            await file.readAsBytes(),
-          );
-          dimensions = '${decodedImage.width} x ${decodedImage.height}';
-        } catch (_) {
-          dimensions = _unknownLabel;
-        }
-      }
-
-      final extension = widget.searchResult.filePath
-          .split('.')
-          .last
-          .toUpperCase();
-
-      final detail = ImageDetail(
-        filePath: widget.searchResult.filePath,
-        fileName: widget.searchResult.fileName,
-        format: extension,
-        dimensions: dimensions,
-        fileSize: fileSize,
-        modifyTime: modifyTime,
-        similarity: widget.searchResult.similarity,
-      );
-
-      if (mounted) {
-        setState(() {
-          _imageDetail = detail;
-          _isLoadingDetail = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoadingDetail = false);
-      }
+  Future<String> _loadFileSize() async {
+    final stat = await File(searchResult.filePath).stat();
+    if (stat.type == FileSystemEntityType.notFound) {
+      throw FileSystemException('File not found', searchResult.filePath);
     }
+    return _formatFileSize(stat.size);
+  }
+
+  Future<String> _loadModifyTime() async {
+    final stat = await File(searchResult.filePath).stat();
+    if (stat.type == FileSystemEntityType.notFound) {
+      throw FileSystemException('File not found', searchResult.filePath);
+    }
+    return _formatDateTime(stat.modified);
   }
 
   String _formatFileSize(int bytes) {
@@ -142,36 +82,68 @@ class _ImageInfoBottomSheetState extends State<ImageInfoBottomSheet> {
             ],
           ),
           const SizedBox(height: 12),
-          if (_isLoadingDetail || _imageDetail == null)
-            const Center(child: CircularProgressIndicator())
-          else ...[
-            _DetailRow(
-              label: context.l10n.fileName,
-              value: _imageDetail!.fileName,
-            ),
-            _DetailRow(
-              label: context.l10n.filePath,
-              value: _imageDetail!.filePath,
-            ),
-            _DetailRow(label: context.l10n.format, value: _imageDetail!.format),
-            _DetailRow(
-              label: context.l10n.dimensions,
-              value: _imageDetail!.dimensions,
-            ),
-            _DetailRow(
-              label: context.l10n.fileSize,
-              value: _imageDetail!.fileSize,
-            ),
-            _DetailRow(
-              label: context.l10n.modified,
-              value: _imageDetail!.modifyTime,
-            ),
-            _DetailRow(
-              label: context.l10n.similarity,
-              value: '${(_imageDetail!.similarity * 100).toStringAsFixed(1)}%',
-            ),
-          ],
+          _DetailRow(
+            label: context.l10n.fileName,
+            value: searchResult.fileName,
+          ),
+          _DetailRow(
+            label: context.l10n.filePath,
+            value: searchResult.filePath,
+          ),
+          _DetailRow(
+            label: context.l10n.format,
+            value: searchResult.filePath.split('.').last.toUpperCase(),
+          ),
+          _AsyncDetailRow(
+            key: ValueKey('dimensions:${searchResult.filePath}'),
+            label: context.l10n.dimensions,
+            loadValue: _loadDimensions,
+          ),
+          _AsyncDetailRow(
+            key: ValueKey('fileSize:${searchResult.filePath}'),
+            label: context.l10n.fileSize,
+            loadValue: _loadFileSize,
+          ),
+          _AsyncDetailRow(
+            key: ValueKey('modified:${searchResult.filePath}'),
+            label: context.l10n.modified,
+            loadValue: _loadModifyTime,
+          ),
+          _DetailRow(
+            label: context.l10n.similarity,
+            value: '${(searchResult.similarity * 100).toStringAsFixed(1)}%',
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _AsyncDetailRow extends StatefulWidget {
+  final String label;
+  final Future<String> Function() loadValue;
+
+  const _AsyncDetailRow({
+    super.key,
+    required this.label,
+    required this.loadValue,
+  });
+
+  @override
+  State<_AsyncDetailRow> createState() => _AsyncDetailRowState();
+}
+
+class _AsyncDetailRowState extends State<_AsyncDetailRow> {
+  late final Future<String> _value = widget.loadValue();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _value,
+      builder: (context, snapshot) => _DetailRow(
+        label: widget.label,
+        value: snapshot.data ?? context.l10n.unknown,
+        isLoading: snapshot.connectionState != ConnectionState.done,
       ),
     );
   }
@@ -180,8 +152,13 @@ class _ImageInfoBottomSheetState extends State<ImageInfoBottomSheet> {
 class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
+  final bool isLoading;
 
-  const _DetailRow({required this.label, required this.value});
+  const _DetailRow({
+    required this.label,
+    required this.value,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +176,21 @@ class _DetailRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: SelectableText(
-              value,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            child: isLoading
+                ? const Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 120,
+                      height: 14,
+                      child: Center(
+                        child: LinearProgressIndicator(minHeight: 2),
+                      ),
+                    ),
+                  )
+                : SelectableText(
+                    value,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
         ],
       ),
