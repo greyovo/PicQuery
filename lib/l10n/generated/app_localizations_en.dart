@@ -659,4 +659,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startupRetry => 'Retry';
+
+  @override
+  String get indexingWarningsTitle => 'Some images were skipped';
+
+  @override
+  String get indexingWarningsDescription =>
+      'Unreadable or unsupported images were skipped. Other images have been indexed. You can retry after fixing these files.';
+
+  @override
+  String indexingWarningsAlbum(String album, int count) {
+    return '$album: $count images failed';
+  }
+
+  @override
+  String indexingWarningsMore(String names) {
+    return '$names, etc.';
+  }
 }

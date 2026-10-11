@@ -15,16 +15,29 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:picquery_app/src/engine/db.dart';
 import 'package:picquery_app/src/engine/image_preprocess.dart';
+import 'package:picquery_app/src/engine/image_format_utils.dart';
 import 'package:picquery_app/src/engine/models.dart';
 import 'package:picquery_app/src/engine/ort_engine.dart';
 
 final _log = Logger('engine.indexer');
 
-const List<String> _supportedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'bmp'];
+const List<String> _imageExtensions = [
+  'jpg',
+  'jpeg',
+  'png',
+  'webp',
+  'bmp',
+  'gif',
+  'heic',
+  'heif',
+  'tif',
+  'tiff',
+  'avif',
+];
 
-bool _isSupportedImage(String path) {
+bool _isImageFile(String path) {
   final ext = p.extension(path).replaceFirst('.', '').toLowerCase();
-  return _supportedExtensions.contains(ext);
+  return _imageExtensions.contains(ext);
 }
 
 String _formatFromPath(String path) {
@@ -46,7 +59,7 @@ String _formatFromPath(String path) {
 
 int _nowSeconds() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-/// Recursively scan a directory for supported image files.
+/// Scan candidate image files, including formats a platform codec may reject.
 List<String> _scanImages(String dirPath) {
   final dir = Directory(dirPath);
   if (!dir.existsSync()) {
@@ -67,7 +80,7 @@ void _scanImagesRecursive(Directory dir, List<String> images) {
   for (final entity in entries) {
     if (entity is Directory) {
       _scanImagesRecursive(entity, images);
-    } else if (entity is File && _isSupportedImage(entity.path)) {
+    } else if (entity is File && _isImageFile(entity.path)) {
       images.add(entity.path);
     }
   }
@@ -104,6 +117,7 @@ class _PendingImage {
   final String format;
   final int albumId;
   final String albumPath;
+  final String? metadataError;
   const _PendingImage({
     required this.pathStr,
     required this.fileName,
@@ -112,6 +126,7 @@ class _PendingImage {
     required this.format,
     required this.albumId,
     required this.albumPath,
+    this.metadataError,
   });
 }
 
@@ -185,23 +200,42 @@ Future<_PendingImage?> _buildPendingImage({
   required String albumPath,
 }) async {
   final file = File(pathStr);
-  final FileStat stat;
+  FileStat? stat;
+  String? metadataError;
   try {
     stat = file.statSync();
-  } catch (_) {
-    _log.severe('Failed to read image metadata.');
-    return null;
+    if (stat.type != FileSystemEntityType.file) {
+      metadataError = 'Image file is unavailable';
+    }
+  } catch (error) {
+    metadataError = error.toString();
   }
 
   return _PendingImage(
     pathStr: pathStr,
     fileName: p.basename(pathStr),
-    fileSize: stat.size,
-    modifiedTime: stat.modified.millisecondsSinceEpoch ~/ 1000,
+    fileSize: stat?.size ?? 0,
+    modifiedTime: (stat?.modified.millisecondsSinceEpoch ?? 0) ~/ 1000,
     format: _formatFromPath(pathStr),
     albumId: albumId,
     albumPath: albumPath,
+    metadataError: metadataError,
   );
+}
+
+// Attach an error handler immediately: look-ahead decoding may fail while the
+// preceding image is still in native inference, or after cancellation.
+Future<({PreprocessedImage? image, Object? error, StackTrace? stackTrace})>
+_prepareImage(_PendingImage pending) async {
+  try {
+    if (pending.metadataError case final error?) {
+      throw FileSystemException(error, pending.pathStr);
+    }
+    final image = await preprocessImageWithMetadata(pending.pathStr);
+    return (image: image, error: null, stackTrace: null);
+  } catch (error, stackTrace) {
+    return (image: null, error: error, stackTrace: stackTrace);
+  }
 }
 
 /// Generic batch image indexing: encodes each pending image, sends progress,
@@ -270,22 +304,22 @@ Future<bool> _indexPendingImages(
   // image. On Windows, JPEG decode and CPU/DirectML inference use different
   // native workers, so this overlaps the two dominant costs without running
   // two model evaluations against the same session concurrently.
-  var nextPreprocessed = preprocessImageWithMetadata(pending.first.pathStr);
+  var nextPreprocessed = _prepareImage(pending.first);
 
   for (var index = 0; index < pending.length; index++) {
     final img = pending[index];
     final ({Float32List embedding, int width, int height}) encoded;
+    final prepared = await nextPreprocessed;
+    if (cancelled.value) break;
+    // Advance even when this decode failed, so each failure belongs to its file.
+    if (index + 1 < pending.length) {
+      nextPreprocessed = _prepareImage(pending[index + 1]);
+    }
     try {
-      final preprocessed = await nextPreprocessed;
-
-      // Start the next file read/decode before inference. The tensor worker is
-      // persistent and serial, while the codec and ORT run outside the Dart UI
-      // isolate, so this is bounded to one look-ahead image in memory.
-      if (index + 1 < pending.length && !cancelled.value) {
-        nextPreprocessed = preprocessImageWithMetadata(
-          pending[index + 1].pathStr,
-        );
+      if (prepared.error case final error?) {
+        Error.throwWithStackTrace(error, prepared.stackTrace!);
       }
+      final preprocessed = prepared.image!;
 
       final encodeWatch = Stopwatch()..start();
       final embedding = await OrtEngine.instance.encodeImage(
@@ -333,10 +367,27 @@ Future<bool> _indexPendingImages(
         );
       }
     } catch (error, stackTrace) {
-      _log.severe('Failed to encode image.', error, stackTrace);
       // Model/session failures affect every following image. Propagate them
       // through the stream instead of reporting normal completion.
-      if (error is StateError) rethrow;
+      if (prepared.error == null && error is StateError) rethrow;
+      final detectedFormat = await ImageFormatUtils.detectImageFormat(
+        img.pathStr,
+      );
+      final stage = img.metadataError != null
+          ? 'metadata'
+          : prepared.error != null
+          ? 'preprocess'
+          : 'inference';
+      final preprocessed = prepared.image;
+      _log.warning(
+        'Skipping image: path=${img.pathStr} album=${img.albumPath} '
+        'stage=$stage extensionFormat=${img.format.isEmpty ? 'none' : img.format} '
+        'detectedFormat=$detectedFormat fileSize=${img.fileSize} '
+        'dimensions=${preprocessed == null ? 'unknown' : '${preprocessed.width}x${preprocessed.height}'} '
+        'errorType=${error.runtimeType}',
+        error,
+        stackTrace,
+      );
       errorsCount++;
       completed++;
       if (!_send(
@@ -348,6 +399,11 @@ Future<bool> _indexPendingImages(
           errors: errorsCount,
           currentPath: img.pathStr,
           currentAlbum: img.albumPath,
+          failure: IndexImageFailure(
+            albumPath: img.albumPath,
+            filePath: img.pathStr,
+            reason: error.toString(),
+          ),
         ),
       )) {
         break;
@@ -404,7 +460,7 @@ void _updateAlbumRecord(Db db, int albumId, int now, int total, bool complete) {
   );
 }
 
-/// Index all supported images in a album (recursively).
+/// Index image files in an album recursively, reporting unreadable files.
 /// When [isUpdate] is true, skips already-indexed files and removes deleted
 /// file records.
 Stream<IndexProgress> indexAlbum({
@@ -472,7 +528,7 @@ Stream<IndexProgress> indexAlbum({
       }
     }
 
-    if (alreadyIndexed > 0) {
+    if (alreadyIndexed > 0 && toEncode.isEmpty) {
       final totalIndexed = db.getFolderImageCount(albumId);
       _send(
         controller,
@@ -563,7 +619,7 @@ Stream<IndexProgress> indexImages({
       }
     }
 
-    if (alreadyIndexed > 0) {
+    if (alreadyIndexed > 0 && toEncode.isEmpty) {
       final totalIndexed = db.getFolderImageCount(albumId);
       _send(
         controller,
@@ -692,7 +748,23 @@ Stream<IndexProgress> indexPendingUpdates() {
     // Step 4: Update all album records.
     for (final albumId in albumIdsToUpdate) {
       final indexed = db.getFolderImageCount(albumId);
-      _updateAlbumRecord(db, albumId, now, indexed, result);
+      final indexedPaths = db.getIndexedFilePaths(albumId).toSet();
+      final remaining = allPending
+          .where(
+            (image) =>
+                image.albumId == albumId &&
+                !indexedPaths.contains(image.pathStr),
+          )
+          .map((image) => image.pathStr)
+          .toSet()
+          .length;
+      _updateAlbumRecord(
+        db,
+        albumId,
+        now,
+        indexed + remaining,
+        !cancelled.value && remaining == 0,
+      );
     }
 
     return result;

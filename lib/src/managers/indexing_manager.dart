@@ -5,7 +5,6 @@ import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/engine/api.dart' as api;
-import 'package:picquery_app/src/engine/models.dart';
 import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/utils/path_selector.dart';
 import 'package:picquery_app/src/utils/adaptive_display.dart';
@@ -38,6 +37,22 @@ class IndexingManager extends ChangeNotifier {
   Set<String> updateAvailableAlbumPaths = const {};
   Map<String, int> pendingUpdateCountsByAlbum = const {};
   final Map<String, Object> _errorsByAlbum = {};
+  final Map<String, Map<String, IndexImageFailure>> _failuresByAlbum = {};
+
+  Map<String, List<IndexImageFailure>> get failuresByAlbum => Map.unmodifiable({
+    for (final entry in _failuresByAlbum.entries)
+      entry.key: List<IndexImageFailure>.unmodifiable(entry.value.values),
+  });
+
+  bool hasImageFailures(String albumPath) =>
+      _failuresByAlbum[albumPath]?.isNotEmpty ?? false;
+
+  void _recordFailure(IndexProgress progress) {
+    final failure = progress.failure;
+    if (failure == null) return;
+    (_failuresByAlbum[failure.albumPath] ??= {})[failure.filePath] = failure;
+  }
+
   String? currentPath;
   String? currentAlbum;
 
@@ -153,6 +168,7 @@ class IndexingManager extends ChangeNotifier {
     currentAlbum = null;
     _activeAlbumPaths = const {};
     _errorsByAlbum.clear();
+    _failuresByAlbum.clear();
     lastIndexingError = null;
     _isPausing = false;
     notifyListeners();
@@ -165,8 +181,9 @@ class IndexingManager extends ChangeNotifier {
       await albumManager.reload();
       await checkForUpdates(showToast: false);
     } catch (error, stackTrace) {
-      Logger('IndexingManager')
-          .severe('Failed to refresh albums after indexing.', error, stackTrace);
+      Logger(
+        'IndexingManager',
+      ).severe('Failed to refresh albums after indexing.', error, stackTrace);
     } finally {
       complete();
       onDone?.call();
@@ -187,6 +204,7 @@ class IndexingManager extends ChangeNotifier {
     _activeAlbumPaths = {path};
     _pausedAlbumPaths.remove(path);
     _errorsByAlbum.remove(path);
+    _failuresByAlbum.remove(path);
     notifyListeners();
 
     Stream<IndexProgress> stream;
@@ -205,10 +223,7 @@ class IndexingManager extends ChangeNotifier {
     var hasReloadedAlbums = false;
     _subscription = stream.listen(
       (progress) {
-        if (progress.errors > 0) {
-          lastIndexingError ??= StateError('Some images could not be indexed.');
-          _errorsByAlbum[path] = lastIndexingError!;
-        }
+        _recordFailure(progress);
         currentPath = progress.currentPath;
         currentAlbum = progress.currentAlbum;
         // The first event includes images indexed before this run.
@@ -333,6 +348,7 @@ class IndexingManager extends ChangeNotifier {
     _pausedAlbumPaths.removeAll(pathsBeingUpdated);
     for (final path in pathsBeingUpdated) {
       _errorsByAlbum.remove(path);
+      _failuresByAlbum.remove(path);
     }
     notifyListeners();
     albumUpdateStatus = .idle;
@@ -344,12 +360,7 @@ class IndexingManager extends ChangeNotifier {
     _subscription?.cancel();
     _subscription = stream.listen(
       (progress) {
-        if (progress.errors > 0) {
-          lastIndexingError ??= StateError('Some images could not be indexed.');
-          for (final path in pathsBeingUpdated) {
-            _errorsByAlbum[path] = lastIndexingError!;
-          }
-        }
+        _recordFailure(progress);
         currentPath = progress.currentPath;
         currentAlbum = progress.currentAlbum;
         updateProgress(progress.current, progress.total);
@@ -525,6 +536,7 @@ class IndexingManager extends ChangeNotifier {
     }
     await api.deleteAlbum(albumId: album.id);
     _errorsByAlbum.remove(album.albumPath);
+    _failuresByAlbum.remove(album.albumPath);
     if (_errorsByAlbum.isEmpty) lastIndexingError = null;
     _pausedAlbumPaths.remove(album.albumPath);
     await albumManager.reload();

@@ -3,9 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:picquery_app/l10n/generated/app_localizations.dart';
+import 'package:picquery_app/src/pages/album_manage_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image/image.dart' as img;
 import 'package:logging/logging.dart';
 import 'package:picquery_app/src/engine/db.dart';
+import 'package:picquery_app/src/engine/api.dart' show IndexProgress;
 import 'package:picquery_app/src/engine/indexer.dart' as indexer;
 import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
@@ -55,6 +60,225 @@ void main() {
       [vector],
     );
   }
+
+  test(
+    'each unreadable file is skipped once and completion is recoverable',
+    () async {
+      final missing = '${temporary.path}/missing.png';
+      final corrupt = File('${temporary.path}/corrupt.png')
+        ..writeAsBytesSync([0]);
+      final unsupported = File('${temporary.path}/unsupported.heic')
+        ..writeAsBytesSync([1]);
+      final done = Completer<void>();
+      manager.startIndexing(
+        'mobile-album',
+        'Photos',
+        imagePaths: [missing, corrupt.path, unsupported.path],
+        onDone: done.complete,
+        onError: done.completeError,
+      );
+      await done.future.timeout(const Duration(seconds: 5));
+      expect(manager.lastIndexingError, isNull);
+      expect(manager.errorForAlbum('mobile-album'), isNull);
+      expect(
+        manager.failuresByAlbum['mobile-album']!.map((image) => image.filePath),
+        [missing, corrupt.path, unsupported.path],
+      );
+      expect(manager.current, 3);
+      expect(manager.total, 3);
+      expect(Db.instance.findFolderByPath('mobile-album')!.imageCount, 0);
+      expect(
+        Db.instance.findFolderByPath('mobile-album')!.isIndexComplete,
+        isFalse,
+      );
+
+      final retry = Completer<void>();
+      manager.startIndexing(
+        'mobile-album',
+        'Photos',
+        imagePaths: [],
+        isUpdate: true,
+        onDone: retry.complete,
+        onError: retry.completeError,
+      );
+      await retry.future.timeout(const Duration(seconds: 5));
+      expect(manager.failuresByAlbum, isEmpty);
+    },
+  );
+
+  test('a corrupt image does not prevent the following image reaching inference', () async {
+    final corrupt = File('${temporary.path}/corrupt.png')
+      ..writeAsBytesSync([0]);
+    final valid = File('${temporary.path}/valid.png')
+      ..writeAsBytesSync(img.encodePng(img.Image(width: 32, height: 32)));
+    final events = <IndexProgress>[];
+    // No model is loaded: reaching inference on the valid file must propagate
+    // the session error, while only the corrupt file is a recoverable failure.
+    await expectLater(
+      indexer
+          .indexImages(
+            albumName: 'photos',
+            imagePaths: [corrupt.path, valid.path],
+            isUpdate: false,
+          )
+          .map((event) {
+            events.add(event);
+            return event;
+          })
+          .drain<void>(),
+      throwsStateError,
+    );
+    expect(
+      events
+          .where((event) => event.failure != null)
+          .map((event) => event.failure!.filePath),
+      [corrupt.path],
+    );
+  });
+
+  test(
+    'incremental failures belong only to their album and retain total counts',
+    () async {
+      final badAlbum = Directory('${temporary.path}/bad')..createSync();
+      final goodAlbum = Directory('${temporary.path}/good')..createSync();
+      final badId = Db.instance.insertFolder(badAlbum.path, 1);
+      final goodId = Db.instance.insertFolder(goodAlbum.path, 1);
+      final corrupt = File('${badAlbum.path}/broken.heic')
+        ..writeAsBytesSync([0]);
+      final removed = File('${goodAlbum.path}/removed.jpg')
+        ..writeAsBytesSync([0]);
+      insertIndexedImage(goodId, removed);
+      removed.deleteSync();
+      await manager.checkForUpdates(showToast: false);
+      final done = Completer<void>();
+      manager.startUpdateIndexing(
+        onDone: done.complete,
+        onError: done.completeError,
+      );
+      await done.future.timeout(const Duration(seconds: 5));
+      expect(manager.failuresByAlbum.keys, [badAlbum.path]);
+      expect(
+        manager.failuresByAlbum[badAlbum.path]!.single.filePath,
+        corrupt.path,
+      );
+      expect(manager.lastIndexingError, isNull);
+      expect(Db.instance.findFolderByPath(badAlbum.path)!.totalImageCount, 1);
+      expect(
+        Db.instance.findFolderByPath(badAlbum.path)!.isIndexComplete,
+        isFalse,
+      );
+      expect(
+        Db.instance.findFolderByPath(goodAlbum.path)!.isIndexComplete,
+        isTrue,
+      );
+      expect(Db.instance.getFolderImageCount(badId), 0);
+    },
+  );
+
+  testWidgets('album warning dialog shows counts and the first three names', (
+    tester,
+  ) async {
+    di.registerSingleton<IndexingManager>(manager);
+    await tester.runAsync(() async {
+      final paths = List.generate(
+        4,
+        (index) => '${temporary.path}/photo$index.png',
+      );
+      final done = Completer<void>();
+      manager.startIndexing(
+        'mobile-album',
+        'My Photos',
+        imagePaths: paths,
+        onDone: done.complete,
+        onError: done.completeError,
+      );
+      await done.future.timeout(const Duration(seconds: 5));
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const AlbumManagePage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Some images were skipped'), findsOneWidget);
+    await tester.tap(find.byTooltip('Some images were skipped'));
+    await tester.pumpAndSettle();
+    expect(find.text('My Photos: 4 images failed'), findsOneWidget);
+    expect(
+      find.text('photo0.png, photo1.png, photo2.png, etc.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('photo3.png'), findsNothing);
+    expect(
+      find.text('Indexing failed. You can report error logs below.'),
+      findsNothing,
+    );
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox());
+    di.unregister<IndexingManager>();
+  });
+
+  test(
+    'skip logs identify header formats independently of extensions',
+    () async {
+      final mislabeled = File('${temporary.path}/mislabeled.jpg')
+        ..writeAsBytesSync([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      final heic = File('${temporary.path}/unsupported.heic')
+        ..writeAsBytesSync([
+          0,
+          0,
+          0,
+          20,
+          ...'ftypmif1'.codeUnits,
+          0,
+          0,
+          0,
+          0,
+          ...'heic'.codeUnits,
+        ]);
+      final missing = '${temporary.path}/missing.png';
+      final logs = <LogRecord>[];
+      final subscription = Logger.root.onRecord.listen((record) {
+        if (record.loggerName == 'engine.indexer' &&
+            record.message.startsWith('Skipping image:')) {
+          logs.add(record);
+        }
+      });
+      addTearDown(subscription.cancel);
+
+      await indexer
+          .indexImages(
+            albumName: 'diagnostic-album',
+            imagePaths: [mislabeled.path, heic.path, missing],
+            isUpdate: false,
+          )
+          .drain<void>();
+
+      expect(logs, hasLength(3));
+      expect(
+        logs[0].message,
+        contains('extensionFormat=jpeg detectedFormat=png'),
+      );
+      expect(logs[0].message, contains('stage=preprocess'));
+      expect(logs[0].message, contains('fileSize=8'));
+      expect(
+        logs[1].message,
+        contains('extensionFormat=heic detectedFormat=heic'),
+      );
+      expect(logs[2].message, contains('stage=metadata'));
+      expect(logs[2].message, contains('detectedFormat=unreadable'));
+      for (final record in logs) {
+        expect(record.message, contains('album=diagnostic-album'));
+        expect(record.message, contains('errorType='));
+        expect(record.error, isNotNull);
+        expect(record.stackTrace, isNotNull);
+      }
+    },
+  );
 
   test('mobile albums reuse shared photos during indexing and updates', () async {
     final photo = File('${temporary.path}/shared.jpg')..writeAsBytesSync([0]);

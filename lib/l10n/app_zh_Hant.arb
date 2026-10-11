@@ -91,5 +91,26 @@
   "startupTranslationLoading": "正在載入翻譯模型…",
   "startupFailed": "準備失敗",
   "startupFailedMessage": "無法準備本機資源。請檢查裝置是否有足夠的可用空間，然後重試。如果問題仍然存在，請重新啟動應用程式。",
-  "startupRetry": "重試"
+  "startupRetry": "重試",
+  "indexingWarningsTitle": "部分圖片索引失敗",
+  "indexingWarningsDescription": "無法讀取或不支援的圖片已略過，其餘圖片已完成索引。修復這些檔案後可重試。",
+  "indexingWarningsAlbum": "{album}：{count} 張圖片索引失敗",
+  "indexingWarningsMore": "{names} 等",
+  "@indexingWarningsAlbum": {
+    "placeholders": {
+      "album": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@indexingWarningsMore": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  }
 }

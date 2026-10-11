@@ -632,6 +632,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get startupRetry => '重试';
+
+  @override
+  String get indexingWarningsTitle => '部分图片索引失败';
+
+  @override
+  String get indexingWarningsDescription =>
+      '无法读取或不受支持的图片已跳过，其余图片已完成索引。修复这些文件后可重试。';
+
+  @override
+  String indexingWarningsAlbum(String album, int count) {
+    return '$album：$count 张图片索引失败';
+  }
+
+  @override
+  String indexingWarningsMore(String names) {
+    return '$names 等';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1261,4 +1278,21 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get startupRetry => '重試';
+
+  @override
+  String get indexingWarningsTitle => '部分圖片索引失敗';
+
+  @override
+  String get indexingWarningsDescription =>
+      '無法讀取或不支援的圖片已略過，其餘圖片已完成索引。修復這些檔案後可重試。';
+
+  @override
+  String indexingWarningsAlbum(String album, int count) {
+    return '$album：$count 張圖片索引失敗';
+  }
+
+  @override
+  String indexingWarningsMore(String names) {
+    return '$names 等';
+  }
 }

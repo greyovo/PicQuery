@@ -1244,6 +1244,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get startupRetry;
+
+  /// No description provided for @indexingWarningsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Some images were skipped'**
+  String get indexingWarningsTitle;
+
+  /// No description provided for @indexingWarningsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unreadable or unsupported images were skipped. Other images have been indexed. You can retry after fixing these files.'**
+  String get indexingWarningsDescription;
+
+  /// No description provided for @indexingWarningsAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'{album}: {count} images failed'**
+  String indexingWarningsAlbum(String album, int count);
+
+  /// No description provided for @indexingWarningsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'{names}, etc.'**
+  String indexingWarningsMore(String names);
 }
 
 class _AppLocalizationsDelegate

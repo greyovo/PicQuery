@@ -91,5 +91,26 @@
   "startupTranslationLoading": "正在加载翻译模型…",
   "startupFailed": "准备失败",
   "startupFailedMessage": "无法准备本地资源。请检查设备是否有足够的可用空间，然后重试。如果问题仍然存在，请重启应用。",
-  "startupRetry": "重试"
+  "startupRetry": "重试",
+  "indexingWarningsTitle": "部分图片索引失败",
+  "indexingWarningsDescription": "无法读取或不受支持的图片已跳过，其余图片已完成索引。修复这些文件后可重试。",
+  "indexingWarningsAlbum": "{album}：{count} 张图片索引失败",
+  "indexingWarningsMore": "{names} 等",
+  "@indexingWarningsAlbum": {
+    "placeholders": {
+      "album": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@indexingWarningsMore": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  }
 }

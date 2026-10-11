@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as path;
 import 'package:picquery_app/src/engine/api.dart';
 import 'package:picquery_app/src/managers/album_manager.dart';
 import 'package:picquery_app/src/managers/indexing_manager.dart';
@@ -115,6 +116,60 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
     );
   }
 
+  void _showIndexingWarnings(IndexingManager indexing, List<Album> albums) {
+    final failures = indexing.failuresByAlbum;
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.warning_amber_rounded),
+        title: Text(context.l10n.indexingWarningsTitle),
+        content: SizedBox(
+          width: 420,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(context.l10n.indexingWarningsDescription),
+                for (final album in albums)
+                  if (failures[album.albumPath] case final images?
+                      when images.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      context.l10n.indexingWarningsAlbum(
+                        album.displayName ?? path.basename(album.albumPath),
+                        images.length,
+                      ),
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      images.length > 3
+                          ? context.l10n.indexingWarningsMore(
+                              images
+                                  .take(3)
+                                  .map((image) => path.basename(image.filePath))
+                                  .join(', '),
+                            )
+                          : images
+                                .map((image) => path.basename(image.filePath))
+                                .join(', '),
+                    ),
+                  ],
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final indexing = indexingManager;
@@ -157,6 +212,16 @@ class _AlbumManagePageState extends State<AlbumManagePage> {
           ],
         ),
         actions: [
+          if (!indexing.isIndexing &&
+              albums.any((album) => indexing.hasImageFailures(album.albumPath)))
+            IconButton(
+              onPressed: () => _showIndexingWarnings(indexing, albums),
+              tooltip: context.l10n.indexingWarningsTitle,
+              icon: Icon(
+                Icons.warning_amber_rounded,
+                color: context.colors.error,
+              ),
+            ),
           if (albums.isNotEmpty) _buildUpdateButton(indexing),
           const SizedBox(width: 12),
         ],
@@ -273,7 +338,9 @@ class _AlbumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCurrent = indexing.isIndexingAlbum(album.albumPath);
     final incomplete = !album.isIndexComplete;
-    final hasIndexingError = indexing.errorForAlbum(album.albumPath) != null;
+    final hasIndexingError =
+        (indexing.errorForAlbum(album.albumPath) != null ||
+        indexing.hasImageFailures(album.albumPath));
     final paused = indexing.isAlbumPaused(album.albumPath);
     final updateAvailable =
         !paused && indexing.updateAvailableAlbumPaths.contains(album.albumPath);

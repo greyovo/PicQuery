@@ -111,7 +111,7 @@ void _tensorWorkerMain(SendPort ready) {
   });
 }
 
-/// Decode [imagePath] at the model's required scale, center crop to 256², and
+/// Decode [imagePath] at the model's required scale, center crop/pad to 256², and
 /// convert to an RGB CHW float tensor in [0, 1].
 ///
 /// `ImageDescriptor` reads source dimensions from the encoded header, while
@@ -120,17 +120,21 @@ void _tensorWorkerMain(SendPort ready) {
 Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
   final total = Stopwatch()..start();
   final buffer = await ui.ImmutableBuffer.fromFilePath(imagePath);
-  final descriptor = await ui.ImageDescriptor.encoded(buffer);
-  final width = descriptor.width;
-  final height = descriptor.height;
-  final readAndHeader = total.elapsed;
-
+  ui.ImageDescriptor? descriptor;
   ui.Codec? codec;
   ui.Image? image;
   try {
-    final scale = kResizeDim / (width < height ? width : height);
-    final targetWidth = (width * scale).round().clamp(kResizeDim, 0x7fffffff);
-    final targetHeight = (height * scale).round().clamp(kResizeDim, 0x7fffffff);
+    descriptor = await ui.ImageDescriptor.encoded(buffer);
+    final width = descriptor.width;
+    final height = descriptor.height;
+    final readAndHeader = total.elapsed;
+    // Keep small images at their native size and pad the missing area.
+    final scale = (kResizeDim / (width < height ? width : height)).clamp(
+      0.0,
+      1.0,
+    );
+    final targetWidth = (width * scale).round().clamp(1, 0x7fffffff);
+    final targetHeight = (height * scale).round().clamp(1, 0x7fffffff);
 
     final decode = Stopwatch()..start();
     codec = await descriptor.instantiateCodec(
@@ -141,11 +145,12 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
     image = frame.image;
     final decodeElapsed = decode.elapsed;
 
-    if (image.width < kResizeDim || image.height < kResizeDim) {
-      throw FormatException('Decoded image is smaller than $kResizeDim pixels');
-    }
-    final cropX = (image.width - kResizeDim) ~/ 2;
-    final cropY = (image.height - kResizeDim) ~/ 2;
+    final copyWidth = image.width.clamp(1, kResizeDim);
+    final copyHeight = image.height.clamp(1, kResizeDim);
+    final cropX = (image.width - copyWidth) ~/ 2;
+    final cropY = (image.height - copyHeight) ~/ 2;
+    final padX = (kResizeDim - copyWidth) ~/ 2;
+    final padY = (kResizeDim - copyHeight) ~/ 2;
     final crop = Stopwatch()..start();
     final rgbaData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     if (rgbaData == null) {
@@ -156,11 +161,11 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
       rgbaData.lengthInBytes,
     );
     final cropped = Uint8List(kResizeDim * kResizeDim * 4);
-    for (var y = 0; y < kResizeDim; y++) {
+    for (var y = 0; y < copyHeight; y++) {
       final from = ((cropY + y) * image.width + cropX) * 4;
       cropped.setRange(
-        y * kResizeDim * 4,
-        (y + 1) * kResizeDim * 4,
+        ((padY + y) * kResizeDim + padX) * 4,
+        ((padY + y) * kResizeDim + padX + copyWidth) * 4,
         rgba,
         from,
       );
@@ -185,7 +190,7 @@ Future<PreprocessedImage> preprocessImageWithMetadata(String imagePath) async {
   } finally {
     image?.dispose();
     codec?.dispose();
-    descriptor.dispose();
+    descriptor?.dispose();
     buffer.dispose();
   }
 }

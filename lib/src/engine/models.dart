@@ -1,11 +1,25 @@
 // Data types exposed by the Dart engine.
 
+/// A recoverable failure of one image; other images can still be indexed.
+class IndexImageFailure {
+  final String albumPath;
+  final String filePath;
+  final String reason;
+
+  const IndexImageFailure({
+    required this.albumPath,
+    required this.filePath,
+    required this.reason,
+  });
+}
+
 class IndexProgress {
   final int current;
   final int total;
   final int errors;
   final String? currentPath;
   final String? currentAlbum;
+  final IndexImageFailure? failure;
 
   const IndexProgress({
     required this.current,
@@ -13,6 +27,7 @@ class IndexProgress {
     required this.errors,
     this.currentPath,
     this.currentAlbum,
+    this.failure,
   });
 
   @override
@@ -21,7 +36,8 @@ class IndexProgress {
       total.hashCode ^
       errors.hashCode ^
       currentPath.hashCode ^
-      currentAlbum.hashCode;
+      currentAlbum.hashCode ^
+      failure.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -32,7 +48,8 @@ class IndexProgress {
           total == other.total &&
           errors == other.errors &&
           currentPath == other.currentPath &&
-          currentAlbum == other.currentAlbum;
+          currentAlbum == other.currentAlbum &&
+          failure == other.failure;
 }
 
 class IndexStatus {
