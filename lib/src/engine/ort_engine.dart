@@ -96,6 +96,7 @@ class OrtEngine {
   OrtValue? _reusableAndroidVisualInput;
   Future<void> _visualInputTail = Future.value();
   List<OrtProvider> _activeProviders = const [];
+  List<OrtProvider> _textProviders = const [];
 
   bool get clipLoaded => _visualSession != null && _textSession != null;
   bool get translationLoaded => _translationSession != null;
@@ -190,16 +191,30 @@ class OrtEngine {
     }
 
     _log.info('Loading text model.');
+    // DirectML can initialize this graph successfully but fail at inference
+    // on LayerNormalization with E_INVALIDARG on some Windows GPUs. A CPU
+    // entry after DirectML only covers unclaimed nodes, not execution errors.
+    // Keep GPU acceleration for the visual model and run text on CPU.
+    final textOptions = Platform.isWindows
+        ? OrtSessionOptions(providers: const [OrtProvider.CPU])
+        : options;
+    final textProviders = textOptions?.providers ?? const <OrtProvider>[];
+    _log.info('Text model execution providers: $textProviders.');
     final OrtSession text;
     try {
-      text = await _createSession(textModelPath, options);
+      text = await OnnxRuntime().createSession(
+        textModelPath,
+        options: textOptions,
+      );
     } catch (_) {
+      await visual.close();
       _log.severe('Failed to load text model.');
       throw Exception('Failed to load text model.');
     }
 
     _visualSession = visual;
     _textSession = text;
+    _textProviders = textProviders;
     _log.info('CLIP models loaded successfully.');
   }
 
@@ -327,7 +342,7 @@ class OrtEngine {
           'Unexpected embedding dimension: got ${embedding.length}, expected $_embeddingDim',
         );
       }
-      _validateEmbedding(embedding, 'Text', _activeProviders);
+      _validateEmbedding(embedding, 'Text', _textProviders);
       return l2Normalize(embedding);
     } finally {
       for (final v in outputs.values) {
