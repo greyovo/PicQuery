@@ -33,7 +33,7 @@ class AppLogger with WidgetsBindingObserver {
     // Migrate logs written by versions that included user directories.
     for (final file in await _listLogFiles()) {
       final original = await file.readAsString();
-      final sanitized = LogRedactor.redact(original);
+      final sanitized = LogRedactor.forLogging(original);
       if (sanitized != original) {
         await file.writeAsString(sanitized, flush: true);
       }
@@ -65,7 +65,7 @@ class AppLogger with WidgetsBindingObserver {
       ..write('${record.loggerName}: ${record.message}');
     if (record.error != null) output.write('\nError: ${record.error}');
     if (record.stackTrace != null) output.write('\n${record.stackTrace}');
-    return LogRedactor.redact(output.toString());
+    return LogRedactor.forLogging(output.toString());
   }
 
   String _shortLevelName(Level level) => switch (level.name) {
@@ -119,7 +119,7 @@ class AppLogger with WidgetsBindingObserver {
         '===== ${file.uri.pathSegments.last} =====\n${await file.readAsString()}',
       );
     }
-    return LogRedactor.redact(sections.join('\n'));
+    return LogRedactor.forLogging(sections.join('\n'));
   }
 
   Future<void> clearLogs() async {

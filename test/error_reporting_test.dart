@@ -128,7 +128,7 @@ void main() {
       final logs = utf8.decode(await hint.attachments.single.bytes);
       expect(logs, contains('read failed'));
       expect(logs, isNot(contains('alice')));
-      expect(logs, contains('[redacted path]'));
+      expect(logs, contains('***'));
     },
   );
 

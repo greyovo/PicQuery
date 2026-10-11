@@ -16,7 +16,24 @@ path=../private/a.jpg''';
     expect(output, isNot(contains('Alice')));
     expect(output, isNot(contains('private')));
     expect(output, isNot(contains('server')));
-    expect(output, contains('[redacted path]'));
+    expect(output, contains('***'));
+    expect(output, contains('.jpg'));
+    expect(output, contains('.dart:10'));
+  });
+
+  test('logging preserves debug paths and partially masks release paths', () {
+    const input = '/Users/alice/photo.jpg';
+    expect(LogRedactor.forLogging(input, debugMode: true), input);
+    expect(
+      LogRedactor.forLogging(input, debugMode: false),
+      '/U***s/a***e/p***o.jpg',
+    );
+    expect(
+      LogRedactor.redact('/home/alice/archive.tar.gz'),
+      '/h***e/a***e/a***r.gz',
+    );
+    expect(LogRedactor.redact('/home/alice/folder/'), '/h***e/a***e/f***r/');
+    expect(LogRedactor.redact('/a/x.png'), '/***/***.png');
   });
 
   test('preserves useful source frames and aggregate diagnostics', () {
