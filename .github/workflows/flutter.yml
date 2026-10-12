@@ -195,15 +195,20 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   build-windows:
-    name: Windows
+    name: Windows integration tests and build
     needs: [prepare-models, metadata, unit-tests]
     runs-on: windows-latest
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Flutter and model assets
         uses: ./.github/actions/setup-flutter
+
+      - name: Run desktop integration tests
+        shell: bash
+        run: bash ci/test_integration.sh windows
 
       - name: Build and package Windows app
         shell: bash
@@ -220,9 +225,10 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   build-linux:
-    name: Linux
+    name: Linux integration tests and build
     needs: [prepare-models, metadata, unit-tests]
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -230,10 +236,13 @@ jobs:
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libcurl4-openssl-dev
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev libcurl4-openssl-dev xvfb xauth libgl1-mesa-dri
 
       - name: Set up Flutter and model assets
         uses: ./.github/actions/setup-flutter
+
+      - name: Run desktop integration tests
+        run: xvfb-run -a bash ci/test_integration.sh linux
 
       - name: Build and package Linux app
         shell: bash
