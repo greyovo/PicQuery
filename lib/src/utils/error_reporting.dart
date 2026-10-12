@@ -59,6 +59,7 @@ class ErrorReporting {
     try {
       await SentryFlutter.init((options) {
         configureOptions(options);
+        options.enableTombstone = true;
         options.enableAutoNativeBreadcrumbs = false;
         options.enableAutoPerformanceTracing = false;
         options.enableAutoSessionTracking = false;
