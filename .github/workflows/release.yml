@@ -1,6 +1,9 @@
 name: Publish a new release
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
@@ -45,7 +48,7 @@ jobs:
 
       - name: Validate changelog entry
         env:
-          TAG: ${{ inputs.tag }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: dart ci/extract_release_notes.dart "$TAG" release-notes.md changelogs
 
       - name: Validate tag and find previous release
@@ -53,7 +56,7 @@ jobs:
         env:
           BUILD_NUMBER_INPUT: ${{ inputs['build-number'] }}
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         shell: bash
         run: |
           if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
@@ -111,7 +114,7 @@ jobs:
     uses: ./.github/workflows/flutter.yml
     secrets: inherit
     with:
-      version: ${{ inputs.tag }}
+      version: ${{ inputs.tag || github.ref_name }}
       build-number: ${{ needs.validate.outputs.build_number }}
 
   publish:
@@ -147,7 +150,7 @@ jobs:
       - name: Prepare release notes
         env:
           PREVIOUS_TAG: ${{ needs.validate.outputs.previous_tag }}
-          TAG: ${{ inputs.tag }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         shell: bash
         run: |
           printf '[查看提交对比](https://github.com/%s/compare/%s...%s)\n' \
@@ -155,13 +158,18 @@ jobs:
 
       - name: Create and publish release
         env:
+          EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         shell: bash
         run: |
+          tag_options=(--verify-tag)
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            tag_options=(--target "$GITHUB_SHA")
+          fi
           gh release create "$TAG" \
             dist/* \
             --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
+            "${tag_options[@]}" \
             --title "$TAG" \
             --notes-file release-notes.md

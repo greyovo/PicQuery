@@ -8,6 +8,14 @@
   or signed builds; other events run Android tests and builds in `android-build`.
   Windows and Linux have build jobs. `release.yml` waits for the entire reusable
   workflow to succeed before publishing, including all integration tests.
+- `release.yml`: runs when `v*` tags are pushed, or via manual dispatch; only
+  `greyovo` can publish. Pushes use the tag as the version and the current
+  Asia/Shanghai date in `YYMMDD` format as the build number. Manual runs accept
+  a required `tag` and optional `build-number` (defaulting to the same date).
+  Both localized changelogs must contain exactly one nonempty section matching
+  the tag; validation errors stop the workflow before building or publishing.
+  Push publication requires the remote tag to exist; manual publication can
+  create the tag at the selected workflow commit.
 - `models.yml`: checks out the default branch of `greyovo/picquery-models` and
   caches the two MobileCLIP ONNX outputs under `picquery-onnx-<full HEAD SHA>`.
   Any commit on that branch invalidates the cache. There is no fallback key for
